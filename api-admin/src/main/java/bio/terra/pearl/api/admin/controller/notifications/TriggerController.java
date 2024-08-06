@@ -46,7 +46,9 @@ public class TriggerController implements TriggerApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     List<Trigger> configs =
-        triggerExtService.findForStudy(adminUser, portalShortcode, studyShortcode, environmentName);
+        triggerExtService.findForStudy(
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName));
     return ResponseEntity.ok(configs);
   }
 
@@ -123,7 +125,9 @@ public class TriggerController implements TriggerApi {
     Trigger config = objectMapper.convertValue(body, Trigger.class);
     Trigger newConfig =
         triggerExtService.create(
-            portalShortcode, studyShortcode, environmentName, config, adminUser);
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName),
+            config);
     return ResponseEntity.ok(newConfig);
   }
 

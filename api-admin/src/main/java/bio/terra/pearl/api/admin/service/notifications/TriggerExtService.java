@@ -3,8 +3,6 @@ package bio.terra.pearl.api.admin.service.notifications;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -16,10 +14,8 @@ import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,18 +49,10 @@ public class TriggerExtService {
     this.emailTemplateService = emailTemplateService;
   }
 
-  public List<Trigger> findForStudy(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnvironment =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, environmentName)
-            .orElseThrow(StudyEnvironmentMissing::new);
-    List<Trigger> configs = triggerService.findByStudyEnvironmentId(studyEnvironment.getId(), true);
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public List<Trigger> findForStudy(PortalStudyEnvAuthContext authContext) {
+    List<Trigger> configs =
+        triggerService.findByStudyEnvironmentId(authContext.getStudyEnvironment().getId(), true);
     triggerService.attachTemplates(configs);
     return configs;
   }
@@ -149,24 +137,15 @@ public class TriggerExtService {
    * update contains a new email template, that template will be created as well.
    */
   @Transactional
-  public Trigger create(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      Trigger newConfig,
-      AdminUser operator) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public Trigger create(PortalStudyEnvAuthContext authContext, Trigger newConfig) {
+
     PortalEnvironment portalEnvironment =
         portalEnvironmentService
-            .findOne(portalShortcode, environmentName)
-            .orElseThrow(PortalEnvironmentMissing::new);
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnvironment =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, environmentName)
-            .orElseThrow(StudyEnvironmentMissing::new);
+            .findOne(authContext.getPortalShortcode(), authContext.getEnvironmentName())
+            .orElseThrow(() -> new IllegalStateException("Could not find portal"));
 
-    return create(newConfig, studyEnvironment, portalEnvironment);
+    return create(newConfig, authContext.getStudyEnvironment(), portalEnvironment);
   }
 
   /**
