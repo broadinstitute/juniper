@@ -1,14 +1,14 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.util.Objects;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * an answer to a survey question
@@ -25,6 +25,10 @@ public class Answer extends BaseEntity {
     private UUID surveyResponseId;
     private UUID enrolleeId;
     private String questionStableId;
+    // if this question's parent is a repeatable group
+    // (e.g. dynamic panel) then this is the index
+    // of the repeat
+    private Integer repeat;
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;

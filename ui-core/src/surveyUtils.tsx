@@ -173,12 +173,13 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
     .filter(([key]) => {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
+    .flatMap(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
 export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
-  surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer {
+  surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer[] {
+  // todo (dynamic): handle dynamic panels by unspooling children
   const answer: Answer = { questionStableId }
   if (viewedLanguage) {
     answer.viewedLanguage = viewedLanguage
@@ -199,7 +200,7 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
     const baseStableId = questionStableId.substring(0, questionStableId.lastIndexOf('-'))
     return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData, viewedLanguage)
   }
-  return answer
+  return [answer]
 }
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */

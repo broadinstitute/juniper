@@ -1,10 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.QuestionChoice;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
@@ -17,14 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -56,13 +45,60 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             if (List.of("signaturepad", "html").contains(questionVersions.get(0).getQuestionType())) {
                 continue;
             }
-            itemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, questionVersions, objectMapper));
+            for (SurveyQuestionDefinition questionDef : questionVersions) {
+                itemFormatters.addAll(generateFormattersForQuestion(exportOptions, questionDef, questionDefs, null));
+            }
         }
 
         // get the most recent survey by sorting in descending version order
         Survey latestSurvey = surveys.stream().sorted(Comparator.comparingInt(Survey::getVersion).reversed()).findFirst().get();
         displayName = latestSurvey.getName();
         moduleName = stableId;
+    }
+
+    private List<AnswerItemFormatter> generateFormattersForQuestion(
+            ExportOptions exportOptions,
+            SurveyQuestionDefinition questionDef,
+            List<SurveyQuestionDefinition> allQuestions,
+            String parentStableId) {
+
+        // if this is a subquestion, then the formatters will be generated
+        // for it when we generate the formatters for the parent question
+        if (Objects.nonNull(questionDef.getParentQuestionStableId())) {
+            return new ArrayList<>();
+        }
+
+        // get all the child questions of this question (with same survey version)
+        List<SurveyQuestionDefinition> children = allQuestions.stream()
+                .filter(q ->
+                        Objects.equals(q.getParentQuestionStableId(), questionDef.getQuestionStableId())
+                                && questionDef.getSurveyVersion() == q.getSurveyVersion())
+                .collect(Collectors.toList());
+
+        List<AnswerItemFormatter> formatters = new ArrayList<>();
+
+        String fullStableIdPath = StringUtils.isEmpty(parentStableId) ? questionDef.getQuestionStableId() : parentStableId + "." + questionDef.getQuestionStableId();
+
+        if (children.isEmpty()) {
+            formatters.add(new AnswerItemFormatter(
+                    exportOptions,
+                    moduleName,
+                    questionDef,
+                    fullStableIdPath,
+                    objectMapper));
+        } else {
+            for (SurveyQuestionDefinition child : children) {
+                if (questionDef.getRepeatable()) {
+                    for (int repeatNum = 0; repeatNum < questionDef.getMaxRepeats(); repeatNum++) {
+                        formatters.addAll(generateFormattersForQuestion(exportOptions, child, allQuestions, fullStableIdPath + "[" + repeatNum + "]"));
+                    }
+                } else {
+                    formatters.addAll(generateFormattersForQuestion(exportOptions, child, allQuestions, fullStableIdPath));
+                }
+            }
+        }
+
+        return formatters;
     }
 
     @Override
@@ -185,6 +221,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         }
         // for now, we only support one answer per question, so just return the first
         Answer matchedAnswer = matchedAnswers.get(0);
+        // TODO (dynamic): this needs to be updated to get nested responses using
+        //       the parent stable ids and 'repeat' column
         // use the ItemExport Info matching the answer version so choices get translated correctly
         AnswerItemFormatter matchedItemFormatter = itemFormatter.getVersionMap().get(matchedAnswer.getSurveyVersion());
         if (matchedItemFormatter == null) {

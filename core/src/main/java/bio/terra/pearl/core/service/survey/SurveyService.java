@@ -19,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -132,17 +133,72 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (int i = 0; i < questions.size(); i++) {
-            JsonNode question = questions.get(i);
-            SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i,false);
-            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
-            questionDefinitions.add(questionDefinition);
+            questionDefinitions.addAll(getSurveyQuestionDefinitionsForQuestion(
+                    survey,
+                    questions.get(i),
+                    questionTemplates,
+                    questionDefinitions.size(),
+                    null));
         }
 
         // add any questions from calculatedValues
         processCalculatedValues(survey, surveyContent, questionDefinitions);
 
         return questionDefinitions;
+    }
+
+    // todo (dynamic): for each JsonNode question, there could be nested questions.
+    //                 let's create a function here that will take in a single JsonNode
+    //                 question and unspool them into a list of question definitions.
+    //                 this function should be called recursively for each nested question.
+
+    /**
+     * Most questions are simple and can be unmarshalled into a single question definition,
+     * but some questions are nested and repeatable. In these cases, multiple question
+     * definitions may be generated.
+     */
+    private List<SurveyQuestionDefinition> getSurveyQuestionDefinitionsForQuestion(
+            Survey survey,
+            JsonNode question,
+            Map<String, JsonNode> questionTemplates,
+            int globalOrder,
+            @Nullable JsonNode parent) {
+
+        List<SurveyQuestionDefinition> defs = new ArrayList<>();
+        // if the question is a dynamic panel: recursively call this for each sub-question in templateElemnts
+        // otherwise, use the code above to generate a single question definition
+
+        String type = question.get("type").asText();
+
+        // recursively call this function for each sub-question in a dynamic panel
+        if (type.toLowerCase().equals("paneldynamic")) {
+            JsonNode templateElements = question.get("templateElements");
+            for (int i = 0; i < templateElements.size(); i++) {
+                JsonNode templateElement = templateElements.get(i);
+                // todo (dynamic): check if other types should be skipped
+                //                 and potentially make this a constant if
+                //                 it's used elsewhere
+                if (templateElement.get("type").asText().equals("html")) {
+                    continue;
+                }
+
+                defs.addAll(
+                        getSurveyQuestionDefinitionsForQuestion(
+                                survey,
+                                templateElement,
+                                questionTemplates,
+                                globalOrder + i,
+                                question));
+            }
+        }
+
+        SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                questionTemplates, globalOrder, false, parent);
+
+        defs.add(questionDefinition);
+        SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+
+        return defs;
     }
 
     public List<Survey> findByPortalId(UUID portalId) {
