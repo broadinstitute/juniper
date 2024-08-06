@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
+import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -23,6 +24,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -41,10 +43,7 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
-import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
-import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
-import bio.terra.pearl.populate.dto.participant.ProxyPopDto;
+import bio.terra.pearl.populate.dto.participant.*;
 import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
@@ -57,6 +56,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,28 +72,6 @@ import static java.time.temporal.ChronoUnit.HOURS;
 @Service
 @Slf4j
 public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
-    private final EnrolleeService enrolleeService;
-    private final StudyEnvironmentService studyEnvironmentService;
-    private final ParticipantUserService participantUserService;
-    private final PortalParticipantUserService portalParticipantUserService;
-    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private final SurveyService surveyService;
-    private final SurveyResponseService surveyResponseService;
-    private final ParticipantTaskService participantTaskService;
-    private final TriggerService triggerService;
-    private final NotificationService notificationService;
-    private final AnswerProcessingService answerProcessingService;
-    private final EnrollmentService enrollmentService;
-    private final ProfileService profileService;
-    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private final TimeShiftPopulateDao timeShiftPopulateDao;
-    private final KitRequestService kitRequestService;
-    private final KitTypeDao kitTypeDao;
-    private final AdminUserDao adminUserDao;
-    private final ParticipantNotePopulator participantNotePopulator;
-    private final ParticipantUserPopulateDao participantUserPopulateDao;
-    private final ObjectMapper objectMapper;
-    private final PortalService portalService;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -109,8 +87,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              TimeShiftPopulateDao timeShiftPopulateDao,
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
                              ParticipantNotePopulator participantNotePopulator,
-                             ParticipantUserPopulateDao participantUserPopulateDao, ObjectMapper objectMapper, PortalService portalService
-    ) {
+                             ParticipantUserPopulateDao participantUserPopulateDao, PortalParticipantUserPopulator portalParticipantUserPopulator, ObjectMapper objectMapper, PortalService portalService,
+                             SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, ShortcodeService shortcodeService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -131,8 +109,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
         this.participantUserPopulateDao = participantUserPopulateDao;
+        this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.objectMapper = objectMapper;
         this.portalService = portalService;
+        this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.shortcodeService = shortcodeService;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
@@ -552,5 +533,106 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Enrollee proxyEnrollee;
         boolean doNotEmailSetting; // the original doNotEmail setting, stored here so it can be restored post-populate
     }
+
+    @Transactional
+    public Enrollee populateFromType(EnrolleePopulateType popType, String username, StudyPopulateContext popContext) {
+        // this operation always creates a new ParticipantUser
+        if (StringUtils.isBlank(username)) {
+            username = PopulateUtils.generateEmail(popType);
+        }
+        ParticipantUserPopDto userPopDto = ParticipantUserPopDto.builder()
+                .username(username).build();
+        PortalParticipantUserPopDto portalParticipantUserPopDto = PortalParticipantUserPopDto.builder()
+                .participantUser(userPopDto)
+                .profile(Profile.builder()
+                        .givenName("Synth")
+                        .familyName(popType.name() + "-Family")
+                        .contactEmail(username)
+                        .build())
+                .build();
+        try {
+            PortalParticipantUser ppUser = portalParticipantUserPopulator.populateFromDto(portalParticipantUserPopDto, popContext, true);
+            EnrolleePopDto enrolleePopDto = EnrolleePopDto.builder()
+                    .linkedUsername(username)
+                    .simulateSubmissions(true)
+                    .shortcode(shortcodeService.generateShortcode("", enrolleeService::findOneByShortcode))
+                    .build();
+            Enrollee enrollee = createNew(enrolleePopDto, popContext, true);
+            ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).orElseThrow();
+            if (popType.equals(EnrolleePopulateType.CONSENTED) || popType.equals(EnrolleePopulateType.ALL_COMPLETE)) {
+                autoConsent(enrollee, user, ppUser, popType, popContext);
+            }
+            if (popType.equals(EnrolleePopulateType.ALL_COMPLETE)) {
+                autoCompleteAll(enrollee, user,  ppUser, popType, popContext);
+            }
+            return enrollee;
+        } catch (IOException e) {
+            throw new InternalServerException("Unable to populate enrollee due to error: " + e.getMessage());
+        }
+    }
+
+    public Enrollee autoConsent(Enrollee enrollee, ParticipantUser user, PortalParticipantUser ppUser, EnrolleePopulateType popType, StudyPopulateContext popContext) {
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        List<ParticipantTask> consentTasks = tasks.stream().filter(task -> task.getTaskType().equals(TaskType.CONSENT)).toList();
+        consentTasks.forEach(task -> autoCompleteSurvey(task, enrollee, user, ppUser, popType, popContext));
+        return enrollee;
+    }
+
+    public Enrollee autoCompleteAll(Enrollee enrollee, ParticipantUser user, PortalParticipantUser ppUser, EnrolleePopulateType popType, StudyPopulateContext popContext) {
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        List<ParticipantTask> surveyTasks = tasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();
+        surveyTasks.forEach(task -> autoCompleteSurvey(task, enrollee, user, ppUser, popType, popContext));
+        return enrollee;
+    }
+
+    public void autoCompleteSurvey(ParticipantTask task, Enrollee enrollee, ParticipantUser user, PortalParticipantUser ppUser, EnrolleePopulateType popType, StudyPopulateContext popContext) {
+        UUID portalId = portalService.findByPortalEnvironmentId(ppUser.getPortalEnvironmentId()).get().getId();
+        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion(), portalId).get();
+        List<SurveyQuestionDefinition> questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(survey.getId());
+        List<AnswerPopDto> answers = questionDefs.stream().map(questionDef -> {
+            AnswerPopDto answer = AnswerPopDto.builder()
+                    .questionStableId(questionDef.getQuestionStableId())
+                    .stringValue("blah")
+                    .build();
+            return answer;
+        }).toList();
+        SurveyResponsePopDto responsePopDto = SurveyResponsePopDto.builder()
+                .surveyStableId(survey.getStableId())
+                .surveyVersion(survey.getVersion())
+                .complete(true)
+                .answerPopDtos(answers)
+                .build();
+        try {
+            populateResponse(enrollee, responsePopDto, ppUser, true, popContext, user);
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException("Unable to complete survey enrollee due to error: " + e.getMessage());
+        }
+    }
+
+    private final EnrolleeService enrolleeService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final SurveyService surveyService;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final TriggerService triggerService;
+    private final NotificationService notificationService;
+    private final AnswerProcessingService answerProcessingService;
+    private final EnrollmentService enrollmentService;
+    private final ProfileService profileService;
+    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final KitRequestService kitRequestService;
+    private final KitTypeDao kitTypeDao;
+    private final AdminUserDao adminUserDao;
+    private final ParticipantNotePopulator participantNotePopulator;
+    private final ParticipantUserPopulateDao participantUserPopulateDao;
+    private final PortalParticipantUserPopulator portalParticipantUserPopulator;
+    private final ObjectMapper objectMapper;
+    private final PortalService portalService;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final ShortcodeService shortcodeService;
 }
 

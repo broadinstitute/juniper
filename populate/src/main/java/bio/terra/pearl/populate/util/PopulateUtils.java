@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.util;
 
+import bio.terra.pearl.populate.service.EnrolleePopulateType;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.time.LocalDate;
@@ -32,6 +33,11 @@ public class PopulateUtils {
     public static String generateEmail() {
         return randomString(16).toLowerCase() + ".seed@test.com";
     }
+
+    public static String generateEmail(EnrolleePopulateType enrolleePopulateType) {
+        return enrolleePopulateType.name() + "-" + randomString(8).toLowerCase() + "@test.com";
+    }
+
 
     public static LocalDate generateRandomDate() {
         long minDay = LocalDate.of(1920, 1, 1).toEpochDay();

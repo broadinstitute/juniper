@@ -14,7 +14,7 @@ import {
 } from 'test-utils/mocking-utils'
 import { userEvent } from '@testing-library/user-event'
 import {
-  Family,
+  Family, renderWithRouter,
   setupRouterTest
 } from '@juniper/ui-core'
 
@@ -90,13 +90,36 @@ test('filters participants based on shortcode', async () => {
 test('send email is toggled depending on participants selected', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
+  await userEvent.click(screen.getByLabelText('Actions'))
   const sendEmailButton = screen.getByText('Send email')
   expect(sendEmailButton).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('add synthetic participant not shown for live environment', async () => {
+  mockSearchApi(1)
+  const studyEnvContext = mockStudyEnvContext()
+  studyEnvContext.currentEnv.environmentName = 'live'
+  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  await waitFor(() => {
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+  })
+  await userEvent.click(screen.getByLabelText('Actions'))
+  expect(screen.queryByText('Add synthetic participant')).not.toBeInTheDocument()
+})
+
+test('add synthetic participant shown for sandbox environment', async () => {
+  mockSearchApi(1)
+  const studyEnvContext = mockStudyEnvContext()
+  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  await waitFor(() => {
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+  })
+  await userEvent.click(screen.getByLabelText('Actions'))
+  expect(screen.getByText('Add synthetic participant')).toBeInTheDocument()
 })
 
 test('keyword search sends search api request', async () => {

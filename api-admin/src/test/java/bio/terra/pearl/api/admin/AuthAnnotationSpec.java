@@ -44,4 +44,9 @@ public record AuthAnnotationSpec(
     return new AuthAnnotationSpec(
         EnforcePortalStudyEnvPermission.class, permissionName, otherAnnotations);
   }
+
+  public static AuthAnnotationSpec withOtherAnnotations(
+      List<Class<? extends Annotation>> otherAnnotations) {
+    return new AuthAnnotationSpec(null, null, otherAnnotations);
+  }
 }

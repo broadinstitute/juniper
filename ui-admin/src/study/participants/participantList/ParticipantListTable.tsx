@@ -27,17 +27,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
-  faEnvelope
+  faEnvelope, faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import {
   currentIsoDate,
   instantToDefaultString
 } from '@juniper/ui-core'
-import { Button } from 'components/forms/Button'
+import { Button, EllipsisDropdownButton } from 'components/forms/Button'
 import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
 import TableClientPagination from 'util/TablePagination'
+import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
 
 /**
  * Participant table used by the participant list. Does not include searching functionality, just table
@@ -51,7 +52,8 @@ function ParticipantListTable({
   disableRowVisibilityCount,
   disableColumnFiltering,
   header,
-  tableClass
+  tableClass,
+  reload
 }: {
   participantList: EnrolleeSearchExpressionResult[],
   studyEnvContext: StudyEnvContextT,
@@ -60,10 +62,12 @@ function ParticipantListTable({
   disableRowVisibilityCount?: boolean
   disableColumnFiltering?: boolean,
   header?: React.ReactNode,
-  tableClass?: string
+  tableClass?: string,
+  reload: () => void
 }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showSyntheticModal, setShowSyntheticModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
   ])
@@ -210,16 +214,39 @@ function ParticipantListTable({
         <RowVisibilityCount table={table}/>
       </div>}
       <div className="d-flex">
-        <Button onClick={() => setShowEmailModal(allowSendEmail)}
-          variant="light" className="border m-1" disabled={!allowSendEmail}
-          tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-          <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
-        </Button>
-        <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
+        <EllipsisDropdownButton aria-label="Actions" text="Actions" className="ms-auto"/>
+        <div className="dropdown-menu">
+          <ul className="list-unstyled pt-3">
+            <li>
+              <Button onClick={() => setShowEmailModal(allowSendEmail)}
+                variant="light" className="bg-white border-0" disabled={!allowSendEmail}
+                tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
+                <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
+              </Button>
+            </li>
+            <li>
+              <DownloadControl table={table} buttonClass="bg-white border-0"
+                fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
+            </li>
+            {(currentEnv.environmentName != 'live') && <li>
+              <Button variant="light" className="bg-white border-0"
+                onClick={() => setShowSyntheticModal(!showSyntheticModal)}>
+                <FontAwesomeIcon icon={faPlus}/> Add synthetic participant
+              </Button>
+            </li>}
+          </ul>
+        </div>
+
+
         <ColumnVisibilityControl table={table}/>
         {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}
+        { showSyntheticModal &&
+          <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
+            onDismiss={() => setShowSyntheticModal(false)}
+            onSubmit={() => { setShowSyntheticModal(false); reload() }}
+          />}
       </div>
     </div>
     {basicTableLayout(table, { filterable: !disableColumnFiltering, tableClass })}

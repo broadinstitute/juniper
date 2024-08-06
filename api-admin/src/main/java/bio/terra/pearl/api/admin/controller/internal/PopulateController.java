@@ -4,6 +4,8 @@ import bio.terra.common.exception.InternalServerErrorException;
 import bio.terra.pearl.api.admin.api.PopulateApi;
 import bio.terra.pearl.api.admin.service.PopulateExtService;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -12,6 +14,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.populate.service.AdminConfigPopulator;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
+import bio.terra.pearl.populate.service.EnrolleePopulateType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -48,89 +51,116 @@ public class PopulateController implements PopulateApi {
 
   @Override
   public ResponseEntity<Object> populateBaseSeed() {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    BaseSeedPopulator.SetupStats populatedObj = populateExtService.populateBaseSeed(user);
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    BaseSeedPopulator.SetupStats populatedObj =
+        populateExtService.populateBaseSeed(OperatorAuthContext.of(operator));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateAdminConfig(Boolean overwrite) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     AdminConfigPopulator.AdminConfigStats populatedObj =
-        populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
+        populateExtService.populateAdminConfig(
+            OperatorAuthContext.of(operator), Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populatePortal(
       String filePathName, Boolean overwrite, String shortcodeOverride) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     if (StringUtils.isBlank(shortcodeOverride)) {
       shortcodeOverride = null;
     }
     Portal populatedObj =
         populateExtService.populatePortal(
-            filePathName, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
+            OperatorAuthContext.of(operator),
+            filePathName,
+            Boolean.TRUE.equals(overwrite),
+            shortcodeOverride);
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> uploadPortal(
       Boolean overwrite, String shortcodeOverride, MultipartFile portalZip) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     if (StringUtils.isBlank(shortcodeOverride)) {
       shortcodeOverride = null;
     }
     Portal populatedObj =
         populateExtService.populatePortal(
-            portalZip, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
+            OperatorAuthContext.of(operator),
+            portalZip,
+            Boolean.TRUE.equals(overwrite),
+            shortcodeOverride);
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateSiteContent(
       String portalShortcode, String filePathName, Boolean overwrite) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     SiteContent populatedObj =
         populateExtService.populateSiteContent(
-            portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
+            OperatorAuthContext.of(operator),
+            portalShortcode,
+            filePathName,
+            Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateSurvey(
       String portalShortcode, String filePathName, Boolean overwrite) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     Survey populatedObj =
         populateExtService.populateSurvey(
-            portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
+            OperatorAuthContext.of(operator),
+            portalShortcode,
+            filePathName,
+            Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateEnrollee(
       String portalShortcode,
-      String envName,
       String studyShortcode,
+      String envName,
       String filePathName,
+      String popType,
+      String username,
       Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
-    AdminUser user = authUtilService.requireAdminUser(request);
-    Enrollee populatedObj =
-        populateExtService.populateEnrollee(
-            portalShortcode,
-            environmentName,
-            studyShortcode,
-            filePathName,
-            user,
-            Boolean.TRUE.equals(overwrite));
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    Enrollee populatedObj;
+    if (StringUtils.isBlank(popType)) {
+      populatedObj =
+          populateExtService.populateEnrollee(
+              PortalStudyEnvAuthContext.of(
+                  operator, portalShortcode, studyShortcode, environmentName),
+              filePathName,
+              Boolean.TRUE.equals(overwrite));
+
+    } else {
+      EnrolleePopulateType populateType = EnrolleePopulateType.valueOf(popType.toUpperCase());
+      populatedObj =
+          populateExtService.populateEnrollee(
+              PortalStudyEnvAuthContext.of(
+                  operator, portalShortcode, studyShortcode, environmentName),
+              populateType,
+              username);
+    }
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateCommand(String command, Object body) {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    Object result = populateExtService.populateCommand(command, body, user);
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    Object result =
+        populateExtService.populateCommand(OperatorAuthContext.of(operator), command, body);
     return ResponseEntity.ok(result);
   }
 
@@ -138,18 +168,22 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Void> bulkPopulateEnrollees(
       String portalShortcode, String envName, String studyShortcode, Integer numEnrollees) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     populateExtService.bulkPopulateEnrollees(
-        portalShortcode, environmentName, studyShortcode, numEnrollees, user);
+        OperatorAuthContext.of(operator),
+        portalShortcode,
+        environmentName,
+        studyShortcode,
+        numEnrollees);
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<Resource> extractPortal(String portalShortcode) {
-    AdminUser user = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      populateExtService.extractPortal(portalShortcode, baos, user);
+      populateExtService.extractPortal(OperatorAuthContext.of(operator), portalShortcode, baos);
       return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
     } catch (IOException e) {
       throw new InternalServerErrorException("Error exporting portal", e);
