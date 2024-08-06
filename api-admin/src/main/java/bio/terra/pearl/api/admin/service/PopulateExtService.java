@@ -1,12 +1,14 @@
 package bio.terra.pearl.api.admin.service;
 
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.populate.service.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
@@ -51,8 +53,8 @@ public class PopulateExtService {
     this.portalExtractService = portalExtractService;
   }
 
-  public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
-    authorizeUser(user);
+  @SuperuserOnly
+  public BaseSeedPopulator.SetupStats populateBaseSeed(OperatorAuthContext authContext) {
     try {
       return baseSeedPopulator.populate("");
     } catch (IOException e) {
@@ -60,9 +62,9 @@ public class PopulateExtService {
     }
   }
 
+  @SuperuserOnly
   public AdminConfigPopulator.AdminConfigStats populateAdminConfig(
-      AdminUser user, boolean overwrite) {
-    authorizeUser(user);
+      OperatorAuthContext authContext, boolean overwrite) {
     try {
       return adminConfigPopulator.populate(overwrite);
     } catch (IOException e) {
@@ -70,9 +72,12 @@ public class PopulateExtService {
     }
   }
 
+  @SuperuserOnly
   public Portal populatePortal(
-      MultipartFile zipFile, AdminUser user, boolean overwrite, String shortcodeOverride) {
-    authorizeUser(user);
+      OperatorAuthContext authContext,
+      MultipartFile zipFile,
+      boolean overwrite,
+      String shortcodeOverride) {
     try {
       ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
       return portalPopulator.populateFromZipFile(zis, overwrite, shortcodeOverride);
@@ -81,25 +86,34 @@ public class PopulateExtService {
     }
   }
 
+  @SuperuserOnly
   public Portal populatePortal(
-      String filePathName, AdminUser user, boolean overwrite, String shortcodeOverride) {
-    authorizeUser(user);
+      OperatorAuthContext authContext,
+      String filePathName,
+      boolean overwrite,
+      String shortcodeOverride) {
     return portalPopulator.populate(
         new FilePopulateContext(filePathName, false, shortcodeOverride), overwrite);
   }
 
+  @SuperuserOnly
   public Survey populateSurvey(
-      String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
-    authorizeUser(user);
+      OperatorAuthContext authContext,
+      String portalShortcode,
+      String filePathName,
+      boolean overwrite) {
     PortalPopulateContext config =
         new PortalPopulateContext(
             filePathName, portalShortcode, null, new HashMap<>(), false, null);
     return surveyPopulator.populate(config, overwrite);
   }
 
+  @SuperuserOnly
   public SiteContent populateSiteContent(
-      String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
-    authorizeUser(user);
+      OperatorAuthContext authContext,
+      String portalShortcode,
+      String filePathName,
+      boolean overwrite) {
     PortalPopulateContext config =
         new PortalPopulateContext(
             filePathName, portalShortcode, null, new HashMap<>(), false, null);
@@ -114,28 +128,45 @@ public class PopulateExtService {
     }
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
   public Enrollee populateEnrollee(
-      String portalShortcode,
-      EnvironmentName envName,
-      String studyShortcode,
-      String filePathName,
-      AdminUser user,
-      boolean overwrite) {
-    authorizeUser(user);
+      PortalStudyEnvAuthContext authContext, String filePathName, boolean overwrite) {
     StudyPopulateContext config =
         new StudyPopulateContext(
-            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
+            filePathName,
+            authContext.getPortalShortcode(),
+            authContext.getStudyShortcode(),
+            authContext.getEnvironmentName(),
+            new HashMap<>(),
+            false,
+            null);
     return enrolleePopulator.populate(config, overwrite);
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
+  public Enrollee populateEnrollee(
+      PortalStudyEnvAuthContext authContext,
+      EnrolleePopulateType enrolleePopulateType,
+      String username) {
+    StudyPopulateContext config =
+        new StudyPopulateContext(
+            null,
+            authContext.getPortalShortcode(),
+            authContext.getStudyShortcode(),
+            authContext.getEnvironmentName(),
+            new HashMap<>(),
+            false,
+            null);
+    return enrolleePopulator.populateFromType(enrolleePopulateType, username, config);
+  }
+
+  @SuperuserOnly
   public void bulkPopulateEnrollees(
+      OperatorAuthContext authContext,
       String portalShortcode,
       EnvironmentName envName,
       String studyShortcode,
-      Integer numEnrollees,
-      AdminUser user) {
-    authorizeUser(user);
-
+      Integer numEnrollees) {
     List<String> usernamesToLink =
         portalParticipantUserPopulator.bulkPopulateParticipants(
             portalShortcode, envName, studyShortcode, numEnrollees);
@@ -143,25 +174,19 @@ public class PopulateExtService {
         portalShortcode, envName, studyShortcode, usernamesToLink);
   }
 
-  public void extractPortal(String portalShortcode, OutputStream os, AdminUser user)
-      throws IOException {
-    authorizeUser(user);
+  @SuperuserOnly
+  public void extractPortal(
+      OperatorAuthContext authContext, String portalShortcode, OutputStream os) throws IOException {
     portalExtractService.extract(portalShortcode, os);
   }
 
   @Transactional
-  public Object populateCommand(String command, Object commandParams, AdminUser user) {
-    authorizeUser(user);
+  @SuperuserOnly
+  public Object populateCommand(
+      OperatorAuthContext authContext, String command, Object commandParams) {
     if ("CONVERT_CONSENTS".equals(command)) {
       throw new IllegalArgumentException("that command is no longer supported");
     }
     throw new IllegalArgumentException("unknown command");
-  }
-
-  protected void authorizeUser(AdminUser user) {
-    if (user.isSuperuser()) {
-      return;
-    }
-    throw new PermissionDeniedException("You do not have access");
   }
 }

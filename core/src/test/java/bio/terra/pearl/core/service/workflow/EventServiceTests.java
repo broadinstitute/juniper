@@ -30,7 +30,6 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testPersistsEnrolleeConsentEvent(TestInfo info) {
-
         EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeConsentEvent(

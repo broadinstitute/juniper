@@ -20,7 +20,6 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,12 +182,22 @@ public class SurveyExtService {
 
   @SandboxOnly
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
-  public StudyEnvironmentSurvey updateConfiguredSurvey(
-      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey updatedObj) {
-    authConfiguredSurveyRequest(authContext, updatedObj);
-    StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
-    BeanUtils.copyProperties(updatedObj, existing);
-    return studyEnvironmentSurveyService.update(existing);
+  @Transactional // this is potentially rearranging the order of surveys, do as a single transaction
+  public List<StudyEnvironmentSurvey> updateConfiguredSurveys(
+      PortalStudyEnvAuthContext authContext, List<StudyEnvironmentSurvey> updatedObjs) {
+    List<StudyEnvironmentSurvey> savedObjs =
+        updatedObjs.stream()
+            .map(
+                updatedObj -> {
+                  StudyEnvironmentSurvey existing =
+                      studyEnvironmentSurveyService.find(updatedObj.getId()).get();
+                  authConfiguredSurveyRequest(authContext, existing);
+                  existing.setSurveyOrder(updatedObj.getSurveyOrder());
+                  existing.setActive(updatedObj.isActive());
+                  return studyEnvironmentSurveyService.update(existing);
+                })
+            .toList();
+    return savedObjs;
   }
 
   /**
@@ -251,13 +260,4 @@ public class SurveyExtService {
   }
 
   private record SurveyAuthEntities(PortalEnvironment portalEnv, Survey survey) {}
-
-  /** confirms the given config is associated with the given study */
-  private void verifyStudyEnvironmentSurvey(
-      StudyEnvironmentSurvey config, StudyEnvironment studyEnvironment) {
-    if (!studyEnvironment.getId().equals(config.getStudyEnvironmentId())) {
-      throw new IllegalArgumentException(
-          "existing studyEnvironmentSurvey does not match the study environment");
-    }
-  }
 }

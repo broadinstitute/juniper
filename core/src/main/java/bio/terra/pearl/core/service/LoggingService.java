@@ -18,8 +18,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class LoggingService {
-  private LogEventDao logEventDao;
-  private ObjectMapper filteredEventMapper;
+  private final LogEventDao logEventDao;
+  private final ObjectMapper filteredEventMapper;
 
   public LoggingService(LogEventDao logEventDao, ObjectMapper objectMapper) {
     this.logEventDao = logEventDao;
@@ -32,8 +32,8 @@ public class LoggingService {
     objectMapper.setFilterProvider(filters);
   }
 
-  public List<LogEvent> listLogEvents(String days, List<LogEventType> eventTypes) {
-    return logEventDao.listLogEvents(days, eventTypes);
+  public List<LogEvent> listLogEvents(String days, List<LogEventType> eventTypes, Integer limit) {
+    return logEventDao.listLogEvents(days, eventTypes, limit);
   }
 
   /** creates a log event and sends the non-sensitive fields to container logs */

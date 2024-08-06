@@ -18,11 +18,11 @@ public class LoggingExtService {
 
   @SuperuserOnly
   public List<LogEvent> listLogEvents(
-      OperatorAuthContext authContext, String days, List<LogEventType> eventTypes) {
+      OperatorAuthContext authContext, String days, List<LogEventType> eventTypes, Integer limit) {
     if (eventTypes.isEmpty()) {
       return List.of();
     }
 
-    return loggingService.listLogEvents(days, eventTypes);
+    return loggingService.listLogEvents(days, eventTypes, limit);
   }
 }

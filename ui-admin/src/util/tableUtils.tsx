@@ -38,6 +38,7 @@ import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
 import classNames from 'classnames'
 
+
 /**
  * Returns a debounced input react component
  * Adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -342,8 +343,8 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
 /**
  * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'] }:{
-  table: Table<T>, fileName: string, excludedColumns?: string[]}
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'], buttonClass='border m-1' }:{
+  table: Table<T>, fileName: string, excludedColumns?: string[], buttonClass: string}
 ) {
   const [show, setShow] = useState(false)
 
@@ -369,7 +370,7 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
 
   return <div className="ms-auto">
     <Button onClick={() => setShow(!show)}
-      variant="light" className="border m-1" disabled={disableDownload}
+      variant="light" className={buttonClass} disabled={disableDownload}
       tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
       <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
     </Button>
@@ -411,7 +412,7 @@ export type BasicTableConfig<T> = {
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
-const defaultBasicTableConfig = {
+export const defaultBasicTableConfig = {
   filterable: false
 }
 

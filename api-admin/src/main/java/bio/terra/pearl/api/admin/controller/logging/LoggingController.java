@@ -29,12 +29,13 @@ public class LoggingController implements LoggingApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String days, String eventTypes) {
+  public ResponseEntity<Object> get(String days, String eventTypes, Integer limit) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     OperatorAuthContext authContext = OperatorAuthContext.of(operator);
 
     List<LogEventType> logEventTypes =
         Arrays.stream(eventTypes.split(",")).map(LogEventType::valueOf).toList();
-    return ResponseEntity.ok(loggingExtService.listLogEvents(authContext, days, logEventTypes));
+    return ResponseEntity.ok(
+        loggingExtService.listLogEvents(authContext, days, logEventTypes, limit));
   }
 }

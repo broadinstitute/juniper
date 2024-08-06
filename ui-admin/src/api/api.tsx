@@ -661,14 +661,14 @@ export default {
     return await this.processResponse(response)
   },
 
-  async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
-    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurvey.id}`
+  async updateConfiguredSurveys(portalShortcode: string, studyShortcode: string, envName: string,
+    configuredSurveys: StudyEnvironmentSurvey[]): Promise<StudyEnvironmentSurvey[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys`
 
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredSurvey)
+      body: JSON.stringify(configuredSurveys)
     })
     return await this.processJsonResponse(response)
   },
@@ -1486,6 +1486,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async populateEnrollee(studyEnvParams: StudyEnvParams, popType: string, username?: string) {
+    const paramString = queryString.stringify({ username, popType })
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/populate?${paramString}`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async populateSiteContent(fileName: string, overwrite: boolean, portalShortcode: string) {
     const url = `${basePopulateUrl()}/siteContent/${portalShortcode}?filePathName=${fileName}&overwrite=${overwrite}`
     const response = await fetch(url, {
@@ -1514,8 +1525,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async loadLogEvents(eventTypes: string[], days: string) {
-    const params = queryString.stringify({ eventTypes: eventTypes.join(','), days })
+  async loadLogEvents(eventTypes: string[], days: string, limit: number = 1000) {
+    const params = queryString.stringify({ eventTypes: eventTypes.join(','), days, limit })
     const url = `${API_ROOT}/logEvents?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

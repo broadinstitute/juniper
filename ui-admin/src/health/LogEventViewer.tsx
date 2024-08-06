@@ -17,7 +17,7 @@ import { renderPageHeader } from 'util/pageUtils'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons'
+import { faInfoCircle, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import pluralize from 'pluralize'
 
@@ -125,6 +125,10 @@ export default function LogEventViewer() {
   return (
     <div className="px-4 py-2">
       {renderPageHeader('Log Events')}
+      <span className="text-muted fst-italic">
+        <FontAwesomeIcon icon={faInfoCircle} className="me-2"/>
+        This table is limited to 1000 log events. If you need to view more, contact support.
+      </span>
       <div className="mt-4">
         {isLoading && <LoadingSpinner/>}
       </div>

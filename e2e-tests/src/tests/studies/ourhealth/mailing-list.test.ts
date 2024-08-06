@@ -22,7 +22,7 @@ test('shows mailing list dialog on direct link', async ({ page }) => {
   await adminLogin(page)
   await page.goto(`${process.env.ADMIN_URL}/demo/studies/heartdemo/env/sandbox/mailingList`)
   await expect(page.getByTestId('loading-spinner')).not.toBeVisible()
-  const tableBody = page.locator('table.table-striped').locator('tbody')
+  const tableBody = page.locator('table').locator('tbody')
   const firstRow = tableBody.locator('tr').nth(0)
   await expect(firstRow.locator('td').nth(1)).toHaveText(email)
   await expect(firstRow.locator('td').nth(2)).toHaveText(name)
