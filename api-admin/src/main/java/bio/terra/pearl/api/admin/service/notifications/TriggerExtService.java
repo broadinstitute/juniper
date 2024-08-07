@@ -16,11 +16,12 @@ import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TriggerExtService {
@@ -85,8 +86,10 @@ public class TriggerExtService {
     switch (trigger.getActionType()) {
       case NOTIFICATION:
         notificationDispatcher.dispatchTestNotification(trigger, enrolleeContext);
+        return;
       case ADMIN_NOTIFICATION:
         testAdminNotification(authContext, trigger, enrolleeContext);
+        return;
       default:
         throw new IllegalArgumentException("Cannot test action type: " + trigger.getActionType());
     }
@@ -101,7 +104,7 @@ public class TriggerExtService {
     emailTemplateService.attachLocalizedTemplates(emailTemplate);
 
     NotificationContextInfo contextInfo =
-        adminEmailService.loadContextInfoFromEnrollee(
+            adminEmailService.loadContextInfoForStudyEnv(
             emailTemplate, authContext.getPortal(), authContext.getStudyEnvironment().getId());
 
     adminEmailService.sendEmail(contextInfo, authContext.getOperator(), enrolleeContext);

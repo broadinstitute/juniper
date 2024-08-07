@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
@@ -34,6 +36,11 @@ public class AdminEmailSubstitutor implements StringLookup {
       valueMap.put("profile", enrolleeContext.getProfile());
       valueMap.put("participantUser", enrolleeContext.getParticipantUser());
       valueMap.put("enrolleeUrl", getEnrolleeUrl(contextInfo, enrolleeContext.getEnrollee().getShortcode()));
+    }
+
+    if (Objects.nonNull(contextInfo.portalEnv()) && Objects.nonNull(contextInfo.portalEnvConfig()) && Objects.nonNull(contextInfo.portal())) {
+      valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
+      valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
     }
   }
 
@@ -70,5 +77,11 @@ public class AdminEmailSubstitutor implements StringLookup {
             contextInfo.portal().getShortcode(),
             contextInfo.study().getShortcode(),
             contextInfo.portalEnv().getEnvironmentName()) + "/participants/" + enrolleeShortcode;
+  }
+
+  public String getImageBaseUrl(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode) {
+    return routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode)
+            + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnv.getEnvironmentName()
+            + "/siteMedia";
   }
 }

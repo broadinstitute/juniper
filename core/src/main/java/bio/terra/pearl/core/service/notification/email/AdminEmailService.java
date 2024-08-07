@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -12,6 +13,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitutor;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
@@ -42,13 +44,14 @@ public class AdminEmailService {
   private final AdminUserService adminUserService;
   private final PortalService portalService;
   private final NotificationService notificationService;
+  private final PortalEnvironmentConfigService portalEnvironmentConfigService;
 
   public AdminEmailService(EmailTemplateService emailTemplateService,
                            ApplicationRoutingPaths routingPaths,
                            SendgridClient sendgridClient,
                            StudyEnvironmentService studyEnvironmentService,
                            StudyService studyService,
-                           PortalEnvironmentService portalEnvironmentService, AdminUserService adminUserService, PortalService portalService, NotificationService notificationService) {
+                           PortalEnvironmentService portalEnvironmentService, AdminUserService adminUserService, PortalService portalService, NotificationService notificationService, PortalEnvironmentConfigService portalEnvironmentConfigService) {
     this.emailTemplateService = emailTemplateService;
     this.routingPaths = routingPaths;
     this.sendgridClient = sendgridClient;
@@ -58,6 +61,7 @@ public class AdminEmailService {
     this.adminUserService = adminUserService;
     this.portalService = portalService;
     this.notificationService = notificationService;
+    this.portalEnvironmentConfigService = portalEnvironmentConfigService;
   }
 
   @Async
@@ -113,7 +117,7 @@ public class AdminEmailService {
             .orElseThrow(() -> new NotFoundException("Email template not found"));
     emailTemplateService.attachLocalizedTemplates(emailTemplate);
 
-    NotificationContextInfo contextInfo = loadContextInfoFromEnrollee(emailTemplate, portal, event.getEnrolleeContext().getEnrollee().getStudyEnvironmentId());
+    NotificationContextInfo contextInfo = loadContextInfoForStudyEnv(emailTemplate, portal, event.getEnrolleeContext().getEnrollee().getStudyEnvironmentId());
 
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(
             null,
@@ -160,7 +164,7 @@ public class AdminEmailService {
     );
   }
 
-  public NotificationContextInfo loadContextInfoFromEnrollee(EmailTemplate template, Portal portal, UUID studyEnvId) {
+  public NotificationContextInfo loadContextInfoForStudyEnv(EmailTemplate template, Portal portal, UUID studyEnvId) {
 
     StudyEnvironment studyEnvironment = studyEnvironmentService
             .find(studyEnvId)
@@ -171,11 +175,14 @@ public class AdminEmailService {
     Study study = studyService
             .findByStudyEnvironmentId(studyEnvId)
             .orElseThrow(() -> new IllegalStateException("Study not found"));
+    PortalEnvironmentConfig portalEnvironmentConfig = portalEnvironmentConfigService
+            .findByPortalEnvId(portalEnvironment.getId())
+            .orElseThrow(() -> new IllegalStateException("Portal environment config not found"));
 
     return new NotificationContextInfo(
             portal,
             portalEnvironment,
-            portalEnvironment.getPortalEnvironmentConfig(),
+            portalEnvironmentConfig,
             study,
             template
     );
