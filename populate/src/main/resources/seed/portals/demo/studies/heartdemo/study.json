@@ -25,7 +25,8 @@
     "emails/surveyReminder.json",
     "emails/outreachReminder.json",
     "emails/invite.json",
-    "emails/adHoc.json"
+    "emails/adHoc.json",
+    "emails/adminKitReceived.json"
   ],
   "studyEnvironmentDtos": [
     {
@@ -89,6 +90,11 @@
       },{
         "triggerType": "AD_HOC",
         "populateFileName": "emails/invite.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "KIT_RECEIVED",
+        "actionType": "ADMIN_NOTIFICATION",
+        "populateFileName": "emails/adminKitReceived.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",

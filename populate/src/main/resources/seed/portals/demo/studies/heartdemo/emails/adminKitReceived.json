@@ -1,0 +1,11 @@
+{
+  "stableId": "hd_hd_adminKitReceived",
+  "name": "Kit Received",
+  "version": 1,
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "New participant kit received in Heart Demo",
+    "bodyPopulateFile": "en/adminKitReceived.html"
+  }]
+}
