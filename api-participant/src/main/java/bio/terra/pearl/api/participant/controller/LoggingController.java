@@ -38,8 +38,8 @@ public class LoggingController implements LoggingApi {
   }
 
   /*
-    * This method is called by the Mixpanel frontend library to track events. This differs from the log
-    * method above, which saves the log event to the database rather than sending it to Mixpanel.
+   * This method is called by the Mixpanel frontend library to track events. This differs from the log
+   * method above, which saves the log event to the database rather than sending it to Mixpanel.
    */
   @Override
   public ResponseEntity<String> trackEvent(String data) {
