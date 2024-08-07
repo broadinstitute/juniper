@@ -82,6 +82,7 @@ function App() {
 
 /** Renders the navbar and footer for the page */
 function PageFrame({ config }: { config: Config }) {
+  console.log(config)
   return (
     <div className="d-flex">
       {/*<AdminSidebar config={config}/>*/}
