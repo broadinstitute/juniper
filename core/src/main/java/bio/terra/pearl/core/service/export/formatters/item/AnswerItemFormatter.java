@@ -19,6 +19,7 @@ import java.util.*;
 @SuperBuilder
 @Getter
 public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
+    private String questionStableIdPath;
     private String questionStableId;
     private String questionType;
     private String questionText;
@@ -46,17 +47,17 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
             ExportOptions exportOptions,
             String moduleName,
             List<SurveyQuestionDefinition> questionVersions,
-            String stableId,
+            String stableIdPath,
             ObjectMapper objectMapper) {
         this(exportOptions,
                 moduleName,
                 questionVersions.stream()
                         .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed())
                         .findFirst().orElseThrow(() -> new IllegalArgumentException("Empty list of question versions")),
-                stableId,
+                stableIdPath,
                 objectMapper);
         for (SurveyQuestionDefinition questionDef : questionVersions) {
-            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, stableId, objectMapper));
+            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, stableIdPath, objectMapper));
         }
     }
 
@@ -67,7 +68,7 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
             ExportOptions exportOptions,
             String moduleName,
             SurveyQuestionDefinition questionDef,
-            String stableId,
+            String stableIdPath,
             ObjectMapper objectMapper) {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
@@ -79,7 +80,8 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         }
         boolean splitOptions = exportOptions.isSplitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
         baseColumnKey = questionDef.getQuestionStableId();
-        questionStableId = stableId;
+        questionStableId = questionDef.getQuestionStableId();
+        questionStableIdPath = stableIdPath;
         stableIdsForOptions = exportOptions.isStableIdsForOptions();
         splitOptionsIntoColumns = splitOptions;
         allowMultiple = questionDef.isAllowMultiple();
@@ -129,6 +131,7 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         }
         Answer answer = Answer.builder()
                 .questionStableId(questionStableId)
+                .questionStableIdPath(questionStableIdPath)
                 .build();
         if (dataType.equals(DataValueExportType.OBJECT_STRING)) {
             answer.setAnswerType(AnswerType.OBJECT);

@@ -190,8 +190,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         List<Answer> answers = exportData.getAnswers().stream().filter(ans ->
                 Objects.equals(ans.getSurveyStableId(), surveyStableId)
         ).toList();
-        // map the answers by question stable id for easier access
-        Map<String, List<Answer>> answerMap = answers.stream().collect(groupingBy(Answer::getQuestionStableId));
+        // map the answers by question stable id path for easier access
+        Map<String, List<Answer>> answerMap = answers.stream().collect(groupingBy(Answer::getQuestionStableIdPath));
         List<UUID> responseIds = answers.stream().map(Answer::getSurveyResponseId).distinct().toList();
         if (responseIds.isEmpty()) {
             return valueMap;
@@ -218,14 +218,12 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
 
     public void addAnswersToMap(AnswerItemFormatter itemFormatter,
                                 Map<String, List<Answer>> answerMap, Map<String, String> valueMap) {
-        List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableId());
+        List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableIdPath());
         if (matchedAnswers == null) {
             return;
         }
         // for now, we only support one answer per question, so just return the first
         Answer matchedAnswer = matchedAnswers.get(0);
-        // TODO (dynamic): this needs to be updated to get nested responses using
-        //       the parent stable ids and 'repeat' column
         // use the ItemExport Info matching the answer version so choices get translated correctly
         AnswerItemFormatter matchedItemFormatter = itemFormatter.getVersionMap().get(matchedAnswer.getSurveyVersion());
         if (matchedItemFormatter == null) {
@@ -345,59 +343,59 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     }
 
     // todo (dynamic): delete if not needed
-    private Map<String, List<SurveyQuestionDefinition>> getQuestionDefMap(List<SurveyQuestionDefinition> defs) {
-        Map<String, List<SurveyQuestionDefinition>> result = new HashMap<>();
-        buildQuestionMap(defs, result, "", null);
-        return result;
-    }
-
-    private void buildQuestionMap(
-            List<SurveyQuestionDefinition> questionDefs,
-            Map<String, List<SurveyQuestionDefinition>> result,
-            String prefix,
-            String currentParentStableId) {
-
-        for (SurveyQuestionDefinition questionDef : questionDefs) {
-            if (Objects.nonNull(questionDef.getParentQuestionStableId()) && !questionDef.getParentQuestionStableId().equals(currentParentStableId)) {
-                continue;
-            }
-
-            if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
-                // if this question is repeatable, we need to add it multiple times to the map
-                for (int i = 0; i < questionDef.getMaxRepeats(); i++) {
-                    String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() + "[" + i + "]" : questionDef.getQuestionStableId() + "[" + i + "]";
-
-                    // todo: reduce duplication
-                    if (result.containsKey(fullStableId)) {
-                        result.get(fullStableId).add(questionDef);
-                    } else {
-                        List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
-                        questionDefList.add(questionDef);
-                        result.put(fullStableId, questionDefList);
-                    }
-
-                    // recursively add all the child questions
-                    buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
-
-                }
-            } else {
-                // if this question is not repeatable, we just add it once to the map
-                // (and we don't need to add the repeat number to the stable id
-                String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() : questionDef.getQuestionStableId();
-
-                if (result.containsKey(fullStableId)) {
-                    result.get(fullStableId).add(questionDef);
-                } else {
-                    List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
-                    questionDefList.add(questionDef);
-                    result.put(fullStableId, questionDefList);
-                }
-
-                // recursively add all the child questions
-                buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
-            }
-
-
-        }
-    }
+//    private Map<String, List<SurveyQuestionDefinition>> getQuestionDefMap(List<SurveyQuestionDefinition> defs) {
+//        Map<String, List<SurveyQuestionDefinition>> result = new HashMap<>();
+//        buildQuestionMap(defs, result, "", null);
+//        return result;
+//    }
+//
+//    private void buildQuestionMap(
+//            List<SurveyQuestionDefinition> questionDefs,
+//            Map<String, List<SurveyQuestionDefinition>> result,
+//            String prefix,
+//            String currentParentStableId) {
+//
+//        for (SurveyQuestionDefinition questionDef : questionDefs) {
+//            if (Objects.nonNull(questionDef.getParentQuestionStableId()) && !questionDef.getParentQuestionStableId().equals(currentParentStableId)) {
+//                continue;
+//            }
+//
+//            if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
+//                // if this question is repeatable, we need to add it multiple times to the map
+//                for (int i = 0; i < questionDef.getMaxRepeats(); i++) {
+//                    String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() + "[" + i + "]" : questionDef.getQuestionStableId() + "[" + i + "]";
+//
+//                    // todo: reduce duplication
+//                    if (result.containsKey(fullStableId)) {
+//                        result.get(fullStableId).add(questionDef);
+//                    } else {
+//                        List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
+//                        questionDefList.add(questionDef);
+//                        result.put(fullStableId, questionDefList);
+//                    }
+//
+//                    // recursively add all the child questions
+//                    buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
+//
+//                }
+//            } else {
+//                // if this question is not repeatable, we just add it once to the map
+//                // (and we don't need to add the repeat number to the stable id
+//                String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() : questionDef.getQuestionStableId();
+//
+//                if (result.containsKey(fullStableId)) {
+//                    result.get(fullStableId).add(questionDef);
+//                } else {
+//                    List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
+//                    questionDefList.add(questionDef);
+//                    result.put(fullStableId, questionDefList);
+//                }
+//
+//                // recursively add all the child questions
+//                buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
+//            }
+//
+//
+//        }
+//    }
 }

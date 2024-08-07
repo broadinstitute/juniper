@@ -25,10 +25,7 @@ public class Answer extends BaseEntity {
     private UUID surveyResponseId;
     private UUID enrolleeId;
     private String questionStableId;
-    // if this question's parent is a repeatable group
-    // (e.g. dynamic panel) then this is the index
-    // of the repeat
-    private Integer repeat;
+    private String questionStableIdPath;
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;
