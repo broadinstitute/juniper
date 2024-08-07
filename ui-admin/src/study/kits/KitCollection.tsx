@@ -29,13 +29,13 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         enrolleeShortcode
       )
       if (loadedEnrollee.consented) { setEnrollee(loadedEnrollee) } else {
-        setQrError('Enrollee has not consented to the study'
-        )
+        setQrError('Enrollee has not consented to the study')
+        setEnrollee(undefined)
       }
     })
   }
 
-  return <div className='m-2'>
+  return <div className='m-2' style={{ maxWidth: '450px' }}>
     {renderPageHeader('Collect a kit')}
     <div className={'text-muted mb-1'}>To collect an in-person kit, follow the steps below. Please ensure that
     all information is correct before submitting.</div>
