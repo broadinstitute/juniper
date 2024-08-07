@@ -254,7 +254,7 @@ function ProfileRow(
         <button
           className="btn btn-outline-primary float-end"
           onClick={() => {
-            mixpanel.track('editProfileField', { field: title })
+            mixpanel.track('editProfileField', { field: title, source: 'participantProfile' })
             onEdit()
           }}
           aria-label={editLabel}

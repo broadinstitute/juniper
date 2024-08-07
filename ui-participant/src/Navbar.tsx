@@ -54,7 +54,7 @@ export default function Navbar(props: NavbarProps) {
 
   async function updatePreferredLanguage(selectedLanguage: string) {
     //track the language change
-    mixpanel.track('languageUpdated', { language: selectedLanguage })
+    mixpanel.track('languageUpdated', { language: selectedLanguage, source: 'navbar' })
     if (profile && ppUser) {
       await Api.updateProfile({
         profile: { ...profile, preferredLanguage: selectedLanguage },
@@ -121,7 +121,7 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  onClick={() => mixpanel.track('userLogin')}
+                  onClick={() => mixpanel.track('userLogin', { source: 'navbar' })}
                   to="/hub"
                 >
                   {i18n('navbarLogin')}
@@ -362,13 +362,13 @@ export const AccountOptionsDropdown = () => {
             </button>
           </NavLink>}
           <button className="dropdown-item" aria-label="change password" onClick={() => {
-            mixpanel.track('changePassword')
+            mixpanel.track('changePassword', { source: 'navbar' })
             doChangePassword()
           }}>
             {i18n('navbarChangePassword')}
           </button>
           <button className="dropdown-item" aria-label="log out" onClick={() => {
-            mixpanel.track('userLogout')
+            mixpanel.track('userLogout', { source: 'navbar' })
             doLogout()
           }}>
             {i18n('navbarLogout')}

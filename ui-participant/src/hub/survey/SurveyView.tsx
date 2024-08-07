@@ -98,7 +98,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         type: 'SUCCESS'
       }
     }
-    mixpanel.track('formCompleted', { form: form.stableId })
+    mixpanel.track('formCompleted', { form: form.stableId, source: 'surveyView' })
     navigate('/hub', { state: showHeaders ? hubUpdate : undefined })
   }
 
