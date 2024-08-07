@@ -19,7 +19,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -132,10 +131,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         //Unmarshal the questions into actual definitions that we can store in the DB.
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
-        for (int i = 0; i < questions.size(); i++) {
+        for (JsonNode question : questions) {
             questionDefinitions.addAll(getSurveyQuestionDefinitionsForQuestion(
                     survey,
-                    questions.get(i),
+                    question,
                     questionTemplates,
                     questionDefinitions.size(),
                     null));
@@ -147,11 +146,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         return questionDefinitions;
     }
 
-    // todo (dynamic): for each JsonNode question, there could be nested questions.
-    //                 let's create a function here that will take in a single JsonNode
-    //                 question and unspool them into a list of question definitions.
-    //                 this function should be called recursively for each nested question.
-
     /**
      * Most questions are simple and can be unmarshalled into a single question definition,
      * but some questions are nested and repeatable. In these cases, multiple question
@@ -162,27 +156,40 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
             int globalOrder,
-            @Nullable JsonNode parent) {
+            JsonNode parent) {
 
-        List<SurveyQuestionDefinition> defs = new ArrayList<>();
-        // if the question is a dynamic panel: recursively call this for each sub-question in templateElemnts
-        // otherwise, use the code above to generate a single question definition
+        SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                questionTemplates, globalOrder, false, parent);
+        SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+
+        List<SurveyQuestionDefinition> defs = new ArrayList<>(List.of(questionDefinition));
+
+        defs.addAll(getSubQuestions(survey, question, questionTemplates, globalOrder));
+
+        return defs;
+    }
+
+    // if a question has any nested children, as is the case with a dynamic panel,
+    // create those questions here
+    private List<SurveyQuestionDefinition> getSubQuestions(
+            Survey survey,
+            JsonNode question,
+            Map<String, JsonNode> questionTemplates,
+            int globalOrder) {
+        List<SurveyQuestionDefinition> subquestions = new ArrayList<>();
+
+        if (!question.has("type")) {
+            return subquestions;
+        }
 
         String type = question.get("type").asText();
-
-        // recursively call this function for each sub-question in a dynamic panel
-        if (type.toLowerCase().equals("paneldynamic")) {
+        // recursively create question defs for each sub-question in a dynamic panel
+        if (type.equalsIgnoreCase("paneldynamic")) {
             JsonNode templateElements = question.get("templateElements");
             for (int i = 0; i < templateElements.size(); i++) {
                 JsonNode templateElement = templateElements.get(i);
-                // todo (dynamic): check if other types should be skipped
-                //                 and potentially make this a constant if
-                //                 it's used elsewhere
-                if (templateElement.get("type").asText().equals("html")) {
-                    continue;
-                }
 
-                defs.addAll(
+                subquestions.addAll(
                         getSurveyQuestionDefinitionsForQuestion(
                                 survey,
                                 templateElement,
@@ -192,13 +199,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             }
         }
 
-        SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                questionTemplates, globalOrder, false, parent);
-
-        defs.add(questionDefinition);
-        SurveyParseUtils.validateQuestionDefinition(questionDefinition);
-
-        return defs;
+        return subquestions;
     }
 
     public List<Survey> findByPortalId(UUID portalId) {

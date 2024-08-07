@@ -91,7 +91,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
                     objectMapper));
         } else {
             for (SurveyQuestionDefinition child : children) {
-                if (questionDef.getRepeatable()) {
+                if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
                     for (int repeatNum = 0; repeatNum < questionDef.getMaxRepeats(); repeatNum++) {
                         formatters.addAll(generateFormattersForQuestion(exportOptions, child, allQuestions, fullStableIdPath + "[" + repeatNum + "]"));
                     }

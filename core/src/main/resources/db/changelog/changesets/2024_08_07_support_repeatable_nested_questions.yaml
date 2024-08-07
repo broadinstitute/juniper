@@ -17,7 +17,7 @@ databaseChangeLog:
                       nullable: true
               - column:
                   name: parent_question_stable_id
-                  type: string
+                  type: text
                   constraints:
                       nullable: true
           - addColumn:
@@ -25,7 +25,7 @@ databaseChangeLog:
               columns:
               - column:
                   name: question_stable_id_path
-                  type: string
+                  type: text
                   constraints:
                       nullable: true
           - sql:
