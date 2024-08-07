@@ -1,10 +1,6 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -25,6 +21,8 @@ import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -158,7 +156,7 @@ public class EnrolleeEmailService implements NotificationSender {
                     enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
-        if (enrolleeContext.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
+        if (enrolleeContext.getProfile().isDoNotEmailSolicit() && (Objects.isNull(config.getTaskType()) || config.getTaskType().equals(TaskType.OUTREACH))) {
             log.info("skipping email, enrollee {} is doNotEmailSolicit: triggerId: {}, portalEnv: {}",
                     enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;

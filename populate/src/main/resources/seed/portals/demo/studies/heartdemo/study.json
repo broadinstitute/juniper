@@ -26,7 +26,7 @@
     "emails/outreachReminder.json",
     "emails/invite.json",
     "emails/adHoc.json",
-    "emails/adminKitReceived.json"
+    "emails/adminNotificationTest.json"
   ],
   "studyEnvironmentDtos": [
     {
@@ -92,9 +92,10 @@
         "populateFileName": "emails/invite.json"
       },{
         "triggerType": "EVENT",
-        "eventType": "KIT_RECEIVED",
+        "eventType": "STUDY_ENROLLMENT",
         "actionType": "ADMIN_NOTIFICATION",
-        "populateFileName": "emails/adminKitReceived.json"
+        "rule": "{profile.doNotEmailSolicit} = true",
+        "populateFileName": "emails/adminNotificationTest.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",

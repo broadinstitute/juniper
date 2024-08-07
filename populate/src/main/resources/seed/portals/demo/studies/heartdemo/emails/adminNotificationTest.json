@@ -5,7 +5,7 @@
   "publishedVersion": 1,
   "localizedEmailTemplateDtos": [{
     "language": "en",
-    "subject": "New participant kit received in Heart Demo",
-    "bodyPopulateFile": "en/adminKitReceived.html"
+    "subject": "New doNotSolicit participant enrollment",
+    "bodyPopulateFile": "en/adminNotificationTest.html"
   }]
 }
