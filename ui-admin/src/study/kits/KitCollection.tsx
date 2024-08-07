@@ -135,7 +135,7 @@ const KitCollectionStep = ({ stepNumber, stepTitle, stepStatus, children }: {
     <h2 className="d-flex align-items-center mb-3">
       { stepStatusToIcon(stepStatus) } Step {stepNumber}
     </h2>
-    <div>{stepTitle}</div>
+    <div className='mb-2'>{stepTitle}</div>
     {children}
   </div>
 }
