@@ -9,7 +9,7 @@ import { TextInput } from 'components/forms/TextInput'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleDot, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
-import InfoPopup from '../../components/forms/InfoPopup'
+import InfoPopup from 'components/forms/InfoPopup'
 
 
 export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {
@@ -29,7 +29,9 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         studyEnvContext.currentEnv.environmentName,
         enrolleeShortcode
       )
-      if (loadedEnrollee.consented) { setEnrollee(loadedEnrollee) } else {
+      if (loadedEnrollee.consented) {
+        setEnrollee(loadedEnrollee)
+      } else {
         setQrError('Enrollee has not consented to the study')
         setEnrollee(undefined)
       }
@@ -60,13 +62,18 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       { showEnrolleeCodeScanner &&
         <BarcodeScanner
           expectedFormats={['qr_code']}
-          onError={error => setQrError(error)}
+          onError={error => {
+            setQrError(error)
+            setEnrollee(undefined)
+          }}
           onSuccess={result => {
             loadEnrollee(result.rawValue)
             setShowEnrolleeCodeScanner(false)
           }}/>
       }
-      { qrError && <div className="text-danger">{qrError}</div> }
+      { qrError &&
+          <div className="text-danger">{qrError}</div>
+      }
     </KitCollectionStep>
 
     <KitCollectionStep
@@ -75,13 +82,17 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       description={<>Confirm the enrollee&apos;s identity</>}
     >
       <div>
-        <TextInput label={'Enrollee Name'} className="mb-1" disabled={true}
+        <TextInput
+          label={'Enrollee Name'}
+          className="mb-1" disabled={true}
           value={enrollee ?
             `${enrollee.profile.givenName} ${enrollee.profile.familyName}` :
             ''
           }>
         </TextInput>
-        <TextInput label={'Date of Birth'} className="mb-2" disabled={true}
+        <TextInput
+          label={'Date of Birth'}
+          className="mb-2" disabled={true}
           value={enrollee ?
             dateToDefaultString(enrollee.profile.birthDate) :
             ''
@@ -113,8 +124,14 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
               setShowKitScanner(false)
             }}/>
       }
-      <TextInput className="my-2" disabled={true} value={kitId}></TextInput>
-      { kitError && <div className="text-danger">{kitError}</div> }
+      <TextInput
+        className="my-2"
+        disabled={true}
+        value={kitId}>
+      </TextInput>
+      { kitError &&
+          <div className="text-danger">{kitError}</div>
+      }
     </KitCollectionStep>
     <div className="d-flex justify-content-end">
       <Button disabled={!(kitId && enrollee)} variant={'primary'}>Submit kit</Button>
