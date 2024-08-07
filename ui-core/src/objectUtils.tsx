@@ -1,4 +1,12 @@
-import { isNil } from 'lodash'
+import {
+  isArray,
+  isBoolean,
+  isEmpty,
+  isNil,
+  isNumber,
+  isPlainObject,
+  isString
+} from 'lodash'
 
 export type ObjectDiff = {
   fieldName: string,
@@ -73,4 +81,34 @@ const getAllFields = (...objs: object[]): Set<string> => {
   })
 
   return new Set(allFields)
+}
+
+
+// inspired by https://stackoverflow.com/a/57478730
+export function flattenObject(
+  data: unknown,
+  prefix: string = '',
+  result: Record<string, unknown> = {}
+): unknown {
+  if (isString(data) || isNumber(data) || isBoolean(data)) {
+    result[prefix] = data
+    return result
+  }
+  if (isArray(data) || isPlainObject(data)) {
+    for (const i in data as Record<string, unknown>) {
+      let pref = prefix
+      if (isArray(data)) {
+        pref = `${pref}[${i}]`
+      } else {
+        if (isEmpty(prefix)) {
+          pref = i
+        } else {
+          pref = `${prefix}.${i}`
+        }
+      }
+
+      flattenObject((data as Record<string, unknown>)[i], pref, result)
+    }
+    return result
+  }
 }

@@ -32,6 +32,7 @@ import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { EnvironmentName } from './types/study'
 import { Profile } from 'src/types/user'
+import { flattenObject } from 'src/objectUtils'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -168,19 +169,34 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
   if (!surveyJSModel.data) {
     return []
   }
-  return Object.entries(surveyJSModel.data)
+
+  const flattenedData = flattenSurveyJsData(surveyJSModel.data)
+
+  return Object.entries(flattenedData)
     // don't make answers for the descriptive sections
     .filter(([key]) => {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .flatMap(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
+    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, flattenedData, selectedLanguage))
+}
+
+// turns all nested objects into top-level keys so that the backend can save complex nested questions
+// as their own answer objects
+export function flattenSurveyJsData(data: Record<string, SurveyJsValueType>): Record<string, SurveyJsValueType> {
+  // include original data; this is required because it keeps the complex unflattened versions of the
+  // objects which surveyjs uses to render the survey
+  return { ...flattenObject(data) as Record<string, SurveyJsValueType>, ...data }
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
-export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
-  surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer[] {
-  // todo (dynamic): handle dynamic panels by unspooling children
-  const answer: Answer = { questionStableId }
+export function makeAnswer(
+  value: SurveyJsValueType,
+  questionStableIdPath: string,
+  surveyJsData: Record<string, SurveyJsValueType>,
+  viewedLanguage?: string): Answer {
+  const questionStableId = questionStableIdPath.split('.').pop() as string
+
+  const answer: Answer = { questionStableId, questionStableIdPath }
   if (viewedLanguage) {
     answer.viewedLanguage = viewedLanguage
   }
@@ -200,7 +216,7 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
     const baseStableId = questionStableId.substring(0, questionStableId.lastIndexOf('-'))
     return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData, viewedLanguage)
   }
-  return [answer]
+  return answer
 }
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
@@ -224,7 +240,7 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
     }
   })
   return {
-    ...model.data,
+    ...flattenSurveyJsData(model.data),
     ...calculatedHash
   }
 }

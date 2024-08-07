@@ -94,6 +94,13 @@ public class SurveyParseUtils {
             definition.setParentQuestionStableId(parent.get("name").asText());
             if (parent.get("type").asText().equals("paneldynamic")) {
                 definition.setRepeatable(true);
+
+                if (parent.has("maxPanelCount")) {
+                    definition.setMaxRepeats(parent.get("maxPanelCount").asInt());
+                } else {
+                    // let's set a reasonable default
+                    definition.setMaxRepeats(5);
+                }
             }
         }
 

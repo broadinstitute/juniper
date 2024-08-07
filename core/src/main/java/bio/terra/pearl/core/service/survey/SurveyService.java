@@ -230,7 +230,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
                     .findFirst().orElse(questionDefinitions.size() - 1);
             questionDefinitions.add(upstreamIndex + 1,
                     SurveyParseUtils.unmarshalSurveyQuestion(survey, derivedQuestion,
-                            Map.of(), upstreamIndex + 1,true));
+                            Map.of(), upstreamIndex + 1, true, null));
         }
         // reassign the export orders
         IntStream.range(0, questionDefinitions.size()).forEach(i -> {

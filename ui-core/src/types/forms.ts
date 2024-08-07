@@ -62,6 +62,11 @@ export const defaultSurvey = {
 
 export type Answer = {
   questionStableId: string
+
+  // e.g., in a dynamic panel question, if it's the fifth response, it would be
+  //       dynamicPanelStableId[4].questionStableId
+  questionStableIdPath: string
+
   stringValue?: string
   numberValue?: number
   booleanValue?: boolean

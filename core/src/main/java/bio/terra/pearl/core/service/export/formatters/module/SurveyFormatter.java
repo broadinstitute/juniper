@@ -30,8 +30,11 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     public static String SPLIT_OPTION_UNSELECTED_VALUE = "0";
     private ObjectMapper objectMapper;
 
-    public SurveyFormatter(ExportOptions exportOptions, String stableId, List<Survey> surveys,
-                           List<SurveyQuestionDefinition> questionDefs, ObjectMapper objectMapper) {
+    public SurveyFormatter(ExportOptions exportOptions,
+                           String stableId,
+                           List<Survey> surveys,
+                           List<SurveyQuestionDefinition> questionDefs,
+                           ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         itemFormatters.add(new PropertyItemFormatter("lastUpdatedAt", SurveyResponse.class));
         itemFormatters.add(new PropertyItemFormatter("complete", SurveyResponse.class));
@@ -339,5 +342,62 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             }
         }
         return (response.getAnswers().isEmpty() ? null : response);
+    }
+
+    // todo (dynamic): delete if not needed
+    private Map<String, List<SurveyQuestionDefinition>> getQuestionDefMap(List<SurveyQuestionDefinition> defs) {
+        Map<String, List<SurveyQuestionDefinition>> result = new HashMap<>();
+        buildQuestionMap(defs, result, "", null);
+        return result;
+    }
+
+    private void buildQuestionMap(
+            List<SurveyQuestionDefinition> questionDefs,
+            Map<String, List<SurveyQuestionDefinition>> result,
+            String prefix,
+            String currentParentStableId) {
+
+        for (SurveyQuestionDefinition questionDef : questionDefs) {
+            if (Objects.nonNull(questionDef.getParentQuestionStableId()) && !questionDef.getParentQuestionStableId().equals(currentParentStableId)) {
+                continue;
+            }
+
+            if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
+                // if this question is repeatable, we need to add it multiple times to the map
+                for (int i = 0; i < questionDef.getMaxRepeats(); i++) {
+                    String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() + "[" + i + "]" : questionDef.getQuestionStableId() + "[" + i + "]";
+
+                    // todo: reduce duplication
+                    if (result.containsKey(fullStableId)) {
+                        result.get(fullStableId).add(questionDef);
+                    } else {
+                        List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
+                        questionDefList.add(questionDef);
+                        result.put(fullStableId, questionDefList);
+                    }
+
+                    // recursively add all the child questions
+                    buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
+
+                }
+            } else {
+                // if this question is not repeatable, we just add it once to the map
+                // (and we don't need to add the repeat number to the stable id
+                String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() : questionDef.getQuestionStableId();
+
+                if (result.containsKey(fullStableId)) {
+                    result.get(fullStableId).add(questionDef);
+                } else {
+                    List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
+                    questionDefList.add(questionDef);
+                    result.put(fullStableId, questionDefList);
+                }
+
+                // recursively add all the child questions
+                buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
+            }
+
+
+        }
     }
 }
