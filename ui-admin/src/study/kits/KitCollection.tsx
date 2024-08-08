@@ -76,6 +76,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
           setEnrollee(undefined)
           setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
           setIsEnrolleeIdentityConfirmed(false)
+          setKitId(undefined)
         }}>
         Click to scan enrollee code
         </Button>
@@ -84,6 +85,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
           expectedFormats={['qr_code']}
           onError={error => {
             setEnrolleeCodeError(error)
+            setShowEnrolleeCodeScanner(false)
             setEnrollee(undefined)
           }}
           onSuccess={result => {
@@ -104,7 +106,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       >
         <TextInput
           label={'Enrollee Name'}
-          className="mb-1" disabled={true}
+          className="mb-2" disabled={true}
           value={enrollee ?
             `${enrollee.profile.givenName} ${enrollee.profile.familyName}` :
             ''
