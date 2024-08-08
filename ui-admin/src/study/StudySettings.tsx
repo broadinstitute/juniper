@@ -60,7 +60,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   }
 
   const loadAllowedKitTypes = async () => {
-    const allowedKitTypes = await Api.fetchAllKitTypes(studyEnvParams)
+    const allowedKitTypes = await Api.fetchAllowedKitTypes(studyEnvParams)
     const allowedKitTypeOptions = allowedKitTypes.map(kt => ({ value: kt.name, label: kt.displayName }))
     setKitTypeOptions(allowedKitTypeOptions)
   }

@@ -994,7 +994,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchAllKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
+  async fetchAllowedKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/allowedKitTypes`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
