@@ -9,7 +9,7 @@ import { EnvironmentName } from '@juniper/ui-core'
 
 jest.mock('api/api', () => ({
   ...jest.requireActual('api/api'),
-  fetchAllKitTypes: jest.fn().mockResolvedValue([]),
+  fetchAllowedKitTypes: jest.fn().mockResolvedValue([]),
   fetchKitTypes: jest.fn().mockResolvedValue([])
 }))
 
