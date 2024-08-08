@@ -88,8 +88,6 @@ public class SurveyParseUtils {
             int globalOrder,
             boolean isDerived) {
 
-        System.out.println(question.toString());
-
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
                 .surveyStableId(survey.getStableId())
@@ -154,7 +152,17 @@ public class SurveyParseUtils {
             if (choice.isTextual()) {
                 choices.add(new QuestionChoice(choice.asText(), choice.asText()));
             } else {
-                choices.add(new QuestionChoice(choice.get("value").asText(), choice.get("text").asText()));
+                JsonNode textNode = choice.get("text");
+
+                String text;
+                if (textNode.isTextual()) {
+                    text = textNode.asText();
+                } else {
+                    // todo: make this grab default language
+                    text = textNode.get("en").asText();
+                }
+
+                choices.add(new QuestionChoice(choice.get("value").asText(), text));
             }
         }
         /**

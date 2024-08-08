@@ -140,6 +140,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         List<Answer> answers = exportData.getAnswers().stream().filter(ans ->
                 Objects.equals(ans.getSurveyStableId(), surveyStableId)
         ).toList();
+
         // map the answers by question stable id for easier access
         Map<String, List<Answer>> answerMap = answers.stream().collect(groupingBy(Answer::getQuestionStableId));
         List<UUID> responseIds = answers.stream().map(Answer::getSurveyResponseId).distinct().toList();

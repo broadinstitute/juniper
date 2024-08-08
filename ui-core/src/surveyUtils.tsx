@@ -32,7 +32,7 @@ import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { EnvironmentName } from './types/study'
 import { Profile } from 'src/types/user'
-import { flattenObject } from 'src/objectUtils'
+import { flattenObject } from './objectUtils'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
