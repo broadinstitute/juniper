@@ -1,8 +1,7 @@
 import {
   findDifferencesBetweenObjects,
   flattenObject,
-  ObjectDiff,
-  unflattenObject
+  ObjectDiff
 } from './objectUtils'
 
 describe('findDifferencesBetweenObjects', () => {
