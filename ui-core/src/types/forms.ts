@@ -62,11 +62,6 @@ export const defaultSurvey = {
 
 export type Answer = {
   questionStableId: string
-
-  // e.g., in a dynamic panel question, if it's the fifth response, it would be
-  //       dynamicPanelStableId[4].questionStableId
-  questionStableIdPath: string
-
   stringValue?: string
   numberValue?: number
   booleanValue?: boolean
@@ -232,6 +227,11 @@ export type HtmlQuestion = BaseQuestion & {
   html: I18nSurveyElement
 }
 
+export type PanelDynamicQuestion = TitledQuestion & {
+  type: 'paneldynamic',
+  templateElements: FormElement[]
+}
+
 export type Question =
   | CheckboxQuestion
   | DropdownQuestion
@@ -241,6 +241,7 @@ export type Question =
   | TemplatedQuestion
   | TextQuestion
   | HtmlQuestion
+  | PanelDynamicQuestion
 
 export type InteractiveQuestion = Exclude<Question, HtmlQuestion>
 

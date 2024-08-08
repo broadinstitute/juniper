@@ -49,8 +49,7 @@ public class SurveyParseUtils {
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
             int globalOrder,
-            boolean isDerived,
-            JsonNode parent) {
+            boolean isDerived) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
@@ -88,20 +87,6 @@ public class SurveyParseUtils {
 
         if (templatedQuestion.has("choices")) {
             definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion));
-        }
-
-        if (parent != null) {
-            definition.setParentQuestionStableId(parent.get("name").asText());
-            if (parent.get("type").asText().equals("paneldynamic")) {
-                definition.setRepeatable(true);
-
-                if (parent.has("maxPanelCount")) {
-                    definition.setMaxRepeats(parent.get("maxPanelCount").asInt());
-                } else {
-                    // let's set a reasonable default
-                    definition.setMaxRepeats(5);
-                }
-            }
         }
 
         return definition;

@@ -6,7 +6,6 @@ import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,13 +37,5 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
 
     public void deleteByResponseId(UUID responseId) {
         dao.deleteByResponseId(responseId);
-    }
-
-    @Override
-    public Answer create(Answer answer) {
-        if (Objects.isNull(answer.getQuestionStableIdPath())) {
-            answer.setQuestionStableIdPath(answer.getQuestionStableId());
-        }
-        return dao.create(answer);
     }
 }

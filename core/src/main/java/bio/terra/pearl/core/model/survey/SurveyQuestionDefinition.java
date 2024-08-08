@@ -27,11 +27,4 @@ public class SurveyQuestionDefinition extends BaseEntity {
     @Builder.Default
     private boolean required = false;
     private Integer exportOrder; // orders the questions on the export spreadsheet
-
-    // if this question & its subquestions are repeatable
-    private Boolean repeatable;
-    private Integer maxRepeats;
-
-    // if this is a subquestion of a panel / json export, this is the parent question stable id
-    private String parentQuestionStableId;
 }

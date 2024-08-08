@@ -19,7 +19,6 @@ import java.util.*;
 @SuperBuilder
 @Getter
 public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
-    private String questionStableIdPath;
     private String questionStableId;
     private String questionType;
     private String questionText;
@@ -43,33 +42,22 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
      * specifying export column(s) information.  This ItemExportInfo will have child ItemExportInfos for each
      * version of the question, so that the exporter can map answers to choices from all versions of the question
      */
-    public AnswerItemFormatter(
-            ExportOptions exportOptions,
-            String moduleName,
-            List<SurveyQuestionDefinition> questionVersions,
-            String stableIdPath,
-            ObjectMapper objectMapper) {
+    public AnswerItemFormatter(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions, ObjectMapper objectMapper) {
         this(exportOptions,
                 moduleName,
                 questionVersions.stream()
                         .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed())
                         .findFirst().orElseThrow(() -> new IllegalArgumentException("Empty list of question versions")),
-                stableIdPath,
                 objectMapper);
         for (SurveyQuestionDefinition questionDef : questionVersions) {
-            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, stableIdPath, objectMapper));
+            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, objectMapper));
         }
     }
 
     /**
      * takes a single version of a question and returns an ItemExportInfo specifying export column(s) info
      */
-    public AnswerItemFormatter(
-            ExportOptions exportOptions,
-            String moduleName,
-            SurveyQuestionDefinition questionDef,
-            String stableIdPath,
-            ObjectMapper objectMapper) {
+    public AnswerItemFormatter(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef, ObjectMapper objectMapper) {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
             try {
@@ -81,7 +69,6 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         boolean splitOptions = exportOptions.isSplitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
         baseColumnKey = questionDef.getQuestionStableId();
         questionStableId = questionDef.getQuestionStableId();
-        questionStableIdPath = stableIdPath;
         stableIdsForOptions = exportOptions.isStableIdsForOptions();
         splitOptionsIntoColumns = splitOptions;
         allowMultiple = questionDef.isAllowMultiple();
@@ -131,7 +118,6 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         }
         Answer answer = Answer.builder()
                 .questionStableId(questionStableId)
-                .questionStableIdPath(questionStableIdPath)
                 .build();
         if (dataType.equals(DataValueExportType.OBJECT_STRING)) {
             answer.setAnswerType(AnswerType.OBJECT);

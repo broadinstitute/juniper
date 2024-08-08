@@ -30,11 +30,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     public static String SPLIT_OPTION_UNSELECTED_VALUE = "0";
     private ObjectMapper objectMapper;
 
-    public SurveyFormatter(ExportOptions exportOptions,
-                           String stableId,
-                           List<Survey> surveys,
-                           List<SurveyQuestionDefinition> questionDefs,
-                           ObjectMapper objectMapper) {
+    public SurveyFormatter(ExportOptions exportOptions, String stableId, List<Survey> surveys,
+                           List<SurveyQuestionDefinition> questionDefs, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         itemFormatters.add(new PropertyItemFormatter("lastUpdatedAt", SurveyResponse.class));
         itemFormatters.add(new PropertyItemFormatter("complete", SurveyResponse.class));
@@ -48,60 +45,13 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             if (List.of("signaturepad", "html").contains(questionVersions.get(0).getQuestionType())) {
                 continue;
             }
-            for (SurveyQuestionDefinition questionDef : questionVersions) {
-                itemFormatters.addAll(generateFormattersForQuestion(exportOptions, questionDef, questionDefs, null));
-            }
+            itemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, questionVersions, objectMapper));
         }
 
         // get the most recent survey by sorting in descending version order
         Survey latestSurvey = surveys.stream().sorted(Comparator.comparingInt(Survey::getVersion).reversed()).findFirst().get();
         displayName = latestSurvey.getName();
         moduleName = stableId;
-    }
-
-    private List<AnswerItemFormatter> generateFormattersForQuestion(
-            ExportOptions exportOptions,
-            SurveyQuestionDefinition questionDef,
-            List<SurveyQuestionDefinition> allQuestions,
-            String parentStableId) {
-
-        // if this is a subquestion, then the formatters will be generated
-        // for it when we generate the formatters for the parent question
-        if (Objects.nonNull(questionDef.getParentQuestionStableId())) {
-            return new ArrayList<>();
-        }
-
-        // get all the child questions of this question (with same survey version)
-        List<SurveyQuestionDefinition> children = allQuestions.stream()
-                .filter(q ->
-                        Objects.equals(q.getParentQuestionStableId(), questionDef.getQuestionStableId())
-                                && questionDef.getSurveyVersion() == q.getSurveyVersion())
-                .collect(Collectors.toList());
-
-        List<AnswerItemFormatter> formatters = new ArrayList<>();
-
-        String fullStableIdPath = StringUtils.isEmpty(parentStableId) ? questionDef.getQuestionStableId() : parentStableId + "." + questionDef.getQuestionStableId();
-
-        if (children.isEmpty()) {
-            formatters.add(new AnswerItemFormatter(
-                    exportOptions,
-                    moduleName,
-                    questionDef,
-                    fullStableIdPath,
-                    objectMapper));
-        } else {
-            for (SurveyQuestionDefinition child : children) {
-                if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
-                    for (int repeatNum = 0; repeatNum < questionDef.getMaxRepeats(); repeatNum++) {
-                        formatters.addAll(generateFormattersForQuestion(exportOptions, child, allQuestions, fullStableIdPath + "[" + repeatNum + "]"));
-                    }
-                } else {
-                    formatters.addAll(generateFormattersForQuestion(exportOptions, child, allQuestions, fullStableIdPath));
-                }
-            }
-        }
-
-        return formatters;
     }
 
     @Override
@@ -190,8 +140,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         List<Answer> answers = exportData.getAnswers().stream().filter(ans ->
                 Objects.equals(ans.getSurveyStableId(), surveyStableId)
         ).toList();
-        // map the answers by question stable id path for easier access
-        Map<String, List<Answer>> answerMap = answers.stream().collect(groupingBy(Answer::getQuestionStableIdPath));
+        // map the answers by question stable id for easier access
+        Map<String, List<Answer>> answerMap = answers.stream().collect(groupingBy(Answer::getQuestionStableId));
         List<UUID> responseIds = answers.stream().map(Answer::getSurveyResponseId).distinct().toList();
         if (responseIds.isEmpty()) {
             return valueMap;
@@ -218,7 +168,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
 
     public void addAnswersToMap(AnswerItemFormatter itemFormatter,
                                 Map<String, List<Answer>> answerMap, Map<String, String> valueMap) {
-        List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableIdPath());
+        List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableId());
         if (matchedAnswers == null) {
             return;
         }
@@ -341,61 +291,4 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         }
         return (response.getAnswers().isEmpty() ? null : response);
     }
-
-    // todo (dynamic): delete if not needed
-//    private Map<String, List<SurveyQuestionDefinition>> getQuestionDefMap(List<SurveyQuestionDefinition> defs) {
-//        Map<String, List<SurveyQuestionDefinition>> result = new HashMap<>();
-//        buildQuestionMap(defs, result, "", null);
-//        return result;
-//    }
-//
-//    private void buildQuestionMap(
-//            List<SurveyQuestionDefinition> questionDefs,
-//            Map<String, List<SurveyQuestionDefinition>> result,
-//            String prefix,
-//            String currentParentStableId) {
-//
-//        for (SurveyQuestionDefinition questionDef : questionDefs) {
-//            if (Objects.nonNull(questionDef.getParentQuestionStableId()) && !questionDef.getParentQuestionStableId().equals(currentParentStableId)) {
-//                continue;
-//            }
-//
-//            if (Objects.nonNull(questionDef.getRepeatable()) && questionDef.getRepeatable()) {
-//                // if this question is repeatable, we need to add it multiple times to the map
-//                for (int i = 0; i < questionDef.getMaxRepeats(); i++) {
-//                    String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() + "[" + i + "]" : questionDef.getQuestionStableId() + "[" + i + "]";
-//
-//                    // todo: reduce duplication
-//                    if (result.containsKey(fullStableId)) {
-//                        result.get(fullStableId).add(questionDef);
-//                    } else {
-//                        List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
-//                        questionDefList.add(questionDef);
-//                        result.put(fullStableId, questionDefList);
-//                    }
-//
-//                    // recursively add all the child questions
-//                    buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
-//
-//                }
-//            } else {
-//                // if this question is not repeatable, we just add it once to the map
-//                // (and we don't need to add the repeat number to the stable id
-//                String fullStableId = StringUtils.isNotEmpty(prefix) ? prefix + "." + questionDef.getQuestionStableId() : questionDef.getQuestionStableId();
-//
-//                if (result.containsKey(fullStableId)) {
-//                    result.get(fullStableId).add(questionDef);
-//                } else {
-//                    List<SurveyQuestionDefinition> questionDefList = new ArrayList<>();
-//                    questionDefList.add(questionDef);
-//                    result.put(fullStableId, questionDefList);
-//                }
-//
-//                // recursively add all the child questions
-//                buildQuestionMap(questionDefs, result, fullStableId, questionDef.getQuestionStableId());
-//            }
-//
-//
-//        }
-//    }
 }

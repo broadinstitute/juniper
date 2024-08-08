@@ -25,7 +25,6 @@ public class Answer extends BaseEntity {
     private UUID surveyResponseId;
     private UUID enrolleeId;
     private String questionStableId;
-    private String questionStableIdPath;
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;

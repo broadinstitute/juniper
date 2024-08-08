@@ -191,12 +191,10 @@ export function flattenSurveyJsData(data: Record<string, SurveyJsValueType>): Re
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
 export function makeAnswer(
   value: SurveyJsValueType,
-  questionStableIdPath: string,
+  questionStableId: string,
   surveyJsData: Record<string, SurveyJsValueType>,
   viewedLanguage?: string): Answer {
-  const questionStableId = questionStableIdPath.split('.').pop() as string
-
-  const answer: Answer = { questionStableId, questionStableIdPath }
+  const answer: Answer = { questionStableId }
   if (viewedLanguage) {
     answer.viewedLanguage = viewedLanguage
   }

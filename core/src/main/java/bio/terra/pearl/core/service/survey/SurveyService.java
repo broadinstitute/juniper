@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,6 +96,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     }
 
 
+    // todo (dynamic): move to surveyparseutils
     public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode surveyContent;
@@ -136,8 +138,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
                     survey,
                     question,
                     questionTemplates,
-                    questionDefinitions.size(),
-                    null));
+                    questionDefinitions.size()));
         }
 
         // add any questions from calculatedValues
@@ -155,11 +156,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             Survey survey,
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
-            int globalOrder,
-            JsonNode parent) {
+            int globalOrder) {
 
         SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                questionTemplates, globalOrder, false, parent);
+                questionTemplates, globalOrder, false);
         SurveyParseUtils.validateQuestionDefinition(questionDefinition);
 
         List<SurveyQuestionDefinition> defs = new ArrayList<>(List.of(questionDefinition));
@@ -183,19 +183,37 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         }
 
         String type = question.get("type").asText();
+        String parentStableId = question.get("name").asText();
         // recursively create question defs for each sub-question in a dynamic panel
         if (type.equalsIgnoreCase("paneldynamic")) {
             JsonNode templateElements = question.get("templateElements");
+
+            // todo(dynamic): swap template and panel iterations it's q1[0] q2[0] ... q1[1] q2[1]
             for (int i = 0; i < templateElements.size(); i++) {
                 JsonNode templateElement = templateElements.get(i);
 
-                subquestions.addAll(
-                        getSurveyQuestionDefinitionsForQuestion(
-                                survey,
-                                templateElement,
-                                questionTemplates,
-                                globalOrder + i,
-                                question));
+                int maxPanels;
+                if (question.has("maxPanelCount")) {
+                    maxPanels = question.get("maxPanelCount").asInt();
+                } else {
+                    // todo (dynamic): keep this as a constant
+                    maxPanels = 5;
+                }
+
+                String stableId = templateElement.get("name").asText();
+                for (int j = 0; j < maxPanels; j++) {
+                    String panelStableId = parentStableId + "[" + j + "]." + stableId;
+                    ((ObjectNode) templateElement).set("name", objectMapper.valueToTree(panelStableId));
+                    subquestions.addAll(
+                            getSurveyQuestionDefinitionsForQuestion(
+                                    survey,
+                                    templateElement,
+                                    questionTemplates,
+                                    globalOrder + i));
+                }
+                // reset the name to the original stableId
+                ((ObjectNode) templateElement).set("name", objectMapper.valueToTree(stableId));
+
             }
         }
 
@@ -231,7 +249,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
                     .findFirst().orElse(questionDefinitions.size() - 1);
             questionDefinitions.add(upstreamIndex + 1,
                     SurveyParseUtils.unmarshalSurveyQuestion(survey, derivedQuestion,
-                            Map.of(), upstreamIndex + 1, true, null));
+                            Map.of(), upstreamIndex + 1, true));
         }
         // reassign the export orders
         IntStream.range(0, questionDefinitions.size()).forEach(i -> {
