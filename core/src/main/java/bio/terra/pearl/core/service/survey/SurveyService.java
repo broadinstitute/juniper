@@ -15,7 +15,6 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,7 +133,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (JsonNode question : questions) {
-            questionDefinitions.addAll(getSurveyQuestionDefinitionsForQuestion(
+            questionDefinitions.addAll(SurveyParseUtils.convertToQuestionDefinitions(
                     survey,
                     question,
                     questionTemplates,
@@ -145,79 +144,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         processCalculatedValues(survey, surveyContent, questionDefinitions);
 
         return questionDefinitions;
-    }
-
-    /**
-     * Most questions are simple and can be unmarshalled into a single question definition,
-     * but some questions are nested and repeatable. In these cases, multiple question
-     * definitions may be generated.
-     */
-    private List<SurveyQuestionDefinition> getSurveyQuestionDefinitionsForQuestion(
-            Survey survey,
-            JsonNode question,
-            Map<String, JsonNode> questionTemplates,
-            int globalOrder) {
-
-        SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                questionTemplates, globalOrder, false);
-        SurveyParseUtils.validateQuestionDefinition(questionDefinition);
-
-        List<SurveyQuestionDefinition> defs = new ArrayList<>(List.of(questionDefinition));
-
-        defs.addAll(getSubQuestions(survey, question, questionTemplates, globalOrder));
-
-        return defs;
-    }
-
-    // if a question has any nested children, as is the case with a dynamic panel,
-    // create those questions here
-    private List<SurveyQuestionDefinition> getSubQuestions(
-            Survey survey,
-            JsonNode question,
-            Map<String, JsonNode> questionTemplates,
-            int globalOrder) {
-        List<SurveyQuestionDefinition> subquestions = new ArrayList<>();
-
-        if (!question.has("type")) {
-            return subquestions;
-        }
-
-        String type = question.get("type").asText();
-        String parentStableId = question.get("name").asText();
-        // recursively create question defs for each sub-question in a dynamic panel
-        if (type.equalsIgnoreCase("paneldynamic")) {
-            JsonNode templateElements = question.get("templateElements");
-
-            // todo(dynamic): swap template and panel iterations it's q1[0] q2[0] ... q1[1] q2[1]
-            for (int i = 0; i < templateElements.size(); i++) {
-                JsonNode templateElement = templateElements.get(i);
-
-                int maxPanels;
-                if (question.has("maxPanelCount")) {
-                    maxPanels = question.get("maxPanelCount").asInt();
-                } else {
-                    // todo (dynamic): keep this as a constant
-                    maxPanels = 5;
-                }
-
-                String stableId = templateElement.get("name").asText();
-                for (int j = 0; j < maxPanels; j++) {
-                    String panelStableId = parentStableId + "[" + j + "]." + stableId;
-                    ((ObjectNode) templateElement).set("name", objectMapper.valueToTree(panelStableId));
-                    subquestions.addAll(
-                            getSurveyQuestionDefinitionsForQuestion(
-                                    survey,
-                                    templateElement,
-                                    questionTemplates,
-                                    globalOrder + i));
-                }
-                // reset the name to the original stableId
-                ((ObjectNode) templateElement).set("name", objectMapper.valueToTree(stableId));
-
-            }
-        }
-
-        return subquestions;
     }
 
     public List<Survey> findByPortalId(UUID portalId) {

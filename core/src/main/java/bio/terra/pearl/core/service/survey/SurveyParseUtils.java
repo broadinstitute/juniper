@@ -44,12 +44,92 @@ public class SurveyParseUtils {
         return elements;
     }
 
+    /**
+     * Converts a question and all of its subquestions (e.g., in a paneldynamic) to SurveyQuestionDefinitions
+     */
+    public static List<SurveyQuestionDefinition> convertToQuestionDefinitions(
+            Survey survey,
+            JsonNode question,
+            Map<String, JsonNode> questionTemplates,
+            int globalOrder) {
+
+        SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                questionTemplates, globalOrder, false);
+        SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+
+        List<SurveyQuestionDefinition> defs = new ArrayList<>(List.of(questionDefinition));
+
+        defs.addAll(getSubQuestions(survey, question, questionTemplates, globalOrder + 1));
+
+        return defs;
+    }
+
+
+    // if a question has any nested children, as is the case with a dynamic panel,
+    // create those questions here
+    private static List<SurveyQuestionDefinition> getSubQuestions(
+            Survey survey,
+            JsonNode question,
+            Map<String, JsonNode> questionTemplates,
+            int globalOrder) {
+        if (!question.has("type")) {
+            return List.of();
+        }
+
+        String type = question.get("type").asText();
+        // recursively create question defs for each sub-question in a dynamic panel
+        if (type.equalsIgnoreCase("paneldynamic")) {
+            return getPanelDynamicElements(survey, question, questionTemplates, globalOrder);
+        }
+
+        return List.of();
+    }
+
+    private static List<SurveyQuestionDefinition> getPanelDynamicElements(Survey survey,
+                                                                          JsonNode question,
+                                                                          Map<String, JsonNode> questionTemplates,
+                                                                          int globalOrder) {
+        JsonNode templateElements = question.get("templateElements");
+        String parentStableId = question.get("name").asText();
+
+        int maxPanels;
+        if (question.has("maxPanelCount")) {
+            maxPanels = question.get("maxPanelCount").asInt();
+        } else {
+            // todo (dynamic): keep this as a constant
+            maxPanels = 5;
+        }
+
+        List<SurveyQuestionDefinition> elements = new ArrayList<>();
+        for (int panelIdx = 0; panelIdx < maxPanels; panelIdx++) {
+
+            for (int questionIdx = 0; questionIdx < templateElements.size(); questionIdx++) {
+                JsonNode templateElement = templateElements.get(questionIdx);
+
+
+                String stableId = templateElement.get("name").asText();
+                String panelStableId = parentStableId + "[" + panelIdx + "]." + stableId;
+                List<SurveyQuestionDefinition> newQuestions = convertToQuestionDefinitions(
+                        survey,
+                        templateElement,
+                        questionTemplates,
+                        globalOrder + elements.size());
+                newQuestions.stream().forEach(q -> q.setQuestionStableId(panelStableId + "." + q.getQuestionStableId()));
+                elements.addAll(newQuestions);
+            }
+        }
+
+        return elements;
+    }
+
     public static SurveyQuestionDefinition unmarshalSurveyQuestion(
             Survey survey,
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
             int globalOrder,
             boolean isDerived) {
+
+        System.out.println(question.toString());
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
