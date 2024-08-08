@@ -20,7 +20,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
   const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
 
   //Step 2 state
-  const [confirmedIdentity, setConfirmedIdentity] = useState(false)
+  const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
 
   //Step 3 state
   const [showKitScanner, setShowKitScanner] = useState(false)
@@ -39,6 +39,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       )
       if (loadedEnrollee.consented) {
         setEnrollee(loadedEnrollee)
+        setIsEnrolleeIdentityConfirmed(false)
       } else {
         setEnrolleeCodeError('Enrollee has not consented to the study')
         setEnrollee(undefined)
@@ -46,7 +47,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
     }, {
       setIsError: error => {
         if (error) {
-          setEnrolleeCodeError('Error loading enrollee')
+          setEnrolleeCodeError('Error loading enrollee. Did you scan the correct QR code?')
           setEnrollee(undefined)
         }
       }
@@ -72,7 +73,9 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
       >
         <Button className="mb-2" variant={'primary'} onClick={() => {
+          setEnrollee(undefined)
           setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
+          setIsEnrolleeIdentityConfirmed(false)
         }}>
         Click to scan enrollee code
         </Button>
@@ -96,7 +99,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
 
       <KitCollectionStep
         stepNumber={2}
-        status={confirmedIdentity ? 'COMPLETE' : 'INCOMPLETE'}
+        status={isEnrolleeIdentityConfirmed && enrollee ? 'COMPLETE' : 'INCOMPLETE'}
         description={<>Confirm the enrollee&apos;s identity</>}
       >
         <TextInput
@@ -116,7 +119,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
           }>
         </TextInput>
         <Button className="mb-2" variant={'primary'}
-          disabled={!enrollee} onClick={() => setConfirmedIdentity(true)}>
+          disabled={!enrollee} onClick={() => setIsEnrolleeIdentityConfirmed(true)}>
           Mark as confirmed
         </Button>
       </KitCollectionStep>
@@ -126,8 +129,8 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         description={'Click to open the camera and scan the kit barcode'}
         status={kitId ? 'COMPLETE' : 'INCOMPLETE'}
       >
-        <Button className="mb-2" variant={'primary'} disabled={!confirmedIdentity}
-          tooltip={!confirmedIdentity ? 'You must complete the prior steps first' : ''}
+        <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
+          tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
           onClick={() => setShowKitScanner(!showKitScanner)}>
         Click to scan kit barcode
         </Button>
@@ -150,7 +153,14 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         }
       </KitCollectionStep>
       <div className="d-flex justify-content-end">
-        <Button disabled={!(kitId && enrollee)} variant={'primary'}>Submit kit</Button>
+        <Button disabled={!(kitId && enrollee)} variant={'primary'}
+          onClick={() => {
+            setEnrollee(undefined)
+            setIsEnrolleeIdentityConfirmed(false)
+            setKitId(undefined)
+          }}>
+        Submit kit
+        </Button>
       </div>
     </div> :
     <div className="m-2">
