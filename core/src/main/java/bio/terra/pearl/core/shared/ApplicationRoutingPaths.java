@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.shared;
 
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import lombok.Getter;
@@ -41,6 +42,14 @@ public class ApplicationRoutingPaths {
 
     public String getAdminPortalUrl(String portalShortcode) {
         return "https://" + adminUiHostname + "/" + portalShortcode;
+    }
+
+    public String getAdminStudyUrl(String portalShortcode, String studyShortcode) {
+        return getAdminPortalUrl(portalShortcode) + "/studies/" + studyShortcode;
+    }
+
+    public String getAdminStudyEnvUrl(String portalShortcode, String studyShortcode, EnvironmentName environment) {
+        return getAdminStudyUrl(portalShortcode, studyShortcode) + "/env/" + environment.toString().toLowerCase();
     }
 
     public String getParticipantBaseUrl(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode) {

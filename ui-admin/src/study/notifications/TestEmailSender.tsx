@@ -8,6 +8,7 @@ import { doApiLoad } from 'api/api-utils'
 import { Button } from '../../components/forms/Button'
 import LoadingSpinner from '../../util/LoadingSpinner'
 import { StudyEnvParams } from '@juniper/ui-core'
+import { isNotification } from 'study/notifications/TriggerBaseForm'
 
 
 export const EXAMPLE_RULE_DATA = {
@@ -59,7 +60,11 @@ export default function TestEmailSender({ studyEnvParams, trigger, onDismiss }:
     </Modal.Header>
     <Modal.Body>
       This will send a test email using the participant data below with the most recently saved version of the template.
-      Unsaved changes will not appear. Update the &apos;contactEmail&apos; field below to control the email desitnation.
+      Unsaved changes will not appear. {
+      // admin emails will always just go to the operator's email,
+      // so we only need this prompt if it's an enrollee email
+        isNotification(trigger) && 'Update the \'contactEmail\' field below to control the email destination.'
+      }
       <textarea rows={20} cols={80} value={JSON.stringify(ruleData, null, 2)} onChange={updateRuleData}/>
     </Modal.Body>
     <Modal.Footer>

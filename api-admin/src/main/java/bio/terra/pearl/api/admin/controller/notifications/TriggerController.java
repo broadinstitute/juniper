@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.controller.notifications;
 
 import bio.terra.pearl.api.admin.api.TriggerApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
 import bio.terra.pearl.api.admin.service.notifications.TriggerExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -45,7 +46,9 @@ public class TriggerController implements TriggerApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     List<Trigger> configs =
-        triggerExtService.findForStudy(adminUser, portalShortcode, studyShortcode, environmentName);
+        triggerExtService.findForStudy(
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName));
     return ResponseEntity.ok(configs);
   }
 
@@ -56,7 +59,9 @@ public class TriggerController implements TriggerApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     Optional<Trigger> configOpt =
         triggerExtService.find(
-            operator, portalShortcode, studyShortcode, environmentName, configId);
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            configId);
     return ResponseEntity.ok(
         configOpt.orElseThrow(
             () -> new NotFoundException("A config with that id does not exist in this study")));
@@ -70,7 +75,10 @@ public class TriggerController implements TriggerApi {
     Trigger config = objectMapper.convertValue(body, Trigger.class);
     Trigger newConfig =
         triggerExtService.replace(
-            portalShortcode, studyShortcode, environmentName, configId, config, operator);
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            configId,
+            config);
     return ResponseEntity.ok(newConfig);
   }
 
@@ -80,10 +88,11 @@ public class TriggerController implements TriggerApi {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnrolleeContext enrolleeContext = objectMapper.convertValue(body, EnrolleeContext.class);
     triggerExtService.test(
-        operator,
-        portalShortcode,
-        studyShortcode,
-        EnvironmentName.valueOfCaseInsensitive(envName),
+        PortalStudyEnvAuthContext.of(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
         configId,
         enrolleeContext);
     return ResponseEntity.ok().build();
@@ -116,7 +125,9 @@ public class TriggerController implements TriggerApi {
     Trigger config = objectMapper.convertValue(body, Trigger.class);
     Trigger newConfig =
         triggerExtService.create(
-            portalShortcode, studyShortcode, environmentName, config, adminUser);
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName),
+            config);
     return ResponseEntity.ok(newConfig);
   }
 
@@ -125,7 +136,9 @@ public class TriggerController implements TriggerApi {
       String portalShortcode, String studyShortcode, String envName, UUID configId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    triggerExtService.delete(operator, portalShortcode, studyShortcode, environmentName, configId);
+    triggerExtService.delete(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        configId);
 
     return ResponseEntity.noContent().build();
   }

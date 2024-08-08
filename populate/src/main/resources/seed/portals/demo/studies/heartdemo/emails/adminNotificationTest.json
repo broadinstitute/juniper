@@ -1,0 +1,11 @@
+{
+  "stableId": "hd_hd_adminNotificationTest",
+  "name": "Admin Notification Test",
+  "version": 1,
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "New doNotSolicit participant enrollment",
+    "bodyPopulateFile": "en/adminNotificationTest.html"
+  }]
+}

@@ -6,9 +6,14 @@ import bio.terra.pearl.core.model.notification.TriggerActionType;
 import bio.terra.pearl.core.model.notification.TriggerScope;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.notification.email.AdminEmailService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -21,15 +26,24 @@ import java.util.Objects;
  * and then executes the actions
  */
 @Service
+@Slf4j
 public class TriggerActionService {
     private final TriggerService triggerService;
     private final NotificationDispatcher notificationDispatcher;
     private final ParticipantTaskService participantTaskService;
+    private final AdminEmailService adminEmailService;
+    private final PortalService portalService;
+    private final EmailTemplateService emailTemplateService;
+    private final AdminUserService adminUserService;
 
-    public TriggerActionService(TriggerService triggerService, NotificationDispatcher notificationDispatcher, ParticipantTaskService participantTaskService) {
+    public TriggerActionService(TriggerService triggerService, NotificationDispatcher notificationDispatcher, ParticipantTaskService participantTaskService, AdminEmailService adminEmailService, PortalService portalService, EmailTemplateService emailTemplateService, AdminUserService adminUserService) {
         this.triggerService = triggerService;
         this.notificationDispatcher = notificationDispatcher;
         this.participantTaskService = participantTaskService;
+        this.adminEmailService = adminEmailService;
+        this.portalService = portalService;
+        this.emailTemplateService = emailTemplateService;
+        this.adminUserService = adminUserService;
     }
 
     /** actions could be triggered by just about anything, so listen to all enrollee events */
@@ -50,11 +64,18 @@ public class TriggerActionService {
             if (TriggerActionType.NOTIFICATION.equals(trigger.getActionType())) {
                 notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
                         event.getPortalParticipantUser().getPortalEnvironmentId());
+            } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
+                try {
+                    adminEmailService.sendEmailFromTrigger(trigger, event);
+                } catch (Exception e) {
+                    log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                }
             } else if (TriggerActionType.TASK_STATUS_CHANGE.equals(trigger.getActionType())) {
                 updateTaskStatus(trigger, event);
             }
         }
     }
+
 
     /**
      * for tasks of type TASK_STATUS_CHANGE, update the task status
