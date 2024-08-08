@@ -8,8 +8,10 @@ import bio.terra.pearl.api.admin.service.study.StudyEnvironmentExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -76,16 +78,15 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
   }
 
   @Override
-  public ResponseEntity<Object> patchKitTypes(
+  public ResponseEntity<Object> updateKitTypes(
       String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser operator = requestService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalStudyEnvAuthContext authContext =
         PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName);
-
+    
     List<String> kitTypeNames =
-        objectMapper.convertValue(
-            body, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+        objectMapper.convertValue(body, new TypeReference<List<String>>() {});
 
     studyEnvExtService.updateKitTypes(authContext, kitTypeNames);
     return ResponseEntity.ok(body);

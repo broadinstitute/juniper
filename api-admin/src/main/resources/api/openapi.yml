@@ -441,7 +441,7 @@ paths:
     patch:
       summary: Updates the configured kit types for a study
       tags: [ studyEnvironment ]
-      operationId: patchKitTypes
+      operationId: updateKitTypes
       parameters:
         - *portalShortcodeParam
         - *studyShortcodeParam

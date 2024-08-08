@@ -90,7 +90,7 @@ public class StudyEnvironmentExtService {
           allowedKitTypes.stream()
               .filter(k -> k.getName().equals(kitTypeName))
               .findFirst()
-              .orElseThrow(() -> new BadRequestException("Invalid kit type"));
+              .orElseThrow(() -> new IllegalArgumentException("Invalid kit type"));
       StudyEnvironmentKitType studyEnvironmentKitType =
           StudyEnvironmentKitType.builder()
               .studyEnvironmentId(authContext.getStudyEnvironment().getId())
@@ -124,7 +124,7 @@ public class StudyEnvironmentExtService {
         existingKitTypes.stream().map(KitType::getName).collect(Collectors.toSet());
 
     if (!updatedKitTypeSet.containsAll(existingKitTypeSet)) {
-      throw new BadRequestException("You may not remove a kit type from a study environment");
+      throw new IllegalArgumentException("You may not remove a kit type from a study environment");
     }
   }
 
@@ -134,7 +134,7 @@ public class StudyEnvironmentExtService {
         allowedKitTypes.stream().map(KitType::getName).collect(Collectors.toSet());
 
     if (!allowedKitTypeSet.containsAll(updatedKitTypeSet)) {
-      throw new BadRequestException("Invalid kit type");
+      throw new IllegalArgumentException("Invalid kit type");
     }
   }
 }

@@ -73,7 +73,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   useEffect(() => {
     loadAllowedKitTypes()
     loadConfiguredKitTypes()
-  }, [studyEnvContext])
+  }, [studyEnvContext.currentEnvPath])
 
   /** update a given field in the config */
   const updateConfig = (propName: keyof StudyEnvironmentConfig, value: string | boolean) => {
