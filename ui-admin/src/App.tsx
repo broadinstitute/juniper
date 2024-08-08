@@ -12,6 +12,7 @@ import { Config } from 'api/api'
 
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
 import { ProtectedRoute } from 'login/ProtectedRoute'
+import AdminNavbar from './navbar/AdminNavbar'
 import HomePage from 'HomePage'
 import PortalProvider from 'portal/PortalProvider'
 import UserProvider from 'user/UserProvider'
@@ -22,13 +23,12 @@ import PortalRouter from './portal/PortalRouter'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
+import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
 import AdminUserRouter from './user/AdminUserRouter'
 import LogEventViewer from './health/LogEventViewer'
-import AdminNavbar from './navbar/AdminNavbar'
-import AdminSidebar from './navbar/AdminSidebar'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -89,7 +89,6 @@ function PageFrame({ config }: { config: Config }) {
       <AdminSidebar config={config}/>
       <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#fff' }}>
         <AdminNavbar/>
-        <div className={'pb-2'}></div>
         <Outlet/>
       </div>
     </div>
