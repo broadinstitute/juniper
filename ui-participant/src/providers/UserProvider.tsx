@@ -16,6 +16,7 @@ import {
   Profile
 } from '@juniper/ui-core'
 import envVars from 'util/envVars'
+import mixpanel from 'mixpanel-browser'
 
 /**
  * The user provide contains the _raw_ user context, which is more or less directly derived
@@ -85,16 +86,19 @@ export default function UserProvider({ children }: { children: React.ReactNode }
    */
   const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
+    mixpanel.identify(loginResult.user.id)
     localStorage.setItem(OAUTH_ACCESS_TOKEN_KEY, accessToken)
   }
 
   const loginUserInternal = (loginResult: LoginResult) => {
     setLoginState(loginResult)
+    mixpanel.identify(loginResult.user.id)
     localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
   }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
   const logoutUser = async () => {
+    mixpanel.reset()
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
     await Api.logout()

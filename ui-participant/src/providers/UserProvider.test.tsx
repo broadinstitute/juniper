@@ -53,6 +53,8 @@ jest.mock('react-oidc-context', () => {
   }
 })
 
+jest.mock('mixpanel-browser')
+
 describe('UserProvider', () => {
   it('updates an enrollee and calls the afterFn', async () => {
     const { RoutedComponent } = setupRouterTest(<AuthProvider>

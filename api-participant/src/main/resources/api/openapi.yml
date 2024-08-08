@@ -59,6 +59,73 @@ paths:
           content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/track:
+    post:
+      summary: Tracks a user event
+      tags: [ logging ]
+      operationId: trackEvent
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+          text/plain:
+            schema:
+              type: string
+              description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/engage:
+    post:
+      summary: Tracks a user engagement event (stub)
+      tags: [ logging ]
+      operationId: trackEngage
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/groups:
+    post:
+      summary: Tracks user groups (stub)
+      tags: [ logging ]
+      operationId: trackGroups
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object

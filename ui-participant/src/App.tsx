@@ -29,6 +29,8 @@ import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
 
+import { initializeMixpanel } from './util/mixpanelUtils'
+
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
 const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
@@ -42,6 +44,9 @@ const ScrollToTop = () => {
   }, [location.pathname])
   return null
 }
+
+// The actual project token is injected into the event by the backend
+initializeMixpanel('placeholder-token')
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent

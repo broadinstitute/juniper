@@ -8,8 +8,6 @@ env:
     name: ${DATABASE_NAME:pearl}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:dbuser}
-  sam:
-    basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   dsm:
     useLiveDsm: ${USE_LIVE_DSM:false}
     basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/dsm}
@@ -32,6 +30,9 @@ env:
     participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}
     adminUi: ${ADMIN_UI_HOSTNAME:localhost:3000}
     adminApi: ${ADMIN_API_HOSTNAME:localhost:8080}
+  mixpanel:
+    enabled: ${MIXPANEL_ENABLED:false}
+    token: ${MIXPANEL_TOKEN:}
 
 # Below here is non-deployment-specific
 

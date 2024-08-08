@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.azure:azure-storage-blob:12.25.4'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.16.1'
     implementation 'org.jooq:jooq:3.19.6'
+    implementation 'com.mixpanel:mixpanel-java:1.5.3'
 
     liquibaseRuntime 'org.liquibase:liquibase-core:4.21.1'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'
