@@ -32,7 +32,6 @@ public class MixpanelService {
 
         for (int i = 0; i < events.length(); i++) {
             JSONObject mixpanelEvent = buildEvent(events.getJSONObject(i));
-            log.info("Preparing Mixpanel event: {}", mixpanelEvent.toString());
             delivery.addMessage(mixpanelEvent);
         }
 
