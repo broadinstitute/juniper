@@ -237,6 +237,8 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
       calculatedHash[val.name] = val.value
     }
   })
+
+  console.log(flattenSurveyJsData(model.data))
   return {
     ...flattenSurveyJsData(model.data),
     ...calculatedHash

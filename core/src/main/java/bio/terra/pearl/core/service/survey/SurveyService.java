@@ -95,7 +95,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     }
 
 
-    // todo (dynamic): move to surveyparseutils
     public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode surveyContent;
@@ -132,12 +131,12 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         //Unmarshal the questions into actual definitions that we can store in the DB.
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
-        for (JsonNode question : questions) {
-            questionDefinitions.addAll(SurveyParseUtils.convertToQuestionDefinitions(
-                    survey,
-                    question,
-                    questionTemplates,
-                    questionDefinitions.size()));
+        for (int i = 0; i < questions.size(); i++) {
+            JsonNode question = questions.get(i);
+            SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                    questionTemplates, i, false);
+            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+            questionDefinitions.add(questionDefinition);
         }
 
         // add any questions from calculatedValues

@@ -2,17 +2,13 @@ package bio.terra.pearl.core.util;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +16,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SurveyParseUtilsTests extends BaseSpringBootTest {
     @Autowired
@@ -105,6 +102,84 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         List<JsonNode> actual = SurveyParseUtils.getAllQuestions(questionNode);
 
         Assertions.assertEquals(2, actual.size());
+    }
+
+    @Test
+    public void testGetDynamicPanelElements() throws JsonProcessingException {
+        String dynamicPanel = """
+                {
+                    "name": "examplePanel",
+                    "type": "paneldynamic",
+                    "title": "First name",
+                    "maxPanelCount": 2,
+                    "templateElements": [
+                        {
+                            "name": "firstName",
+                            "type": "text",
+                            "title": "First name",
+                            "isRequired": true
+                        },
+                        {
+                            "name": "lastName",
+                            "type": "text",
+                            "title": "Last name",
+                            "isRequired": true
+                        }
+                    ]
+                }
+                """;
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(dynamicPanel);
+
+        List<JsonNode> actual = SurveyParseUtils.getAllQuestions(questionNode);
+
+        Assertions.assertEquals(5, actual.size());
+
+        JsonNode panel = actual.get(0);
+        JsonNode firstName1 = actual.get(1);
+        JsonNode lastName1 = actual.get(2);
+        JsonNode firstName2 = actual.get(3);
+        JsonNode lastName2 = actual.get(4);
+
+
+        Assertions.assertEquals("examplePanel", panel.get("name").asText());
+        Assertions.assertEquals("examplePanel[0].firstName", firstName1.get("name").asText());
+        Assertions.assertEquals("examplePanel[0].lastName", lastName1.get("name").asText());
+        Assertions.assertEquals("examplePanel[1].firstName", firstName2.get("name").asText());
+        Assertions.assertEquals("examplePanel[1].lastName", lastName2.get("name").asText());
+    }
+
+    @Test
+    public void testDynamicPanelWithoutMaxPanelCount() throws JsonProcessingException {
+        String dynamicPanel = """
+                {
+                    "name": "examplePanel",
+                    "type": "paneldynamic",
+                    "title": "First name",
+                    "templateElements": [
+                        {
+                            "name": "firstName",
+                            "type": "text",
+                            "title": "First name",
+                            "isRequired": true
+                        },
+                        {
+                            "name": "lastName",
+                            "type": "text",
+                            "title": "Last name",
+                            "isRequired": true
+                        }
+                    ]
+                }
+                """;
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(dynamicPanel);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            SurveyParseUtils.getAllQuestions(questionNode);
+        });
     }
 
     @Test
@@ -293,94 +368,6 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(unparseableForm, "FallbackName");
         assertThat(parsedTitles, equalTo(Map.of("en", "FallbackName")));
-    }
-
-    @Test
-    @Transactional
-    public void testConvertSimpleQuestionToQuestionDefinition(TestInfo info) throws JsonProcessingException {
-        Survey survey = surveyFactory.buildPersisted(
-                surveyFactory.builderWithDependencies(getTestName(info))
-                        .content("""
-                                {
-                                    "title": "The Basics",
-                                    "showQuestionNumbers": "off",
-                                    "pages": [{
-                                        "elements": [{
-                                            "name": "firstName",
-                                            "type": "text",
-                                            "title": "First name",
-                                            "isRequired": true
-                                        }]
-                                    }]
-                                }
-                                """)
-        );
-
-        List<JsonNode> questions = SurveyParseUtils.getAllQuestions(objectMapper.readTree(survey.getContent()));
-        List<SurveyQuestionDefinition> questionDef = SurveyParseUtils.convertToQuestionDefinitions(survey, questions.get(0), Map.of(), 0);
-
-        assertThat(questionDef, hasSize(1));
-
-        SurveyQuestionDefinition question = questionDef.get(0);
-
-        assertThat(question.getQuestionStableId(), equalTo("firstName"));
-        assertThat(question.getQuestionType(), equalTo("text"));
-        assertThat(question.getQuestionText(), equalTo("First name"));
-    }
-
-    @Test
-    @Transactional
-    public void testConvertPanelDynamicToQuestionDefinition(TestInfo info) throws JsonProcessingException {
-        Survey survey = surveyFactory.buildPersisted(
-                surveyFactory.builderWithDependencies(getTestName(info))
-                        .content("""
-                                {
-                                    "title": "The Basics",
-                                    "showQuestionNumbers": "off",
-                                    "pages": [{
-                                        "elements": [{
-                                            "name": "examplePanel",
-                                            "type": "paneldynamic",
-                                            "title": "First name",
-                                            "maxPanelCount": 2,
-                                            "templateElements": [
-                                                {
-                                                    "name": "firstName",
-                                                    "type": "text",
-                                                    "title": "First name",
-                                                    "isRequired": true
-                                                },
-                                                {
-                                                    "name": "lastName",
-                                                    "type": "text",
-                                                    "title": "Last name",
-                                                    "isRequired": true
-                                                }
-                                            ]
-                                        }]
-                                    }]
-                                }
-                                """)
-        );
-
-        List<JsonNode> questions = SurveyParseUtils.getAllQuestions(objectMapper.readTree(survey.getContent()));
-
-        System.out.println(questions.get(0).toString());
-        List<SurveyQuestionDefinition> questionDef = SurveyParseUtils.convertToQuestionDefinitions(survey, questions.get(0), Map.of(), 0);
-
-        // panel question + 2x inner questions
-        assertThat(questionDef, hasSize(5));
-
-        SurveyQuestionDefinition question = questionDef.get(0);
-        assertThat(question.getQuestionStableId(), equalTo("examplePanel"));
-        assertThat(question.getQuestionType(), equalTo("paneldynamic"));
-        assertThat(question.getQuestionText(), equalTo("First name"));
-
-
-        SurveyQuestionDefinition question1 = questionDef.get(1);
-        assertThat(question1.getQuestionStableId(), equalTo("examplePanel[0].firstName"));
-
-
     }
 
 }
