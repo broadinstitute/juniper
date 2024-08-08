@@ -27,6 +27,8 @@ import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
 import AdminUserRouter from './user/AdminUserRouter'
 import LogEventViewer from './health/LogEventViewer'
+import AdminNavbar from './navbar/AdminNavbar'
+import AdminSidebar from './navbar/AdminSidebar'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -82,12 +84,11 @@ function App() {
 
 /** Renders the navbar and footer for the page */
 function PageFrame({ config }: { config: Config }) {
-  console.log(config)
   return (
     <div className="d-flex">
-      {/*<AdminSidebar config={config}/>*/}
+      <AdminSidebar config={config}/>
       <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#fff' }}>
-        {/*<AdminNavbar/>*/}
+        <AdminNavbar/>
         <div className={'pb-2'}></div>
         <Outlet/>
       </div>

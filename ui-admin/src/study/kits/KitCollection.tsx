@@ -10,16 +10,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleDot, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
+import { useUser } from 'user/UserProvider'
 
 
 export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {
+  //Step 1 state
   const [showEnrolleeCodeScanner, setShowEnrolleeCodeScanner] = useState(false)
-  const [showKitScanner, setShowKitScanner] = useState(false)
   const [enrollee, setEnrollee] = useState<Enrollee>()
+  const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
+
+  //Step 2 state
   const [confirmedIdentity, setConfirmedIdentity] = useState(false)
-  const [qrError, setQrError] = useState<string>()
-  const [kitError, setKitError] = useState<string>()
+
+  //Step 3 state
+  const [showKitScanner, setShowKitScanner] = useState(false)
   const [kitId, setKitId] = useState<string>()
+  const [kitCodeError, setKitCodeError] = useState<string>()
+
+  const { user } = useUser()
 
   const loadEnrollee = (enrolleeShortcode: string) => {
     doApiLoad(async () => {
@@ -32,56 +40,65 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       if (loadedEnrollee.consented) {
         setEnrollee(loadedEnrollee)
       } else {
-        setQrError('Enrollee has not consented to the study')
+        setEnrolleeCodeError('Enrollee has not consented to the study')
         setEnrollee(undefined)
+      }
+    }, {
+      setIsError: error => {
+        if (error) {
+          setEnrolleeCodeError('Error loading enrollee')
+          setEnrollee(undefined)
+        }
       }
     })
   }
 
-  return <div className='m-2 vh-100' style={{ maxWidth: '450px' }}>
-    {renderPageHeader('Collect a kit')}
-    <div className={'text-muted mb-1'}>
-      To collect an in-person kit, follow the steps below. Please ensure that
-      all information is correct before submitting.
-    </div>
+  //While under development, we will only allow superusers to access this page
+  return user?.superuser ?
+    <div className='m-2' style={{ maxWidth: '450px' }}>
+      {renderPageHeader('Collect a kit')}
 
-    <KitCollectionStep
-      stepNumber={1}
-      description={<>
-        Click to open the camera and scan the enrollee&apos;s barcode
-        <InfoPopup content={'The enrollee can find their unique QR code by going to their profile'}/>
-      </>
-      }
-      status={qrError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
-    >
-      <Button className="mb-2" variant={'primary'} onClick={() => {
-        setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
-      }}>
+      <div className={'text-muted mb-1'}>
+        To collect an in-person kit, follow the steps below. Please ensure
+        that all information is correct before submitting.
+      </div>
+
+      <KitCollectionStep
+        stepNumber={1}
+        description={<>
+          Click to open the camera and scan the enrollee&apos;s barcode
+          <InfoPopup content={'The enrollee can find their unique QR code by going to their profile'}/>
+        </>}
+        status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
+      >
+        <Button className="mb-2" variant={'primary'} onClick={() => {
+          setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
+        }}>
         Click to scan enrollee code
-      </Button>
-      { showEnrolleeCodeScanner &&
+        </Button>
+        { showEnrolleeCodeScanner &&
         <BarcodeScanner
           expectedFormats={['qr_code']}
           onError={error => {
-            setQrError(error)
+            setEnrolleeCodeError(error)
             setEnrollee(undefined)
           }}
           onSuccess={result => {
             loadEnrollee(result.rawValue)
+            setEnrolleeCodeError(undefined)
             setShowEnrolleeCodeScanner(false)
           }}/>
-      }
-      { qrError &&
-          <div className="text-danger">{qrError}</div>
-      }
-    </KitCollectionStep>
+        }
+        { enrolleeCodeError &&
+          <div className="text-danger">{enrolleeCodeError}</div>
+        }
+      </KitCollectionStep>
 
-    <KitCollectionStep
-      stepNumber={2}
-      status={confirmedIdentity ? 'COMPLETE' : 'INCOMPLETE'}
-      description={<>Confirm the enrollee&apos;s identity</>}
-    >
-      <div>
+      <KitCollectionStep
+        stepNumber={2}
+        status={confirmedIdentity ? 'COMPLETE' : 'INCOMPLETE'}
+        description={<>Confirm the enrollee&apos;s identity</>}
+      >
         <TextInput
           label={'Enrollee Name'}
           className="mb-1" disabled={true}
@@ -102,41 +119,45 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
           disabled={!enrollee} onClick={() => setConfirmedIdentity(true)}>
           Mark as confirmed
         </Button>
-      </div>
-    </KitCollectionStep>
+      </KitCollectionStep>
 
-    <KitCollectionStep
-      stepNumber={3}
-      description={'Click to open the camera and scan the kit barcode'}
-      status={kitId ? 'COMPLETE' : 'INCOMPLETE'}
-    >
-      <Button className="mb-2" variant={'primary'} disabled={!confirmedIdentity}
-        tooltip={!confirmedIdentity ? 'You must complete the prior steps first' : ''}
-        onClick={() => setShowKitScanner(!showKitScanner)}>
+      <KitCollectionStep
+        stepNumber={3}
+        description={'Click to open the camera and scan the kit barcode'}
+        status={kitId ? 'COMPLETE' : 'INCOMPLETE'}
+      >
+        <Button className="mb-2" variant={'primary'} disabled={!confirmedIdentity}
+          tooltip={!confirmedIdentity ? 'You must complete the prior steps first' : ''}
+          onClick={() => setShowKitScanner(!showKitScanner)}>
         Click to scan kit barcode
-      </Button>
-      { showKitScanner &&
+        </Button>
+        { showKitScanner &&
           <BarcodeScanner
-            expectedFormats={['upc_a']}
-            onError={error => setKitError(error)}
+            expectedFormats={['code_128']}
+            onError={error => setKitCodeError(error)}
             onSuccess={result => {
               setKitId(result.rawValue)
               setShowKitScanner(false)
             }}/>
-      }
-      <TextInput
-        className="my-2"
-        disabled={true}
-        value={kitId}>
-      </TextInput>
-      { kitError &&
-          <div className="text-danger">{kitError}</div>
-      }
-    </KitCollectionStep>
-    <div className="d-flex justify-content-end">
-      <Button disabled={!(kitId && enrollee)} variant={'primary'}>Submit kit</Button>
+        }
+        <TextInput
+          className="my-2"
+          disabled={true}
+          value={kitId}>
+        </TextInput>
+        { kitCodeError &&
+          <div className="text-danger">{kitCodeError}</div>
+        }
+      </KitCollectionStep>
+      <div className="d-flex justify-content-end">
+        <Button disabled={!(kitId && enrollee)} variant={'primary'}>Submit kit</Button>
+      </div>
+    </div> :
+    <div className="m-2">
+      <div className="alert alert-danger" role="alert">
+        You do not have permission to access this page.
+      </div>
     </div>
-  </div>
 }
 
 type StepStatus = 'COMPLETE' | 'INCOMPLETE' | 'ERROR'
