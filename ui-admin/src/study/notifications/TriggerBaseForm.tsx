@@ -22,7 +22,7 @@ const taskTypeOptions = [
 ]
 
 const actionTypeOptions: {label: string, value: TriggerActionType }[] = [
-  { label: 'Notification', value: 'NOTIFICATION' },
+  { label: 'Participant Notification', value: 'NOTIFICATION' },
   { label: 'Admin Notification', value: 'ADMIN_NOTIFICATION' },
   { label: 'Update task status', value: 'TASK_STATUS_CHANGE' }
 ]
