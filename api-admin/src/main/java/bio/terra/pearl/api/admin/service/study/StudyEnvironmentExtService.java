@@ -13,7 +13,6 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import jakarta.ws.rs.BadRequestException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 public class StudyEnvironmentExtService {
   private final StudyEnvironmentService studyEnvService;
   private final StudyEnvironmentConfigService studyEnvConfigService;
-  private final AuthUtilService authUtilService;
   private final EnrolleeService enrolleeService;
   private final WithdrawnEnrolleeService withdrawnEnrolleeService;
   private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
@@ -34,13 +32,11 @@ public class StudyEnvironmentExtService {
   public StudyEnvironmentExtService(
       StudyEnvironmentService studyEnvService,
       StudyEnvironmentConfigService studyEnvConfigService,
-      AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
       StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
     this.studyEnvService = studyEnvService;
     this.studyEnvConfigService = studyEnvConfigService;
-    this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
@@ -74,15 +70,15 @@ public class StudyEnvironmentExtService {
         authContext.getStudyEnvironment().getId());
   }
 
+  @SandboxOnly
   @EnforcePortalStudyEnvPermission(permission = "study_settings_edit")
   public void updateKitTypes(PortalStudyEnvAuthContext authContext, List<String> updatedKitTypes) {
     List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllowedKitTypes();
+    validateKitTypes(updatedKitTypes, allowedKitTypes);
+
     List<KitType> configuredKitTypes =
         studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(
             authContext.getStudyEnvironment().getId());
-
-    validateNoRemovalOfKitTypes(updatedKitTypes, configuredKitTypes);
-    validateKitTypes(updatedKitTypes, allowedKitTypes);
 
     List<StudyEnvironmentKitType> newKitTypes = new ArrayList<>();
     for (String kitTypeName : updatedKitTypes) {
@@ -99,6 +95,22 @@ public class StudyEnvironmentExtService {
       newKitTypes.add(studyEnvironmentKitType);
     }
 
+    List<StudyEnvironmentKitType> removedKitTypes = new ArrayList<>();
+    for (KitType configuredKitType : configuredKitTypes) {
+      if (!updatedKitTypes.contains(configuredKitType.getName())) {
+        StudyEnvironmentKitType studyEnvironmentKitType =
+            StudyEnvironmentKitType.builder()
+                .studyEnvironmentId(authContext.getStudyEnvironment().getId())
+                .kitTypeId(configuredKitType.getId())
+                .build();
+        removedKitTypes.add(studyEnvironmentKitType);
+      }
+    }
+
+    removedKitTypes.forEach(
+        kitType ->
+            studyEnvironmentKitTypeService.deleteByKitTypeIdAndStudyEnvironmentId(
+                kitType.getKitTypeId(), kitType.getStudyEnvironmentId()));
     studyEnvironmentKitTypeService.bulkCreate(newKitTypes);
   }
 
@@ -116,17 +128,6 @@ public class StudyEnvironmentExtService {
   }
 
   public record StudyEnvStats(int enrolleeCount, int withdrawnCount) {}
-
-  protected void validateNoRemovalOfKitTypes(
-      List<String> updatedKitTypes, List<KitType> existingKitTypes) {
-    Set<String> updatedKitTypeSet = new HashSet<>(updatedKitTypes);
-    Set<String> existingKitTypeSet =
-        existingKitTypes.stream().map(KitType::getName).collect(Collectors.toSet());
-
-    if (!updatedKitTypeSet.containsAll(existingKitTypeSet)) {
-      throw new IllegalArgumentException("You may not remove a kit type from a study environment");
-    }
-  }
 
   protected void validateKitTypes(List<String> updatedKitTypes, List<KitType> allowedKitTypes) {
     Set<String> updatedKitTypeSet = new HashSet<>(updatedKitTypes);

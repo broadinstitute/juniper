@@ -223,6 +223,7 @@ export type StudyEnvironmentChange = {
   preEnrollSurveyChanges: VersionedEntityChange
   surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
+  kitTypeChanges: ListChange<KitType, VersionedConfigChange>
 }
 
 export type VersionedEntityChange = {

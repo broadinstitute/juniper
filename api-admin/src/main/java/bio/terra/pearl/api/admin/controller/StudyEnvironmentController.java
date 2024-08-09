@@ -8,7 +8,6 @@ import bio.terra.pearl.api.admin.service.study.StudyEnvironmentExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -84,7 +83,7 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalStudyEnvAuthContext authContext =
         PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName);
-    
+
     List<String> kitTypeNames =
         objectMapper.convertValue(body, new TypeReference<List<String>>() {});
 

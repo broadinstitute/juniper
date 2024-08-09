@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.publishing;
 
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
 import bio.terra.pearl.core.model.publishing.ListChange;
@@ -12,7 +12,9 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -30,6 +32,7 @@ import java.util.UUID;
 
 @Service
 public class StudyPublishingService {
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private StudyEnvironmentService studyEnvironmentService;
     private SurveyService surveyService;
@@ -43,7 +46,7 @@ public class StudyPublishingService {
                                   StudyEnvironmentService studyEnvironmentService, SurveyService surveyService,
                                   StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                   TriggerService triggerService,
-                                  EmailTemplateService emailTemplateService, EventService eventService, PortalEnvironmentService portalEnvironmentService) {
+                                  EmailTemplateService emailTemplateService, EventService eventService, PortalEnvironmentService portalEnvironmentService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.surveyService = surveyService;
@@ -52,6 +55,7 @@ public class StudyPublishingService {
         this.emailTemplateService = emailTemplateService;
         this.eventService = eventService;
         this.portalEnvironmentService = portalEnvironmentService;
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     }
 
     /**
@@ -63,6 +67,7 @@ public class StudyPublishingService {
         applyChangesToStudyEnvConfig(destEnv, envChange.getConfigChanges());
         applyChangesToPreEnrollSurvey(destEnv, envChange.getPreEnrollSurveyChanges(), destPortalEnv.getPortalId());
         applyChangesToSurveys(destEnv, envChange.getSurveyChanges(), destPortalEnv.getId(), destPortalEnv.getPortalId());
+        applyChangesToKitTypes(destEnv, envChange.getKitTypeChanges());
         triggerService.applyDiff(envChange, destEnv, destPortalEnv);
         return destEnv;
     }
@@ -123,6 +128,19 @@ public class StudyPublishingService {
             }
         }
         return destEnv.getConfiguredSurveys();
+    }
+
+    protected void applyChangesToKitTypes(StudyEnvironment destEnv, ListChange<KitType, KitType> kitTypeChanges) {
+        for (KitType kitType : kitTypeChanges.addedItems()) {
+            StudyEnvironmentKitType studyEnvKitType = new StudyEnvironmentKitType();
+            studyEnvKitType.setKitTypeId(kitType.getId());
+            studyEnvKitType.setStudyEnvironmentId(destEnv.getId());
+
+            studyEnvironmentKitTypeService.create(studyEnvKitType);
+        }
+        for (KitType kitType : kitTypeChanges.removedItems()) {
+            studyEnvironmentKitTypeService.deleteByKitTypeIdAndStudyEnvironmentId(kitType.getId(), destEnv.getId());
+        }
     }
 
 }

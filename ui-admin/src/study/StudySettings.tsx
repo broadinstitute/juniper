@@ -186,15 +186,17 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
           </label>
           <div style={{ width: 300 }}>
             <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes} isClearable={false}
+              isDisabled={studyEnvContext.currentEnv.environmentName !== 'sandbox'}
               onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
             />
           </div>
-          <Button onClick={saveKitTypes}
-            variant="primary" disabled={isLoading}
-            tooltip={'Save'}>
-            {isLoading && <LoadingSpinner/>}
-            {!isLoading && 'Save kit types'}
-          </Button>
+          {studyEnvContext.currentEnv.environmentName === 'sandbox' &&
+              <Button onClick={saveKitTypes}
+                variant="primary" disabled={isLoading}
+                tooltip={'Save'}>
+                {isLoading && <LoadingSpinner/>}
+                {!isLoading && 'Save kit types'}
+              </Button>}
         </div>
     }
   </form>

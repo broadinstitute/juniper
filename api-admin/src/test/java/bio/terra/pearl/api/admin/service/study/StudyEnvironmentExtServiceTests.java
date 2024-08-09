@@ -1,6 +1,5 @@
 package bio.terra.pearl.api.admin.service.study;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
@@ -9,7 +8,6 @@ import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.SandboxOnly;
 import bio.terra.pearl.core.model.kit.KitType;
-import jakarta.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,40 +25,14 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
                 AuthAnnotationSpec.withPortalStudyEnvPerm(
                     "survey_edit", List.of(SandboxOnly.class)),
             "updateConfig", AuthAnnotationSpec.withPortalStudyEnvPerm("study_settings_edit"),
-            "updateKitTypes", AuthAnnotationSpec.withPortalStudyEnvPerm("study_settings_edit"),
+            "updateKitTypes",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "study_settings_edit", List.of(SandboxOnly.class)),
             "getKitTypes",
                 AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON),
             "getAllowedKitTypes",
                 AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON),
             "getStats", AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON)));
-  }
-
-  @Test
-  public void testValidateCanAddKitTypes() {
-    List<String> updatedKitTypes = List.of("KitType1", "KitType2");
-    List<KitType> existingKitTypes =
-        List.of(
-            KitType.builder().name("KitType1").build(), KitType.builder().name("KitType2").build());
-
-    assertDoesNotThrow(
-        () ->
-            studyEnvironmentExtService.validateNoRemovalOfKitTypes(
-                updatedKitTypes, existingKitTypes));
-  }
-
-  @Test
-  public void testValidateCantRemoveKitTypes() {
-    List<String> updatedKitTypes = List.of("KitType1");
-    List<KitType> existingKitTypes =
-        List.of(
-            KitType.builder().name("KitType1").build(), KitType.builder().name("KitType2").build());
-
-    assertThrows(
-        BadRequestException.class,
-        () ->
-            studyEnvironmentExtService.validateNoRemovalOfKitTypes(
-                updatedKitTypes, existingKitTypes),
-        "You may not remove a kit type from a study environment");
   }
 
   @Test
@@ -71,7 +43,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
             KitType.builder().name("KitType1").build(), KitType.builder().name("KitType2").build());
 
     assertThrows(
-        BadRequestException.class,
+        IllegalArgumentException.class,
         () -> studyEnvironmentExtService.validateKitTypes(updatedKitTypes, allowedKitTypes),
         "Invalid kit type");
   }
