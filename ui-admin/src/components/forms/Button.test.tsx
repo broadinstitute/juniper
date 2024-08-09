@@ -88,24 +88,17 @@ describe('Button', () => {
   })
 
   it('shows tooltip when focused', async () => {
-    // Arrange
     const user = userEvent.setup()
     render(<Button tooltip="This is a tooltip">Test button</Button>)
-
-    // Act
     const button = screen.getByRole('button')
-    await act(() => user.tab())
 
-    // Assert
-    expect(button).toHaveFocus()
-    // TODO: JN-1200  this assertion worked prior to vite/jest upgrade
-    //screen.getByText('This is a tooltip')
-
-    // Act
-    await act(() => user.tab())
-
-    // Assert
     expect(button).not.toHaveFocus()
-    expect(() => screen.getByText('This is a tooltip')).toThrow()
+    expect(screen.queryByText('This is a tooltip')).not.toBeInTheDocument()
+
+
+    await user.tab()
+
+    expect(button).toHaveFocus()
+    screen.getByText('This is a tooltip')
   })
 })

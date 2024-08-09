@@ -59,5 +59,8 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "mixpanel-browser": "^2.54.0"
+  },
+  "overrides": {
+    "nan": ">=2.20.0"
   }
 }
