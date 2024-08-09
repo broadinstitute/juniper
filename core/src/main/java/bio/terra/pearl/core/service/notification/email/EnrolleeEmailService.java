@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -74,6 +75,7 @@ public class EnrolleeEmailService implements NotificationSender {
                         ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
             }
         }
+        // now save/update the Notification object
         if (notification.getId() != null) {
             // the notification might have been saved, but in a transaction not-yet completed (if, for example,
             // study enrollment transaction is taking a long time). So retry the update if it fails
@@ -148,7 +150,7 @@ public class EnrolleeEmailService implements NotificationSender {
     public boolean shouldSendEmail(Trigger config,
                                    EnrolleeContext enrolleeContext,
                                    NotificationContextInfo contextInfo) {
-        if (enrolleeContext.getProfile() == null) {
+        if (enrolleeContext.getProfile() == null || StringUtils.isBlank(enrolleeContext.getProfile().getContactEmail())) {
             return false;  // no address to send email to
         }
         if (enrolleeContext.getProfile().isDoNotEmail()) {
