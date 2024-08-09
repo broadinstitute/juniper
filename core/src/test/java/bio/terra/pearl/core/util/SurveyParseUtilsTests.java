@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChoices);
 
-        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode, "en");
         String expected = """
                 [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
@@ -208,11 +209,52 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChoices);
 
-        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode, "en");
         String expected = """
                 [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testParseQuestionChoicesTranslated(TestInfo info) throws JsonProcessingException {
+        String questionWithChoices = """
+                {
+                  "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
+                  "type": "radiogroup",
+                  "title": "Have you had any of the following treatments?",
+                  "choices": [
+                    {
+                      "text": "Cardiac stent placement",
+                      "value": "cardiacStentPlacement"
+                    },
+                    {
+                      "text": {"en": "Cardiac bypass surgery", "es": "Cirugía de bypass cardíaco"},
+                      "value": "cardiacBypassSurgery"
+                    },
+                    {
+                      "text": "None of these",
+                      "value": "noneOfThese"
+                    }
+                  ]
+                }""";
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChoices);
+
+        String actualEn = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode, "en");
+        String expectedEn = """
+                [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
+
+        Assertions.assertEquals(expectedEn, actualEn);
+
+        String actualEs = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode, "es");
+        String expectedEs = """
+                [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cirugía de bypass cardíaco"},{"stableId":"noneOfThese","text":"None of these"}]""";
+
+        Assertions.assertEquals(expectedEs, actualEs);
+
     }
 
     @Test
@@ -228,7 +270,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChoices);
 
-        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode, "en");
         String expected = """
                 [{"stableId":"foo","text":"foo"},{"stableId":"bar","text":"bar"},{"stableId":"baz","text":"baz"}]""";
 

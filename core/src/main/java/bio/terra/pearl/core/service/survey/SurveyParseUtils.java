@@ -86,7 +86,8 @@ public class SurveyParseUtils {
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
             int globalOrder,
-            boolean isDerived) {
+            boolean isDerived,
+            String defaultLanguage) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
@@ -123,7 +124,7 @@ public class SurveyParseUtils {
         }
 
         if (templatedQuestion.has("choices")) {
-            definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion));
+            definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion, defaultLanguage));
         }
 
         return definition;
@@ -145,7 +146,7 @@ public class SurveyParseUtils {
         }
     }
 
-    public static String unmarshalSurveyQuestionChoices(JsonNode question) {
+    public static String unmarshalSurveyQuestionChoices(JsonNode question, String defaultLanguage) {
         List<QuestionChoice> choices = new ArrayList<>();
         for (JsonNode choice : question.get("choices")) {
             // if all text/value pairs are the same, surveyjs transforms the choices into an array of strings.  grrrr...
@@ -159,7 +160,7 @@ public class SurveyParseUtils {
                     text = textNode.asText();
                 } else {
                     // todo: make this grab default language
-                    text = textNode.get("en").asText();
+                    text = textNode.get(defaultLanguage).asText();
                 }
 
                 choices.add(new QuestionChoice(choice.get("value").asText(), text));
