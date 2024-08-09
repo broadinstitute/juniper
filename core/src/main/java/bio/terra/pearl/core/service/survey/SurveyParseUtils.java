@@ -159,7 +159,6 @@ public class SurveyParseUtils {
                 if (textNode.isTextual()) {
                     text = textNode.asText();
                 } else {
-                    // todo: make this grab default language
                     text = textNode.get(defaultLanguage).asText();
                 }
 
