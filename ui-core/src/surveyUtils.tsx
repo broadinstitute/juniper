@@ -180,11 +180,12 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
     .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, flattenedData, selectedLanguage))
 }
 
-// turns all nested objects into top-level keys so that the backend can save complex nested questions
-// as their own answer objects
+// turns all nested objects into top-level keys so that the backend can save individual fields of complex
+// nested questions as their own answers, e.g. with matrix or dynamic panel questions.
+// all original data will be present, even in its unflattened form.
 export function flattenSurveyJsData(data: Record<string, SurveyJsValueType>): Record<string, SurveyJsValueType> {
-  // include original data; this is required because it keeps the complex unflattened versions of the
-  // objects which surveyjs uses to render the survey
+  // include original data; this is required because it keeps the
+  // original objects which surveyjs uses to render the survey
   return { ...flattenObject(data) as Record<string, SurveyJsValueType>, ...data }
 }
 
@@ -238,7 +239,6 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
     }
   })
 
-  console.log(flattenSurveyJsData(model.data))
   return {
     ...flattenSurveyJsData(model.data),
     ...calculatedHash

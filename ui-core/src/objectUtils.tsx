@@ -84,6 +84,7 @@ const getAllFields = (...objs: object[]): Set<string> => {
 }
 
 
+// turns a nested object into a flat object, e.g. { a: { b: 1 } } => { 'a.b': 1 }
 // inspired by https://stackoverflow.com/a/57478730
 export function flattenObject(
   data: unknown,

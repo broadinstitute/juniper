@@ -28,9 +28,7 @@ public class SurveyParseUtils {
     public static final Pattern INVALID_STABLE_ID = Pattern.compile("[^a-zA-Z\\-_\\d]");
 
     /**
-     * recursively gets all questions from the given node. includes all top-level questions;
-     * in the case of dynamic panels, sub questions will not be included. these sub-questions
-     * can be retrieved in the "templateElements" field of the dynamic panel question.
+     * recursively gets all questions from the given node.
      */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
@@ -86,8 +84,7 @@ public class SurveyParseUtils {
             JsonNode question,
             Map<String, JsonNode> questionTemplates,
             int globalOrder,
-            boolean isDerived,
-            String defaultLanguage) {
+            boolean isDerived) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
