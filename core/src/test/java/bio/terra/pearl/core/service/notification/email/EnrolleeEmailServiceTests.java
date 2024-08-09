@@ -185,7 +185,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();

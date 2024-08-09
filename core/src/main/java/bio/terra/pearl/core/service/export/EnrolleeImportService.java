@@ -314,6 +314,10 @@ public class EnrolleeImportService {
         profile.setId(registrationProfile.getId());
         profile.setMailingAddressId(registrationProfile.getMailingAddressId());
         profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
+        // if there's no explicit contact email, default to the username
+        if (profile.getContactEmail() == null) {
+            profile.setContactEmail(registrationProfile.getContactEmail());
+        }
         return profileService.updateWithMailingAddress(profile, auditInfo);
     }
 

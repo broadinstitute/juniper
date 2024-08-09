@@ -127,6 +127,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         userExpected.setUsername("userName1");
         Profile profileExpected = new Profile();
         profileExpected.setBirthDate(LocalDate.parse("1980-10-10"));
+        // confirm the account name gets copied over
+        profileExpected.setContactEmail(userExpected.getUsername());
         verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
 
         Enrollee enrolleeExpected2 = new Enrollee();
@@ -135,6 +137,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         userExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
         userExpected2.setUsername("userName2");
         Profile profileExpected2 = new Profile();
+        profileExpected2.setContactEmail(userExpected2.getUsername());
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
         verifySurveyQuestionAnswer(imports.get(0), "medical_history", "diagnosis", "sick");
     }

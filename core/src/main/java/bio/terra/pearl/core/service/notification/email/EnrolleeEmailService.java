@@ -74,6 +74,7 @@ public class EnrolleeEmailService implements NotificationSender {
                         ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
             }
         }
+        // now save/update the Notification object
         if (notification.getId() != null) {
             // the notification might have been saved, but in a transaction not-yet completed (if, for example,
             // study enrollment transaction is taking a long time). So retry the update if it fails
@@ -148,7 +149,7 @@ public class EnrolleeEmailService implements NotificationSender {
     public boolean shouldSendEmail(Trigger config,
                                    EnrolleeContext enrolleeContext,
                                    NotificationContextInfo contextInfo) {
-        if (enrolleeContext.getProfile() == null) {
+        if (enrolleeContext.getProfile() == null || enrolleeContext.getProfile().getContactEmail() == null) {
             return false;  // no address to send email to
         }
         if (enrolleeContext.getProfile().isDoNotEmail()) {
