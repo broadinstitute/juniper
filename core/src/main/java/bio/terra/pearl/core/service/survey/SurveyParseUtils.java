@@ -124,7 +124,7 @@ public class SurveyParseUtils {
         }
 
         if (templatedQuestion.has("choices")) {
-            definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion, defaultLanguage));
+            definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion));
         }
 
         return definition;
@@ -146,7 +146,7 @@ public class SurveyParseUtils {
         }
     }
 
-    public static String unmarshalSurveyQuestionChoices(JsonNode question, String defaultLanguage) {
+    public static String unmarshalSurveyQuestionChoices(JsonNode question) {
         List<QuestionChoice> choices = new ArrayList<>();
         for (JsonNode choice : question.get("choices")) {
             // if all text/value pairs are the same, surveyjs transforms the choices into an array of strings.  grrrr...
@@ -159,7 +159,11 @@ public class SurveyParseUtils {
                 if (textNode.isTextual()) {
                     text = textNode.asText();
                 } else {
-                    text = textNode.get(defaultLanguage).asText();
+                    if (textNode.has("en")) {
+                        text = textNode.get("en").asText();
+                    } else {
+                        text = textNode.get("value").asText();
+                    }
                 }
 
                 choices.add(new QuestionChoice(choice.get("value").asText(), text));
