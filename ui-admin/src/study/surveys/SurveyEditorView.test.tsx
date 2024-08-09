@@ -44,6 +44,7 @@ describe('SurveyEditorView', () => {
 
   test('checks local storage for a draft', async () => {
     clearAllMocks()
+    localStorage.clear()
     //Arrange
     const FORM_DRAFT_KEY = getFormDraftKey({ form: mockForm() })
 
@@ -58,8 +59,7 @@ describe('SurveyEditorView', () => {
 
     //Assert
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
-    // TODO JN-1200
-    //expect(screen.queryByText('Survey Draft Loaded')).not.toBeInTheDocument()
+    expect(screen.queryByText('Survey Draft Loaded')).not.toBeInTheDocument()
   })
 
   test('shows a dropdown with options', async () => {

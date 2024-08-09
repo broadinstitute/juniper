@@ -17,16 +17,6 @@ type ButtonVariant =
   | 'dark'
   | 'link'
 
-// Mainly for tests. JSDOM does not support the :focus-visible selector.
-export const supportsFocusVisible = (() => {
-  try {
-    document.querySelector(':focus-visible')
-    return true
-  } catch (err) {
-    return false
-  }
-})()
-
 export type ButtonProps = JSX.IntrinsicElements['button'] & {
   outline?: boolean
   tooltip?: string
@@ -83,10 +73,7 @@ export const Button = (props: ButtonProps) => {
         placement={tooltipPlacement ? tooltipPlacement : 'top'}
         // Show the tooltip if the button is hovered or if the button is focused via the keyboard.
         show={
-          !!tooltip && (
-            isHovered
-            || isFocused && (supportsFocusVisible ? buttonRef.current?.matches(':focus-visible') : true)
-          )
+          !!tooltip && (isHovered || isFocused)
         }
         target={buttonRef.current}
       >
