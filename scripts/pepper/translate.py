@@ -1,5 +1,9 @@
 import argparse
-from typing import Any
+import os.path
+from typing import Any, Union
+
+from openpyxl import load_workbook
+
 
 def main():
     # 1: parse arguments
@@ -62,8 +66,14 @@ def main():
 
 # ------ helper classes and methods --------
 
-def ensure_files_exist(files: list[str]):
-    pass
+def ensure_files_exist(files: list[Union[str, None]]):
+    for file in files:
+        if file is None or file == "":
+            continue
+        if not os.path.isfile(file):
+            print('File "' + file + '" does not exist.')
+            exit(1)
+
 
 class DataDefinition:
     stable_id = None
@@ -72,12 +82,34 @@ class DataDefinition:
     format = None  # e.g., if date
     option_values = None  # list of values, no label
 
+    num_repeats = None
+    subquestions = None  # list of composite subquestions
+
 
 def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
+    dsm_data_dict = load_workbook(filename=filepath)
+
+    # steps:
+    # - iterate through leftmost (A) column; if column above is empty, then it's the start of a new survey
+    #   - skip first survey line: it's just header
+    #   - import question
+    #      - if type is empty, and C (question type) is composite,
+    #        remove sub-questions and put them into data definition
+    #      - otherwise, A = question name B = type E = choices
+
     return []
 
 
 def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
+
+    # steps:
+    # - iterate through leftmost (A) column; if column above is empty, then it's the start of a new survey
+    #   - skip first survey line: it's just header
+    #   - import question
+    #      - if type is empty, and C (question type) is composite,
+    #        remove sub-questions and put them into data definition
+    #      - otherwise, A = question name B = type E = choices
+
     return []
 
 
@@ -100,6 +132,10 @@ def create_translations(
         juniper_questions: list[DataDefinition],
         translation_overrides: list[TranslationOverride]
 ) -> tuple[list[DataDefinition], list[DataDefinition], list[Translation]]:
+    # create constant default translations, e.g.:
+    # - profile.email -> profile.contactEmail
+    # - profile.email -> account.username
+
     return [], [], []
 
 
