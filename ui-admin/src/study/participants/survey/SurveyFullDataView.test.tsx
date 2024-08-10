@@ -6,6 +6,7 @@ import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core'
 import { DataChangeRecord } from 'api/api'
 import { AnswerEditHistory } from './AnswerEditHistory'
+import { userEvent } from '@testing-library/user-event'
 
 
 describe('getDisplayValue', () => {
@@ -112,8 +113,9 @@ describe('ItemDisplay', () => {
       surveyVersion={1}
       supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish', id: '' }]}
       showFullQuestions={true}/>)
+    userEvent.click(screen.getAllByText('test123')[0])
 
-    expect(screen.getByText('(testQ) (Answered in Spanish)')).toBeInTheDocument()
+    expect(screen.getByText('answered in Spanish')).toBeInTheDocument()
   })
 
   it('renders correctly if a viewedLanguage is not specified', async () => {
