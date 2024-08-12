@@ -146,7 +146,6 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         Assertions.assertEquals("lastName", lastName.get("name").asText());
     }
 
-
     @Test
     public void testResolvingQuestionTemplate() throws JsonProcessingException {
         String questionWithChoices = """

@@ -430,4 +430,77 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         assertThat(languageTextDao.findByPortalId(portal.getId(), "es"), hasSize(0));
     }
 
+    @Test
+    @Transactional
+    void testCreateSurveyWithDynamicPanel(TestInfo info) {
+
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+
+        Survey survey = Survey
+                .builder()
+                .stableId("exampleSurvey")
+                .content("""
+                        {
+                          "title": "The Basics",
+                          "pages": [{
+                                "name": "page1",
+                                "elements": [{
+                                  "type": "paneldynamic",
+                                  "name": "oh_oh_languages",
+                                  "title": "What languages do you speak at home?",
+                                  "templateElements": [
+                                    {
+                                      "type": "text",
+                                      "name": "language",
+                                      "title": "Language",
+                                      "isRequired": true
+                                    },
+                                    {
+                                      "type": "dropdown",
+                                      "name": "proficiency",
+                                      "title": "Proficiency",
+                                      "isRequired": true,
+                                      "choices": [
+                                        {"value": "native", "text": "Native"},
+                                        {"value": "fluent", "text": "Fluent"},
+                                        {"value": "proficient", "text": "Proficient"},
+                                        {"value": "basic", "text": "Basic"}
+                                      ]
+                                    }
+                                  ]
+                                 }
+                                ]
+                           }]
+                        }
+                        """)
+                .portalId(portal.getId())
+                .eligibilityRule("")
+                .build();
+
+        Survey savedSurvey = surveyService.create(survey);
+
+        List<SurveyQuestionDefinition> questionDefinitions = surveyService.getSurveyQuestionDefinitions(savedSurvey);
+
+        assertThat(questionDefinitions, hasSize(3));
+
+        SurveyQuestionDefinition dynamicPanel = questionDefinitions.stream().filter(q -> q.getQuestionStableId().equals("oh_oh_languages")).findFirst().get();
+        assertThat(dynamicPanel.getQuestionStableId(), equalTo("oh_oh_languages"));
+        assertThat(dynamicPanel.getQuestionType(), equalTo("paneldynamic"));
+        assertThat(dynamicPanel.getRepeatable(), equalTo(true));
+
+        SurveyQuestionDefinition language = questionDefinitions.stream().filter(q -> q.getQuestionStableId().equals("language")).findFirst().get();
+
+        assertThat(language.getQuestionStableId(), equalTo("language"));
+        assertThat(language.getQuestionType(), equalTo("text"));
+        assertThat(language.getParentStableId(), equalTo("oh_oh_languages"));
+
+        SurveyQuestionDefinition proficiency = questionDefinitions.stream().filter(q -> q.getQuestionStableId().equals("proficiency")).findFirst().get();
+
+        assertThat(proficiency.getQuestionStableId(), equalTo("proficiency"));
+        assertThat(proficiency.getQuestionType(), equalTo("dropdown"));
+        assertThat(proficiency.getParentStableId(), equalTo("oh_oh_languages"));
+        assertThat(proficiency.getChoices(), equalTo("""
+                [{"stableId":"native","text":"Native"},{"stableId":"fluent","text":"Fluent"},{"stableId":"proficient","text":"Proficient"},{"stableId":"basic","text":"Basic"}]"""));
+    }
+
 }
