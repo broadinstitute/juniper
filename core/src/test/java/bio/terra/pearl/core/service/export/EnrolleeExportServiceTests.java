@@ -415,6 +415,30 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                }
             """;
 
+    private final String DYNAMIC_PANEL_EXCERPT_NO_LASTNAME = """
+            {
+              "pages": [
+                  {
+                    "elements": [             
+                      {
+                        "name": "examplePanel",
+                        "type": "paneldynamic",
+                        "title": "Names of people in your family",
+                        "templateElements": [
+                            {
+                                "name": "firstName",
+                                "type": "text",
+                                "title": "First name",
+                                "isRequired": true
+                            }
+                        ]
+                      }   
+                    ]
+                  }
+                 ]
+               }
+            """;
+
     @Test
     @Transactional
     public void testDynamicPanelExport(TestInfo testInfo) {
@@ -517,10 +541,75 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
 
-        List<String> columnKeys = enrolleeExportService.getExporter(ExportFileFormat.CSV, moduleFormatters, exportMaps).getColumnKeys();
+        BaseExporter exporter = enrolleeExportService.getExporter(ExportFileFormat.CSV, moduleFormatters, exportMaps);
+        List<String> columnKeys = exporter.getColumnKeys();
+        List<String> columnHeaders = exporter.getHeaderRow();
 
         assertTrue(columnKeys.contains("examplesurvey.examplePanel.firstName[0]"));
         assertTrue(columnKeys.contains("examplesurvey.examplePanel.lastName[0]"));
+
+        assertTrue(columnHeaders.contains("examplesurvey.examplePanel.firstName[0]"));
+    }
+
+    @Test
+    @Transactional
+    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Survey surveyV1 = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(surveyV1, studyEnv.getId(), false);
+
+        Survey surveyV2 = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT_NO_LASTNAME)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(surveyV2, studyEnv.getId(), true);
+
+        Enrollee enrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        // enrollee responded to old version of the survey
+        surveyResponseFactory.buildWithAnswers(
+                enrollee,
+                surveyV1,
+                Map.of(
+                        "examplePanel", """
+                                    [{"firstName":"John","lastName":"Doe"},
+                                     {"firstName":"Jane","lastName":"Doe"},
+                                     {"firstName":"Jim","lastName":"Doe"},
+                                     {"firstName":"Jill","lastName":"Doe"}]
+                                """
+                )
+        );
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
+
+
+        assertThat(exportMaps, hasSize(1));
+
+        Map<String, String> enrolleeMap = exportMaps.get(0);
+
+        // should still export survey responses for the old version of the survey
+        assertThat(enrolleeMap.get("examplesurvey.examplePanel.firstName[0]"), equalTo("John"));
+        assertThat(enrolleeMap.get("examplesurvey.examplePanel.lastName[0]"), equalTo("Doe"));
+
+
     }
 
 }

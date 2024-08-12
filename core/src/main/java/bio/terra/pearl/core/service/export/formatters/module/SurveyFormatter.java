@@ -170,10 +170,14 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             AnswerItemFormatter answerItemFormatter = (AnswerItemFormatter) itemFormatter;
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId());
-            columnHeader = moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
-            if (Objects.nonNull(answerItemFormatter.getRepeatIndex())) {
-                columnHeader += "[" + answerItemFormatter.getRepeatIndex() + "]";
+            if (Objects.nonNull(answerItemFormatter.getParentStableId())) {
+                cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getParentStableId()) + "." + cleanStableId;
             }
+            if (Objects.nonNull(answerItemFormatter.getRepeatIndex())) {
+                cleanStableId += "[" + answerItemFormatter.getRepeatIndex() + "]";
+            }
+
+            columnHeader = moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
             if (isOtherDescription) {
                 columnHeader += OTHER_DESCRIPTION_KEY_SUFFIX;
             } else if (answerItemFormatter.isSplitOptionsIntoColumns() && choice != null) {
@@ -307,32 +311,10 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
 
     protected static String valueAsString(AnswerItemFormatter itemFormatter, Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         if (itemFormatter.isChildQuestion()) {
-            Integer repeatIndex = itemFormatter.getRepeatIndex();
-
-            try {
-                JsonNode answerNode = objectMapper.readTree(answer.valueAsString());
-                if (Objects.nonNull(repeatIndex)) {
-                    if (!answerNode.has(repeatIndex)) {
-                        return "";
-                    }
-                    answerNode = answerNode.get(repeatIndex);
-                }
-
-                if (!answerNode.has(itemFormatter.getQuestionStableId())) {
-                    return "";
-                }
-                answerNode = answerNode.get(itemFormatter.getQuestionStableId());
-
-                if (answerNode == null) {
-                    return "";
-                }
-
-                return formatStringValue(answerNode.asText(), choices, stableIdForOptions, answer);
-            } catch (Exception e) {
-                log.warn("Failed to parse parent answer for child question - enrollee: {}, question: {}, answer: {}",
-                        answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
-            }
-
+            // if the question is a child of a parent question, then the answer value is
+            // the parent's json object value, so we need to extract the value of this
+            // child's stable id from it
+            return extractChildValue(itemFormatter, answer, choices, stableIdForOptions, objectMapper);
         }
 
         if (answer.getStringValue() != null) {
@@ -343,6 +325,35 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             return answer.getNumberValue().toString();
         } else if (answer.getObjectValue() != null) {
             return formatObjectValue(answer, choices, stableIdForOptions, objectMapper);
+        }
+        return "";
+    }
+
+    protected static String extractChildValue(AnswerItemFormatter itemFormatter, Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
+        Integer repeatIndex = itemFormatter.getRepeatIndex();
+
+        try {
+            JsonNode answerNode = objectMapper.readTree(answer.valueAsString());
+            if (Objects.nonNull(repeatIndex)) {
+                if (!answerNode.has(repeatIndex)) {
+                    return "";
+                }
+                answerNode = answerNode.get(repeatIndex);
+            }
+
+            if (!answerNode.has(itemFormatter.getQuestionStableId())) {
+                return "";
+            }
+            answerNode = answerNode.get(itemFormatter.getQuestionStableId());
+
+            if (answerNode == null) {
+                return "";
+            }
+
+            return formatStringValue(answerNode.asText(), choices, stableIdForOptions, answer);
+        } catch (Exception e) {
+            log.warn("Failed to parse parent answer for child question - enrollee: {}, question: {}, answer: {}",
+                    answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
         }
         return "";
     }

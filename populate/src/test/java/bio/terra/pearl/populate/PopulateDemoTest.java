@@ -14,6 +14,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
@@ -194,8 +195,10 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                 .limit(null)
                 .build();
-        List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.getFilter(), options.getLimit());
+
+        List<EnrolleeExportData> enrolleeExportData = enrolleeExportService.loadEnrolleeExportData(sandboxEnvironmentId, options);
+        List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId, enrolleeExportData);
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(enrolleeExportData, moduleInfos);
 
         assertThat(exportData, hasSize(13));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))

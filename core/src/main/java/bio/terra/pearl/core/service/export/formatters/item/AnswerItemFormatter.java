@@ -9,7 +9,6 @@ import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Getter;
@@ -161,26 +160,6 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         if (exportString == null) {
             // we don't create empty answers if the participant doesn't have a value specified
             return;
-        }
-        if (isChildQuestion) {
-            try {
-                JsonNode valueNode = objectMapper.readTree(exportString);
-                if (repeatIndex != null) {
-                    valueNode = valueNode.get(repeatIndex);
-                }
-                valueNode = valueNode.get(questionStableId);
-                if (valueNode == null) {
-                    return;
-                }
-
-                if (valueNode.isTextual()) {
-                    exportString = valueNode.asText();
-                } else {
-                    exportString = objectMapper.writeValueAsString(valueNode);
-                }
-            } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Error parsing child question value", e);
-            }
         }
         Answer answer = Answer.builder()
                 .questionStableId(questionStableId)
