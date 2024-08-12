@@ -1,4 +1,8 @@
-import { Trigger, TriggerActionType, TriggerType } from '@juniper/ui-core'
+import {
+  Trigger,
+  TriggerActionType,
+  TriggerType
+} from '@juniper/ui-core'
 import { NavLink } from 'react-router-dom'
 import Select from 'react-select'
 import React from 'react'
@@ -18,7 +22,8 @@ const taskTypeOptions = [
 ]
 
 const actionTypeOptions: {label: string, value: TriggerActionType }[] = [
-  { label: 'Notification', value: 'NOTIFICATION' },
+  { label: 'Participant Notification', value: 'NOTIFICATION' },
+  { label: 'Admin Notification', value: 'ADMIN_NOTIFICATION' },
   { label: 'Update task status', value: 'TASK_STATUS_CHANGE' }
 ]
 
@@ -85,6 +90,7 @@ export const isEventConfig = (config?: Trigger) => config?.triggerType === 'EVEN
  *
  */
 export const isNotification = (config?: Trigger) => config?.actionType === 'NOTIFICATION'
+export const isAdminNotification = (config?: Trigger) => config?.actionType === 'ADMIN_NOTIFICATION'
 /**
  *
  */

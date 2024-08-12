@@ -10,6 +10,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
+
 import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
@@ -22,7 +23,6 @@ import { Link } from 'react-router-dom'
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
-
   const [groupByFamilyString, setGroupByFamily] = useSingleSearchParam('groupByFamily')
   const groupByFamily = groupByFamilyString === 'true'
 
@@ -43,7 +43,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     return concatSearchExpressions(expressions)
   }
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
@@ -52,7 +52,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
-
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     {renderPageHeader('Participant List')}
@@ -64,6 +63,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         updateSearchState={updateSearchState}
         setSearchState={setSearchState}
       />
+
       {
         familyLinkageEnabled && <div className="d-flex align-content-center p-2">
           <Button
@@ -83,10 +83,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     <LoadingSpinner isLoading={isLoading}>
       {groupByFamily
         ? <ParticipantListTableGroupedByFamily participantList={participantList} studyEnvContext={studyEnvContext}/>
-        : <ParticipantListTable participantList={participantList} studyEnvContext={studyEnvContext}/>}
+        : <ParticipantListTable participantList={participantList} studyEnvContext={studyEnvContext} reload={reload}/>}
     </LoadingSpinner>
   </div>
 }
-
 
 export default ParticipantList

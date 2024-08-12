@@ -343,8 +343,8 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
 /**
  * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'] }:{
-  table: Table<T>, fileName: string, excludedColumns?: string[]}
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'], buttonClass='border m-1' }:{
+  table: Table<T>, fileName: string, excludedColumns?: string[], buttonClass: string}
 ) {
   const [show, setShow] = useState(false)
 
@@ -370,7 +370,7 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
 
   return <div className="ms-auto">
     <Button onClick={() => setShow(!show)}
-      variant="light" className="border m-1" disabled={disableDownload}
+      variant="light" className={buttonClass} disabled={disableDownload}
       tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
       <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
     </Button>

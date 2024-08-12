@@ -38,9 +38,9 @@ export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEn
         customMessages: { adHocMessage, adHocSubject },
         triggerId: selectedConfig.id
       })
-      Store.addNotification(successNotification('email sent'))
+      Store.addNotification(successNotification('email processed'))
     } catch (e) {
-      Store.addNotification(failureNotification('email send failed'))
+      Store.addNotification(failureNotification('email processing failed'))
     }
     onDismiss()
   }

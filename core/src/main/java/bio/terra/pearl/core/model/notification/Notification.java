@@ -23,6 +23,8 @@ public class Notification extends BaseEntity {
     private UUID triggerId;
     private NotificationDeliveryStatus deliveryStatus;
     private NotificationDeliveryType deliveryType;
+    @Builder.Default
+    private NotificationType notificationType = NotificationType.PARTICIPANT;
     private String sentTo;
     private String customMessages;
     private String sendgridApiRequestId;

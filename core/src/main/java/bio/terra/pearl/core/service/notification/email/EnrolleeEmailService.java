@@ -1,10 +1,6 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -20,11 +16,14 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -76,6 +75,7 @@ public class EnrolleeEmailService implements NotificationSender {
                         ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
             }
         }
+        // now save/update the Notification object
         if (notification.getId() != null) {
             // the notification might have been saved, but in a transaction not-yet completed (if, for example,
             // study enrollment transaction is taking a long time). So retry the update if it fails
@@ -150,7 +150,7 @@ public class EnrolleeEmailService implements NotificationSender {
     public boolean shouldSendEmail(Trigger config,
                                    EnrolleeContext enrolleeContext,
                                    NotificationContextInfo contextInfo) {
-        if (enrolleeContext.getProfile() == null) {
+        if (enrolleeContext.getProfile() == null || StringUtils.isBlank(enrolleeContext.getProfile().getContactEmail())) {
             return false;  // no address to send email to
         }
         if (enrolleeContext.getProfile().isDoNotEmail()) {
@@ -158,7 +158,7 @@ public class EnrolleeEmailService implements NotificationSender {
                     enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
-        if (enrolleeContext.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
+        if (enrolleeContext.getProfile().isDoNotEmailSolicit() && Objects.nonNull(config.getTaskType()) && config.getTaskType().equals(TaskType.OUTREACH)) {
             log.info("skipping email, enrollee {} is doNotEmailSolicit: triggerId: {}, portalEnv: {}",
                     enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;

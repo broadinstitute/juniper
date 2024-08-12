@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
@@ -55,12 +56,13 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
 
     Trigger savedConfig =
         triggerExtService.replace(
-            bundle.getPortal().getShortcode(),
-            bundle.getStudy().getShortcode(),
-            bundle.getStudyEnv().getEnvironmentName(),
+            PortalStudyEnvAuthContext.of(
+                user,
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv().getEnvironmentName()),
             oldConfig.getId(),
-            update,
-            user);
+            update);
     assertThat(savedConfig.isActive(), equalTo(true));
     assertThat(savedConfig.getStudyEnvironmentId(), equalTo(bundle.getStudyEnv().getId()));
     assertThat(savedConfig.getPortalEnvironmentId(), equalTo(bundle.getPortalEnv().getId()));
@@ -82,10 +84,11 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () ->
             triggerExtService.delete(
-                user,
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv().getEnvironmentName(),
+                PortalStudyEnvAuthContext.of(
+                    user,
+                    bundle.getPortal().getShortcode(),
+                    bundle.getStudy().getShortcode(),
+                    bundle.getStudyEnv().getEnvironmentName()),
                 UUID.randomUUID()));
   }
 
@@ -114,10 +117,11 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () ->
             triggerExtService.delete(
-                user,
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv().getEnvironmentName(),
+                PortalStudyEnvAuthContext.of(
+                    user,
+                    bundle.getPortal().getShortcode(),
+                    bundle.getStudy().getShortcode(),
+                    bundle.getStudyEnv().getEnvironmentName()),
                 config.getId()));
   }
 
@@ -141,10 +145,11 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
     Assertions.assertTrue(triggerService.find(config.getId()).isPresent());
 
     triggerExtService.delete(
-        user,
-        bundle.getPortal().getShortcode(),
-        bundle.getStudy().getShortcode(),
-        bundle.getStudyEnv().getEnvironmentName(),
+        PortalStudyEnvAuthContext.of(
+            user,
+            bundle.getPortal().getShortcode(),
+            bundle.getStudy().getShortcode(),
+            bundle.getStudyEnv().getEnvironmentName()),
         config.getId());
 
     // should still exist, but active should be false

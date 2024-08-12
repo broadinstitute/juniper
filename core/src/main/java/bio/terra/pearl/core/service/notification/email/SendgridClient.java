@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.notification.email;
 import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
-import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,8 +37,11 @@ public class SendgridClient {
   public String sendEmail(Mail mail) {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
-      log.info("Email send skipped: no sendgrid api provided");
-      throw new UnsupportedOperationException("Attempted to send email without sendgrid key");
+      log.warn("Email send skipped: no sendgrid api provided");
+      if (deploymentZone.equalsIgnoreCase("prod")) {
+        throw new UnsupportedOperationException("Attempted to send email without sendgrid key");
+      }
+      return null;
     }
     SendGrid sg = new SendGrid(sendGridApiKey);
     Request request = new Request();
@@ -88,10 +90,59 @@ public class SendgridClient {
     return events;
   }
 
-  public Mail buildEmail(LocalizedEmailTemplate localizedEmailTemplate, String toAddress, String fromAddress, String fromName,
+  public Mail buildEmail(LocalizedEmailTemplate localizedEmailTemplate,
+                         String toAddress,
+                         String fromAddress,
+                         String fromName,
                          StringSubstitutor stringSubstitutor) {
+    Email from = buildFrom(fromAddress, fromName);
+    Email to = buildTo(toAddress);
+
+
+    String subject = buildSubject(localizedEmailTemplate, stringSubstitutor);
+    String contentString = buildContent(localizedEmailTemplate, stringSubstitutor, toAddress);
+
+
+    Content content = new Content("text/html", contentString);
+    return new Mail(from, subject, to, content);
+  }
+
+  public Mail buildMultiRecipientMail(LocalizedEmailTemplate localizedEmailTemplate,
+                                      List<String> ccAddresses,
+                                      String fromAddress,
+                                      String fromName,
+                                      StringSubstitutor stringSubstitutor) {
+
+    Email from = buildFrom(fromAddress, fromName);
+
+
+    String subject = buildSubject(localizedEmailTemplate, stringSubstitutor);
+    String contentString = buildContent(localizedEmailTemplate, stringSubstitutor, StringUtils.join(ccAddresses, ", "));
+
+    Content content = new Content("text/html", contentString);
+
+    Mail mail = new Mail();
+    mail.setFrom(from);
+    mail.setSubject(subject);
+    mail.addContent(content);
+
+
+    if (!StringUtils.isEmpty(emailRedirectAddress)) {
+      ccAddresses = List.of(emailRedirectAddress);
+    }
+    Personalization to = new Personalization();
+    for (String ccAddress : ccAddresses) {
+      Email ccEmail = new Email(ccAddress);
+      to.addTo(ccEmail);
+    }
+
+    mail.addPersonalization(to);
+
+    return mail;
+  }
+
+  private Email buildFrom(String fromAddress, String fromName) {
     Email from = new Email(fromAddress);
-    Email to = new Email(toAddress);
 
     if (fromName == null) {
       fromName = "Juniper";
@@ -101,16 +152,30 @@ public class SendgridClient {
     }
     from.setName(fromName);
 
-    String subject = stringSubstitutor.replace(localizedEmailTemplate.getSubject());
-    String contentString = stringSubstitutor.replace(localizedEmailTemplate.getBody());
+    return from;
+  }
 
+  private Email buildTo(String toAddress) {
     if (!StringUtils.isEmpty(emailRedirectAddress)) {
-      to =  new Email(emailRedirectAddress);
+      return new Email(emailRedirectAddress);
+    }
+
+    return new Email(toAddress);
+  }
+
+  private String buildSubject(LocalizedEmailTemplate localizedEmailTemplate, StringSubstitutor stringSubstitutor) {
+    return stringSubstitutor.replace(localizedEmailTemplate.getSubject());
+  }
+
+  private String buildContent(LocalizedEmailTemplate localizedEmailTemplate,
+                              StringSubstitutor stringSubstitutor,
+                              String toAddress) {
+    String contentString = stringSubstitutor.replace(localizedEmailTemplate.getBody());
+    if (!StringUtils.isEmpty(emailRedirectAddress)) {
       contentString = "<p><i>Redirected from " + toAddress + "</i></p>" + contentString;
     }
 
-    Content content = new Content("text/html", contentString);
-    return new Mail(from, subject, to, content);
+    return contentString;
   }
 
 }

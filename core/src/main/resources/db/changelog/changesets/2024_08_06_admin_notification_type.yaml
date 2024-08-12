@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "admin_notification_type"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: notification
+            columns:
+              - column:
+                  name: notification_type
+                  type: "text"
+                  defaultValue: "PARTICIPANT"
+                  constraints:
+                    nullable: false

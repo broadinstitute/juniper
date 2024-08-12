@@ -30,6 +30,7 @@ import { HubUpdate } from 'hub/hubUpdates'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
 import { ReactQuestionFactory } from 'survey-react-ui'
+import mixpanel from 'mixpanel-browser'
 
 // register themed address validation type
 ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
@@ -97,6 +98,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         type: 'SUCCESS'
       }
     }
+    mixpanel.track('formCompleted', { form: form.stableId, source: 'surveyView' })
     navigate('/hub', { state: showHeaders ? hubUpdate : undefined })
   }
 
