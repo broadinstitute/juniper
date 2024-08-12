@@ -32,7 +32,6 @@ import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { EnvironmentName } from './types/study'
 import { Profile } from 'src/types/user'
-import { flattenObject } from './objectUtils'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -170,23 +169,13 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
     return []
   }
 
-  const flattenedData = flattenSurveyJsData(surveyJSModel.data)
 
-  return Object.entries(flattenedData)
+  return Object.entries(surveyJSModel.data)
     // don't make answers for the descriptive sections
     .filter(([key]) => {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, flattenedData, selectedLanguage))
-}
-
-// turns all nested objects into top-level keys so that the backend can save individual fields of complex
-// nested questions as their own answers, e.g. with matrix or dynamic panel questions.
-// all original data will be present, even in its unflattened form.
-export function flattenSurveyJsData(data: Record<string, SurveyJsValueType>): Record<string, SurveyJsValueType> {
-  // include original data; this is required because it keeps the
-  // original objects which surveyjs uses to render the survey
-  return { ...flattenObject(data) as Record<string, SurveyJsValueType>, ...data }
+    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
@@ -240,7 +229,7 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
   })
 
   return {
-    ...flattenSurveyJsData(model.data),
+    ...model.data,
     ...calculatedHash
   }
 }

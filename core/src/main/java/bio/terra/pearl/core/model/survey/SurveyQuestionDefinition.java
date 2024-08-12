@@ -27,4 +27,10 @@ public class SurveyQuestionDefinition extends BaseEntity {
     @Builder.Default
     private boolean required = false;
     private Integer exportOrder; // orders the questions on the export spreadsheet
+
+    // if parentStableId is specified, then this question's value is derived from
+    // the parent question's value by fetching parentValue[questionStableId], or,
+    // if the parent is repeatable, parentValue[repeatIndex][questionStableId]
+    private String parentStableId;
+    private Boolean repeatable;
 }

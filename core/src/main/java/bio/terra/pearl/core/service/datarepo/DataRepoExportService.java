@@ -224,12 +224,8 @@ public class DataRepoExportService {
         Set<TdrColumn> tdrColumns = new LinkedHashSet<>();
 
         try {
-            List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
-            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(
-                    studyEnvironmentId,
-                    moduleFormatters,
-                    null,
-                    exportOptions.getLimit());
+            List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId, List.of());
+            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(List.of(), moduleFormatters);
 
             TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);
 

@@ -50,31 +50,30 @@ public class SurveyParseUtils {
             return List.of();
         }
 
+        List<JsonNode> subQuestions = new ArrayList<>();
+
         if (parent.get("type").asText().equals("paneldynamic") && parent.has("templateElements")) {
-            return getPanelDynamicSubQuestions(parent);
+            subQuestions = getPanelDynamicSubQuestions(parent);
         }
-        return List.of();
+
+        // keep track of the parent stableid
+        subQuestions = subQuestions
+                .stream()
+                .map(q -> (JsonNode) q.deepCopy())
+                .map(q -> {
+                    ((ObjectNode) q).put("parent", parent.get("name").asText());
+                    return q;
+                })
+                .toList();
+        return subQuestions;
     }
 
     private static List<JsonNode> getPanelDynamicSubQuestions(JsonNode parent) {
         List<JsonNode> subQuestions = new ArrayList<>();
 
-        if (!parent.has("maxPanelCount")) {
-            throw new IllegalArgumentException("Cannot create dynamic panel without maxPanelCount field");
-        }
-        int maxPanels = parent.get("maxPanelCount").asInt();
-        for (int i = 0; i < maxPanels; i++) {
-            for (JsonNode subQuestion : parent.get("templateElements")) {
-
-                List<JsonNode> questions = getAllQuestions(subQuestion).stream().map(q -> (JsonNode) q.deepCopy()).toList();
-
-                // update the name of each question to include the panel index
-                for (JsonNode question : questions) {
-                    ((ObjectNode) question).put("name", parent.get("name").asText() + "[" + i + "]." + question.get("name").asText());
-                }
-
-                subQuestions.addAll(questions);
-            }
+        for (JsonNode subQuestion : parent.get("templateElements")) {
+            List<JsonNode> questions = getAllQuestions(subQuestion);
+            subQuestions.addAll(questions);
         }
         return subQuestions;
     }
@@ -92,7 +91,10 @@ public class SurveyParseUtils {
                 .surveyVersion(survey.getVersion())
                 .questionStableId(question.get("name").asText())
                 .exportOrder(globalOrder)
+                .parentStableId(question.has("parent") ? question.get("parent").asText() : null)
+                .repeatable(question.has("type") ? question.get("type").asText().equals("paneldynamic") : null)
                 .build();
+
         //The following fields may either be specified in the question itself,
         //or as part of a question template. Resolve the remaining fields against
         //the template (if applicable), so we have the full question definition.

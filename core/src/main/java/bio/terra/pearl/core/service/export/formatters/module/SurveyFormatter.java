@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,29 +31,105 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     public static String SPLIT_OPTION_UNSELECTED_VALUE = "0";
     private ObjectMapper objectMapper;
 
-    public SurveyFormatter(ExportOptions exportOptions, String stableId, List<Survey> surveys,
-                           List<SurveyQuestionDefinition> questionDefs, ObjectMapper objectMapper) {
+    public SurveyFormatter(ExportOptions exportOptions,
+                           String stableId,
+                           List<Survey> surveys,
+                           List<SurveyQuestionDefinition> questionDefs,
+                           List<EnrolleeExportData> data,
+                           ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         itemFormatters.add(new PropertyItemFormatter("lastUpdatedAt", SurveyResponse.class));
         itemFormatters.add(new PropertyItemFormatter("complete", SurveyResponse.class));
 
-        // group all the questions that share a stableId (i.e. different versions of the same question), and then sort them by
-        // the export order of the most recent version
-        Collection<List<SurveyQuestionDefinition>> questionDefsByStableId = questionDefs.stream().collect(groupingBy(
-                SurveyQuestionDefinition::getQuestionStableId
-        )).values().stream().sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder())).toList();
-        for (List<SurveyQuestionDefinition> questionVersions : questionDefsByStableId) {
-            if (List.of("signaturepad", "html").contains(questionVersions.get(0).getQuestionType())) {
-                continue;
-            }
-            itemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, questionVersions, objectMapper));
-        }
-
+        buildItemFormatters(exportOptions, questionDefs, data);
         // get the most recent survey by sorting in descending version order
         Survey latestSurvey = surveys.stream().sorted(Comparator.comparingInt(Survey::getVersion).reversed()).findFirst().get();
         displayName = latestSurvey.getName();
         moduleName = stableId;
     }
+
+    private void buildItemFormatters(
+            ExportOptions exportOptions,
+            List<SurveyQuestionDefinition> questionDefs,
+            List<EnrolleeExportData> data) {
+        // group all the questions that share a stableId (i.e. different versions of the same question), and then sort them by
+        // the export order of the most recent version
+        Collection<List<SurveyQuestionDefinition>> questionDefsByStableId = questionDefs.stream().collect(groupingBy(
+                SurveyQuestionDefinition::getQuestionStableId
+        )).values().stream().sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder())).toList();
+
+        for (List<SurveyQuestionDefinition> questionVersions : questionDefsByStableId) {
+            SurveyQuestionDefinition mostRecent = questionVersions.get(0);
+
+            if (List.of("signaturepad", "html").contains(mostRecent.getQuestionType())) {
+                continue;
+            }
+
+            if (StringUtils.isNotEmpty(mostRecent.getParentStableId())) {
+                // we'll handle these when we get to the parent question
+                continue;
+            }
+
+            itemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, questionVersions, objectMapper));
+
+            itemFormatters.addAll(buildChildrenItemFormatters(exportOptions, questionDefsByStableId, data, mostRecent));
+
+        }
+    }
+
+    private Collection<List<SurveyQuestionDefinition>> getChildrenOf(Collection<List<SurveyQuestionDefinition>> questionDefs, SurveyQuestionDefinition parent) {
+        return questionDefs.stream().filter(questionDef -> parent.getQuestionStableId().equals(questionDef.get(0).getParentStableId())).toList();
+    }
+
+    private List<ItemFormatter<SurveyResponse>> buildChildrenItemFormatters(
+            ExportOptions exportOptions,
+            Collection<List<SurveyQuestionDefinition>> questionDefs,
+            List<EnrolleeExportData> data,
+            SurveyQuestionDefinition parent) {
+
+        Collection<List<SurveyQuestionDefinition>> children = getChildrenOf(questionDefs, parent);
+        if (children.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (parent.getRepeatable()) {
+            return buildRepeatableChildrenItemFormatters(exportOptions, data, parent, children);
+        }
+
+        List<ItemFormatter<SurveyResponse>> childrenItemFormatters = new ArrayList<>();
+        for (List<SurveyQuestionDefinition> childVersions : children) {
+            childrenItemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, childVersions, objectMapper));
+        }
+        return childrenItemFormatters;
+    }
+
+    private List<ItemFormatter<SurveyResponse>> buildRepeatableChildrenItemFormatters(
+            ExportOptions exportOptions,
+            List<EnrolleeExportData> data,
+            SurveyQuestionDefinition parent,
+            Collection<List<SurveyQuestionDefinition>> children) {
+        int maxParentResponseLength = data
+                .stream()
+                .flatMap(enrolleeData -> enrolleeData.getAnswers().stream())
+                .filter(answer -> parent.getQuestionStableId().equals(answer.getQuestionStableId()))
+                .mapToInt(answer -> {
+                    try {
+                        return objectMapper.readTree(answer.getObjectValue()).size();
+                    } catch (JsonProcessingException e) {
+                        return 0;
+                    }
+                }).max().orElse(0);
+
+        List<ItemFormatter<SurveyResponse>> childrenItemFormatters = new ArrayList<>();
+        for (int repeat = 0; repeat < maxParentResponseLength; repeat++) {
+            for (List<SurveyQuestionDefinition> childVersions : children) {
+                childrenItemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, childVersions, objectMapper, repeat));
+            }
+        }
+
+        return childrenItemFormatters;
+    }
+
 
     @Override
     public String getColumnKey(ItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum) {
@@ -80,6 +157,9 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId());
             columnHeader = moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
+            if (Objects.nonNull(answerItemFormatter.getRepeatIndex())) {
+                columnHeader += "[" + answerItemFormatter.getRepeatIndex() + "]";
+            }
             if (isOtherDescription) {
                 columnHeader += OTHER_DESCRIPTION_KEY_SUFFIX;
             } else if (answerItemFormatter.isSplitOptionsIntoColumns() && choice != null) {
@@ -169,7 +249,15 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
 
     public void addAnswersToMap(AnswerItemFormatter itemFormatter,
                                 Map<String, List<Answer>> answerMap, Map<String, String> valueMap) {
-        List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableId());
+        String valueStableId = itemFormatter.getQuestionStableId();
+
+        // if the question is a child of another question, then we need to get the parent question's value
+        // so that the child answer can be extracted from it
+        if (itemFormatter.isChildQuestion()) {
+            valueStableId = itemFormatter.getParentStableId();
+        }
+
+        List<Answer> matchedAnswers = answerMap.get(valueStableId);
         if (matchedAnswers == null) {
             return;
         }
@@ -192,7 +280,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         } else {
             valueMap.put(
                     getColumnKey(itemFormatter, false, null, 1),
-                    valueAsString(answer, itemFormatter.getChoices(), itemFormatter.isStableIdsForOptions(), objectMapper)
+                    valueAsString(itemFormatter, answer, itemFormatter.getChoices(), itemFormatter.isStableIdsForOptions(), objectMapper)
             );
         }
         if (itemFormatter.isHasOtherDescription() && answer.getOtherDescription() != null) {
@@ -203,7 +291,36 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         }
     }
 
-    protected static String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
+    protected static String valueAsString(AnswerItemFormatter itemFormatter, Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
+        if (itemFormatter.isChildQuestion()) {
+            Integer repeatIndex = itemFormatter.getRepeatIndex();
+
+            try {
+                JsonNode answerNode = objectMapper.readTree(answer.valueAsString());
+                if (Objects.nonNull(repeatIndex)) {
+                    if (!answerNode.has(repeatIndex)) {
+                        return "";
+                    }
+                    answerNode = answerNode.get(repeatIndex);
+                }
+
+                if (!answerNode.has(itemFormatter.getQuestionStableId())) {
+                    return "";
+                }
+                answerNode = answerNode.get(itemFormatter.getQuestionStableId());
+
+                if (answerNode == null) {
+                    return "";
+                }
+
+                return formatStringValue(answerNode.asText(), choices, stableIdForOptions, answer);
+            } catch (Exception e) {
+                log.warn("Failed to parse parent answer for child question - enrollee: {}, question: {}, answer: {}",
+                        answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
+            }
+
+        }
+
         if (answer.getStringValue() != null) {
             return formatStringValue(answer.getStringValue(), choices, stableIdForOptions, answer);
         } else if (answer.getBooleanValue() != null) {
