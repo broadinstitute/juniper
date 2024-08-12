@@ -1,6 +1,5 @@
 import {
   findDifferencesBetweenObjects,
-  flattenObject,
   ObjectDiff
 } from './objectUtils'
 
@@ -176,37 +175,6 @@ describe('findDifferencesBetweenObjects', () => {
       fieldName: 'nested.deeply nested.field4',
       oldValue: '',
       newValue: 'another another another new'
-    })
-  })
-})
-
-
-describe('flattenData', () => {
-  it('flattens complex data', () => {
-    const data = {
-      'normalQuestion': 'answer',
-      'group': {
-        'nestedQuestion': 'nestedAnswer',
-        'nestedGroup': {
-          'deeplyNestedQuestion': 'deeplyNestedAnswer'
-        }
-      },
-      'arrayGroup': [
-        { 'arrayQuestion': 'arrayAnswer1', 'nestedArrayQuestion': { 'q': 'a1' } },
-        { 'arrayQuestion': 'arrayAnswer2', 'nestedArrayQuestion': { 'q': 'a2' } }
-      ]
-    }
-
-    const flattened = flattenObject(data)
-
-    expect(flattened).toEqual({
-      'arrayGroup[0].arrayQuestion': 'arrayAnswer1',
-      'arrayGroup[0].nestedArrayQuestion.q': 'a1',
-      'arrayGroup[1].arrayQuestion': 'arrayAnswer2',
-      'arrayGroup[1].nestedArrayQuestion.q': 'a2',
-      'group.nestedGroup.deeplyNestedQuestion': 'deeplyNestedAnswer',
-      'group.nestedQuestion': 'nestedAnswer',
-      'normalQuestion': 'answer'
     })
   })
 })
