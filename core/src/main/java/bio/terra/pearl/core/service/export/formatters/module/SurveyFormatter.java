@@ -113,12 +113,26 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
                 .flatMap(enrolleeData -> enrolleeData.getAnswers().stream())
                 .filter(answer -> parent.getQuestionStableId().equals(answer.getQuestionStableId()))
                 .mapToInt(answer -> {
+
+                    String value = StringUtils.isEmpty(answer.getStringValue()) ? answer.getObjectValue() : answer.getStringValue();
+                    if (StringUtils.isEmpty(value)) {
+                        return 0;
+                    }
+
                     try {
-                        return objectMapper.readTree(answer.getObjectValue()).size();
+                        return objectMapper.readTree(value).size();
                     } catch (JsonProcessingException e) {
                         return 0;
                     }
-                }).max().orElse(0);
+                })
+                .max()
+                .orElse(1);
+
+        if (maxParentResponseLength < 1) {
+            // always return one so that we can still introspect
+            // on the data even if no data exists
+            maxParentResponseLength = 1;
+        }
 
         List<ItemFormatter<SurveyResponse>> childrenItemFormatters = new ArrayList<>();
         for (int repeat = 0; repeat < maxParentResponseLength; repeat++) {

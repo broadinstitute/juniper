@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -96,7 +97,7 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         }
         boolean splitOptions = exportOptions.isSplitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
         this.repeatIndex = repeatIndex;
-        baseColumnKey = Objects.nonNull(repeatIndex) ? questionDef.getQuestionStableId() + "[" + repeatIndex + "]" : questionDef.getQuestionStableId();
+        baseColumnKey = buildBaseKey(questionDef.getQuestionStableId(), repeatIndex, questionDef.getParentStableId());
         questionStableId = questionDef.getQuestionStableId();
         stableIdsForOptions = exportOptions.isStableIdsForOptions();
         splitOptionsIntoColumns = splitOptions;
@@ -115,6 +116,18 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         parentStableId = questionDef.getParentStableId();
         versionMap = new HashMap<>();
         this.objectMapper = objectMapper;
+    }
+
+    private static String buildBaseKey(String questionStableId, Integer repeatIndex, String parentStableId) {
+        String key = questionStableId;
+        if (Objects.nonNull(repeatIndex)) {
+            key += "[" + repeatIndex + "]";
+        }
+        if (StringUtils.isNotEmpty(parentStableId)) {
+            key = parentStableId + "." + key;
+        }
+
+        return key;
     }
 
 

@@ -17,7 +17,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SurveyParseUtilsTests extends BaseSpringBootTest {
     @Autowired
@@ -135,53 +134,18 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         List<JsonNode> actual = SurveyParseUtils.getAllQuestions(questionNode);
 
-        Assertions.assertEquals(5, actual.size());
+        Assertions.assertEquals(3, actual.size());
 
         JsonNode panel = actual.get(0);
-        JsonNode firstName1 = actual.get(1);
-        JsonNode lastName1 = actual.get(2);
-        JsonNode firstName2 = actual.get(3);
-        JsonNode lastName2 = actual.get(4);
+        JsonNode firstName = actual.get(1);
+        JsonNode lastName = actual.get(2);
 
 
         Assertions.assertEquals("examplePanel", panel.get("name").asText());
-        Assertions.assertEquals("examplePanel[0].firstName", firstName1.get("name").asText());
-        Assertions.assertEquals("examplePanel[0].lastName", lastName1.get("name").asText());
-        Assertions.assertEquals("examplePanel[1].firstName", firstName2.get("name").asText());
-        Assertions.assertEquals("examplePanel[1].lastName", lastName2.get("name").asText());
+        Assertions.assertEquals("firstName", firstName.get("name").asText());
+        Assertions.assertEquals("lastName", lastName.get("name").asText());
     }
 
-    @Test
-    public void testDynamicPanelWithoutMaxPanelCount() throws JsonProcessingException {
-        String dynamicPanel = """
-                {
-                    "name": "examplePanel",
-                    "type": "paneldynamic",
-                    "title": "First name",
-                    "templateElements": [
-                        {
-                            "name": "firstName",
-                            "type": "text",
-                            "title": "First name",
-                            "isRequired": true
-                        },
-                        {
-                            "name": "lastName",
-                            "type": "text",
-                            "title": "Last name",
-                            "isRequired": true
-                        }
-                    ]
-                }
-                """;
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode questionNode = mapper.readTree(dynamicPanel);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            SurveyParseUtils.getAllQuestions(questionNode);
-        });
-    }
 
     @Test
     public void testResolvingQuestionTemplate() throws JsonProcessingException {
