@@ -27,7 +27,7 @@ runs:
     - name: Setup JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'adopt'
         cache: 'gradle'
     - name: Construct Docker Image Name and Tag
@@ -42,10 +42,10 @@ runs:
         # this value will always be the same so specifying directly
         workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
         service_account: ${{ inputs.publish-service-account }}
-    
+
     - name: Setup gcloud
       uses: google-github-actions/setup-gcloud@v1
-    
+
     - name: Explicitly Auth Docker For GCR
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.image-repo }} --quiet
@@ -56,13 +56,13 @@ runs:
         ./gradlew --build-cache ${{ inputs.gradle-build-args }} \
         --image=${{ steps.image-name.outputs.name }} \
         -Djib.console=plain
-    
+
     - name: Run Trivy Vulnerability Scan
       uses: broadinstitute/dsp-appsec-trivy-action@v1
       with:
         image: ${{ steps.image-name.outputs.name }}
-    
+
     - name: Push Image
       shell: bash
       run: docker push ${{ steps.image-name.outputs.name }}
-    
+
