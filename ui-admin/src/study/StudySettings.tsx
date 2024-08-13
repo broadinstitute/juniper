@@ -178,26 +178,24 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       {!isLoading && 'Save study config'}
     </Button>
 
-    { user?.superuser &&
-        <div>
-          <h4 className="h5 mt-4">{studyEnvContext.study.name} kit type configuration</h4>
-          <label className="form-label mb-0">
-            kit types
-          </label>
-          <div style={{ width: 300 }}>
-            <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes} isClearable={false}
-              isDisabled={studyEnvContext.currentEnv.environmentName !== 'sandbox'}
-              onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
-            />
-          </div>
-          {studyEnvContext.currentEnv.environmentName === 'sandbox' &&
-              <Button onClick={saveKitTypes}
-                variant="primary" disabled={isLoading}
-                tooltip={'Save'}>
-                {isLoading && <LoadingSpinner/>}
-                {!isLoading && 'Save kit types'}
-              </Button>}
-        </div>
-    }
+    <div>
+      <h4 className="h5 mt-4">{studyEnvContext.study.name} kit type configuration</h4>
+      <label className="form-label mb-0">
+        kit types
+      </label>
+      <div style={{ width: 300 }}>
+        <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes} isClearable={false}
+          isDisabled={studyEnvContext.currentEnv.environmentName !== 'sandbox'}
+          onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
+        />
+      </div>
+      {studyEnvContext.currentEnv.environmentName === 'sandbox' &&
+          <Button onClick={saveKitTypes}
+            variant="primary" disabled={isLoading}
+            tooltip={'Save'}>
+            {isLoading && <LoadingSpinner/>}
+            {!isLoading && 'Save kit types'}
+          </Button>}
+    </div>
   </form>
 }
