@@ -1,5 +1,7 @@
 import argparse
+import csv
 import os.path
+from copy import deepcopy
 from typing import Any, Union
 
 from openpyxl import load_workbook
@@ -77,40 +79,102 @@ def ensure_files_exist(files: list[Union[str, None]]):
 
 class DataDefinition:
     stable_id = None
-    survey_stable_id = None
     data_type = None
+    question_type = None
     format = None  # e.g., if date
     option_values = None  # list of values, no label
 
     num_repeats = None
     subquestions = None  # list of composite subquestions
 
+    def __init__(self,
+                 stable_id: str,
+                 data_type: str,
+                 question_type: str,
+                 format: str | None = None,
+                 option_values: list[str] | None = None,
+                 num_repeats: int | None = None,
+                 subquestions: list[Any] | None = None):
+        self.stable_id = stable_id
+        self.data_type = data_type
+        self.question_type = question_type
+        self.format = format
+        self.option_values = option_values
 
-def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
+        self.num_repeats = num_repeats
+        self.subquestions = subquestions
+
+
+def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
     dsm_data_dict = load_workbook(filename=filepath)
 
     # steps:
     # - iterate through leftmost (A) column; if column above is empty, then it's the start of a new survey
     #   - skip first survey line: it's just header
-    #   - import question
-    #      - if type is empty, and C (question type) is composite,
-    #        remove sub-questions and put them into data definition
-    #      - otherwise, A = question name B = type E = choices
+    #   - import questions until blank line
 
-    return []
+    row_idx = 0
+    num_blanks = 0
+    out: list[DataDefinition] = []
+    current_survey = ""
+    while True:
+        name_col = str(dsm_data_dict['A' + str(row_idx)].value or '')
+        if name_col is None or name_col == '':
+            if num_blanks == 0:
+                # survey is done
+                current_survey = ""
+            num_blanks += 1
+            if num_blanks > 3:
+                break
+            row_idx += 1
+            continue
+
+        if num_blanks != 0:
+            current_survey = name_col
+            # skip header
+            row_idx += 2
+            continue
+
+        stable_id = name_col
+        survey_stable_id = current_survey
+        data_type = str(dsm_data_dict['B' + str(row_idx)].value or '')
+        question_type = str(dsm_data_dict['C' + str(row_idx)].value or '')
+
+        options = str(dsm_data_dict['E' + str(row_idx)].value or '')
+
+        option_values = None
+        if options != '':
+            option_texts = options.split('\n')
+            option_values = [option.split(' ')[0] for option in option_texts]
+
+        question: DataDefinition = DataDefinition(
+            stable_id, survey_stable_id, data_type, question_type, option_values=option_values
+        )
+        out.append(question)
+
+        # todo: handle subquestions of composite/dynamic panels,
+        #       possibly in outer juniper/pepper specific function
+
+        num_blanks = 0
+
+    return out
+
+
+def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
+    # todo: add DSM-specific parsing logic after simple_parse_data_dict
+
+    # todo: if question has [[]] around it, it's a composite/multi question
+    #       - group subquestions together by looking at what questions
+    #         start with the parent's stableid
+    #       - if the data dict description doesn't have "May have up to <?> responses", then it's not actually
+    #         a dynamicpanel question on the juniper side - we can just treat them like regular questions
+
+    return simple_parse_data_dict(filepath)
 
 
 def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
-
-    # steps:
-    # - iterate through leftmost (A) column; if column above is empty, then it's the start of a new survey
-    #   - skip first survey line: it's just header
-    #   - import question
-    #      - if type is empty, and C (question type) is composite,
-    #        remove sub-questions and put them into data definition
-    #      - otherwise, A = question name B = type E = choices
-
-    return []
+    # todo: add Juniper-specific parsing logic after simple_parse_data_dict
+    return simple_parse_data_dict(filepath)
 
 
 class TranslationOverride:
@@ -126,6 +190,20 @@ class Translation:
     dsm_question_definition = None
     juniper_question_definition = None
 
+    translation_override = None  #handles overrides of default behavior
+
+    def __init__(self, dsm_question_definition: DataDefinition, juniper_question_definition: DataDefinition,
+                 translation_override: TranslationOverride | None = None):
+        self.dsm_question_definition = dsm_question_definition
+        self.juniper_question_definition = juniper_question_definition
+        self.translation_override = translation_override
+
+
+default_translation_overrides = [
+    # todo: email
+    # todo: username
+    # todo: profile info (name)
+]
 
 def create_translations(
         dsm_questions: list[DataDefinition],
@@ -136,33 +214,120 @@ def create_translations(
     # - profile.email -> profile.contactEmail
     # - profile.email -> account.username
 
-    return [], [], []
+    leftover_dsm_questions = deepcopy(dsm_questions)
+    leftover_juniper_questions = deepcopy(juniper_questions)
+
+    translations = []
+
+    for override in translation_overrides + default_translation_overrides:
+        dsm_question = next((q for q in dsm_questions if q.stable_id == override.dsm_stable_id), None)
+        juniper_question = next((q for q in juniper_questions if q.stable_id == override.juniper_stable_id), None)
+
+        if dsm_question is not None and juniper_question is not None:
+            translations.append(Translation(dsm_question, juniper_question, override))
+            if dsm_question in leftover_dsm_questions:
+                leftover_dsm_questions.remove(dsm_question)
+            if juniper_question in leftover_juniper_questions:
+                leftover_juniper_questions.remove(juniper_question)
+        else:
+            print('Error parsing translation override: ')
+            if dsm_question is None:
+                print('DSM question with stable ID ' + override.dsm_stable_id + ' not found')
+            if juniper_question is None:
+                print('Juniper question with stable ID ' + override.juniper_stable_id + ' not found')
+            exit(1)
+
+    # if not found in overrides, try to match by stable ID
+    for dsm_question in leftover_dsm_questions:
+        for juniper_question in leftover_juniper_questions:
+            if dsm_question.stable_id == juniper_question.stable_id:
+                translations.append(Translation(dsm_question, juniper_question))
+                # todo: if there is a composite question, make sure subquestions match
+                leftover_dsm_questions.remove(dsm_question)
+                leftover_juniper_questions.remove(juniper_question)
+                break
+
+    return leftover_dsm_questions, leftover_juniper_questions, translations
 
 
 def validate_leftover_questions(
         leftover_dsm_questions: list[DataDefinition],
         leftover_juniper_questions: list[DataDefinition]
 ):
-    # todo: print out every leftover question
+    if len(leftover_dsm_questions) == 0 and len(leftover_juniper_questions) == 0:
+        return
 
-    if len(leftover_juniper_questions) > 0 or len(leftover_dsm_questions) > 0:
-        # todo: print out possible solutions
+    print('There are questions that could not be matched:')
 
-        confirmation = input('Is this OK? (y/n): ')
-        if not confirmation.lower().startswith('y'):
-            exit(1)
+    if len(leftover_dsm_questions) > 0:
+        print('DSM questions:')
+        for dsm_question in leftover_dsm_questions:
+            print('\t' + dsm_question.stable_id)
+
+    if len(leftover_juniper_questions) > 0:
+        print('Juniper questions:')
+        for juniper_question in leftover_juniper_questions:
+            print('\t:' + juniper_question.stable_id)
+
+    print('If any of these questions need to be imported '
+          'from DSM to Juniper, please add them to the '
+          'translation override file.')
+
+    confirmation = input('Is this OK? (y/n): ')
+    if not confirmation.lower().startswith('y'):
+        exit(1)
 
 
 def parse_dsm_data(filepath: str) -> list[dict[str, Any]]:
+
+    raw_data = []
+    with open(filepath, 'r') as f:
+        # pepper exports as tsv
+        for row in csv.reader(f, delimiter="\t", quotechar='"'):
+            raw_data.append(row)
+
+    header = raw_data[0]
+
+    data: list[dict[str, Any]] = []
+
+    # start at 2 because row 0 contains headers and 1 contains labels
+    for row in raw_data[2:]:
+        new_row = {}
+        for i, value in enumerate(row):
+            new_row[header[i]] = value
+        data.append(new_row)
+
     return []
 
 
 def apply_translations(data: list[dict[str, Any]], translations: list[Translation]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+
+    for row in data:
+        new_row = {}
+        for translation in translations:
+            apply_translation(row, new_row, translation)
+
+        out.append(new_row)
     return []
 
 
+def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
+    # todo: convert DSM multiselect (multi-answer) to Juniper multiselect (single json answer)
+    # todo: convert DSM composite question (multi-answer) to Juniper dynamic panel (single json answer)
+
+    juniper_stable_id = translation.juniper_question_definition.stable_id
+    dsm_stable_id = translation.dsm_question_definition.stable_id
+
+    juniper_data[juniper_stable_id] = dsm_data[dsm_stable_id]
+
+
 def write_data(outfile: str, data: list[dict[str, Any]]):
-    pass
+    with open(outfile, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(data[0].keys())
+        for row in data:
+            writer.writerow(row.values())
 
 
 if __name__ == '__main__':
