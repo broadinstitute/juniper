@@ -20,12 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 public class BaseStatusService {
   /** cached status */
   private final AtomicReference<SystemStatus> cachedStatus;
+
   /** configuration parameters */
   private final StatusCheckConfiguration configuration;
+
   /** set of status methods to check */
   private final ConcurrentHashMap<String, Supplier<SystemStatusSystems>> statusCheckMap;
+
   /** scheduler */
   private final ScheduledExecutorService scheduler;
+
   /** last time cache was updated */
   private final AtomicReference<Instant> lastStatusUpdate;
 

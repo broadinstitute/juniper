@@ -10,16 +10,22 @@ plugins {
 apply from: 'generators.gradle'
 apply from: 'publishing.gradle'
 sourceCompatibility = '21'
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 
 dependencies {
-    implementation 'bio.terra:terra-common-lib:1.1.17-20240716.185355-1'
+    implementation 'bio.terra:terra-common-lib:0.1.10-SNAPSHOT'
     implementation project(':core')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'org.springframework.boot:spring-boot-starter:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.1.2'
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.2'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
@@ -28,7 +34,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.sendgrid:sendgrid-java:4.0.1'
     implementation 'org.liquibase:liquibase-core:4.21.1'
-    implementation 'com.diffplug.spotless:spotless-plugin-gradle:6.25.0'
     implementation 'com.auth0:java-jwt:4.2.2'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -38,7 +43,7 @@ dependencies {
             'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation('org.springframework.boot:spring-boot-starter-test:3.1.2') {
+    testImplementation('org.springframework.boot:spring-boot-starter-test:3.3.2') {
         // Fixes warning about multiple occurrences of JSONObject on the classpath
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
@@ -46,6 +51,7 @@ dependencies {
     testImplementation 'commons-io:commons-io:2.13.0'
     // See https://stackoverflow.com/questions/5644011/multi-project-test-dependencies-with-gradle/60138176#60138176
     testImplementation(testFixtures(project(":core")))
+    testImplementation 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.41.0'
 }
 
 task copyWebApp(type: Copy) {
@@ -75,11 +81,4 @@ jibDockerBuild.dependsOn('createUnfingerprintedAssets')
 
 test {
     useJUnitPlatform ()
-}
-
-spotless {
-    java {
-        palantirJavaFormat("2.38.0")
-        removeUnusedImports()
-    }
 }
