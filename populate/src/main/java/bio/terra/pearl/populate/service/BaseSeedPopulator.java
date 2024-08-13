@@ -70,6 +70,10 @@ public class BaseSeedPopulator {
         rolePopulator.populateList(new FilePopulateContext("iam/roles.json"), false);
     }
 
+    public void populateKitTypes() {
+        kitTypePopulator.populateList(new FilePopulateContext("kits/kitTypes.json"), false);
+    }
+
     /** This class is NOT persisted, despite extending BaseEntity */
     @Getter
     @Setter

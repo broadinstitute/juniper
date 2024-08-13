@@ -2,7 +2,7 @@ import React from 'react'
 import { StudyEnvironmentChange } from 'api/api'
 import {
   ConfigChangeListView,
-  ConfigChanges, renderNotificationConfig,
+  ConfigChanges, renderKitType, renderNotificationConfig,
   renderStudyEnvironmentSurvey,
   VersionChangeView
 } from './diffComponents'
@@ -32,12 +32,12 @@ const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedC
       <h3 className="h6">
         PreEnroll survey</h3>
       <label className="d-flex ms-4">
-        { studyEnvChange.preEnrollSurveyChanges.changed &&
-          <input type="checkbox" className="me-3" checked={selectedChanges.preEnrollSurveyChanges.changed}
-            onChange={e => setSelectedChanges({
-              ...selectedChanges,
-              preEnrollSurveyChanges: e.target.checked ? studyEnvChange.preEnrollSurveyChanges : { changed: false }
-            })}/> }
+        {studyEnvChange.preEnrollSurveyChanges.changed &&
+            <input type="checkbox" className="me-3" checked={selectedChanges.preEnrollSurveyChanges.changed}
+              onChange={e => setSelectedChanges({
+                ...selectedChanges,
+                preEnrollSurveyChanges: e.target.checked ? studyEnvChange.preEnrollSurveyChanges : { changed: false }
+              })}/>}
         <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
       </label>
     </div>
@@ -59,6 +59,16 @@ const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedC
           setSelectedChanges={triggerChanges =>
             setSelectedChanges({ ...selectedChanges, triggerChanges })}
           renderItemSummary={renderNotificationConfig}/>
+      </div>
+    </div>
+    <div className="my-1">
+      <h3 className="h6">Kit Types</h3>
+      <div className="ms-4">
+        <ConfigChangeListView configChangeList={studyEnvChange.kitTypeChanges}
+          selectedChanges={selectedChanges.kitTypeChanges}
+          setSelectedChanges={kitTypeChanges =>
+            setSelectedChanges({ ...selectedChanges, kitTypeChanges })}
+          renderItemSummary={renderKitType}/>
       </div>
     </div>
   </div>

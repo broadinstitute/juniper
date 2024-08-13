@@ -1,85 +1,50 @@
 package bio.terra.pearl.api.admin.service.study;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
+import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
-import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.admin.AdminUserFactory;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
-import org.junit.jupiter.api.Assertions;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.SandboxOnly;
+import bio.terra.pearl.core.model.kit.KitType;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
   @Autowired private StudyEnvironmentExtService studyEnvironmentExtService;
-  @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
-  @Autowired private AdminUserFactory adminUserFactory;
-  @Autowired private StudyEnvironmentConfigService studyEnvironmentConfigService;
 
   @Test
-  @Transactional
-  public void updateChecksSandbox(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-
-    Assertions.assertThrows(
-        UnsupportedOperationException.class,
-        () -> {
-          studyEnvironmentExtService.update(
-              PortalStudyEnvAuthContext.of(
-                  operator,
-                  studyEnvBundle.getPortal().getShortcode(),
-                  studyEnvBundle.getStudy().getShortcode(),
-                  EnvironmentName.irb),
-              new StudyEnvironment());
-        });
+  public void assertAllMethods() {
+    AuthTestUtils.assertAllMethodsAnnotated(
+        studyEnvironmentExtService,
+        Map.of(
+            "update",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class)),
+            "updateConfig", AuthAnnotationSpec.withPortalStudyEnvPerm("study_settings_edit"),
+            "updateKitTypes",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "study_settings_edit", List.of(SandboxOnly.class)),
+            "getKitTypes",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON),
+            "getAllowedKitTypes",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON),
+            "getStats", AuthAnnotationSpec.withPortalStudyEnvPerm(AuthUtilService.BASE_PERMISSON)));
   }
 
   @Test
-  @Transactional
-  public void updateConfigAuthsToStudy(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
-    Assertions.assertThrows(
-        NotFoundException.class,
-        () -> {
-          studyEnvironmentExtService.updateConfig(
-              operator,
-              studyEnvBundle.getPortal().getShortcode(),
-              studyEnvBundle.getStudy().getShortcode(),
-              EnvironmentName.irb,
-              new StudyEnvironmentConfig());
-        });
-  }
+  public void testInvalidKitTypeErrors() {
+    List<String> updatedKitTypes = List.of("KitType1", "InvalidKitType");
+    List<KitType> allowedKitTypes =
+        List.of(
+            KitType.builder().name("KitType1").build(), KitType.builder().name("KitType2").build());
 
-  @Test
-  @Transactional
-  public void updateConfigAllowsSuperuser(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-    AdminUser superUser = adminUserFactory.buildPersisted(getTestName(info), true);
-    studyEnvironmentExtService.updateConfig(
-        superUser,
-        studyEnvBundle.getPortal().getShortcode(),
-        studyEnvBundle.getStudy().getShortcode(),
-        EnvironmentName.irb,
-        StudyEnvironmentConfig.builder().password("test456").build());
-
-    StudyEnvironmentConfig updatedConfig =
-        studyEnvironmentConfigService
-            .find(studyEnvBundle.getStudyEnv().getStudyEnvironmentConfigId())
-            .get();
-    assertThat(updatedConfig.getPassword(), equalTo("test456"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> studyEnvironmentExtService.validateKitTypes(updatedKitTypes, allowedKitTypes),
+        "Invalid kit type");
   }
 }

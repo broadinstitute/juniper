@@ -1,0 +1,17 @@
+[
+  {
+    "name": "SALIVA",
+    "displayName": "Saliva",
+    "description": "Saliva sample collection kit"
+  },
+  {
+    "name": "BLOOD",
+    "displayName": "Blood",
+    "description": "Blood sample collection kit"
+  },
+  {
+    "name": "STOOL",
+    "displayName": "Stool",
+    "description": "Stool sample collection kit"
+  }
+]

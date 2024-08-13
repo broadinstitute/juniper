@@ -223,6 +223,7 @@ export type StudyEnvironmentChange = {
   preEnrollSurveyChanges: VersionedEntityChange
   surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
+  kitTypeChanges: ListChange<KitType, VersionedConfigChange>
 }
 
 export type VersionedEntityChange = {
@@ -980,6 +981,22 @@ export default {
 
   async fetchKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/kitTypes`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateKitTypes(studyEnvParams: StudyEnvParams, kitTypes: string[]): Promise<string> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/kitTypes`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitTypes)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchAllowedKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/allowedKitTypes`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
