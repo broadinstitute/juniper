@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: "portal_change_record_fields"
-      author: dbush
+      id: "add_parent_to_question_def"
+      author: connorlbark
       changes:
         - addColumn:
             tableName: survey_question_definition

@@ -132,14 +132,14 @@ public class SurveyParseUtils {
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */
-    public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition, List<SurveyQuestionDefinition> defs) {
+    public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition, List<SurveyQuestionDefinition> allDefsInSurvey) {
         /** we don't care about the stableIds for html questions, since those aren't answered and aren't included in data exports */
         if (!List.of("html").contains(surveyQuestionDefinition.getQuestionType())) {
             validateQuestionStableId(surveyQuestionDefinition.getQuestionStableId());
         }
 
         if (surveyQuestionDefinition.getParentStableId() != null) {
-            SurveyQuestionDefinition parent = defs.stream()
+            SurveyQuestionDefinition parent = allDefsInSurvey.stream()
                     .filter(d -> d.getQuestionStableId().equals(surveyQuestionDefinition.getParentStableId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Parent question not found: " + surveyQuestionDefinition.getParentStableId()));

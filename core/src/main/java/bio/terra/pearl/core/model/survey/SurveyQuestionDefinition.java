@@ -28,9 +28,11 @@ public class SurveyQuestionDefinition extends BaseEntity {
     private boolean required = false;
     private Integer exportOrder; // orders the questions on the export spreadsheet
 
-    // if parentStableId is specified, then this question's value is derived from
+    // if parentStableId is specified, then this question will not have an answer
+    // object associated with it. instead, question's value is derived from
     // the parent question's value by fetching parentValue[questionStableId], or,
-    // if the parent is repeatable, parentValue[repeatIndex][questionStableId]
+    // if the parent is repeatable, parentValue[repeatIndex][questionStableId].
+    // child questions cannot be nested or there will be unpredictable behavior.
     private String parentStableId;
     private Boolean repeatable;
 }
