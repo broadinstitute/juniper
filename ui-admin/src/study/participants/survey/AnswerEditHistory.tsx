@@ -1,5 +1,5 @@
 import { CalculatedValue, Question } from 'survey-core'
-import { Answer, instantToDefaultString } from '@juniper/ui-core'
+import { Answer, instantToDefaultString, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { DataChangeRecord } from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,10 +12,12 @@ import { sortBy } from 'lodash'
 /**
  * Renders a dropdown with the edit history for a question response
  */
-export const AnswerEditHistory = ({ question, answer, editHistory }: {
-    question: Question | CalculatedValue, answer: Answer, editHistory: DataChangeRecord[]
+export const AnswerEditHistory = ({ question, answer, editHistory, supportedLanguages }: {
+    question: Question | CalculatedValue, answer: Answer,
+  editHistory: DataChangeRecord[], supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
   const { users } = useAdminUserContext()
+  const answerLanguage = supportedLanguages?.find(lang => lang.languageCode === answer?.viewedLanguage)
 
   return <>
     <div
@@ -35,6 +37,9 @@ export const AnswerEditHistory = ({ question, answer, editHistory }: {
       </div>
     </div>
     <div className="dropdown-menu" aria-labelledby="viewHistory">
+      {answerLanguage && <span className="ms-2 text-muted fst-italic float-end me-3" style={{ fontSize: '0.75em' }}>
+          answered in {answerLanguage.languageName}
+      </span>}
       {editHistory.map((changeRecord, index) =>
         <div key={index} className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
           <FontAwesomeIcon icon={faPencil} className="me-2"/>
