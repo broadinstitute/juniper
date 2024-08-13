@@ -28,8 +28,10 @@ public class EnrolleePopDto extends Enrollee implements TimeShiftable {
      * useful for fine-grained control of tasks and status, the former more useful for quick and accurate synthetic
      * participant creation.
      * */
+    @Builder.Default
     private boolean simulateSubmissions = false;
     /** if true, the enrollee will be withdrawn via the withdrawEnrollee method in WithdrawnEnrolleeService after creation */
+    @Builder.Default
     private boolean withdrawn = false;
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
     @Builder.Default

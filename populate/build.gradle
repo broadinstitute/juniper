@@ -1,12 +1,12 @@
 plugins {
-    id "io.freefair.lombok" version "5.3.3.3"
+    id "io.freefair.lombok" version "8.7.1"
     id 'java'
     id 'jacoco'
 }
 
 group = 'bio.terra.pearl.core'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '21'
 
 repositories {
     mavenCentral()
