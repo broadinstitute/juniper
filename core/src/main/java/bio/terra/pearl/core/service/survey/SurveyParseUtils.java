@@ -94,7 +94,7 @@ public class SurveyParseUtils {
                 .questionStableId(question.get("name").asText())
                 .exportOrder(globalOrder)
                 .parentStableId(question.has("parent") ? question.get("parent").asText() : null)
-                .repeatable(question.has("type") ? question.get("type").asText().equals("paneldynamic") : null)
+                .repeatable(question.has("type") && question.get("type").asText().equals("paneldynamic"))
                 .build();
 
         //The following fields may either be specified in the question itself,
@@ -148,6 +148,7 @@ public class SurveyParseUtils {
                 throw new IllegalArgumentException("Deeply nested questions are not supported: " + surveyQuestionDefinition.getQuestionStableId());
             }
         }
+
     }
     public static void validateQuestionStableId(String questionStableId) {
         if (questionStableId == null || questionStableId.isBlank()) {

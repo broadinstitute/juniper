@@ -34,5 +34,8 @@ public class SurveyQuestionDefinition extends BaseEntity {
     // if the parent is repeatable, parentValue[repeatIndex][questionStableId].
     // child questions cannot be nested or there will be unpredictable behavior.
     private String parentStableId;
-    private Boolean repeatable;
+
+    // subquestions are repeatable
+    @Builder.Default
+    private boolean repeatable = false;
 }

@@ -1,5 +1,9 @@
 package bio.terra.pearl.core.service.export.formatters;
 
+import bio.terra.pearl.core.service.export.DataValueExportType;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -12,11 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import bio.terra.pearl.core.service.export.DataValueExportType;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class ExportFormatUtils {
@@ -109,6 +108,10 @@ public class ExportFormatUtils {
             return Boolean.valueOf(exportString);
         }
         return exportString;
+    }
+
+    public static String formatIndex(int index) {
+        return String.format("[%d]", index);
     }
 
 }

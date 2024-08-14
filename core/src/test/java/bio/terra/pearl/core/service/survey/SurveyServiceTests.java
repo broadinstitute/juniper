@@ -486,7 +486,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         SurveyQuestionDefinition dynamicPanel = questionDefinitions.stream().filter(q -> q.getQuestionStableId().equals("oh_oh_languages")).findFirst().get();
         assertThat(dynamicPanel.getQuestionStableId(), equalTo("oh_oh_languages"));
         assertThat(dynamicPanel.getQuestionType(), equalTo("paneldynamic"));
-        assertThat(dynamicPanel.getRepeatable(), equalTo(true));
+        assertThat(dynamicPanel.isRepeatable(), equalTo(true));
 
         SurveyQuestionDefinition language = questionDefinitions.stream().filter(q -> q.getQuestionStableId().equals("language")).findFirst().get();
 

@@ -15,5 +15,5 @@ databaseChangeLog:
                   name: repeatable
                   type: "boolean"
                   constraints:
-                      nullable: true
+                    nullable: false
                   defaultValueBoolean: false

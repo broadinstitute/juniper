@@ -92,7 +92,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             return Collections.emptyList();
         }
 
-        if (parent.getRepeatable()) {
+        if (parent.isRepeatable()) {
             return buildRepeatableChildrenItemFormatters(exportOptions, data, parent, children);
         }
 
@@ -171,10 +171,10 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId());
             if (Objects.nonNull(answerItemFormatter.getParentStableId())) {
-                cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getParentStableId()) + "." + cleanStableId;
+                cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getParentStableId()) + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
             }
             if (Objects.nonNull(answerItemFormatter.getRepeatIndex())) {
-                cleanStableId += "[" + answerItemFormatter.getRepeatIndex() + "]";
+                cleanStableId += ExportFormatUtils.formatIndex(answerItemFormatter.getRepeatIndex());
             }
 
             columnHeader = moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;

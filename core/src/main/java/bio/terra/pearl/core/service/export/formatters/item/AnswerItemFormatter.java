@@ -120,10 +120,10 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
     private static String buildBaseKey(String questionStableId, Integer repeatIndex, String parentStableId) {
         String key = questionStableId;
         if (Objects.nonNull(repeatIndex)) {
-            key += "[" + repeatIndex + "]";
+            key += ExportFormatUtils.formatIndex(repeatIndex);
         }
         if (StringUtils.isNotEmpty(parentStableId)) {
-            key = parentStableId + "." + key;
+            key = parentStableId + ExportFormatUtils.COLUMN_NAME_DELIMITER + key;
         }
 
         return key;

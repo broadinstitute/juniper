@@ -227,11 +227,6 @@ export type HtmlQuestion = BaseQuestion & {
   html: I18nSurveyElement
 }
 
-export type PanelDynamicQuestion = TitledQuestion & {
-  type: 'paneldynamic',
-  templateElements: FormElement[]
-}
-
 export type Question =
   | CheckboxQuestion
   | DropdownQuestion
@@ -241,7 +236,6 @@ export type Question =
   | TemplatedQuestion
   | TextQuestion
   | HtmlQuestion
-  | PanelDynamicQuestion
 
 export type InteractiveQuestion = Exclude<Question, HtmlQuestion>
 
