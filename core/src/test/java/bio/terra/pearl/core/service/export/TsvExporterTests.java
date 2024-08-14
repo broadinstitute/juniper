@@ -2,26 +2,24 @@ package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class TsvExporterTests extends BaseSpringBootTest {
     @Autowired
@@ -61,7 +59,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
                 .questionText("Question 1")
                 .questionType("text")
                 .build();
-        SurveyFormatter sampleFormatter = new SurveyFormatter(new ExportOptions(), "survey1", List.of(survey), List.of(questionDef), objectMapper);
+        SurveyFormatter sampleFormatter = new SurveyFormatter(new ExportOptions(), "survey1", List.of(survey), List.of(questionDef), List.of(), objectMapper);
         Map<String, String> valueMap = Map.of("survey1.tabTrailing\t", "blah");
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
         // header and subheader should be quoted
@@ -71,7 +69,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
     @Test
     public void testSplitColumnsExport() throws Exception {
         ExportOptions opts = ExportOptions.builder().splitOptionsIntoColumns(true).build();
-        SurveyFormatter surveyFormatter = new SurveyFormatter(opts, "survey", List.of(Survey.builder().stableId("survey").build()), List.of(), objectMapper);
+        SurveyFormatter surveyFormatter = new SurveyFormatter(opts, "survey", List.of(Survey.builder().stableId("survey").build()), List.of(), List.of(), objectMapper);
         // replace the formatters with a simple set we control
         surveyFormatter.getItemFormatters().clear();
         surveyFormatter.getItemFormatters().add(

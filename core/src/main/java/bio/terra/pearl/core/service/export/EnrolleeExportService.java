@@ -81,14 +81,22 @@ public class EnrolleeExportService {
      * The enrollees will be returned most-recently-created first
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
-        List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
-        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.getFilter(), exportOptions.getLimit());
+
+        List<EnrolleeExportData> enrolleeExportData = loadEnrolleeExportData(studyEnvironmentId, exportOptions);
+
+        List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId, enrolleeExportData);
+        List<Map<String, String>> enrolleeMaps = generateExportMaps(enrolleeExportData, moduleFormatters);
         BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
         exporter.export(os);
     }
 
-    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId, List<ModuleFormatter> moduleFormatters, EnrolleeSearchExpression filter, Integer limit) {
+    public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptions exportOptions) {
+        return loadEnrolleesForExport(
+                studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId),
+                loadEnrollees(studyEnvironmentId, exportOptions.getFilter(), exportOptions.getLimit()));
+    }
 
+    private List<Enrollee> loadEnrollees(UUID studyEnvironmentId, EnrolleeSearchExpression filter, Integer limit) {
         List<EnrolleeSearchExpressionResult> results =
                 enrolleeSearchExpressionDao.executeSearch(
                         filter,
@@ -98,20 +106,15 @@ public class EnrolleeExportService {
         if (limit != null && !results.isEmpty()) {
             results = results.subList(0, Math.min(results.size(), limit));
         }
-        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId);
 
-        return generateExportMaps(
-                studyEnvironmentConfig,
-                results.stream()
-                        .map(EnrolleeSearchExpressionResult::getEnrollee)
-                        .toList(),
-                moduleFormatters);
+        return results.stream()
+                .map(EnrolleeSearchExpressionResult::getEnrollee)
+                .toList();
+
     }
 
-    public List<Map<String, String>> generateExportMaps(StudyEnvironmentConfig config,
-                                                        List<Enrollee> enrollees,
+    public List<Map<String, String>> generateExportMaps(List<EnrolleeExportData> enrolleeExportData,
                                                         List<ModuleFormatter> moduleFormatters) {
-        List<EnrolleeExportData> enrolleeExportData = loadAllEnrolleesForExport(config, enrollees);
 
         List<Map<String, String>> exportMaps = new ArrayList<>();
         for (EnrolleeExportData exportData : enrolleeExportData) {
@@ -133,7 +136,7 @@ public class EnrolleeExportService {
      * gets information about the modules, which will determine the columns needed for the export
      * e.g. the columns needed to represent the survey questions.
      */
-    public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId)  {
+    public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
         List<ModuleFormatter> moduleFormatters = new ArrayList<>();
         moduleFormatters.add(new EnrolleeFormatter(exportOptions));
         moduleFormatters.add(new ParticipantUserFormatter(exportOptions));
@@ -141,7 +144,7 @@ public class EnrolleeExportService {
         moduleFormatters.add(new KitRequestFormatter());
         moduleFormatters.add(new EnrolleeRelationFormatter());
         moduleFormatters.add(new FamilyFormatter());
-        moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
+        moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId, enrolleeExportData));
         return moduleFormatters;
     }
 
@@ -151,7 +154,7 @@ public class EnrolleeExportService {
      * returns a ModuleExportInfo for each unique survey stableId that has ever been attached to the studyEnvironment
      * If multiple versions of a survey have been attached, those will be consolidated into a single ModuleExportInfo
      */
-    protected List<SurveyFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) {
+    protected List<SurveyFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
         // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
         List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
         Map<String, List<StudyEnvironmentSurvey>> configuredSurveysByStableId = configuredSurveys.stream().collect(
@@ -170,14 +173,20 @@ public class EnrolleeExportService {
         for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
             List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
             List<SurveyQuestionDefinition> surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
-            moduleFormatters.add(new SurveyFormatter(exportOptions, surveysOfStableId.getKey(), surveys, surveyQuestionDefinitions, objectMapper));
+            moduleFormatters.add(new SurveyFormatter(
+                    exportOptions,
+                    surveysOfStableId.getKey(),
+                    surveys,
+                    surveyQuestionDefinitions,
+                    enrolleeExportData,
+                    objectMapper));
         }
 
         return moduleFormatters;
     }
 
-    protected List<EnrolleeExportData> loadAllEnrolleesForExport(StudyEnvironmentConfig config,
-                                                                 List<Enrollee> enrollees) {
+    protected List<EnrolleeExportData> loadEnrolleesForExport(StudyEnvironmentConfig config,
+                                                              List<Enrollee> enrollees) {
 
 
         // for now, load each enrollee individually.  Later we'll want more sophisticated batching strategies

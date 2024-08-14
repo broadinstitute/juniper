@@ -134,9 +134,12 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
             SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i,false);
-            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+                    questionTemplates, i, false);
             questionDefinitions.add(questionDefinition);
+        }
+
+        for (SurveyQuestionDefinition questionDefinition : questionDefinitions) {
+            SurveyParseUtils.validateQuestionDefinition(questionDefinition, questionDefinitions);
         }
 
         // add any questions from calculatedValues
@@ -174,7 +177,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
                     .findFirst().orElse(questionDefinitions.size() - 1);
             questionDefinitions.add(upstreamIndex + 1,
                     SurveyParseUtils.unmarshalSurveyQuestion(survey, derivedQuestion,
-                            Map.of(), upstreamIndex + 1,true));
+                            Map.of(), upstreamIndex + 1, true));
         }
         // reassign the export orders
         IntStream.range(0, questionDefinitions.size()).forEach(i -> {

@@ -1,10 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters.item;
 
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.AnswerType;
-import bio.terra.pearl.core.model.survey.QuestionChoice;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.export.BaseExporter;
 import bio.terra.pearl.core.service.export.DataValueExportType;
 import bio.terra.pearl.core.service.export.ExportOptions;
@@ -17,16 +13,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuperBuilder
 @Getter
 public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
+    private ObjectMapper objectMapper;
+
     private String questionStableId;
     private String questionType;
     private String questionText;
@@ -38,6 +33,12 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
     private boolean hasOtherDescription = false;
     @Builder.Default
     private List<QuestionChoice> choices = null;
+
+    @Builder.Default
+    private boolean isChildQuestion = false;
+    private String parentStableId;
+    private Integer repeatIndex;
+
     /**
      * for survey questions, we need to have a map of past versions so we can look up values of stableIds that may
      * no longer be supported, and also to produce a full data dictionary
@@ -50,22 +51,41 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
      * specifying export column(s) information.  This ItemExportInfo will have child ItemExportInfos for each
      * version of the question, so that the exporter can map answers to choices from all versions of the question
      */
-    public AnswerItemFormatter(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions, ObjectMapper objectMapper) {
+    public AnswerItemFormatter(
+            ExportOptions exportOptions,
+            String moduleName,
+            List<SurveyQuestionDefinition> questionVersions,
+            ObjectMapper objectMapper,
+            Integer repeatIndex) {
         this(exportOptions,
                 moduleName,
                 questionVersions.stream()
                         .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed())
                         .findFirst().orElseThrow(() -> new IllegalArgumentException("Empty list of question versions")),
-                objectMapper);
+                objectMapper,
+                repeatIndex);
         for (SurveyQuestionDefinition questionDef : questionVersions) {
-            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, objectMapper));
+            this.getVersionMap().put(questionDef.getSurveyVersion(), new AnswerItemFormatter(exportOptions, moduleName, questionDef, objectMapper, repeatIndex));
         }
+    }
+
+    public AnswerItemFormatter(
+            ExportOptions exportOptions,
+            String moduleName,
+            List<SurveyQuestionDefinition> questionVersions,
+            ObjectMapper objectMapper) {
+        this(exportOptions, moduleName, questionVersions, objectMapper, null);
     }
 
     /**
      * takes a single version of a question and returns an ItemExportInfo specifying export column(s) info
      */
-    public AnswerItemFormatter(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef, ObjectMapper objectMapper) {
+    public AnswerItemFormatter(
+            ExportOptions exportOptions,
+            String moduleName,
+            SurveyQuestionDefinition questionDef,
+            ObjectMapper objectMapper,
+            Integer repeatIndex) {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
             try {
@@ -75,7 +95,8 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
             }
         }
         boolean splitOptions = exportOptions.isSplitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
-        baseColumnKey = questionDef.getQuestionStableId();
+        this.repeatIndex = repeatIndex;
+        baseColumnKey = buildBaseKey(questionDef.getQuestionStableId(), repeatIndex, questionDef.getParentStableId());
         questionStableId = questionDef.getQuestionStableId();
         stableIdsForOptions = exportOptions.isStableIdsForOptions();
         splitOptionsIntoColumns = splitOptions;
@@ -90,8 +111,24 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
         questionType = questionDef.getQuestionType();
         questionText = questionDef.getQuestionText();
         hasOtherDescription = questionDef.isAllowOtherDescription();
+        isChildQuestion = questionDef.getParentStableId() != null;
+        parentStableId = questionDef.getParentStableId();
         versionMap = new HashMap<>();
+        this.objectMapper = objectMapper;
     }
+
+    private static String buildBaseKey(String questionStableId, Integer repeatIndex, String parentStableId) {
+        String key = questionStableId;
+        if (Objects.nonNull(repeatIndex)) {
+            key += ExportFormatUtils.formatIndex(repeatIndex);
+        }
+        if (StringUtils.isNotEmpty(parentStableId)) {
+            key = parentStableId + ExportFormatUtils.COLUMN_NAME_DELIMITER + key;
+        }
+
+        return key;
+    }
+
 
     @Override
     public void applyToEveryColumn(BaseExporter.ColumnProcessor columnProcessor, ModuleFormatter moduleFormatter, int moduleRepeatNum) {

@@ -1,12 +1,14 @@
 package bio.terra.pearl.core.util;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -17,7 +19,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 public class SurveyParseUtilsTests extends BaseSpringBootTest {
-    @Autowired ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    SurveyFactory surveyFactory;
 
     @Test
     public void testUnmarshalQuestionChoices() throws JsonProcessingException {
@@ -47,7 +52,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
-               [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
+                [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
         Assertions.assertEquals(expected, actual);
     }
@@ -100,6 +105,48 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void testGetDynamicPanelElements() throws JsonProcessingException {
+        String dynamicPanel = """
+                {
+                    "name": "examplePanel",
+                    "type": "paneldynamic",
+                    "title": "First name",
+                    "maxPanelCount": 2,
+                    "templateElements": [
+                        {
+                            "name": "firstName",
+                            "type": "text",
+                            "title": "First name",
+                            "isRequired": true
+                        },
+                        {
+                            "name": "lastName",
+                            "type": "text",
+                            "title": "Last name",
+                            "isRequired": true
+                        }
+                    ]
+                }
+                """;
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(dynamicPanel);
+
+        List<JsonNode> actual = SurveyParseUtils.getAllQuestions(questionNode);
+
+        Assertions.assertEquals(3, actual.size());
+
+        JsonNode panel = actual.get(0);
+        JsonNode firstName = actual.get(1);
+        JsonNode lastName = actual.get(2);
+
+
+        Assertions.assertEquals("examplePanel", panel.get("name").asText());
+        Assertions.assertEquals("firstName", firstName.get("name").asText());
+        Assertions.assertEquals("lastName", lastName.get("name").asText());
+    }
+
+    @Test
     public void testResolvingQuestionTemplate() throws JsonProcessingException {
         String questionWithChoices = """
                 {
@@ -130,6 +177,41 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
                 [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testParseQuestionChoicesTranslated(TestInfo info) throws JsonProcessingException {
+        String questionWithChoices = """
+                {
+                  "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
+                  "type": "radiogroup",
+                  "title": "Have you had any of the following treatments?",
+                  "choices": [
+                    {
+                      "text": "Cardiac stent placement",
+                      "value": "cardiacStentPlacement"
+                    },
+                    {
+                      "text": {"en": "Cardiac bypass surgery", "es": "Cirugía de bypass cardíaco"},
+                      "value": "cardiacBypassSurgery"
+                    },
+                    {
+                      "text": "None of these",
+                      "value": "noneOfThese"
+                    }
+                  ]
+                }""";
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChoices);
+
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String expected = """
+                [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]
+                """;
+
+        Assertions.assertEquals(expected.strip(), actual.strip());
     }
 
     @Test

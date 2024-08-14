@@ -3,7 +3,9 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -35,6 +37,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -64,6 +67,10 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private StudyEnvironmentService studyEnvironmentService;
     @Autowired
     private EnrolleeRelationService enrolleeRelationService;
+    @Autowired
+    private AnswerFactory answerFactory;
+    @Autowired
+    private SurveyResponseFactory surveyResponseFactory;
 
     @Test
     @Transactional
@@ -73,8 +80,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
-        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
-        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, 2);
+
+        ExportOptions opts = ExportOptions.builder().limit(2).build();
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), opts);
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(opts, studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
 
         assertThat(exportMaps, hasSize(2));
         // confirm enrollees are in reverse order of creation
@@ -90,6 +101,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnrolleeFactory.EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
         List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
                         .builder()
                         .filter(null) // no filter means proxies will be included
@@ -97,9 +110,10 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                         .fileFormat(ExportFileFormat.TSV)
                         .limit(null)
                         .build(),
-                studyEnv.getId());
+                studyEnv.getId(),
+                exportData);
 
-        List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoWithProxies, null, null);
+        List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(exportData, exportModuleInfoWithProxies);
         assertThat(exportMapsWithProxies, hasSize(3));
 
         assertThat(exportMapsWithProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
@@ -111,14 +125,16 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(exportMapsWithProxies.get(2).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.proxy().getShortcode()));
         assertThat(exportMapsWithProxies.get(2).get("enrollee.subject"), equalTo("false"));
 
-        List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
 
-        List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(
+        List<EnrolleeExportData> exportDataNoProxies = enrolleeExportService.loadEnrolleeExportData(
                 studyEnv.getId(),
-                exportModuleInfoNoProxies,
-                // this rule is constructed in the frontend by default
-                enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"),
-                null);
+                ExportOptions
+                        .builder()
+                        .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
+                        .build());
+        List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportDataNoProxies);
+        List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(exportDataNoProxies, exportModuleInfoNoProxies);
+
         assertThat(exportMapsNoProxies, hasSize(2));
 
         assertThat(exportMapsNoProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
@@ -138,8 +154,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         enrolleeFactory.buildProxyAndGovernedEnrollee(testName, portalEnv, studyEnv);
 
-        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
-        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, null);
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
 
         // no family or relation data should be exported because the study env config has neither enabled
         assertThat(exportMaps, hasSize(2));
@@ -153,8 +170,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .acceptingProxyEnrollment(true)
                 .build());
 
-        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
-        exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, null);
+        exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
 
         // should export relation but not family data
         assertThat(exportMaps, hasSize(2));
@@ -196,8 +214,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 getAuditInfo(testInfo)
         );
 
-        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId);
-        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnvId, exportModuleInfo, null, null);
+        List<EnrolleeExportData> data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptions());
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId, data);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(data, exportModuleInfo);
 
         // no family or relation data should be exported because the study env config has neither enabled
         assertThat(exportMaps, hasSize(2));
@@ -212,8 +231,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .enableFamilyLinkage(true)
                 .build());
 
-        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId);
-        exportMaps = enrolleeExportService.generateExportMaps(studyEnvId, exportModuleInfo, null, null);
+        data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptions());
+        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId, data);
+        exportMaps = enrolleeExportService.generateExportMaps(data, exportModuleInfo);
 
         // should export family and relation data
         assertThat(exportMaps, hasSize(2));
@@ -274,7 +294,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                         .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        List<SurveyFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+
+        List<SurveyFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId(), List.of());
+
         assertThat(moduleFormatters, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = moduleFormatters.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
@@ -350,7 +372,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                         .build());
         surveyFactory.attachToEnv(survey2, studyEnv.getId(), true);
 
-        List<SurveyFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<SurveyFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId(), List.of());
         assertThat(exportModuleInfo, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
@@ -361,4 +383,233 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                         .map(itemFormatter -> ((AnswerItemFormatter) itemFormatter).getQuestionStableId()).toList(),
                 hasItems("hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable", "hd_hd_socialHealth_neighborhoodNoisy"));
     }
+
+
+    private final String DYNAMIC_PANEL_EXCERPT = """
+            {
+              "pages": [
+                  {
+                    "elements": [             
+                      {
+                        "name": "examplePanel",
+                        "type": "paneldynamic",
+                        "title": "Names of people in your family",
+                        "templateElements": [
+                            {
+                                "name": "firstName",
+                                "type": "text",
+                                "title": "First name",
+                                "isRequired": true
+                            },
+                            {
+                                "name": "lastName",
+                                "type": "text",
+                                "title": "Last name",
+                                "isRequired": true
+                            }
+                        ]
+                      }   
+                    ]
+                  }
+                 ]
+               }
+            """;
+
+    private final String DYNAMIC_PANEL_EXCERPT_NO_LASTNAME = """
+            {
+              "pages": [
+                  {
+                    "elements": [             
+                      {
+                        "name": "examplePanel",
+                        "type": "paneldynamic",
+                        "title": "Names of people in your family",
+                        "templateElements": [
+                            {
+                                "name": "firstName",
+                                "type": "text",
+                                "title": "First name",
+                                "isRequired": true
+                            }
+                        ]
+                      }   
+                    ]
+                  }
+                 ]
+               }
+            """;
+
+    @Test
+    @Transactional
+    public void testDynamicPanelExport(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        // 4 responses
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+        // 2 responses
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        // make sure it doesn't blow up if no survey response / no answers
+        Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+        enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        surveyResponseFactory.buildWithAnswers(
+                enrollee1,
+                survey,
+                Map.of(
+                        "examplePanel", """
+                                    [{"firstName":"John","lastName":"Doe"},
+                                     {"firstName":"Jane","lastName":"Doe"},
+                                     {"firstName":"Jim","lastName":"Doe"},
+                                     {"firstName":"Jill","lastName":"Doe"}]
+                                """
+                )
+        );
+        surveyResponseFactory.buildWithAnswers(
+                enrollee2,
+                survey,
+                Map.of(
+                        "examplePanel", """
+                                    [{"firstName":"Jonas","lastName":"Salk"},
+                                     {"firstName":"Peter","lastName":"Salk"}]
+                                """
+                )
+        );
+        surveyResponseFactory.buildWithAnswers(
+                enrollee3,
+                survey,
+                Map.of()
+        );
+
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
+
+
+        assertThat(exportMaps, hasSize(4));
+
+        Map<String, String> enrollee1Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee1.getShortcode())).findFirst().get();
+        Map<String, String> enrollee2Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
+
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.firstName[0]"), equalTo("John"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.lastName[0]"), equalTo("Doe"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.firstName[1]"), equalTo("Jane"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.lastName[1]"), equalTo("Doe"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.firstName[2]"), equalTo("Jim"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.lastName[2]"), equalTo("Doe"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.firstName[3]"), equalTo("Jill"));
+        assertThat(enrollee1Map.get("examplesurvey.examplePanel.lastName[3]"), equalTo("Doe"));
+
+        assertThat(enrollee2Map.get("examplesurvey.examplePanel.firstName[0]"), equalTo("Jonas"));
+        assertThat(enrollee2Map.get("examplesurvey.examplePanel.lastName[0]"), equalTo("Salk"));
+        assertThat(enrollee2Map.get("examplesurvey.examplePanel.firstName[1]"), equalTo("Peter"));
+        assertThat(enrollee2Map.get("examplesurvey.examplePanel.lastName[1]"), equalTo("Salk"));
+    }
+
+
+    @Test
+    @Transactional
+    public void testDynamicPanelExportNoResponses(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
+
+        BaseExporter exporter = enrolleeExportService.getExporter(ExportFileFormat.CSV, moduleFormatters, exportMaps);
+        List<String> columnKeys = exporter.getColumnKeys();
+        List<String> columnHeaders = exporter.getHeaderRow();
+
+        assertTrue(columnKeys.contains("examplesurvey.examplePanel.firstName[0]"));
+        assertTrue(columnKeys.contains("examplesurvey.examplePanel.lastName[0]"));
+
+        assertTrue(columnHeaders.contains("examplesurvey.examplePanel.firstName[0]"));
+    }
+
+    @Test
+    @Transactional
+    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Survey surveyV1 = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(surveyV1, studyEnv.getId(), false);
+
+        Survey surveyV2 = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(DYNAMIC_PANEL_EXCERPT_NO_LASTNAME)
+                        .name("Dynamic Panel Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
+
+        surveyFactory.attachToEnv(surveyV2, studyEnv.getId(), true);
+
+        Enrollee enrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        // enrollee responded to old version of the survey
+        surveyResponseFactory.buildWithAnswers(
+                enrollee,
+                surveyV1,
+                Map.of(
+                        "examplePanel", """
+                                    [{"firstName":"John","lastName":"Doe"},
+                                     {"firstName":"Jane","lastName":"Doe"},
+                                     {"firstName":"Jim","lastName":"Doe"},
+                                     {"firstName":"Jill","lastName":"Doe"}]
+                                """
+                )
+        );
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
+
+
+        assertThat(exportMaps, hasSize(1));
+
+        Map<String, String> enrolleeMap = exportMaps.get(0);
+
+        // should still export survey responses for the old version of the survey
+        assertThat(enrolleeMap.get("examplesurvey.examplePanel.firstName[0]"), equalTo("John"));
+        assertThat(enrolleeMap.get("examplesurvey.examplePanel.lastName[0]"), equalTo("Doe"));
+
+
+    }
+
 }
