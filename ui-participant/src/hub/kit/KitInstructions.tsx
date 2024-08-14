@@ -43,7 +43,8 @@ export function KitInstructions() {
                     and provide you with a sample collection kit.
                   </div>
                   <div className="d-flex flex-column align-items-center">
-                    <QRCode value={activeEnrollee?.shortcode} size={200} className={'pb-3'}/>
+                    <QRCode value={activeEnrollee?.shortcode} size={200}
+                      className={'pb-3'} aria-label={'eligibility-qr'}/>
                   </div></> :
                   <span className="text-danger">
                     No enrollee found. Please contact a member of the study team.

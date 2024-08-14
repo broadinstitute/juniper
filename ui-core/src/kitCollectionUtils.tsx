@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleCheck, faCircleDot, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faCircleCheck, faCircleDot, faCircleExclamation, faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
 export type KitReturnType = 'IN_PERSON' | 'RETURN_LABEL'
@@ -13,5 +13,7 @@ export const stepStatusToIcon = (status: StepStatus) => {
       return <FontAwesomeIcon className="text-muted me-1" icon={faCircleDot}/>
     case 'ERROR':
       return <FontAwesomeIcon className="text-danger me-1" icon={faCircleExclamation}/>
+    default:
+      return <FontAwesomeIcon className="text-danger me-1" icon={faCircleQuestion}/>
   }
 }
