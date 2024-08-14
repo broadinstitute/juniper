@@ -355,18 +355,36 @@ public class ActivityImporter {
                 .flatMap(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child).stream())
                 .collect(Collectors.toList());
 
+        SurveyJSPanel panel;
+        if (pepperQuestionDef.isAllowMultiple()) {
+            // construct as surveyjs panel dynamic section
+            panel = SurveyJSPanel
+                    .builder()
+                    .name(pepperQuestionDef.getStableId())
+                    .type("paneldynamic")
+                    .title(getQuestionTxt(pepperQuestionDef))
+                    .templateElements(subQuestions)
+                    .panelAddText(addButtonTemplate)
+                    .templateTitle(additionalItemTemplate)
+                    .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                    .build();
+        } else {
+            subQuestions = subQuestions.stream().map(node -> {
+                ObjectNode nodeObj = (ObjectNode) node;
+                nodeObj.put("name", pepperQuestionDef.getStableId() + "_" + node.get("name").asText());
+                return nodeObj;
+            }).collect(Collectors.toList());
 
-        // construct as surveyjs panel dynamic section
-        SurveyJSPanel panel = SurveyJSPanel
-                .builder()
-                .name(pepperQuestionDef.getStableId())
-                .type("paneldynamic")
-                .title(getQuestionTxt(pepperQuestionDef))
-                .templateElements(subQuestions)
-                .panelAddText(addButtonTemplate)
-                .templateTitle(additionalItemTemplate)
-                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
-                .build();
+            panel = SurveyJSPanel
+                    .builder()
+                    .name(pepperQuestionDef.getStableId())
+                    .title(getQuestionTxt(pepperQuestionDef))
+                    .elements(subQuestions)
+                    .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                    .build();
+        }
+
+
         return objectMapper.valueToTree(panel);
     }
 
