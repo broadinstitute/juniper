@@ -8,10 +8,10 @@ export function KitInstructions() {
   const { ppUser, enrollees } = useActiveUser()
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
   const isConsented = activeEnrollee?.consented
-  //TODO: JN-1259, replace with an actual kit identifier
-  const kitId = '74fceed84fe3494fbb2b9976b13d815e'
   const [selectedReturnType, setSelectedReturnType] = useState<KitReturnType>()
+  //TODO: JN-1259, replace with an actual kit
   const activeKit = undefined
+  const kitId = '74fceed84fe3494fbb2b9976b13d815e'
 
   return <div
     className="hub-dashboard-background flex-grow-1"

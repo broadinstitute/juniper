@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleDot, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
-export type KitStatus = 'SENT' | 'RECEIVED'
 export type KitReturnType = 'IN_PERSON' | 'RETURN_LABEL'
 export type StepStatus = 'COMPLETE' | 'INCOMPLETE' | 'ERROR'
 
