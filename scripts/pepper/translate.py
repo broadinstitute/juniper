@@ -51,7 +51,9 @@ def main():
         translations
     ) = create_translations(dsm_questions, juniper_questions, translation_overrides)
 
+    print('# all dsm questions')
     print(len(dsm_questions))
+    print('# unmatched dsm')
     print(len(leftover_dsm_questions))
 
     for t in translations:
@@ -285,8 +287,10 @@ def create_translations(
     # - profile.email -> profile.contactEmail
     # - profile.email -> account.username
 
-    leftover_dsm_questions = deepcopy(dsm_questions)
-    leftover_juniper_questions = deepcopy(juniper_questions)
+    dsm_questions = deepcopy(dsm_questions)
+    juniper_questions = deepcopy(juniper_questions)
+
+    unmatched_dsm_questions = []
 
     translations = []
 
@@ -296,10 +300,11 @@ def create_translations(
 
         if dsm_question is not None and juniper_question is not None:
             translations.append(Translation(dsm_question, juniper_question, override))
-            if dsm_question in leftover_dsm_questions:
-                leftover_dsm_questions.remove(dsm_question)
-            if juniper_question in leftover_juniper_questions:
-                leftover_juniper_questions.remove(juniper_question)
+            # remove from lists; we don't need to match these anymore
+            if dsm_question in dsm_questions:
+                dsm_questions.remove(dsm_question)
+            if juniper_question in juniper_questions:
+                juniper_questions.remove(juniper_question)
         else:
             print('Error parsing translation override: ')
             if dsm_question is None:
@@ -309,24 +314,21 @@ def create_translations(
             exit(1)
 
     # if not found in overrides, try to match by stable ID
-    for dsm_question in leftover_dsm_questions:
-        for juniper_question in leftover_juniper_questions:
-            if is_matched(juniper_question, dsm_question):
-                translations.append(Translation(dsm_question, juniper_question))
-                # todo: if there is a composite question, make sure subquestions match
-                leftover_dsm_questions.remove(dsm_question)
-                leftover_juniper_questions.remove(juniper_question)
-                break
+    while len(dsm_questions) > 0 and len(juniper_questions) > 0:
+        dsm_question = dsm_questions.pop(0)
+        matched_juniper_question = next((q for q in juniper_questions if is_matched(dsm_question, q)), None)
 
-    return leftover_dsm_questions, leftover_juniper_questions, translations
+        if matched_juniper_question is not None:
+            translations.append(Translation(dsm_question, matched_juniper_question))
+            juniper_questions.remove(matched_juniper_question)
+        else:
+            unmatched_dsm_questions.append(dsm_question)
+
+    return unmatched_dsm_questions, juniper_questions, translations
 
 
 def is_matched(q1: DataDefinition, q2: DataDefinition) -> bool:
-    split_q1 = q1.stable_id.split('.')
-    split_q2 = q2.stable_id.split('.')
-
-    # remove the survey prefix
-    return '_'.join(split_q1[1:]) == '_'.join(split_q2[1:])
+    return q1.stable_id.replace('.', '_').strip() == q2.stable_id.replace('.', '_').strip()
 
 
 def validate_leftover_questions(
