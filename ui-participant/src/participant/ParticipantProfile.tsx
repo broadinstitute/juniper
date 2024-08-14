@@ -29,7 +29,6 @@ import {
   useParams
 } from 'react-router-dom'
 import { useUser } from '../providers/UserProvider'
-import QRCode from 'react-qr-code'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -114,7 +113,6 @@ export function ParticipantProfile() {
   >
 
     <div className="row mx-0 justify-content-center py-4">
-      <QRCode value="OHSALK" />
       <div className="col-12 col-sm-10 col-lg-6">
         {
           hasProxiedUsers &&
