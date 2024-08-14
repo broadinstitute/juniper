@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { StepStatus, stepStatusToIcon } from 'src/kitCollectionUtils'
+import { StepStatus, stepStatusToIcon } from '../../kitCollectionUtils'
 
 export const KitCollectionStep = ({ title, status, children, disabled }: {
     title: string, status: StepStatus, children: ReactNode, disabled?: boolean
