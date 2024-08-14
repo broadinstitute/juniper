@@ -1,7 +1,6 @@
 import React, { ReactNode, useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { Button } from 'components/forms/Button'
-import { IDetectedBarcode, IScannerProps, Scanner } from '@yudiel/react-qr-scanner'
 import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { dateToDefaultString, Enrollee } from '@juniper/ui-core'
@@ -11,6 +10,7 @@ import { faCircleCheck, faCircleDot, faCircleExclamation } from '@fortawesome/fr
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import { useUser } from 'user/UserProvider'
+import { IDetectedBarcode, IScannerProps, Scanner } from '@yudiel/react-qr-scanner'
 
 
 export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {

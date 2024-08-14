@@ -7,7 +7,7 @@ import SurveyView from './survey/SurveyView'
 import { ParticipantProfile } from 'participant/ParticipantProfile'
 import PrintSurveyView from './survey/PrintSurveyView'
 import ManageProfiles from '../participant/ManageProfiles'
-import { KitInstructions } from '../participant/KitInstructions'
+import { KitInstructions } from './kit/KitInstructions'
 
 /** Handles url pathing for hub routes (a.k.a participant is signed in) */
 export default function HubRouter() {
