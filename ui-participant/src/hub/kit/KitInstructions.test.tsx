@@ -5,11 +5,15 @@ import { asMockedFn, setupRouterTest } from '@juniper/ui-core'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'
 import { mockEnrollee } from 'test-utils/test-participant-factory'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
 
 jest.mock('providers/ActiveUserProvider')
+jest.mock('providers/PortalProvider')
 
 describe('KitInstructions', () => {
   it('renders kit instructions for a consented enrollee', async () => {
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
     asMockedFn(useActiveUser).mockReturnValue({
       ...mockUseActiveUser(),
       enrollees: [{
@@ -32,6 +36,7 @@ describe('KitInstructions', () => {
   })
 
   it('renders Consent Required message if enrollee has not consented', () => {
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
     asMockedFn(useActiveUser).mockReturnValue({
       ...mockUseActiveUser(),
       enrollees: [{

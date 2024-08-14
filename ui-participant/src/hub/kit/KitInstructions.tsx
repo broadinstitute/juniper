@@ -2,16 +2,22 @@ import React, { lazy, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { KitCollectionStep, KitReturnType } from '@juniper/ui-core'
+import { usePortalEnv } from 'providers/PortalProvider'
 const QRCode = lazy(() => import('react-qr-code'))
+
+//TODO: JN-1294, implement i18n for this entire component
 
 export function KitInstructions() {
   const { ppUser, enrollees } = useActiveUser()
+  const { portalEnv } = usePortalEnv()
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
   const isConsented = activeEnrollee?.consented
   const [selectedReturnType, setSelectedReturnType] = useState<KitReturnType>()
   //TODO: JN-1259, replace with an actual kit
   const activeKit = undefined
-  const kitId = '74fceed84fe3494fbb2b9976b13d815e'
+  const kitId = undefined
+
+  const studySupportEmail = portalEnv.portalEnvironmentConfig.emailSourceAddress
 
   return <div
     className="hub-dashboard-background flex-grow-1"
@@ -30,7 +36,7 @@ export function KitInstructions() {
               </div>
               <div className="pb-3">
                 If you have any questions, please ask a member of the
-                study team or email <a href="mailto:info@ourhealthstudy.org">info@ourhealthstudy.org</a>
+                study team or email <a href={`mailto:${studySupportEmail}`}>{studySupportEmail}</a>
               </div>
             </div>
 
