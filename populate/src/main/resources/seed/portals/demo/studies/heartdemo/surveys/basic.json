@@ -1550,6 +1550,44 @@
                 "value": "urdu"
               }
             ]
+          },
+          {
+            "type" : "paneldynamic",
+            "name" : "hd_hd_basic_languages",
+            "title" : {
+              "en": "Please specify the language(s) you speak at home.",
+              "es": "Por favor especifica el/los idioma(s) que hablas en casa.",
+              "dev": "DEV_Please specify the language(s) you speak at home."
+            },
+            "maxPanelCount": 5,
+            "templateElements": [
+              {
+                "type": "text",
+                "name": "language",
+                "title": {
+                  "en": "Language",
+                  "es": "Idioma",
+                  "dev": "DEV_Language"
+                },
+                "isRequired": true
+              },
+              {
+                "type": "dropdown",
+                "name": "proficiency",
+                "title": {
+                  "en": "Proficiency",
+                  "es": "Dominio",
+                  "dev": "DEV_Proficiency"
+                },
+                "isRequired": true,
+                "choices": [
+                  {"value": "native", "text": {"en": "Native", "es": "Nativo", "dev": "DEV_Native"}},
+                  {"value": "fluent", "text": {"en": "Fluent", "es": "Fluido", "dev": "DEV_Fluent"}},
+                  {"value": "proficient", "text": {"en": "Proficient", "es": "Competente", "dev": "DEV_Proficient"}},
+                  {"value": "basic", "text": {"en": "Basic", "es": "Básico", "dev": "DEV_Basic"}}
+                ]
+              }
+            ]
           }
         ]
       },{

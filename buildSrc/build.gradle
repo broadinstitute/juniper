@@ -10,12 +10,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.diffplug.spotless:spotless-plugin-gradle:6.11.0'
+    implementation 'com.diffplug.spotless:spotless-plugin-gradle:6.25.0'
     implementation 'com.felipefzdz.gradle.shellcheck:shellcheck:1.4.6'
     implementation 'com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin:3.3.0'
     implementation 'com.srcclr.gradle:com.srcclr.gradle.gradle.plugin:3.1.12'
     implementation 'de.undercouch.download:de.undercouch.download.gradle.plugin:5.2.0'
-    implementation 'com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.12'
+    implementation 'com.github.spotbugs.snom:spotbugs-gradle-plugin:6.0.20'
     implementation 'io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:1.0.15.RELEASE'
     implementation 'org.hidetake.swagger.generator:org.hidetake.swagger.generator.gradle.plugin:2.19.2'
     implementation 'org.sonarqube:org.sonarqube.gradle.plugin:4.2.1.3168'

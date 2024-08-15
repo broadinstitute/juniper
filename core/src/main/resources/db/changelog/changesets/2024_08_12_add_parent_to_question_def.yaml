@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_parent_to_question_def"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: survey_question_definition
+            columns:
+              - column:
+                  name: parent_stable_id
+                  type: "text"
+                  constraints:
+                    nullable: true
+              - column:
+                  name: repeatable
+                  type: "boolean"
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false

@@ -1,3 +1,4 @@
+
 plugins {
     id 'idea'
     id 'jacoco'
@@ -86,8 +87,8 @@ compileJava {
 
 // Spotbugs configuration
 spotbugs {
-    reportLevel = 'high'
-    effort = 'max'
+    reportLevel = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
+    effort = com.github.spotbugs.snom.Effort.MAX
 }
 spotbugsMain {
     reports {
@@ -105,3 +106,6 @@ jacocoTestReport {
         xml.required = true
     }
 }
+
+// See https://github.com/spotbugs/spotbugs-gradle-plugin/issues/1197
+ext['commons-lang3.version']='3.13.0'

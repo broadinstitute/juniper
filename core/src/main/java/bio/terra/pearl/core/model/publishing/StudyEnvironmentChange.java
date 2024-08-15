@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.model.publishing;
 
+import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -19,4 +21,5 @@ public class StudyEnvironmentChange {
     VersionedEntityChange<Survey> preEnrollSurveyChanges;
     ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges;
     ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges;
+    ListChange<KitType, KitType> kitTypeChanges;
 }

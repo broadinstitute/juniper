@@ -168,6 +168,8 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
   if (!surveyJSModel.data) {
     return []
   }
+
+
   return Object.entries(surveyJSModel.data)
     // don't make answers for the descriptive sections
     .filter(([key]) => {
@@ -177,8 +179,11 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
-export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
-  surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer {
+export function makeAnswer(
+  value: SurveyJsValueType,
+  questionStableId: string,
+  surveyJsData: Record<string, SurveyJsValueType>,
+  viewedLanguage?: string): Answer {
   const answer: Answer = { questionStableId }
   if (viewedLanguage) {
     answer.viewedLanguage = viewedLanguage
@@ -222,6 +227,7 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
       calculatedHash[val.name] = val.value
     }
   })
+
   return {
     ...model.data,
     ...calculatedHash

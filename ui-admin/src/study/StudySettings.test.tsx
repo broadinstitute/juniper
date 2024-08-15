@@ -7,6 +7,12 @@ import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import { userEvent } from '@testing-library/user-event'
 import { EnvironmentName } from '@juniper/ui-core'
 
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  fetchAllowedKitTypes: jest.fn().mockResolvedValue([]),
+  fetchKitTypes: jest.fn().mockResolvedValue([])
+}))
+
 test('renders a study env. config', async () => {
   const portalContext = mockPortalContext()
   const studyEnvContext = mockStudyEnvContext()
@@ -60,4 +66,3 @@ test('updates a study env. config', async () => {
   expect(input).toHaveValue('newPass')
   expect(screen.getByText('Save study config')).toHaveAttribute('aria-disabled', 'false')
 })
-

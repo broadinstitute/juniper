@@ -112,7 +112,6 @@ export const ItemDisplay = ({
   question, answerMap, surveyVersion, showFullQuestions, supportedLanguages, editHistory = []
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
-  const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
   const editHistoryForQuestion = editHistory
     .filter(changeRecord => changeRecord.fieldName === question.name)
     .sort((a, b) => b.createdAt - a.createdAt)
@@ -130,13 +129,14 @@ export const ItemDisplay = ({
       <div className="d-flex align-items-center">
         {renderQuestionText(answer, question, showFullQuestions)}
         <span className="ms-2 fst-italic text-muted">
-        ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
+        ({stableIdText})
         </span>
       </div>
     </dt>
     <dl>
       { answer ?
-        <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> :
+        <AnswerEditHistory question={question} answer={answer} supportedLanguages={supportedLanguages}
+          editHistory={editHistoryForQuestion}/> :
         <pre className="fw-bold">{displayValue}</pre>}
     </dl>
   </>

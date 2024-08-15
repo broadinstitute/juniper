@@ -34,7 +34,8 @@ export const emptyStudyEnvChange: StudyEnvironmentChange = {
   configChanges: [],
   preEnrollSurveyChanges: { changed: false },
   surveyChanges: { addedItems: [], removedItems: [], changedItems: [] },
-  triggerChanges: { addedItems: [], removedItems: [], changedItems: [] }
+  triggerChanges: { addedItems: [], removedItems: [], changedItems: [] },
+  kitTypeChanges: { addedItems: [], removedItems: [], changedItems: [] }
 }
 
 const EXCLUDED_PROPS = ['participantHostname']
