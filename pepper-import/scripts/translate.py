@@ -273,9 +273,12 @@ class TranslationOverride:
     dsm_stable_id = None
     juniper_stable_id = None
 
-    def __init__(self, dsm_stable_id: str, juniper_stable_id: str):
+    constant_value = None
+
+    def __init__(self, dsm_stable_id: str | None, juniper_stable_id: str, constant_value=None):
         self.dsm_stable_id = dsm_stable_id
         self.juniper_stable_id = juniper_stable_id
+        self.constant_value = constant_value
 
 
 def parse_translation_override(filepath: str) -> list[TranslationOverride]:
@@ -313,9 +316,11 @@ class Translation:
 
 
 default_translation_overrides = [
-    # todo: email
-    # todo: username
-    # todo: profile info (name)
+    TranslationOverride('PROFILE.EMAIL', 'profile.contactEmail'),
+    TranslationOverride('PROFILE.EMAIL', 'account.username'),
+    TranslationOverride('PROFILE.FIRSTNAME', 'profile.givenName'),
+    TranslationOverride('PROFILE.LASTNAME', 'profile.familyName'),
+    TranslationOverride(None, 'enrollee.subject', constant_value='true'),
 ]
 
 
@@ -339,7 +344,7 @@ def create_translations(
         dsm_question = next((q for q in dsm_questions if q.stable_id == override.dsm_stable_id), None)
         juniper_question = next((q for q in juniper_questions if q.stable_id == override.juniper_stable_id), None)
 
-        if dsm_question is not None and juniper_question is not None:
+        if dsm_question is not None or juniper_question is not None:
             translations.append(Translation(dsm_question, juniper_question, override))
             # remove from lists; we don't need to match these anymore
             if dsm_question in dsm_questions:
@@ -360,7 +365,6 @@ def create_translations(
         matched_juniper_question = next((q for q in juniper_questions if is_matched(dsm_question, q)), None)
 
         if matched_juniper_question is not None:
-            # todo: check if composite and create translations for the subquestions
             translations.append(Translation(dsm_question, matched_juniper_question))
             juniper_questions.remove(matched_juniper_question)
 
@@ -404,7 +408,6 @@ def create_workflow_translations(
                 juniper_questions.remove(completed_juniper_question)
                 if dsm_question in dsm_questions:
                     dsm_questions.remove(dsm_question)
-
 
 
 def is_matched(q1: DataDefinition, q2: DataDefinition) -> bool:
@@ -480,6 +483,12 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
 
 
 def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
+    if translation.translation_override is not None and translation.translation_override.constant_value is not None:
+        juniper_data[
+            translation.juniper_question_definition.stable_id
+        ] = translation.translation_override.constant_value
+        return
+
     juniper_question = translation.juniper_question_definition
     dsm_question = translation.dsm_question_definition
 
