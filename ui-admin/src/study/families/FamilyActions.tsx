@@ -1,6 +1,9 @@
 import React from 'react'
 import { Family } from '@juniper/ui-core'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  participantListPath,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import {
@@ -31,7 +34,11 @@ export const FamilyActions = (
         justification)
       setIsDeleting(false)
       Store.addNotification(successNotification('Family deleted.'))
-      navigate(`../../../participants?groupByFamily=true`)
+      navigate(`${participantListPath(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName
+      )}?groupByFamily=true`)
     } catch (e) {
       Store.addNotification(failureNotification('Could not delete family.'))
     }
@@ -40,7 +47,7 @@ export const FamilyActions = (
   return <div>
     <h4>Delete Family</h4>
     <p>
-      Note that participants will remain in the system.
+      Note: this only deletes the family relationships. Participants will still be able to participate in the study.
     </p>
     <button className="btn btn-danger" onClick={() => setIsDeleting(true)}>Delete Family</button>
     {isDeleting && <JustifyChangesModal
