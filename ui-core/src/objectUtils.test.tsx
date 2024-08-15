@@ -1,4 +1,7 @@
-import { findDifferencesBetweenObjects, ObjectDiff } from './objectUtils'
+import {
+  findDifferencesBetweenObjects,
+  ObjectDiff
+} from './objectUtils'
 
 describe('findDifferencesBetweenObjects', () => {
   it('basic', () => {

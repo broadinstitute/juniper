@@ -7,6 +7,8 @@ import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -27,8 +29,9 @@ public class SurveyParseUtils {
     public static final Pattern INVALID_STABLE_ID = Pattern.compile("[^a-zA-Z\\-_\\d]");
 
     /**
-     * recursively gets all questions from the given node
+     * recursively gets all questions from the given node.
      */
+
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
         if (containerElement.has("elements")) {
@@ -37,14 +40,52 @@ public class SurveyParseUtils {
             }
         } else {
             elements.add(containerElement);
+            // certain questions have multiple subquestions (e.g., paneldynamic or matrix)
+            elements.addAll(getSubQuestions(containerElement));
         }
 
         return elements;
     }
 
-    public static SurveyQuestionDefinition unmarshalSurveyQuestion(Survey survey, JsonNode question,
-                                                                   Map<String, JsonNode> questionTemplates,
-                                                                   int globalOrder, boolean isDerived) {
+    private static List<JsonNode> getSubQuestions(JsonNode parent) {
+        if (!parent.has("type")) {
+            return List.of();
+        }
+
+        List<JsonNode> subQuestions = new ArrayList<>();
+
+        if (parent.get("type").asText().equals("paneldynamic") && parent.has("templateElements")) {
+            subQuestions = getPanelDynamicSubQuestions(parent);
+        }
+
+        // keep track of the parent stableid
+        subQuestions = subQuestions
+                .stream()
+                .map(q -> (JsonNode) q.deepCopy())
+                .map(q -> {
+                    ((ObjectNode) q).put("parent", parent.get("name").asText());
+                    return q;
+                })
+                .toList();
+        return subQuestions;
+    }
+
+    private static List<JsonNode> getPanelDynamicSubQuestions(JsonNode parent) {
+        List<JsonNode> subQuestions = new ArrayList<>();
+
+        for (JsonNode subQuestion : parent.get("templateElements")) {
+            List<JsonNode> questions = getAllQuestions(subQuestion);
+            subQuestions.addAll(questions);
+        }
+        return subQuestions;
+    }
+
+    public static SurveyQuestionDefinition unmarshalSurveyQuestion(
+            Survey survey,
+            JsonNode question,
+            Map<String, JsonNode> questionTemplates,
+            int globalOrder,
+            boolean isDerived) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
@@ -52,7 +93,10 @@ public class SurveyParseUtils {
                 .surveyVersion(survey.getVersion())
                 .questionStableId(question.get("name").asText())
                 .exportOrder(globalOrder)
+                .parentStableId(question.has("parent") ? question.get("parent").asText() : null)
+                .repeatable(question.has("type") && question.get("type").asText().equals("paneldynamic"))
                 .build();
+
         //The following fields may either be specified in the question itself,
         //or as part of a question template. Resolve the remaining fields against
         //the template (if applicable), so we have the full question definition.
@@ -88,11 +132,23 @@ public class SurveyParseUtils {
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */
-    public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition) {
+    public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition, List<SurveyQuestionDefinition> allDefsInSurvey) {
         /** we don't care about the stableIds for html questions, since those aren't answered and aren't included in data exports */
         if (!List.of("html").contains(surveyQuestionDefinition.getQuestionType())) {
             validateQuestionStableId(surveyQuestionDefinition.getQuestionStableId());
         }
+
+        if (surveyQuestionDefinition.getParentStableId() != null) {
+            SurveyQuestionDefinition parent = allDefsInSurvey.stream()
+                    .filter(d -> d.getQuestionStableId().equals(surveyQuestionDefinition.getParentStableId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Parent question not found: " + surveyQuestionDefinition.getParentStableId()));
+
+            if (StringUtils.isNotEmpty(parent.getParentStableId())) {
+                throw new IllegalArgumentException("Deeply nested questions are not supported: " + surveyQuestionDefinition.getQuestionStableId());
+            }
+        }
+
     }
     public static void validateQuestionStableId(String questionStableId) {
         if (questionStableId == null || questionStableId.isBlank()) {
@@ -110,7 +166,20 @@ public class SurveyParseUtils {
             if (choice.isTextual()) {
                 choices.add(new QuestionChoice(choice.asText(), choice.asText()));
             } else {
-                choices.add(new QuestionChoice(choice.get("value").asText(), choice.get("text").asText()));
+                JsonNode textNode = choice.get("text");
+
+                String text;
+                if (textNode.isTextual()) {
+                    text = textNode.asText();
+                } else {
+                    if (textNode.has("en")) {
+                        text = textNode.get("en").asText();
+                    } else {
+                        text = textNode.get("value").asText();
+                    }
+                }
+
+                choices.add(new QuestionChoice(choice.get("value").asText(), text));
             }
         }
         /**
