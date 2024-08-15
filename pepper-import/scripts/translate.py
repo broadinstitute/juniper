@@ -88,6 +88,7 @@ def main():
         for sub in t.subquestion_translations:
             print('\t' + sub.dsm_question_definition.stable_id + ' -> ' + sub.juniper_question_definition.stable_id)
     print()
+
     # 4: alert user of discrepancies
     #    - if there are any DSM or juniper variables that couldn't be mapped, alert the user
     #    - they can accept this discrepancy or cancel out & fix it in translation override
@@ -296,15 +297,19 @@ class Translation:
 
     subquestion_translations = []
 
-    translation_override = None  #handles overrides of default behavior
+    translation_override = None  # handles overrides of default behavior
+
+    value_if_present = None
 
     def __init__(self, dsm_question_definition: DataDefinition, juniper_question_definition: DataDefinition,
                  translation_override: TranslationOverride | None = None,
-                 subquestion_translations=None):
+                 subquestion_translations=None,
+                 value_if_present=None):
         self.dsm_question_definition = dsm_question_definition
         self.juniper_question_definition = juniper_question_definition
         self.translation_override = translation_override
         self.subquestion_translations = subquestion_translations or []
+        self.value_if_present = value_if_present
 
 
 default_translation_overrides = [
@@ -373,6 +378,33 @@ def create_translations(
             unmatched_dsm_questions.append(dsm_question)
 
     return unmatched_dsm_questions, juniper_questions, translations
+
+
+def create_workflow_translations(
+        dsm_questions: list[DataDefinition],
+        juniper_questions: list[DataDefinition],
+        translations: list[Translation]
+):
+    for dsm_question in dsm_questions:
+        # look for known DSM questions, e.g. survey completion
+        if dsm_question.stable_id.endswith(".COMPLETEDAT") and dsm_question.stable_id.count('.') == 1:
+            survey_name = dsm_question.stable_id.split('.')[0]
+            last_updated_at_juniper_question = next(
+                (q for q in juniper_questions if q.stable_id == survey_name + '.lastUpdatedAt'), None)
+            if last_updated_at_juniper_question is not None:
+                translations.append(Translation(dsm_question, last_updated_at_juniper_question))
+                juniper_questions.remove(last_updated_at_juniper_question)
+                if dsm_question in dsm_questions:
+                    dsm_questions.remove(dsm_question)
+
+            completed_juniper_question = next(
+                (q for q in juniper_questions if q.stable_id == survey_name + '.completed'), None)
+            if completed_juniper_question is not None:
+                translations.append(Translation(dsm_question, completed_juniper_question, value_if_present=True))
+                juniper_questions.remove(completed_juniper_question)
+                if dsm_question in dsm_questions:
+                    dsm_questions.remove(dsm_question)
+
 
 
 def is_matched(q1: DataDefinition, q2: DataDefinition) -> bool:
@@ -459,27 +491,66 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
         juniper_data[juniper_question.stable_id] = get_multi_panel_values(translation, dsm_data)
     else:
         simple_translate(
-            juniper_question, dsm_question, dsm_data, juniper_data
+            translation, dsm_data, juniper_data
         )
 
 
-def simple_translate(juniper_question: DataDefinition, dsm_question: DataDefinition, dsm_data: dict[str, Any],
+def simple_translate(translation: Translation,
+                     dsm_data: dict[str, Any],
                      juniper_data: dict[str, Any]) -> Any:
-    values = get_all_values(dsm_question, dsm_data)
+    juniper_question = translation.juniper_question_definition
+    dsm_question = translation.dsm_question_definition
 
-    if juniper_question.data_type == 'datetime':
-        if dsm_question.data_type != 'datetime':
-            print('Error: DSM question ' + dsm_question.stable_id + ' is not a datetime question, but is in juniper. '
-                                                                    'Attempting to parse anyway...')
+    values = get_all_values(dsm_question, dsm_data)
 
     for idx in range(len(values)):
         response_stable_id = get_juniper_response_stable_id(juniper_question, idx)
-        juniper_data[response_stable_id] = values[idx]
+        value = values[idx]
+        juniper_data[response_stable_id] = translate_value(translation, value)
 
 
-def translate_value(juniper_question: DataDefinition, dsm_question: DataDefinition, value: Any) -> Any:
-    # todo: handle parsing datetime, etc.
+def translate_value(translation: Translation, value: Any) -> Any:
+    if translation.value_if_present is not None:
+        return translation.value_if_present if value.strip() != '' else None
+
+    # possible data types: string, date, boolean, date_time, object_string
+
+    if translation.juniper_question_definition.data_type in ['string', 'object_string']:
+        return str(value)
+    elif translation.juniper_question_definition.data_type == 'date':
+        if translation.dsm_question_definition.data_type != 'date':
+            print_wrong_type_warning(translation.dsm_question_definition, translation.juniper_question_definition)
+        return convert_date(value)
+    elif translation.juniper_question_definition.data_type == 'date_time':
+        if translation.dsm_question_definition.data_type != 'date_time':
+            print_wrong_type_warning(translation.dsm_question_definition, translation.juniper_question_definition)
+        return convert_date_time(value)
+    elif translation.juniper_question_definition.data_type == 'boolean':
+        # we'll assume that strings can be mapped to booleans...
+        if translation.dsm_question_definition.data_type not in ['boolean', 'string']:
+            print_wrong_type_warning(translation.dsm_question_definition, translation.juniper_question_definition)
+        return convert_boolean(value)
     return value
+
+
+def print_wrong_type_warning(dsm_question: DataDefinition, juniper_question: DataDefinition):
+    print(f'Warning: translating DSM question ({dsm_question.stable_id}:{dsm_question.data_type}) '
+          f'to Juniper question ({juniper_question.stable_id}:{juniper_question.stable_id}) '
+          f'with different data types')
+
+
+def convert_date(value: str) -> str:
+    # todo
+    return value
+
+
+def convert_date_time(value: str) -> str:
+    # todo
+    return value
+
+
+def convert_boolean(value: str) -> bool:
+    return value.lower() == 'true'
 
 
 def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> list[str]:
@@ -539,13 +610,14 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
             out_value[
                 juniper_idx
             ][
-                strip_parent_stable_id(translation.juniper_question_definition.stable_id, subquestion_translation.juniper_question_definition.stable_id)
+                strip_parent_stable_id(translation.juniper_question_definition.stable_id,
+                                       subquestion_translation.juniper_question_definition.stable_id)
             ] = subquestion_data
     return out_value
 
 
 def strip_parent_stable_id(parent_stable_id: str, subquestion_stable_id: str) -> str:
-    return subquestion_stable_id[len(parent_stable_id)+1:]
+    return subquestion_stable_id[len(parent_stable_id) + 1:]
 
 
 def get_multi_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[str]:
