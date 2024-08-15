@@ -1,14 +1,14 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.util.Objects;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * an answer to a survey question

@@ -14,6 +14,7 @@ public class ScheduledKitStatusService {
   public ScheduledKitStatusService(KitRequestService kitRequestService) {
     this.kitRequestService = kitRequestService;
   }
+
   /**
    * Update kit statuses from Pepper at 12:30am every day. We're _very_ generous with lockAtMostFor
    * because this only runs once per day.

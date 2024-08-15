@@ -1,28 +1,32 @@
 plugins {
-    id "io.freefair.lombok" version "6.5.1"
+    id "io.freefair.lombok" version "8.7.1"
     id 'bio.terra.java-spring-conventions'
     id 'de.undercouch.download'
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
-
     id 'com.gorylenko.gradle-git-properties' version '2.4.2'
 }
 
 apply from: 'generators.gradle'
 apply from: 'publishing.gradle'
+sourceCompatibility = '21'
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
 
 dependencies {
-
     implementation 'bio.terra:terra-common-lib:0.1.10-SNAPSHOT'
     implementation project(':core')
     implementation project(':populate')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'org.springframework.boot:spring-boot-starter:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.2'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
@@ -36,12 +40,13 @@ dependencies {
 
     implementation 'net.javacrumbs.shedlock:shedlock-spring:5.2.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.2.0'
+
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
             //'org.bouncycastle:bcprov-jdk15on:1.70',
             'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation('org.springframework.boot:spring-boot-starter-test:3.1.2') {
+    testImplementation('org.springframework.boot:spring-boot-starter-test:3.3.2') {
         // Fixes warning about multiple occurrences of JSONObject on the classpath
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
@@ -61,7 +66,6 @@ task copyWebApp(type: Copy) {
 // need to run the copyWebApp task yourself
 copyWebApp.dependsOn(rootProject.bundleAdminUI)
 jibDockerBuild.dependsOn('copyWebApp')
-
 
 test {
     useJUnitPlatform ()

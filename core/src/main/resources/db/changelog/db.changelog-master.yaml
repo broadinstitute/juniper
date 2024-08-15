@@ -305,6 +305,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_08_06_admin_notification_type.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_08_12_add_parent_to_question_def.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
