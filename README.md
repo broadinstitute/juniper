@@ -36,7 +36,7 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 ## Local development
 
 ### Prerequisites
-* Java 17
+* Java 21
 * IntelliJ
 * Node v20+ (v20.10.0 tested)
 * Docker
@@ -56,7 +56,7 @@ In IntelliJ, File -> New -> Project from Existing Sources.  When importing the p
 
 * **Server:**
 
-   * Make sure IntelliJ is set to Java 17 in *two* places
+   * Make sure IntelliJ is set to Java 21 in *two* places
       * Project Structure > Project Settings > Project > SDK
       * Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"

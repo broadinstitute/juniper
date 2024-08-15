@@ -1,12 +1,12 @@
 plugins {
-    id "io.freefair.lombok" version "5.3.3.3"
+    id "io.freefair.lombok" version "8.7.1"
     id 'java'
     id 'jacoco'
 }
 
 group = 'bio.terra.pearl.core'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '21'
 
 repositories {
     mavenCentral()
@@ -17,14 +17,14 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    implementation 'org.springframework.boot:spring-boot-starter:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
     implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-postgres', version: '3.34.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.2.5'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.3.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'org.yaml:snakeyaml:2.0'
 
