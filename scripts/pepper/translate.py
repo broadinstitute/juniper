@@ -51,26 +51,30 @@ def main():
         translations
     ) = create_translations(dsm_questions, juniper_questions, translation_overrides)
 
-    print('# all dsm questions')
-    print(len(dsm_questions))
-    print('# unmatched dsm')
-    print(len(leftover_dsm_questions))
+    # print('# all dsm questions')
+    # print(len(dsm_questions))
+    # print('# unmatched dsm')
+    # print(len(leftover_dsm_questions))
 
+    print('Translations')
     for t in translations:
         print(t.dsm_question_definition.stable_id + ' -> ' + t.juniper_question_definition.stable_id)
+        for sub in t.subquestion_translations:
+            print('\t' + sub.dsm_question_definition.stable_id + ' -> ' + sub.juniper_question_definition.stable_id)
+    print()
     # 4: alert user of discrepancies
     #    - if there are any DSM or juniper variables that couldn't be mapped, alert the user
     #    - they can accept this discrepancy or cancel out & fix it in translation override
 
     validate_leftover_questions(leftover_dsm_questions, leftover_juniper_questions)
-    #
-    # # 5: translate data
-    # #    - parse the data & actually do the translation
-    #
-    # dsm_data = parse_dsm_data(args.in_file)
-    # juniper_data = apply_translations(dsm_data, translations)
-    #
-    # write_data(args.out_file, juniper_data)
+
+    # 5: translate data
+    #    - parse the data & actually do the translation
+
+    dsm_data = parse_dsm_data(args.in_file)
+    juniper_data = apply_translations(dsm_data, translations)
+
+    write_data(args.out_file, juniper_data)
 
 
 # ------ helper classes and methods --------
@@ -164,9 +168,6 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
         )
         out.append(question)
 
-        # todo: handle subquestions of composite/dynamic panels,
-        #       possibly in outer juniper/pepper specific function
-
         row_idx += 1
         num_blanks = 0
 
@@ -174,14 +175,6 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
 
 
 def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
-    # todo: add DSM-specific parsing logic after simple_parse_data_dict
-
-    # todo: if question has [[]] around it, it's a composite/multi question
-    #       - group subquestions together by looking at what questions
-    #         start with the parent's stableid
-    #       - if the data dict description doesn't have "May have up to <?> responses", then it's not actually
-    #         a dynamicpanel question on the juniper side - we can just treat them like regular questions
-
     simple_questions = simple_parse_data_dict(filepath)
 
     questions = []
@@ -191,7 +184,7 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
         if question.stable_id.startswith("[[") and question.stable_id.endswith("]]"):
             # these questions are either composite or multiselect
             # either way, we need to group their subquestions together
-            question.stable_id = question.stable_id[2:-2] # remove the [[]]
+            question.stable_id = question.stable_id[2:-2]  # remove the [[]]
             subquestions = list(filter(lambda q: q.stable_id.startswith(question.stable_id), simple_questions))
 
             # if the description doesn't have "May have up to <?> responses", then it's not a dynamicpanel
@@ -215,14 +208,14 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
                 print('Error: question ' + question.stable_id + ' is neither composite nor multiselect')
                 exit(1)
             # remove all subquestions from the list
-            simple_questions = list(filter(lambda q: q not in subquestions, simple_questions))
+            # let's not so we can keep track of if they were matched
+            # simple_questions = list(filter(lambda q: q not in subquestions, simple_questions))
         else:
             questions.append(question)
     return questions
 
 
 def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
-    # todo: add Juniper-specific parsing logic after simple_parse_data_dict
     simple_questions = simple_parse_data_dict(filepath)
 
     questions = []
@@ -236,7 +229,8 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
             question.subquestions = []
             for subquestion in simple_questions:
                 if subquestion.stable_id.startswith(question.stable_id):
-                    simple_questions.remove(subquestion)
+                    # let's not do this, so we can keep track of if they have been matched
+                    # simple_questions.remove(subquestion)
 
                     # remove the index from the stableid
                     subquestion.stable_id = subquestion.stable_id[:-3]
@@ -249,27 +243,43 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
     return questions
 
 
-
 class TranslationOverride:
     dsm_stable_id = None
     juniper_stable_id = None
 
+    def __init__(self, dsm_stable_id: str, juniper_stable_id: str):
+        self.dsm_stable_id = dsm_stable_id
+        self.juniper_stable_id = juniper_stable_id
+
 
 def parse_translation_override(filepath: str) -> list[TranslationOverride]:
-    return []
+    if filepath is None or filepath == '':
+        return []
+
+    out: list[TranslationOverride] = []
+
+    with open(filepath, 'r') as f:
+        for row in csv.reader(f):
+            out.append(TranslationOverride(row[0], row[1]))
+
+    return out
 
 
 class Translation:
     dsm_question_definition = None
     juniper_question_definition = None
 
+    subquestion_translations = []
+
     translation_override = None  #handles overrides of default behavior
 
     def __init__(self, dsm_question_definition: DataDefinition, juniper_question_definition: DataDefinition,
-                 translation_override: TranslationOverride | None = None):
+                 translation_override: TranslationOverride | None = None,
+                 subquestion_translations=None):
         self.dsm_question_definition = dsm_question_definition
         self.juniper_question_definition = juniper_question_definition
         self.translation_override = translation_override
+        self.subquestion_translations = subquestion_translations or []
 
 
 default_translation_overrides = [
@@ -277,6 +287,7 @@ default_translation_overrides = [
     # todo: username
     # todo: profile info (name)
 ]
+
 
 def create_translations(
         dsm_questions: list[DataDefinition],
@@ -319,8 +330,20 @@ def create_translations(
         matched_juniper_question = next((q for q in juniper_questions if is_matched(dsm_question, q)), None)
 
         if matched_juniper_question is not None:
+            # todo: check if composite and create translations for the subquestions
             translations.append(Translation(dsm_question, matched_juniper_question))
             juniper_questions.remove(matched_juniper_question)
+
+            if matched_juniper_question.question_type == 'paneldynamic':
+                for dsm_subquestion in dsm_question.subquestions:
+                    juniper_subquestion = next((q for q in juniper_questions if is_matched(dsm_subquestion, q)), None)
+                    if juniper_subquestion is not None:
+                        translations[-1].subquestion_translations.append(
+                            Translation(dsm_subquestion, juniper_subquestion)
+                        )
+                        juniper_questions.remove(juniper_subquestion)
+                        dsm_questions.remove(dsm_subquestion)
+
         else:
             unmatched_dsm_questions.append(dsm_question)
 
@@ -328,7 +351,14 @@ def create_translations(
 
 
 def is_matched(q1: DataDefinition, q2: DataDefinition) -> bool:
-    return q1.stable_id.replace('.', '_').strip() == q2.stable_id.replace('.', '_').strip()
+    return standardize_stable_id(q1.stable_id) == standardize_stable_id(q2.stable_id)
+
+
+def standardize_stable_id(stable_id: str) -> str:
+    if stable_id.endswith('[0]'):
+        stable_id = stable_id[:-3]
+
+    return stable_id.replace('.', '_').strip()
 
 
 def validate_leftover_questions(
@@ -360,7 +390,6 @@ def validate_leftover_questions(
 
 
 def parse_dsm_data(filepath: str) -> list[dict[str, Any]]:
-
     raw_data = []
     with open(filepath, 'r') as f:
         # pepper exports as tsv
@@ -378,7 +407,7 @@ def parse_dsm_data(filepath: str) -> list[dict[str, Any]]:
             new_row[header[i]] = value
         data.append(new_row)
 
-    return []
+    return data
 
 
 def apply_translations(data: list[dict[str, Any]], translations: list[Translation]) -> list[dict[str, Any]]:
@@ -388,19 +417,108 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
         new_row = {}
         for translation in translations:
             apply_translation(row, new_row, translation)
-
         out.append(new_row)
-    return []
+
+    return out
 
 
 def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
-    # todo: convert DSM multiselect (multi-answer) to Juniper multiselect (single json answer)
-    # todo: convert DSM composite question (multi-answer) to Juniper dynamic panel (single json answer)
+    juniper_question = translation.juniper_question_definition
+    dsm_question = translation.dsm_question_definition
 
-    juniper_stable_id = translation.juniper_question_definition.stable_id
-    dsm_stable_id = translation.dsm_question_definition.stable_id
+    if juniper_question.question_type == 'paneldynamic':
+        # todo: make sure this is right; does it need to be parsed as a string?
+        juniper_data[juniper_question.stable_id] = get_dynamic_panel_values(translation, dsm_data)
+    elif juniper_question.question_type == 'multiselect':
+        # todo: make sure this is correct, possibly convert to string?
+        juniper_data[juniper_question.stable_id] = get_multi_panel_values(translation, dsm_data)
+    else:
+        simple_translate(
+            juniper_question, dsm_question, dsm_data, juniper_data
+        )
 
-    juniper_data[juniper_stable_id] = dsm_data[dsm_stable_id]
+
+def simple_translate(juniper_question: DataDefinition, dsm_question: DataDefinition, dsm_data: dict[str, Any],
+                     juniper_data: dict[str, Any]) -> Any:
+    values = get_all_values(dsm_question, dsm_data)
+
+    if juniper_question.data_type == 'datetime':
+        if dsm_question.data_type != 'datetime':
+            print('Error: DSM question ' + dsm_question.stable_id + ' is not a datetime question, but is in juniper. '
+                                                                    'Attempting to parse anyway...')
+
+    for idx in range(len(values)):
+        response_stable_id = get_juniper_response_stable_id(juniper_question, idx)
+        juniper_data[response_stable_id] = values[idx]
+
+
+def translate_value(juniper_question: DataDefinition, dsm_question: DataDefinition, value: Any) -> Any:
+    # todo: handle parsing datetime, etc.
+    return value
+
+
+def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> list[str]:
+    out = {0: dsm_data[dsm_question.stable_id]}
+
+    for [key, value] in dsm_data.items():
+        if key.startswith(dsm_question.stable_id) and is_repeat_question(dsm_question.stable_id, key):
+            index = get_repeat_index(key)
+            out[index] = value
+
+    return [out[i] for i in range(len(out))]
+
+
+def is_repeat_question(question_stable_id: str, response_stable_id: str) -> bool:
+    return response_stable_id.startswith(question_stable_id + '_')
+
+
+def get_juniper_response_stable_id(juniper_question: DataDefinition, repeat: int) -> str:
+    stable_id = juniper_question.stable_id
+
+    if repeat == 0:
+        return stable_id
+
+    [survey_id, question_id] = stable_id.partition('.')
+    return survey_id + '.' + str(repeat) + '.' + question_id
+
+
+def get_repeat_index(response_stable_id: str) -> int:
+    return int(response_stable_id.split('_')[-1])
+
+
+def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[dict[str, Any]]:
+    out_value: list[dict[str, Any]] = []
+    for subquestion_translation in translation.subquestion_translations:
+        subquestion_values: list[tuple[str, Any]] = []  # find all DSM answers to this subquestion
+        for key, value in dsm_data.items():
+            if key.startswith(subquestion_translation.dsm_question_definition.stable_id):
+                subquestion_values.append((key, value))
+
+        for subquestion_stable_id, subquestion_data in subquestion_values:
+            index = subquestion_stable_id.split('_')[-1]
+            try:
+                index = int(index)
+            except:
+                # pepper leaves out the index if it's 0
+                index = 1
+
+            juniper_idx = index - 1
+
+            if len(out_value) < juniper_idx + 1:
+                for i in range(len(out_value), juniper_idx + 1):
+                    out_value.append({})
+
+            out_value[juniper_idx][subquestion_translation.juniper_question_definition.stable_id] = subquestion_data
+    return out_value
+
+
+def get_multi_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[str]:
+    out_value = []
+    for subquestion in translation.dsm_question_definition.subquestions:
+        if dsm_data[subquestion.stable_id] == '1':
+            option = subquestion.stable_id.split('.')[-1]  # todo make this is right
+            out_value.append(option)
+    return out_value
 
 
 def write_data(outfile: str, data: list[dict[str, Any]]):
