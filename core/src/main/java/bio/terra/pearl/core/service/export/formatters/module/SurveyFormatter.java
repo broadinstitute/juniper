@@ -214,7 +214,13 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     public static String stripStudyAndSurveyPrefixes(String stableId) {
         // if there are >= 3 underscores, filter out everything before the third underscore
         int thirdUnderscoreIndex = StringUtils.ordinalIndexOf(stableId, "_", 3);
-        if (thirdUnderscoreIndex < 0) {
+
+        // warning: hacky!
+        // the `stableId.toUpperCase()` check is a temporary fix to allow AT's questions
+        // to not be affected by the arcane study stripping logic since many of its questions
+        // feature many underscores. no other study has all caps stableIds, so it's safe(ish)
+        // to do.
+        if (thirdUnderscoreIndex < 0 || stableId.toUpperCase().equals(stableId)) {
             return stableId;
         }
         return stableId.substring(thirdUnderscoreIndex + 1);

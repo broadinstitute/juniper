@@ -7,6 +7,32 @@ from typing import Any, Union
 from openpyxl import load_workbook
 
 
+# todo s:
+#       - figure out _DETAIL questions on the import side
+#       - check multi-select options match?
+#       - for each survey, also map `.COMPLETEDAT` to `lastUpdatedAt` and `completed` on the juniper side
+#       - create export rows for non-subject users that are proxies of a governed user
+#       - export enrollee.subject=true for all subjects (how to track?)
+
+# Usage:
+# python translate.py -DDd <dsm_data_dict> -DDj <juniper_data_dict> -T <translation_override> -I <in_file> -O <out_file>
+# Translates data from Pepper into a format that you can use as the basis for importing participants in Juniper.
+#
+# Step 1: Download a data export from DSM with all the data that you need
+# Step 2: Download the Juniper data dictionary in your recreated study
+# Step 3: Run the script with the following arguments:
+# python translate.py -DDd <dsm_data_dict> -DDj <juniper_data_dict> -I <in_file> -O <out_file>
+# Step 4: If any questions are not matched, the script will alert you. You can either accept the discrepancy or
+#         cancel out and fix it by creating a translation override file.
+#         Example:
+#         profile.email,profile.contactEmail
+#         profile.email,account.username
+#         ...
+# Step 5: Run the script again with the translation override file:
+# python translate.py -DDd <dsm_data_dict> -DDj <juniper_data_dict> -T <translation_override> -I <in_file> -O <out_file>
+# Step 6: Use the generated CSV file to import the data into Juniper
+
+
 def main():
     # 1: parse arguments
     #    - --dsm-data-dict (-DDd)
@@ -20,7 +46,7 @@ def main():
         description='Converts data from DSM to Juniper.')
 
     parser.add_argument('-DDd', '--dsm-data-dict', required=True, help='Data dictionary from DSM export')
-    parser.add_argument('-DDj', '--juniper-data-dict', required=True, help='Data diction from Juniper')
+    parser.add_argument('-DDj', '--juniper-data-dict', required=True, help='Data dictionary from Juniper')
     parser.add_argument('-T', '--translation-override',
                         help='If there are any issues with automatic translation, you can '
                              'provide an override as a CSV file with two columns: <dsm '
@@ -152,7 +178,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
             continue
 
         stable_id = name_col
-        survey_stable_id = current_survey
+
         data_type = str(dsm_data_dict['B' + str(row_idx)].value or '')
         question_type = str(dsm_data_dict['C' + str(row_idx)].value or '')
         description = str(dsm_data_dict['D' + str(row_idx)].value or '')
@@ -190,7 +216,6 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
             # if the description doesn't have "May have up to <?> responses", then it's not a dynamicpanel
             if question.question_type.lower() == 'composite':
                 if 'May have up to' not in question.description:
-                    parent_question_id = question.stable_id.split('.')[-1]
                     # treat as regular questions
                     for subquestion in subquestions:
                         # subquestion.stable_id = subquestion.stable_id
@@ -358,7 +383,7 @@ def standardize_stable_id(stable_id: str) -> str:
     if stable_id.endswith('[0]'):
         stable_id = stable_id[:-3]
 
-    return stable_id.replace('.', '_').strip()
+    return stable_id.replace('.', '_').strip().lower()
 
 
 def validate_leftover_questions(
@@ -429,7 +454,7 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
     if juniper_question.question_type == 'paneldynamic':
         # todo: make sure this is right; does it need to be parsed as a string?
         juniper_data[juniper_question.stable_id] = get_dynamic_panel_values(translation, dsm_data)
-    elif juniper_question.question_type == 'multiselect':
+    elif dsm_question.question_type.lower() == 'multiselect':
         # todo: make sure this is correct, possibly convert to string?
         juniper_data[juniper_question.stable_id] = get_multi_panel_values(translation, dsm_data)
     else:
@@ -495,6 +520,9 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
                 subquestion_values.append((key, value))
 
         for subquestion_stable_id, subquestion_data in subquestion_values:
+            if subquestion_data.strip() == '':
+                continue
+
             index = subquestion_stable_id.split('_')[-1]
             try:
                 index = int(index)
@@ -508,8 +536,16 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
                 for i in range(len(out_value), juniper_idx + 1):
                     out_value.append({})
 
-            out_value[juniper_idx][subquestion_translation.juniper_question_definition.stable_id] = subquestion_data
+            out_value[
+                juniper_idx
+            ][
+                strip_parent_stable_id(translation.juniper_question_definition.stable_id, subquestion_translation.juniper_question_definition.stable_id)
+            ] = subquestion_data
     return out_value
+
+
+def strip_parent_stable_id(parent_stable_id: str, subquestion_stable_id: str) -> str:
+    return subquestion_stable_id[len(parent_stable_id)+1:]
 
 
 def get_multi_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[str]:
