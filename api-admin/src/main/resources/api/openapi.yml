@@ -965,6 +965,22 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes a family
+      tags: [ family ]
+      operationId: delete
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcodeOrId, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: New family object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/proband/{enrolleeShortcode}:
     patch:
       summary: Updates the family's proband

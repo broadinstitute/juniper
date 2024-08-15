@@ -1408,6 +1408,22 @@ export default {
     return await this.processJsonResponse(result)
   },
 
+  async deleteFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, justification: string
+  ): Promise<Response> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}?${params}`
+
+    const result = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(result)
+  },
+
   async fetchFamilyChangeRecords(
     portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
     familyShortcode: string, modelName?: string

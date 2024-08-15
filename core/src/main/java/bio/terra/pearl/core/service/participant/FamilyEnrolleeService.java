@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.FamilyEnrolleeDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
@@ -86,5 +87,25 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
 
     public List<FamilyEnrollee> findByEnrolleeId(UUID id) {
         return dao.findByEnrolleeId(id);
+    }
+
+    @Override
+    protected DataChangeRecord makeCreationChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
+        DataChangeRecord dataChangeRecord = super.makeCreationChangeRecord(obj, auditInfo);
+
+        dataChangeRecord.setFamilyId(obj.getFamilyId());
+        dataChangeRecord.setEnrolleeId(obj.getEnrolleeId());
+
+        return dataChangeRecord;
+    }
+
+    @Override
+    protected DataChangeRecord makeDeletionChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
+        DataChangeRecord dataChangeRecord = super.makeDeletionChangeRecord(obj, auditInfo);
+
+        dataChangeRecord.setFamilyId(obj.getFamilyId());
+        dataChangeRecord.setEnrolleeId(obj.getEnrolleeId());
+
+        return dataChangeRecord;
     }
 }
