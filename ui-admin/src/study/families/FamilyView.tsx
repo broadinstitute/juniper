@@ -29,6 +29,7 @@ import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelati
 import { getFamilyNameString } from 'util/familyUtils'
 import { useUser } from 'user/UserProvider'
 import { FamilyAuditTable } from 'study/families/FamilyAuditTable'
+import { FamilyActions } from 'study/families/FamilyActions'
 
 
 export type SurveyWithResponsesT = {
@@ -84,6 +85,9 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
               </li>
+              <li style={navListItemStyle} className="ps-3">
+                <NavLink end to="actions" className={getLinkCssClasses}>Advanced actions</NavLink>
+              </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
@@ -103,6 +107,10 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                   studyEnvContext={studyEnvContext}/>}
                 />}
                 <Route path="changeRecords" element={<FamilyAuditTable
+                  family={family}
+                  studyEnvContext={studyEnvContext}
+                />}/>
+                <Route path="actions" element={<FamilyActions
                   family={family}
                   studyEnvContext={studyEnvContext}
                 />}/>

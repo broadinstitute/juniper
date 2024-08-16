@@ -154,6 +154,27 @@ public class FamilyController implements FamilyApi {
   }
 
   @Override
+  public ResponseEntity<Object> delete(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcodeOrId,
+      String justification) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+
+    familyExtService.delete(
+        PortalStudyEnvAuthContext.of(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
+        familyShortcodeOrId,
+        justification);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
   public ResponseEntity<Object> listChangeRecords(
       String portalShortcode,
       String studyShortcode,

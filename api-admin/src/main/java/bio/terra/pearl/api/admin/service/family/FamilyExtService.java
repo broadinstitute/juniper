@@ -10,20 +10,27 @@ import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FamilyExtService {
   private final FamilyService familyService;
   private final EnrolleeService enrolleeService;
+  private final FamilyEnrolleeService familyEnrolleeService;
 
-  public FamilyExtService(FamilyService familyService, EnrolleeService enrolleeService) {
+  public FamilyExtService(
+      FamilyService familyService,
+      EnrolleeService enrolleeService,
+      FamilyEnrolleeService familyEnrolleeService) {
     this.familyService = familyService;
     this.enrolleeService = enrolleeService;
+    this.familyEnrolleeService = familyEnrolleeService;
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
@@ -154,5 +161,21 @@ public class FamilyExtService {
     this.addEnrollee(authContext, created.getShortcode(), proband.getShortcode(), justification);
 
     return find(authContext, created.getShortcode());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
+  @Transactional
+  public void delete(
+      PortalStudyEnvAuthContext authContext, String familyShortcodeOrId, String justification) {
+    AdminUser user = authContext.getOperator();
+
+    Family family = find(authContext, familyShortcodeOrId);
+
+    familyService.delete(
+        family.getId(),
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(user.getId())
+            .justification(justification)
+            .build());
   }
 }
