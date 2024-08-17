@@ -43,10 +43,10 @@ public class ProfileServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testProfileCreatesWithMailingAddress() {
+    public void testProfileCreatesWithMailingAddress(TestInfo info) {
         Profile profile = Profile.builder()
                 .familyName("someName" + RandomStringUtils.randomAlphabetic(4)).build();
-        Profile savedProfile = profileService.create(profile, DataAuditInfo.builder().build());
+        Profile savedProfile = profileService.create(profile, getAuditInfo(info));
         DaoTestUtils.assertGeneratedProperties(savedProfile);
         DaoTestUtils.assertGeneratedProperties(savedProfile.getMailingAddress());
         assertThat(savedProfile.getMailingAddressId(), equalTo(savedProfile.getMailingAddress().getId()));
@@ -54,13 +54,13 @@ public class ProfileServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testProfileCreatesWithExistingMailingAddress() {
+    public void testProfileCreatesWithExistingMailingAddress(TestInfo info) {
         Profile profile = Profile.builder()
                 .familyName("someName" + RandomStringUtils.randomAlphabetic(4))
                 .mailingAddress(MailingAddress.builder()
                         .city("someCity" + RandomStringUtils.randomAlphabetic(4)).build())
                 .build();
-        Profile savedProfile = profileService.create(profile, DataAuditInfo.builder().build());
+        Profile savedProfile = profileService.create(profile, getAuditInfo(info));
         DaoTestUtils.assertGeneratedProperties(savedProfile);
         DaoTestUtils.assertGeneratedProperties(savedProfile.getMailingAddress());
         assertThat(savedProfile.getMailingAddressId(), equalTo(savedProfile.getMailingAddress().getId()));

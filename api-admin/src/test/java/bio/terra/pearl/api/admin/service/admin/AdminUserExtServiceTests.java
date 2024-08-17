@@ -15,7 +15,6 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
@@ -58,16 +57,14 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testGetAttachesRolesAndPermissions(TestInfo testInfo) {
-    Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
+  public void testGetAttachesRolesAndPermissions(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     AdminUserBundle adminUserBundle =
-        portalAdminUserFactory.buildPersistedWithPortals(getTestName(testInfo), List.of(portal));
-    DataAuditInfo auditInfo =
-        DataAuditInfo.builder().responsibleAdminUserId(adminUserBundle.user().getId()).build();
+        portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal));
     portalAdminUserRoleService.setRoles(
         adminUserBundle.portalAdminUsers().get(0).getId(),
         List.of("study_admin", "prototype_tester"),
-        auditInfo);
+        getAuditInfo(info));
     AdminUser fetchedUser =
         adminUserExtService.getInPortal(
             PortalAuthContext.of(adminUserBundle.user(), portal.getShortcode()),

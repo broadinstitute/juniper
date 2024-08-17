@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
+import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,5 +62,19 @@ public class PortalAdminUserFactory {
                     .build(), auditInfo));
         }
         return new AdminUserBundle(adminUser, portalUsers);
+    }
+
+    /** brute force role check done by reloading the whole user */
+    public boolean userHasRole(UUID portalAdminUserId, String roleName) {
+        PortalAdminUser portalAdminUser = portalAdminUserService.findWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        return portalAdminUser.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
+    }
+
+    /** brute force permission check done by reloading the whole user */
+    public boolean userHasPermission(UUID portalAdminUserId, String permissionName) {
+        PortalAdminUser portalAdminUser = portalAdminUserService.findWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        List<Permission> permissions = portalAdminUser.getRoles().stream().flatMap(role -> role.getPermissions().stream()).toList();
+
+        return permissions.stream().anyMatch(role -> role.getName().equals(permissionName));
     }
 }

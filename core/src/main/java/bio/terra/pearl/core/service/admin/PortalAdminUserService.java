@@ -69,11 +69,6 @@ public class PortalAdminUserService extends AdminDataAuditedService<PortalAdminU
         return dao.isUserInPortal(userId, portalId);
     }
 
-    public boolean userHasRole(UUID portalAdminUserId, String roleName) {
-        PortalAdminUser portalAdminUser = findWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
-        return portalAdminUser.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
-    }
-
     @Transactional
     public void deleteByUserId(UUID adminUserId, DataAuditInfo auditInfo) {
         List<PortalAdminUser> portalAdminUsers = dao.findByUserId(adminUserId);

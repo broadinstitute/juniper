@@ -6,7 +6,6 @@ import { Link, useParams } from 'react-router-dom'
 import { instantToDateString } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import { useUser } from './UserProvider'
 import { AdminUser, Role } from 'api/adminUser'
 import { RoleTable } from './RolesList'
 import InfoPopup from '../components/forms/InfoPopup'
@@ -16,16 +15,12 @@ import Select from 'react-select'
 /** shows roles and other details for an admin user */
 export const AdminUserDetailRaw = ({ adminUserId, portalShortcode }:
   { adminUserId: string, portalShortcode?: string}) => {
-  const { user: operator } = useUser()
   const [adminUser, setAdminUser] = useState<AdminUser>()
-  const [roles, setRoles] = useState<Role[]>([])
   const { isLoading } = useLoadingEffect(async () => {
-    const [user, roles] = await Promise.all([
-      Api.fetchAdminUser(adminUserId, portalShortcode),
-      Api.fetchRoles()
+    const [user] = await Promise.all([
+      Api.fetchAdminUser(adminUserId, portalShortcode)
     ])
     setAdminUser(user)
-    setRoles(roles)
   })
   const showMultiplePortalUsers = (adminUser?.portalAdminUsers && adminUser.portalAdminUsers.length > 1)
 
@@ -74,15 +69,15 @@ export const RoleSelector = ({ roles, selectedRoleNames, setSelectedRoleNames }:
     <label className="form-label" htmlFor={inputId}>
     Roles <InfoPopup content={<span>See the full list of <Link to="roles" target="_blank">
                   roles and descriptions</Link>
-                </span>}/>
+      </span>}/>
     </label>
     <Select options={roles} inputId={inputId}
-            value={selectedRoleNames.map(roleName => roles.find(role => role.name === roleName))}
-            getOptionLabel={role => role!.displayName}
-            getOptionValue={option => option!.name}
-            isMulti={true}
-            onChange={values => setSelectedRoleNames(values.map(value => value!.name))}/>
-    </>
+      value={selectedRoleNames.map(roleName => roles.find(role => role.name === roleName))}
+      getOptionLabel={role => role!.displayName}
+      getOptionValue={option => option!.name}
+      isMulti={true}
+      onChange={values => setSelectedRoleNames(values.map(value => value!.name))}/>
+  </>
 }
 
 export default AdminUserDetail

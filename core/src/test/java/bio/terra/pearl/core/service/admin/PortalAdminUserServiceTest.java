@@ -48,7 +48,7 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         // add roles for user in each portal
         roleService.create(Role.builder().name("role1").build());
         roleService.create(Role.builder().name("role2").build());
-        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("testDeleteByUserId").build();
+        DataAuditInfo auditInfo = getAuditInfo(info);
         portalAdminUserRoleService.setRoles(user1Portal1.getId(), List.of("role1", "role2"), auditInfo);
         portalAdminUserRoleService.setRoles(user1Portal2.getId(), List.of("role2"), auditInfo);
 
@@ -62,12 +62,12 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         assertThat(portal2Users.size(), equalTo(1));
         PortalAdminUser portal2user = portal2Users.get(0);
         assertThat(portal2user.getAdminUserId(), equalTo(user1Portal2.getAdminUserId()));
-        assertTrue(portalAdminUserService.userHasRole(portal2user.getId(), "role2"));
+        assertTrue(portalAdminUserFactory.userHasRole(portal2user.getId(), "role2"));
     }
 
     @Transactional
     @Test
-    public void testDeleteByUserId() {
+    public void testDeleteByUserId(TestInfo info) {
         String testName = "testDeleteByUserId";
         // set up a user in two portals and another in one portal
         Portal portal1 = portalFactory.buildPersisted(testName);
@@ -83,7 +83,7 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         // add roles for all
         roleService.create(Role.builder().name("role1").build());
         roleService.create(Role.builder().name("role2").build());
-        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("testDeleteByUserId").build();
+        DataAuditInfo auditInfo = getAuditInfo(info);
         portalAdminUserRoleService.setRoles(user1Portal1.getId(), List.of("role1", "role2"), auditInfo);
         portalAdminUserRoleService.setRoles(user1Portal2.getId(), List.of("role2"), auditInfo);
         portalAdminUserRoleService.setRoles(user2.getId(), List.of("role1"), auditInfo);
@@ -96,7 +96,7 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         PortalAdminUser foundUser = users.get(0);
         assertThat(foundUser.getAdminUserId(), equalTo(user2.getAdminUserId()));
 
-        assertTrue(portalAdminUserService.userHasRole(foundUser.getId(), "role1"));
+        assertTrue(portalAdminUserFactory.userHasRole(foundUser.getId(), "role1"));
 
         List<PortalAdminUser> portal2Users = portalAdminUserService.findByPortal(portal2.getId());
         assertThat(portal2Users.size(), equalTo(0));

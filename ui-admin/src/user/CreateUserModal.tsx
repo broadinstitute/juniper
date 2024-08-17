@@ -8,8 +8,6 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 import { doApiLoad, useLoadingEffect } from '../api/api-utils'
-import InfoPopup from '../components/forms/InfoPopup'
-import { Link } from 'react-router-dom'
 import { RoleSelector } from './AdminUserDetail'
 
 /** creates a new admin user */
@@ -89,7 +87,7 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
               </label>
             </div>
             <div>
-              <RoleSelector roles={roles} selectedRoleNames={newUser.roleNames} setSelectedRoleNames={(roleNames) =>
+              <RoleSelector roles={roles} selectedRoleNames={newUser.roleNames} setSelectedRoleNames={roleNames =>
                 setNewUser({ ...newUser, roleNames })}/>
             </div>
           </div> }
