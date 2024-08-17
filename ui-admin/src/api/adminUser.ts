@@ -13,7 +13,8 @@ export type AdminUser = {
 export type NewAdminUser = {
   username: string,
   superuser: boolean,
-  portalShortcode: string | null
+  portalShortcode: string | null,
+  roleNames: string[]
 }
 
 export type PortalAdminUser = {

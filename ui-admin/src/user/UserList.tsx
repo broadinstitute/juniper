@@ -33,12 +33,14 @@ const UserList = ({ portal }: {portal?: Portal}) => {
     }
     return portalAdminUsers.map(portalAdminUser =>
       portals.find(portal => portal.id === portalAdminUser.portalId)?.shortcode ?? '')
+      .join(', ')
   }
 
   const columns: ColumnDef<AdminUser>[] = useMemo(() => {
     const cols: ColumnDef<AdminUser>[] = [{
       header: 'Username',
       id: 'username',
+      accessorKey: 'username',
       cell: ({ row }) => <Link to={row.original.id}>{row.original.username}</Link>
     }]
     if (!portal) {
@@ -63,13 +65,11 @@ const UserList = ({ portal }: {portal?: Portal}) => {
       accessorKey: 'lastLogin',
       cell: info => instantToDefaultString(info.getValue() as number)
     })
-    if (portal) {
-      cols.push({
-        header: 'Actions',
-        accessorKey: 'actions',
-        cell: info => <UserAction row={info.row} portal={portal} onUserListChanged={reload}/>
-      })
-    }
+    cols.push({
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: info => <UserAction row={info.row} portal={portal} onUserListChanged={reload}/>
+    })
     return cols
   }, [users])
 

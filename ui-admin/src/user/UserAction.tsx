@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /** Handle actions for a given portal user. */
 const userAction = ({ row, portal, onUserListChanged }:
-                      {row: Row<AdminUser>, portal: Portal, onUserListChanged: () => void}) => {
+                      {row: Row<AdminUser>, portal?: Portal, onUserListChanged: () => void}) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   return <div>

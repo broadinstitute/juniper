@@ -2,16 +2,16 @@ package bio.terra.pearl.api.admin.service.workflow;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DataChangeRecordServiceTest extends BaseSpringBootTest {
-  @Autowired DataChangeRecordService dataChangeRecordService;
+public class ParticipantDataChangeServiceTest extends BaseSpringBootTest {
+  @Autowired ParticipantDataChangeService participantDataChangeService;
   @Autowired EnrolleeFactory enrolleeFactory;
 
   @Test
@@ -20,11 +20,12 @@ public class DataChangeRecordServiceTest extends BaseSpringBootTest {
         enrolleeFactory.buildWithPortalUser(info.getDisplayName());
 
     Assertions.assertEquals(
-        0, dataChangeRecordService.findAllRecordsForEnrollee(enrolleeBundle.enrollee()).size());
+        0,
+        participantDataChangeService.findAllRecordsForEnrollee(enrolleeBundle.enrollee()).size());
 
-    DataChangeRecord enrolleeRecord =
-        dataChangeRecordService.create(
-            DataChangeRecord.builder()
+    ParticipantDataChange enrolleeRecord =
+        participantDataChangeService.create(
+            ParticipantDataChange.builder()
                 .responsibleUserId(enrolleeBundle.enrollee().getParticipantUserId())
                 .enrolleeId(enrolleeBundle.enrollee().getId())
                 .modelName("Profile")
@@ -32,9 +33,9 @@ public class DataChangeRecordServiceTest extends BaseSpringBootTest {
                 .newValue("new")
                 .build());
 
-    DataChangeRecord portalUserRecord =
-        dataChangeRecordService.create(
-            DataChangeRecord.builder()
+    ParticipantDataChange portalUserRecord =
+        participantDataChangeService.create(
+            ParticipantDataChange.builder()
                 .responsibleUserId(enrolleeBundle.enrollee().getParticipantUserId())
                 .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
                 .modelName("Profile")
@@ -42,8 +43,8 @@ public class DataChangeRecordServiceTest extends BaseSpringBootTest {
                 .newValue("new")
                 .build());
 
-    List<DataChangeRecord> records =
-        dataChangeRecordService.findAllRecordsForEnrollee(enrolleeBundle.enrollee());
+    List<ParticipantDataChange> records =
+        participantDataChangeService.findAllRecordsForEnrollee(enrolleeBundle.enrollee());
 
     Assertions.assertEquals(2, records.size());
     Assertions.assertTrue(

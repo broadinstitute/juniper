@@ -1,56 +1,63 @@
 package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
-import bio.terra.pearl.core.model.admin.PortalAdminUser;
-import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import bio.terra.pearl.core.model.admin.*;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+
+import java.time.Instant;
 import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
-    private PortalAdminUserService portalAdminUserService;
-    private PortalAdminUserRoleService portalAdminUserRoleService;
+public class AdminUserService extends AdminDataAuditedService<AdminUser, AdminUserDao> {
+    private final PortalAdminUserService portalAdminUserService;
+    private final PortalAdminUserRoleService portalAdminUserRoleService;
+    private final ObjectMapper objectMapper;
 
-    public AdminUserService(AdminUserDao adminUserDao, PortalAdminUserService portalAdminUserService,
-                            PortalAdminUserRoleService portalAdminUserRoleService) {
-        super(adminUserDao);
+    public AdminUserService(AdminUserDao adminUserDao,
+                            PortalAdminUserService portalAdminUserService,
+                            PortalAdminUserRoleService portalAdminUserRoleService,
+                            AdminDataChangeService adminDataChangeService,
+                            ObjectMapper objectMapper, ObjectMapper objectMapper1) {
+        super(adminUserDao, adminDataChangeService, objectMapper);
         this.portalAdminUserService = portalAdminUserService;
         this.portalAdminUserRoleService = portalAdminUserRoleService;
+        this.objectMapper = objectMapper1;
     }
 
     public Optional<AdminUser> findByUsername(String username) {
         return dao.findByUsername(username);
     }
 
+    /** Optimized load of just permissions -- no roles */
     public Optional<AdminUserWithPermissions> findByUsernameWithPermissions(String username) {
         return dao.findByUsernameWithPermissions(username);
     }
 
     @Transactional
-    @Override
-    public AdminUser create(AdminUser adminUser) {
+    public AdminUser create(AdminUser adminUser, DataAuditInfo auditInfo) {
         //An AdminUser could belong to more than one portal, so we need to check if the user already exists
         //before creating. If the user exists, we'll just add the new portal to the existing user.
         AdminUser savedUser = dao.findByUsername(adminUser.getUsername())
-                                 .orElseGet(() -> dao.create(adminUser));
+                                 .orElseGet(() -> super.create(adminUser, auditInfo));
 
         logger.info("Created AdminUser - id: {}, username: {}", savedUser.getId(), savedUser.getUsername());
         for (PortalAdminUser portalAdminUser : adminUser.getPortalAdminUsers()) {
             portalAdminUser.setAdminUserId(savedUser.getId());
-            portalAdminUserService.create(portalAdminUser);
+            savedUser.getPortalAdminUsers().add(portalAdminUserService.create(portalAdminUser, auditInfo));
         }
         return savedUser;
     }
 
-    @Override
     @Transactional
-    public void delete(UUID adminUserId, Set<CascadeProperty> cascade) {
-        portalAdminUserService.deleteByUserId(adminUserId);
+    @Override
+    public void delete(UUID adminUserId, DataAuditInfo auditInfo, Set<CascadeProperty> cascade) {
+        portalAdminUserService.deleteByUserId(adminUserId, auditInfo);
         dao.delete(adminUserId);
     }
 
@@ -93,7 +100,23 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
         }
         for (PortalAdminUserRole portalAdminUserRole : portalAdminUserRoles) {
             portalUserIdMap.get(portalAdminUserRole.getPortalAdminUserId())
-                .getRoleIds().add(portalAdminUserRole.getRoleId());
+                .getPortalAdminUserRoles().add(portalAdminUserRole);
+        }
+    }
+
+    /** note this should be called AFTER the model has been saved, so the generated ID can be included,
+     * but remember to include attached portalParticipantUsers attached */
+    protected AdminDataChange makeCreationChangeRecord(AdminUser newModel, DataAuditInfo auditInfo) {
+        try {
+            AdminDataChange adminDataChange  = AdminDataChange.fromAuditInfo(auditInfo)
+                    .modelName(newModel.getClass().getSimpleName())
+                    .modelId(newModel.getId())
+                    .newValue(objectMapper.writeValueAsString(newModel))
+                    .oldValue(null)
+                    .build();
+            return adminDataChange;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not serialize for audit log", e);
         }
     }
 }

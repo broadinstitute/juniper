@@ -10,14 +10,12 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -31,7 +29,7 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Autowired
     private ProfileService profileService;
     @Autowired
-    private DataChangeRecordService dataChangeRecordService;
+    private ParticipantDataChangeService participantDataChangeService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
     @Autowired
@@ -86,11 +84,11 @@ public class ProfileServiceTests extends BaseSpringBootTest {
                 .enrolleeId(bundle.enrollee().getId())
                 .build());
 
-        List<DataChangeRecord> dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
+        List<ParticipantDataChange> participantDataChanges = participantDataChangeService.findByEnrollee(bundle.enrollee().getId());
 
-        Assertions.assertEquals(1, dataChangeRecords.size());
+        Assertions.assertEquals(1, participantDataChanges.size());
 
-        DataChangeRecord record = dataChangeRecords.get(0);
+        ParticipantDataChange record = participantDataChanges.get(0);
 
         Assertions.assertFalse(record.getOldValue().contains("NEW GIVEN NAME"));
         Assertions.assertFalse(record.getOldValue().contains("NEW FAMILY NAME"));
@@ -119,11 +117,11 @@ public class ProfileServiceTests extends BaseSpringBootTest {
                 .enrolleeId(bundle.enrollee().getId())
                 .build());
 
-        List<DataChangeRecord> dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
+        List<ParticipantDataChange> participantDataChanges = participantDataChangeService.findByEnrollee(bundle.enrollee().getId());
 
-        Assertions.assertEquals(1, dataChangeRecords.size());
+        Assertions.assertEquals(1, participantDataChanges.size());
 
-        DataChangeRecord record = dataChangeRecords.get(0);
+        ParticipantDataChange record = participantDataChanges.get(0);
         Assertions.assertTrue(record.getNewValue().contains(firstStreet1));
         Assertions.assertTrue(record.getNewValue().contains(firstCity));
 
@@ -141,14 +139,14 @@ public class ProfileServiceTests extends BaseSpringBootTest {
                 .enrolleeId(bundle.enrollee().getId())
                 .build());
 
-        dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
+        participantDataChanges = participantDataChangeService.findByEnrollee(bundle.enrollee().getId());
 
-        Assertions.assertEquals(2, dataChangeRecords.size());
+        Assertions.assertEquals(2, participantDataChanges.size());
 
         // get most recent of the two
-        record = (dataChangeRecords.get(0).getCreatedAt().isAfter(dataChangeRecords.get(1).getCreatedAt())
-                ? dataChangeRecords.get(0)
-                : dataChangeRecords.get(1));
+        record = (participantDataChanges.get(0).getCreatedAt().isAfter(participantDataChanges.get(1).getCreatedAt())
+                ? participantDataChanges.get(0)
+                : participantDataChanges.get(1));
 
         Assertions.assertTrue(record.getOldValue().contains(firstStreet1));
         Assertions.assertTrue(record.getOldValue().contains(firstCity));

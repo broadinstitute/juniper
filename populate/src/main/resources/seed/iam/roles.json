@@ -9,7 +9,8 @@
       "consent_form_edit",
       "site_content_edit",
       "participant_data_edit",
-      "participant_data_view"
+      "participant_data_view",
+      "admin_user_edit"
     ]
   },
   {

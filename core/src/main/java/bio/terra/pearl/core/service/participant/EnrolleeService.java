@@ -19,7 +19,7 @@ import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
@@ -40,7 +40,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final StudyEnvironmentService studyEnvironmentService;
     private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final NotificationService notificationService;
-    private final DataChangeRecordService dataChangeRecordService;
+    private final ParticipantDataChangeService participantDataChangeService;
     private final WithdrawnEnrolleeService withdrawnEnrolleeService;
     private final ParticipantUserService participantUserService;
     private final PortalParticipantUserService portalParticipantUserService;
@@ -62,7 +62,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy StudyEnvironmentService studyEnvironmentService,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
                            NotificationService notificationService,
-                           @Lazy DataChangeRecordService dataChangeRecordService,
+                           @Lazy ParticipantDataChangeService participantDataChangeService,
                            @Lazy WithdrawnEnrolleeService withdrawnEnrolleeService,
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
@@ -81,7 +81,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.studyEnvironmentService = studyEnvironmentService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationService = notificationService;
-        this.dataChangeRecordService = dataChangeRecordService;
+        this.participantDataChangeService = participantDataChangeService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.participantUserService = participantUserService;
         this.participantNoteService = participantNoteService;
@@ -216,7 +216,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         kitRequestService.deleteByEnrolleeId(enrolleeId, cascades);
 
         notificationService.deleteByEnrolleeId(enrolleeId);
-        dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
+        participantDataChangeService.deleteByEnrolleeId(enrolleeId);
 
         enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrolleeId);
         dao.delete(enrolleeId);

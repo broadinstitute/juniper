@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { Portal } from 'api/api'
-import { NewAdminUser } from 'api/adminUser'
+import { AdminUser, NewAdminUser, Role } from 'api/adminUser'
 import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
-import { doApiLoad } from '../api/api-utils'
+import { doApiLoad, useLoadingEffect } from '../api/api-utils'
+import InfoPopup from '../components/forms/InfoPopup'
+import { Link } from 'react-router-dom'
+import { RoleSelector } from './AdminUserDetail'
 
 /** creates a new admin user */
 const CreateUserModal = ({ onDismiss, portals, userCreated }:
@@ -18,13 +21,29 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
   const [portalShortcode, setPortalShortcode] =
     useState<string | null>(portals.length > 0 ? portals[0].shortcode : null)
   const { user } = useUser()
-  const [newUser, setNewUser] = useState<NewAdminUser>({ username: '', superuser: false, portalShortcode })
+  const [newUser, setNewUser] = useState<NewAdminUser>({
+    username: '',
+    superuser: false,
+    portalShortcode,
+    roleNames: ['study_admin']
+  })
   const portalOpts = portals.map(portal => ({ label: portal.name, value: portal.shortcode }))
   const selectedPortalOpt = portalOpts.find(portalOpt => portalOpt.value === portalShortcode)
+  const [roles, setRoles] = useState<Role[]>([])
+
+  useLoadingEffect(async () => {
+    const fetchedRoles = await Api.fetchRoles()
+    setRoles(fetchedRoles)
+  })
 
   const createUser = async () => {
     doApiLoad(async () => {
-      const createdUser = await Api.createUser(newUser)
+      let createdUser: AdminUser
+      if (!newUser.superuser) {
+        createdUser = await Api.createPortalUser(newUser)
+      } else {
+        createdUser = await Api.createSuperuser(newUser)
+      }
       Store.addNotification(successNotification(`${createdUser.username} created`))
       userCreated()
       onDismiss()
@@ -62,11 +81,17 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
             </label>
           </div> }
           { !newUser.superuser && <div>
-            <label>
-              Portal
-              <Select options={portalOpts} value={selectedPortalOpt}
-                onChange={opt => setPortalShortcode(opt?.value ?? null)}/>
-            </label>
+            <div>
+              <label className="w-100 mb-3">
+                Portal
+                <Select options={portalOpts} value={selectedPortalOpt}
+                  onChange={opt => setPortalShortcode(opt?.value ?? null)}/>
+              </label>
+            </div>
+            <div>
+              <RoleSelector roles={roles} selectedRoleNames={newUser.roleNames} setSelectedRoleNames={(roleNames) =>
+                setNewUser({ ...newUser, roleNames })}/>
+            </div>
           </div> }
         </div>
       </form>

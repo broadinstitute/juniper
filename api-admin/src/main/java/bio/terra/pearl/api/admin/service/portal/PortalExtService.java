@@ -16,7 +16,6 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -126,10 +125,5 @@ public class PortalExtService {
     List<PortalEnvironmentLanguage> updatedLangs =
         portalEnvironmentLanguageService.setPortalEnvLanguages(portalEnv.getId(), languages);
     return updatedLangs;
-  }
-
-  public void removeUserFromPortal(UUID adminUserId, String portalShortcode, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    portalAdminUserService.removeUserFromPortal(adminUserId, portal);
   }
 }

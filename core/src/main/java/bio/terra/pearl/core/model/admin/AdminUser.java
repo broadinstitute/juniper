@@ -16,9 +16,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class AdminUser extends BaseEntity {
     private String username;
-
-    private String token;
-
     private Instant lastLogin;
     @Builder.Default
     private boolean superuser = false;
