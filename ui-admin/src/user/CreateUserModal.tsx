@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { Portal } from 'api/api'
-import { AdminUser, NewAdminUser, Role } from 'api/adminUser'
+import { AdminUser, AdminUserParams, Role } from 'api/adminUser'
 import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
@@ -19,7 +19,7 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
   const [portalShortcode, setPortalShortcode] =
     useState<string | null>(portals.length > 0 ? portals[0].shortcode : null)
   const { user } = useUser()
-  const [newUser, setNewUser] = useState<NewAdminUser>({
+  const [newUser, setNewUser] = useState<AdminUserParams>({
     username: '',
     superuser: false,
     portalShortcode,

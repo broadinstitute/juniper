@@ -5,25 +5,26 @@ import { useLoadingEffect } from 'api/api-utils'
 import { Link, useParams } from 'react-router-dom'
 import { instantToDateString } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { AdminUser, Role } from 'api/adminUser'
 import { RoleTable } from './RolesList'
 import InfoPopup from '../components/forms/InfoPopup'
 import Select from 'react-select'
+import EditUserModal from './EditUserModal'
+import { Button } from '../components/forms/Button'
 
 
 /** shows roles and other details for an admin user */
 export const AdminUserDetailRaw = ({ adminUserId, portalShortcode }:
   { adminUserId: string, portalShortcode?: string}) => {
   const [adminUser, setAdminUser] = useState<AdminUser>()
-  const { isLoading } = useLoadingEffect(async () => {
-    const [user] = await Promise.all([
-      Api.fetchAdminUser(adminUserId, portalShortcode)
-    ])
+  const [showEditModal, setShowEditModal] = useState(false)
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const user = await Api.fetchAdminUser(adminUserId, portalShortcode)
     setAdminUser(user)
   })
   const showMultiplePortalUsers = (adminUser?.portalAdminUsers && adminUser.portalAdminUsers.length > 1)
-
+  const enableEditing = !adminUser?.superuser && portalShortcode
 
   return <div>
     {isLoading && <LoadingSpinner/>}
@@ -43,8 +44,15 @@ export const AdminUserDetailRaw = ({ adminUserId, portalShortcode }:
             </dd>
           </dl>
           <RoleTable roles={portalAdminUser.roles}/>
+          { enableEditing && <Button variant="secondary" outline={true} onClick={() => setShowEditModal(true)}>
+            <FontAwesomeIcon icon={faEdit}/> Edit user roles
+          </Button> }
         </div>
       }) }
+      { showEditModal && <EditUserModal userId={adminUser!.id}
+        portalShortcode={portalShortcode!}
+        onDismiss={() => setShowEditModal(false)}
+        userUpdated={reload}/>}
     </div>}
   </div>
 }

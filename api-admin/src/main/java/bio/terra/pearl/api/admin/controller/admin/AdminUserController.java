@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -91,6 +92,17 @@ public class AdminUserController implements AdminUserApi {
             newUser.getUsername(),
             newUser.getRoleNames());
     return new ResponseEntity(createdUser, HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<Object> setRolesInPortal(
+      String portalShortcode, UUID adminUserId, Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    List<String> roleNames = objectMapper.convertValue(body, new TypeReference<List<String>>() {});
+    List<String> updatedRoles =
+        adminUserExtService.setPortalUserRoles(
+            PortalAuthContext.of(operator, portalShortcode), adminUserId, roleNames);
+    return ResponseEntity.ok(updatedRoles);
   }
 
   /** deletes a user and all associated portal users */
