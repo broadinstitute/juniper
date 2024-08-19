@@ -19,7 +19,7 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     @Autowired
     BaseSeedPopulator baseSeedPopulator;
     @Autowired
-    AdminUserService adminUserService
+    AdminUserService adminUserService;
 
     @Test
     @Transactional

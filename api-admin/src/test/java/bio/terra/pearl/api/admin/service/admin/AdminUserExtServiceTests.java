@@ -52,6 +52,8 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
             "delete",
             AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
             "deleteInPortal",
+            AuthAnnotationSpec.withPortalPerm("admin_user_edit"),
+            "setPortalUserRoles",
             AuthAnnotationSpec.withPortalPerm("admin_user_edit")));
   }
 

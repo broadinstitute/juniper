@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api from 'api/api'
 import { Role } from 'api/adminUser'
-import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
@@ -18,7 +17,6 @@ const EditPortalUserModal = ({ userId, portalShortcode, onDismiss, userUpdated }
     userUpdated: () => void
   }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { user: operator } = useUser()
 
   /** there might be a case for supporting updating usernames, but for now we only support updating roles */
   const [updateParams, setUpdateParams] = useState<{username: string, roleNames: string[]}>({
