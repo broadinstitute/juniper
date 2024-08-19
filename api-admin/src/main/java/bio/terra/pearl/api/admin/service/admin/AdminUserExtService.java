@@ -129,14 +129,17 @@ public class AdminUserExtService {
       // regular users can only assign roles they have themselves
       PortalAdminUser operatorPaUser =
           portalAdminUserService
-              .findWithRolesAndPermissions(authContext.getOperator().getId())
+              .findByUserIdAndPortal(
+                  authContext.getOperator().getId(), authContext.getPortal().getId())
               .orElseThrow();
-      List<String> operatorRoles = operatorPaUser.getRoles().stream().map(Role::getName).toList();
+      portalAdminUserService.attachRolesAndPermissions(operatorPaUser);
+      List<String> operatorRoleNames =
+          operatorPaUser.getRoles().stream().map(Role::getName).toList();
       roleNames.forEach(
           roleName -> {
-            if (!operatorRoles.contains(roleName)) {
+            if (!operatorRoleNames.contains(roleName)) {
               throw new PermissionDeniedException(
-                  "You do not have permission to assing Role %s".formatted(roleName));
+                  "You do not have permission to assign role %s".formatted(roleName));
             }
           });
     }

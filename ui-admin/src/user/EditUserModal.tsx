@@ -36,15 +36,7 @@ const EditPortalUserModal = ({ userId, portalShortcode, onDismiss, userUpdated }
       username: loadedUser.username,
       roleNames: loadedUser.portalAdminUsers![0].roles.map(role => role.name)
     })
-    if (operator?.superuser) {
-      setRoles(allRoles)
-    } else {
-      /** regular users can only assign other people roles that they have themself */
-      const loadedOperator = await Api.fetchAdminUser(operator!.id, portalShortcode)
-      const operatorRoleNames = loadedOperator.portalAdminUsers![0].roles.map(role => role.name)
-      const availableRoles = allRoles.filter(role => operatorRoleNames.includes(role.name))
-      setRoles(availableRoles)
-    }
+    setRoles(allRoles)
   })
 
   const updateUser = async () => {
