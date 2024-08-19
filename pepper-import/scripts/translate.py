@@ -80,13 +80,6 @@ def main():
         translations
     ) = create_translations(dsm_questions, juniper_questions, translation_overrides)
 
-    print('# all dsm questions')
-    print(len(dsm_questions))
-    print('# unmatched dsm')
-    print(len(leftover_dsm_questions))
-    print('# translations')
-    print(len(translations))
-
     print('Translations')
     for t in translations:
         print_translation(t)
@@ -234,11 +227,6 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
             # either way, we need to group their subquestions together
             question.stable_id = question.stable_id[2:-2]  # remove the [[]]
             subquestions = list(filter(lambda q: q.stable_id.startswith(question.stable_id) and not q.stable_id.endswith('_DETAIL'), simple_questions))
-
-            if question.stable_id == 'MEDICAL_HISTORY.DETERMINED':
-                print(len(subquestions))
-                for q in subquestions:
-                    print(q.stable_id)
 
             # if the description doesn't have "May have up to <?> responses", then it's not a dynamicpanel
             if question.question_type.lower() == 'composite':
