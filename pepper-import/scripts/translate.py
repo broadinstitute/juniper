@@ -1,7 +1,9 @@
 import argparse
 import csv
 import os.path
-from copy import deepcopy
+import re
+from copy import copy
+from datetime import datetime
 from typing import Any, Union
 
 from openpyxl import load_workbook
@@ -53,6 +55,7 @@ def main():
                              'question id>,<juniper question id>')
     parser.add_argument('-I', '--in-file', required=True)
     parser.add_argument('-O', '--out-file', required=True)
+    parser.add_argument('-L', '--limit', type=int, default=None)
 
     args = parser.parse_args()
 
@@ -77,16 +80,16 @@ def main():
         translations
     ) = create_translations(dsm_questions, juniper_questions, translation_overrides)
 
-    # print('# all dsm questions')
-    # print(len(dsm_questions))
-    # print('# unmatched dsm')
-    # print(len(leftover_dsm_questions))
+    print('# all dsm questions')
+    print(len(dsm_questions))
+    print('# unmatched dsm')
+    print(len(leftover_dsm_questions))
+    print('# translations')
+    print(len(translations))
 
     print('Translations')
     for t in translations:
-        print(t.dsm_question_definition.stable_id + ' -> ' + t.juniper_question_definition.stable_id)
-        for sub in t.subquestion_translations:
-            print('\t' + sub.dsm_question_definition.stable_id + ' -> ' + sub.juniper_question_definition.stable_id)
+        print_translation(t)
     print()
 
     # 4: alert user of discrepancies
@@ -99,6 +102,10 @@ def main():
     #    - parse the data & actually do the translation
 
     dsm_data = parse_dsm_data(args.in_file)
+
+    if args.limit is not None:
+        dsm_data = dsm_data[:args.limit]
+
     juniper_data = apply_translations(dsm_data, translations)
 
     write_data(args.out_file, juniper_data)
@@ -145,6 +152,20 @@ class DataDefinition:
         self.num_repeats = num_repeats
         self.subquestions = subquestions
 
+
+def print_translation(translation, prefix: str = ''):
+    prefix = prefix or ''
+
+    dsm_stable_id = str(translation.dsm_question_definition.stable_id) if translation.dsm_question_definition else ''
+    juniper_stable_id = str(translation.juniper_question_definition.stable_id)
+
+    if translation.translation_override is not None and translation.translation_override.constant_value is not None:
+        print(prefix + juniper_stable_id + ' (constant value: ' + translation.translation_override.constant_value + ')')
+    else:
+        print(prefix + dsm_stable_id + ' -> ' + juniper_stable_id)
+
+    for sub in translation.subquestion_translations:
+        print_translation(sub, prefix + '\t')
 
 def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
     dsm_data_dict = load_workbook(filename=filepath)
@@ -212,17 +233,17 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
             # these questions are either composite or multiselect
             # either way, we need to group their subquestions together
             question.stable_id = question.stable_id[2:-2]  # remove the [[]]
-            subquestions = list(filter(lambda q: q.stable_id.startswith(question.stable_id), simple_questions))
+            subquestions = list(filter(lambda q: q.stable_id.startswith(question.stable_id) and not q.stable_id.endswith('_DETAIL'), simple_questions))
+
+            if question.stable_id == 'MEDICAL_HISTORY.DETERMINED':
+                print(len(subquestions))
+                for q in subquestions:
+                    print(q.stable_id)
 
             # if the description doesn't have "May have up to <?> responses", then it's not a dynamicpanel
             if question.question_type.lower() == 'composite':
-                if 'May have up to' not in question.description:
-                    # treat as regular questions
-                    for subquestion in subquestions:
-                        # subquestion.stable_id = subquestion.stable_id
-                        questions.append(subquestion)
-                    continue
-                else:
+                # if not, then it's a regular panel, so we should just ignore it.
+                if 'May have up to' in question.description:
                     # treat as dynamicpanel
                     question.subquestions = subquestions
                     questions.append(question)
@@ -230,6 +251,9 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
                 # treat as multiselect
                 question.subquestions = subquestions
                 questions.append(question)
+
+                for subquestion in subquestions:
+                    simple_questions.remove(subquestion)
             else:
                 print('Error: question ' + question.stable_id + ' is neither composite nor multiselect')
                 exit(1)
@@ -250,6 +274,11 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
         question = simple_questions.pop(0)
         # subquestion; handled when we encounter the parent question
         if question.stable_id.endswith('[0]'):
+            continue
+        if question.option_values == ['0']:
+            # these are derived columns for muliselect
+            # questions; we handle these when we encounter
+            # the parent question, so we can ignore these
             continue
         if question.question_type == 'paneldynamic':
             question.subquestions = []
@@ -274,11 +303,13 @@ class TranslationOverride:
     juniper_stable_id = None
 
     constant_value = None
+    value_if_present = None
 
-    def __init__(self, dsm_stable_id: str | None, juniper_stable_id: str, constant_value=None):
+    def __init__(self, dsm_stable_id: str | None, juniper_stable_id: str|None, constant_value=None, value_if_present=None):
         self.dsm_stable_id = dsm_stable_id
         self.juniper_stable_id = juniper_stable_id
         self.constant_value = constant_value
+        self.value_if_present = value_if_present
 
 
 def parse_translation_override(filepath: str) -> list[TranslationOverride]:
@@ -302,25 +333,26 @@ class Translation:
 
     translation_override = None  # handles overrides of default behavior
 
-    value_if_present = None
 
     def __init__(self, dsm_question_definition: DataDefinition, juniper_question_definition: DataDefinition,
                  translation_override: TranslationOverride | None = None,
-                 subquestion_translations=None,
-                 value_if_present=None):
+                 subquestion_translations=None):
         self.dsm_question_definition = dsm_question_definition
         self.juniper_question_definition = juniper_question_definition
         self.translation_override = translation_override
         self.subquestion_translations = subquestion_translations or []
-        self.value_if_present = value_if_present
 
 
 default_translation_overrides = [
     TranslationOverride('PROFILE.EMAIL', 'profile.contactEmail'),
     TranslationOverride('PROFILE.EMAIL', 'account.username'),
+    # if the user doesn't have an email, it usually means their proxy does, so check there
+    # as well
+    TranslationOverride('PROFILE.PROXY.EMAIL', 'account.username'),
     TranslationOverride('PROFILE.FIRSTNAME', 'profile.givenName'),
     TranslationOverride('PROFILE.LASTNAME', 'profile.familyName'),
     TranslationOverride(None, 'enrollee.subject', constant_value='true'),
+    TranslationOverride('CONSENT.CREATEDAT', 'enrollee.role', value_if_present='true'),
 ]
 
 
@@ -333,31 +365,34 @@ def create_translations(
     # - profile.email -> profile.contactEmail
     # - profile.email -> account.username
 
-    dsm_questions = deepcopy(dsm_questions)
-    juniper_questions = deepcopy(juniper_questions)
+    all_dsm_questions = copy(dsm_questions)
+    all_juniper_questions = copy(juniper_questions)
+
+    dsm_questions = copy(dsm_questions)
+    juniper_questions = copy(juniper_questions)
 
     unmatched_dsm_questions = []
 
     translations = []
 
     for override in translation_overrides + default_translation_overrides:
-        dsm_question = next((q for q in dsm_questions if q.stable_id == override.dsm_stable_id), None)
-        juniper_question = next((q for q in juniper_questions if q.stable_id == override.juniper_stable_id), None)
+        dsm_question = next((q for q in all_dsm_questions if q.stable_id == override.dsm_stable_id), None)
+        juniper_question = next((q for q in all_juniper_questions if q.stable_id == override.juniper_stable_id), None)
 
-        if dsm_question is not None or juniper_question is not None:
+        if (override.juniper_stable_id == '' or juniper_question is not None) and (override.dsm_stable_id == '' or dsm_question is not None):
             translations.append(Translation(dsm_question, juniper_question, override))
             # remove from lists; we don't need to match these anymore
             if dsm_question in dsm_questions:
                 dsm_questions.remove(dsm_question)
+
             if juniper_question in juniper_questions:
                 juniper_questions.remove(juniper_question)
         else:
             print('Error parsing translation override: ')
-            if dsm_question is None:
+            if dsm_question is None and override.dsm_stable_id is not None:
                 print('DSM question with stable ID ' + override.dsm_stable_id + ' not found')
             if juniper_question is None:
                 print('Juniper question with stable ID ' + override.juniper_stable_id + ' not found')
-            exit(1)
 
     # if not found in overrides, try to match by stable ID
     while len(dsm_questions) > 0 and len(juniper_questions) > 0:
@@ -381,6 +416,7 @@ def create_translations(
         else:
             unmatched_dsm_questions.append(dsm_question)
 
+    create_workflow_translations(unmatched_dsm_questions, juniper_questions, translations)
     return unmatched_dsm_questions, juniper_questions, translations
 
 
@@ -391,7 +427,7 @@ def create_workflow_translations(
 ):
     for dsm_question in dsm_questions:
         # look for known DSM questions, e.g. survey completion
-        if dsm_question.stable_id.endswith(".COMPLETEDAT") and dsm_question.stable_id.count('.') == 1:
+        if dsm_question.stable_id.endswith(".LASTUPDATEDAT") and dsm_question.stable_id.count('.') == 1:
             survey_name = dsm_question.stable_id.split('.')[0]
             last_updated_at_juniper_question = next(
                 (q for q in juniper_questions if q.stable_id == survey_name + '.lastUpdatedAt'), None)
@@ -400,11 +436,12 @@ def create_workflow_translations(
                 juniper_questions.remove(last_updated_at_juniper_question)
                 if dsm_question in dsm_questions:
                     dsm_questions.remove(dsm_question)
-
+        if dsm_question.stable_id.endswith(".COMPLETEDAT") and dsm_question.stable_id.count('.') == 1:
+            survey_name = dsm_question.stable_id.split('.')[0]
             completed_juniper_question = next(
-                (q for q in juniper_questions if q.stable_id == survey_name + '.completed'), None)
+                (q for q in juniper_questions if q.stable_id == survey_name + '.complete'), None)
             if completed_juniper_question is not None:
-                translations.append(Translation(dsm_question, completed_juniper_question, value_if_present=True))
+                translations.append(Translation(dsm_question, completed_juniper_question, translation_override=TranslationOverride(None, None, value_if_present='true')))
                 juniper_questions.remove(completed_juniper_question)
                 if dsm_question in dsm_questions:
                     dsm_questions.remove(dsm_question)
@@ -477,7 +514,10 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
         new_row = {}
         for translation in translations:
             apply_translation(row, new_row, translation)
-        out.append(new_row)
+        if 'account.username' not in new_row or new_row['account.username'] is None or new_row['account.username'] == '':
+            print('Warning: skipping user with missing username (check for input rows with missing emails)')
+        else:
+            out.append(new_row)
 
     return out
 
@@ -515,12 +555,14 @@ def simple_translate(translation: Translation,
     for idx in range(len(values)):
         response_stable_id = get_juniper_response_stable_id(juniper_question, idx)
         value = values[idx]
+        if response_stable_id in juniper_data and juniper_data[response_stable_id] is not None and juniper_data[response_stable_id] != '':
+            continue  # assume any value is good enough
         juniper_data[response_stable_id] = translate_value(translation, value)
 
 
 def translate_value(translation: Translation, value: Any) -> Any:
-    if translation.value_if_present is not None:
-        return translation.value_if_present if value.strip() != '' else None
+    if translation.translation_override is not None and translation.translation_override.value_if_present is not None:
+        return translation.translation_override.value_if_present if value.strip() != '' else None
 
     # possible data types: string, date, boolean, date_time, object_string
 
@@ -531,7 +573,7 @@ def translate_value(translation: Translation, value: Any) -> Any:
             print_wrong_type_warning(translation.dsm_question_definition, translation.juniper_question_definition)
         return convert_date(value)
     elif translation.juniper_question_definition.data_type == 'date_time':
-        if translation.dsm_question_definition.data_type != 'date_time':
+        if translation.dsm_question_definition.data_type != 'datetime':
             print_wrong_type_warning(translation.dsm_question_definition, translation.juniper_question_definition)
         return convert_date_time(value)
     elif translation.juniper_question_definition.data_type == 'boolean':
@@ -554,8 +596,12 @@ def convert_date(value: str) -> str:
 
 
 def convert_date_time(value: str) -> str:
-    # todo
-    return value
+    if value is None or value == '':
+        return value or ''
+
+    datetime_object = datetime.strptime(value, '%m-%d-%Y %H:%M:%S')
+
+    return datetime_object.strftime('%Y-%m-%d %I:%M%p')
 
 
 def convert_boolean(value: str) -> bool:
@@ -574,7 +620,10 @@ def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> li
 
 
 def is_repeat_question(question_stable_id: str, response_stable_id: str) -> bool:
-    return response_stable_id.startswith(question_stable_id + '_')
+    # use regex to match the question stable ID
+    # format: question_stable_id_response_stable_id_[0-9]+
+    return re.match(question_stable_id + '_[0-9]+', response_stable_id) is not None
+
 
 
 def get_juniper_response_stable_id(juniper_question: DataDefinition, repeat: int) -> str:

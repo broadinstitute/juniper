@@ -259,11 +259,11 @@ public class ActivityImporter {
 
             labelTrue = translatePepperTemplate(boolQuestionDef.getTrueTemplate());
             labelFalse = translatePepperTemplate(boolQuestionDef.getFalseTemplate());
-            valueTrue = "true";
-            valueFalse = "false";
+            valueTrue = "Yes";
+            valueFalse = "No";
         } else if (pepperQuestionDef.getQuestionType().equals(QuestionType.AGREEMENT)) {
-            valueTrue = "true";
-            valueFalse = "false";
+            valueTrue = "Yes";
+            valueFalse = "No";
         }
 
         if (titleMap.isEmpty() && placeholder != null) {
@@ -293,7 +293,7 @@ public class ActivityImporter {
                 .placeholder(placeholder)
                 .labelTrue(labelTrue)
                 .labelFalse(labelFalse)
-                .valueFalse(valueTrue)
+                .valueTrue(valueTrue)
                 .valueFalse(valueFalse)
                 .inputType(inputType)
                 .choices(choices)
@@ -316,13 +316,41 @@ public class ActivityImporter {
     }
 
     private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
+
+        boolean hasDetailsAllowed = picklistQuestionDef.getPicklistOptions().stream().anyMatch(PicklistOptionDef::isDetailsAllowed);
+
+        if (!hasDetailsAllowed) {
+            return List.of();
+        }
+
+        if (picklistQuestionDef.getSelectMode().equals(PicklistSelectMode.SINGLE)) {
+
+            PicklistOptionDef option = picklistQuestionDef.getPicklistOptions().stream().filter(PicklistOptionDef::isDetailsAllowed).findFirst().orElseThrow();
+
+            Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
+            String detailStableId = picklistQuestionDef.getStableId() + "_DETAIL";
+
+            SurveyJSQuestion otherQuestion = SurveyJSQuestion.builder()
+                    .name(detailStableId)
+                    .type("text")
+                    .title(otherTitle)
+                    .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
+                    .validators(null)
+                    .build();
+
+            return List.of(objectMapper.valueToTree(otherQuestion));
+        }
+
         List<JsonNode> otherQuestions = new ArrayList<>();
         for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
             if (option.isDetailsAllowed()) {
                 Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
+
+                // this is the naming convention for these questions in DSM
+                String detailStableId = picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_DETAIL";
+
                 SurveyJSQuestion otherQuestion = SurveyJSQuestion.builder()
-                        // similar naming convention as in dsm
-                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_DETAIL")
+                        .name(detailStableId)
                         .type("text")
                         .title(otherTitle)
                         .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
@@ -541,7 +569,7 @@ public class ActivityImporter {
                     pepperOperation = "contains";
                     break;
                 case "answers.hastrue":
-                    return stableId + " = true";
+                    return "(" + stableId + " = true or " + stableId + " = 'Yes')";
                 case "isanswered":
                     return stableId + " notempty";
                 default:
