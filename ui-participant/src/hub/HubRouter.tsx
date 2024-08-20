@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Navbar from '../Navbar'
 import HubPage from './HubPage'
@@ -7,7 +7,7 @@ import SurveyView from './survey/SurveyView'
 import { ParticipantProfile } from 'participant/ParticipantProfile'
 import PrintSurveyView from './survey/PrintSurveyView'
 import ManageProfiles from '../participant/ManageProfiles'
-import { KitInstructions } from './kit/KitInstructions'
+const KitInstructions = lazy(() => import('./kit/KitInstructions'))
 
 /** Handles url pathing for hub routes (a.k.a participant is signed in) */
 export default function HubRouter() {
