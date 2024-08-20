@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { KitCollectionStep, KitReturnType } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-const QRCode = lazy(() => import('react-qr-code'))
+import QRCode from 'react-qr-code'
 
 //TODO: JN-1294, implement i18n for this entire component
 
-export function KitInstructions() {
+export default function KitInstructions() {
   const { ppUser, enrollees } = useActiveUser()
   const { portalEnv } = usePortalEnv()
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
