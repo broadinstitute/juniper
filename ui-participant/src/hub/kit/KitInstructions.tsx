@@ -1,4 +1,4 @@
-import React, { lazy, useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { KitCollectionStep, KitReturnType } from '@juniper/ui-core'
