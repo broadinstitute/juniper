@@ -79,6 +79,9 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
                         page.getId().equals(section.getHtmlPageId())
                 ).collect(Collectors.toList()));
             });
+
+            localSite.setPages(htmlPages);
+
             localSite.setLandingPage(htmlPages.stream()
                     .filter(page -> page.getId().equals(localSite.getLandingPageId()))
                     .findFirst().orElse(null));

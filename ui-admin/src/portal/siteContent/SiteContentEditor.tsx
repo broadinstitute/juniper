@@ -1,4 +1,8 @@
-import React, { useState } from 'react'
+import React, {
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import Api, { HtmlSection } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -41,8 +45,6 @@ import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
 
-const landingPageOption = { label: 'Landing page', value: 'Landing page' }
-
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
@@ -65,11 +67,23 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = useLanguageSelectorFromParam()
   const selectedLanguage = selectedLanguageOption?.value
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
+  const localContent = useMemo(
+    () => workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode),
+    [workingContent, selectedLanguage])
+
 
   const { portalEnv } = portalEnvContext
   const [activeTab, setActiveTab] = useState<string | null>('designer')
-  const [selectedPage, setSelectedPage] = useState<HtmlPage>(localContent!.landingPage)
+  const [selectedPagePath, setSelectedPagePath] = useState<string>()
+
+  const selectedPage = useMemo(
+    () => localContent?.pages.find(p => p.path === selectedPagePath) || localContent?.landingPage,
+    [localContent, selectedPagePath])
+
+  useEffect(() => {
+    console.log('selectedPage', selectedPage)
+  }, [selectedPage])
+
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
@@ -90,6 +104,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       ...workingContent,
       localizedSiteContents: updatedLocalContents
     }
+
     setWorkingContent(newWorkingContent)
   }
 
@@ -121,7 +136,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       pages: [...localContent.pages, newPage]
     }
     updateLocalContent(updatedLocalContent)
-    setSelectedPage(newPage)
+    setSelectedPagePath(newPage.path)
   }
 
   const deletePage = (path: string) => {
@@ -140,12 +155,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
 
     updateLocalContent(updatedLocalContent)
-    setSelectedPage(updatedLocalContent.landingPage)
+    setSelectedPagePath(updatedLocalContent.landingPage.path)
   }
 
   /** updates the global SiteContent object with the given HtmlPage */
   const updatePage = (page: HtmlPage, isLandingPage: boolean) => {
     if (!localContent) {
+      console.log('No local content')
       return
     }
     let updatedLocalContent
@@ -155,8 +171,16 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         landingPage: page
       }
     } else {
+      console.log('updating page')
       const updatedPages = [...localContent.pages]
-      updatedPages.filter(p => p.path !== page.path).concat(page)
+
+      const matchedPageIndex = updatedPages.findIndex(p => p.path === page.path)
+      console.log('matchedPageIndex', matchedPageIndex)
+      if (matchedPageIndex === -1) {
+        return
+      }
+
+      updatedPages[matchedPageIndex] = page
 
       updatedLocalContent = {
         ...localContent,
@@ -194,11 +218,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
   const pageOpts: { label: string, value: string }[] = (localContent?.pages || [])
-    .map(page => ({ label: page.title, value: page.path }))
+    .map(page => ({ label: page.title || 'Landing Page', value: page.path }))
 
-  pageOpts.unshift(landingPageOption)
-
-  const isLandingPage = selectedPage.path === localContent?.landingPage.path
+  const isLandingPage = selectedPagePath === undefined || selectedPagePath === localContent?.landingPage.path
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
@@ -249,10 +271,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <div style={{ width: 250 }}>
             <Select
               options={pageOpts}
-              value={pageOpts.find(opt => opt.value === selectedPage.path)}
+              value={pageOpts.find(opt => opt.value === selectedPagePath)}
               isDisabled={hasInvalidSection} aria-label={'Select a page'}
               onChange={e => {
-                setSelectedPage(localContent?.pages.find(p => p.path === e?.value) || localContent!.landingPage)
+                setSelectedPagePath(
+                  localContent?.pages.find(p => p.path === e?.value)?.path || localContent!.landingPage.path
+                )
               }}/>
           </div>
           <Button className="btn btn-secondary"
@@ -311,11 +335,16 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 <div>
                   {selectedPage &&
                       <ApiProvider api={previewApi}>
-                        <HtmlPageEditView htmlPage={selectedPage} readOnly={readOnly}
+                        <HtmlPageEditView
+                          htmlPage={selectedPage}
+                          readOnly={readOnly}
                           portalEnvContext={portalEnvContext}
-                          siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
-                          footerSection={localContent.footerSection} updateFooter={updateFooter}
-                          updatePage={page => updatePage(page, isLandingPage)} useJsonEditor={false}/>
+                          siteHasInvalidSection={hasInvalidSection}
+                          setSiteHasInvalidSection={setHasInvalidSection}
+                          footerSection={localContent.footerSection}
+                          updateFooter={updateFooter}
+                          updatePage={page => updatePage(page, isLandingPage)}
+                          useJsonEditor={false}/>
                       </ApiProvider>}
                 </div>
               </ErrorBoundary>

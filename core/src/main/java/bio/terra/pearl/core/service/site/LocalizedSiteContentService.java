@@ -38,21 +38,22 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             localSite.setFooterSectionId(footer.getId());
             localSite.setFooterSection(footer);
         }
+        LocalizedSiteContent savedSite = dao.create(localSite);
+
         List<HtmlPage> pages = localSite.getPages();
         for (int i = 0; i < pages.size(); i++) {
             HtmlPage page = pages.get(i);
-            page.setLocalizedSiteContentId(localSite.getId());
+            page.setLocalizedSiteContentId(savedSite.getId());
             page = htmlPageService.create(page);
             pages.set(i, page);
         }
-        LocalizedSiteContent savedSite = dao.create(localSite);
         for (int i = 0; i < localSite.getNavbarItems().size(); i++) {
             NavbarItem navItem = localSite.getNavbarItems().get(i);
             if (navItem.getHtmlPagePath() != null) {
                 pages.stream()
                         .filter(p -> p.getPath().equals(navItem.getHtmlPagePath()))
                         .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Navbar item page path not found"));
+                        .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(navItem.getHtmlPagePath())));
             }
 
             navItem.setItemOrder(i);

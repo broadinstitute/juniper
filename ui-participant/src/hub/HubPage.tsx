@@ -18,6 +18,7 @@ import {
 } from './hubUpdates'
 import {
   Enrollee,
+  getJoinLink,
   ParticipantDashboardAlert,
   useI18n
 } from '@juniper/ui-core'
@@ -28,7 +29,6 @@ import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import ParticipantSelector from '../participant/ParticipantSelector'
 import { Link } from 'react-router-dom'
-import { getJoinLink } from '../Navbar'
 
 
 /** renders the logged-in hub page */

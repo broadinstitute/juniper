@@ -37,8 +37,7 @@ export function NavbarEditor({
 
   const localContent = siteContent
     .localizedSiteContents
-    .find(lsc => lsc.language === (selectedLanguageOption?.value || defaultLanguage.languageCode))
-
+    .find(lsc => lsc.language === (selectedLanguageOption?.value?.languageCode || defaultLanguage.languageCode))
 
   const pages = localContent?.pages || []
   const [navbarItems, setNavbarItems] = React.useState<NavbarItem[]>(localContent?.navbarItems || [])
@@ -55,10 +54,14 @@ export function NavbarEditor({
         value={selectedLanguageOption}
         inputId={selectLanguageInputId}
         aria-label={'Select a language'}
-        onChange={languageOnChange}/>
+        onChange={languageOnChange}
+      />
     </div> }
     {localContent
-      ? <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={localContent}/>
+      ? <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={{
+        ...localContent,
+        navbarItems
+      }}/>
       : <p>Not configured for this language</p>}
 
     <div>
@@ -67,10 +70,12 @@ export function NavbarEditor({
         pages={pages}
         navbarItem={item}
         isPartOfGroup={isPartOfGroup}
-        updateNavbarItem={item => {
-          const newItems = navbarItems.slice()
-          newItems[idx] = item
-          setNavbarItems(newItems)
+        updateNavbarItem={newItem => {
+          setNavbarItems(items => {
+            const newItems = items.slice()
+            newItems[idx] = newItem
+            return newItems
+          })
         }}
       />)}
     </div>
@@ -82,7 +87,8 @@ const NavbarTypeOptions: {label: string, value: NavBarItemType}[] = [
   { value: 'INTERNAL', label: 'Internal' },
   { value: 'INTERNAL_ANCHOR', label: 'Internal Anchor' },
   { value: 'MAILING_LIST', label: 'Mailing List' },
-  { value: 'EXTERNAL', label: 'External' }
+  { value: 'EXTERNAL', label: 'External' },
+  { value: 'GROUP', label: 'Group' }
 ]
 
 const NavbarItemEditor = (
@@ -107,19 +113,34 @@ const NavbarItemEditor = (
   })
 
   return <div className="d-flex flex-row">
-    <div>
+    <div className="me-2">
       <label>Type</label>
       <Select
         value={options.find(opt => opt.value === navbarItem.itemType)}
         options={options}
         onChange={val => {
-          // todo
-          console.log(val)
+          switch (val?.value) {
+            case 'INTERNAL':
+              updateNavbarItem({ ...navbarItem, itemType: 'INTERNAL', htmlPagePath: '' } as NavbarItemInternal)
+              break
+            case 'INTERNAL_ANCHOR':
+              updateNavbarItem({ ...navbarItem, itemType: 'INTERNAL_ANCHOR', href: '' } as NavbarItemInternalAnchor)
+              break
+            case 'MAILING_LIST':
+              updateNavbarItem({ ...navbarItem, itemType: 'MAILING_LIST' })
+              break
+            case 'EXTERNAL':
+              updateNavbarItem({ ...navbarItem, itemType: 'EXTERNAL', href: '' } as NavbarItemExternal)
+              break
+            case 'GROUP':
+              updateNavbarItem({ ...navbarItem, itemType: 'GROUP', items: [] } as NavbarItemGroup)
+              break
+          }
         }}/>
     </div>
-    <div>
+    <div className="me-2">
       <label>Text</label>
-      <input value={navbarItem.text} onChange={e => {
+      <input className="form-control " value={navbarItem.text} onChange={e => {
         updateNavbarItem({ ...navbarItem, text: e.target.value })
       }}/>
     </div>
@@ -168,7 +189,7 @@ const NavbarItemInternalEditor = (
       <label>Page</label>
       <Select
         value={currentPage && { value: navbarItem.htmlPagePath, label: currentPage.title }}
-        options={pages.map(page => ({ value: page.path, label: page.title }))}
+        options={pages.map(page => ({ value: page.path, label: page.title || 'Landing Page' }))}
         onChange={val => {
           updateNavbarItem({ ...navbarItem, htmlPagePath: val?.value || '' })
         }}
@@ -188,7 +209,8 @@ const NavbarItemGroupEditor = (
     pages: HtmlPage[]
   }
 ) => {
-  return <div className="fs-3">
+  return <div className="ms-3">
+    <p>Sub items</p>
     {navbarItem.items.map((item, idx) => <NavbarItemEditor
       key={idx}
       pages={pages}
@@ -219,7 +241,7 @@ const NavbarItemExternalEditor = (
   return <>
     <div>
       <label>URL</label>
-      <input value={navbarItem.href} onChange={e => {
+      <input className="form-control" value={navbarItem.href} onChange={e => {
         updateNavbarItem({ ...navbarItem, href: e.target.value })
       }}/>
     </div>
@@ -238,7 +260,7 @@ const NavbarItemInternalAnchorEditor = (
   return <>
     <div>
       <label>URL</label>
-      <input value={navbarItem.href} onChange={e => {
+      <input className="form-control" value={navbarItem.href} onChange={e => {
         updateNavbarItem({ ...navbarItem, href: e.target.value })
       }}/>
     </div>

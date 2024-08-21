@@ -205,13 +205,30 @@ const MailingListNavLink = (props: MailingListNavLinkProps) => {
 export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.text}</NavLink>
+    return <NavLink to={`/${navLink.htmlPagePath}`} className={navLinkClasses}>{navLink.text}</NavLink>
   } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
     return <HashLink to={navLink.href} className={navLinkClasses}>{navLink.text}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <MailingListNavLink role="button" className={navLinkClasses}>{navLink.text}</MailingListNavLink>
   } else if (navLink.itemType === 'EXTERNAL') {
     return <a href={navLink.href} className={navLinkClasses} target="_blank">{navLink.text}</a>
+  } else if (navLink.itemType === 'GROUP') {
+    return <div className="dropdown">
+      <button
+        aria-expanded="false"
+        aria-label={navLink.text}
+        className={classNames(
+          navLinkClasses,
+          'btn btn-text dropdown-toggle text-start'
+        )}
+        data-bs-toggle="dropdown"
+      >
+        {navLink.text}
+      </button>
+      <div className="dropdown-menu border-0 bg-transparent">
+        {navLink.items.map((item, index) => <CustomNavLink key={index} navLink={item}/>)}
+      </div>
+    </div>
   }
   return <></>
 }

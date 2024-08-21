@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   EnrolleeRelation,
   LocalSiteContent,
@@ -24,16 +25,22 @@ export function NavbarPreview(
     profile?: Profile,
     proxyRelations?: EnrolleeRelation[]
   }) {
-  return <ParticipantNavbar
-    portal={portal}
-    portalEnv={portalEnv}
-    localContent={localContent}
-    user={user}
-    profile={profile}
-    proxyRelations={proxyRelations || []}
-    reloadPortal={() => {}}
-    updatePreferredLanguage={async () => {}}
-    doChangePassword={() => {}}
-    doLogout={() => {}}
-  />
+  return <div>
+    <ParticipantNavbar
+      portal={portal}
+      portalEnv={portalEnv}
+      localContent={localContent}
+      user={user}
+      profile={profile}
+      proxyRelations={proxyRelations || []}
+      reloadPortal={() => {
+      }}
+      updatePreferredLanguage={async () => {
+      }}
+      doChangePassword={() => {
+      }}
+      doLogout={() => {
+      }}
+    />
+  </div>
 }
