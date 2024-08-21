@@ -87,7 +87,8 @@ public class SiteContentExtractor {
 
             NavbarItemPopDto itemFileDto = new NavbarItemPopDto();
             BeanUtils.copyProperties(navbarItem, itemFileDto, "id", "localizedSiteContentId", "htmlPage");
-            itemFileDto.setHtmlPageDto(convertHtmlPage(navbarItem.getHtmlPage()));
+            // todo: fix
+            //            itemFileDto.setHtmlPageDto(convertHtmlPage(navbarItem.getHtmlPage()));
             String navbarAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(itemFileDto);
             context.writeFileForEntity(filePath + "/" + navbarFile, navbarAsString, navbarItem.getId());
         } else {

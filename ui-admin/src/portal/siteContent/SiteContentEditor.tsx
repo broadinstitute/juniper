@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/api'
+import Api, { HtmlSection } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faClockRotateLeft, faGlobe,
+  faClockRotateLeft,
+  faGlobe,
   faImage,
   faPalette,
   faPlus,
@@ -11,17 +12,25 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import {
-  HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
-  ApiContextT, HtmlSectionView, SiteFooter
+  ApiContextT,
+  ApiProvider,
+  HtmlPage,
+  HtmlSectionView,
+  LocalSiteContent,
+  SiteContent,
+  SiteFooter
 } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
-import AddNavbarItemModal, { NavItemProps } from './AddNavbarItemModal'
+import AddPageModal from 'portal/siteContent/AddPageModal'
 import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
-import { Tab, Tabs } from 'react-bootstrap'
+import {
+  Tab,
+  Tabs
+} from 'react-bootstrap'
 import DeleteNavItemModal from './DeleteNavItemModal'
 import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
@@ -32,7 +41,6 @@ import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
 
-type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
 
 type InitializedSiteContentViewProps = {
@@ -50,10 +58,18 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
+
+  const {
+    defaultLanguage, languageOnChange, selectedLanguageOption,
+    selectLanguageInputId, languageOptions
+  } = useLanguageSelectorFromParam()
+  const selectedLanguage = selectedLanguageOption?.value
+  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
+
   const { portalEnv } = portalEnvContext
   const [activeTab, setActiveTab] = useState<string | null>('designer')
-  const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
-  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
+  const [selectedPage, setSelectedPage] = useState<HtmlPage>(localContent!.landingPage)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
@@ -63,14 +79,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showTranslationModal, setShowTranslationModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const zoneConfig = useConfig()
-  const {
-    defaultLanguage, languageOnChange, selectedLanguageOption,
-    selectLanguageInputId, languageOptions
-  } = useLanguageSelectorFromParam()
-  const selectedLanguage = selectedLanguageOption?.value
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
-
-  const navBarItems = localContent?.navbarItems ?? []
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -104,81 +112,55 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     setWorkingContent(newWorkingContent)
   }
 
-  const insertNewNavItem = (itemProps: NavItemProps) => {
+  const insertNewPage = (newPage: HtmlPage) => {
     if (!localContent) {
       return
     }
-    let newNavBarItem: NavbarItemInternal | NavbarItemExternal
-    if (itemProps.itemType === 'INTERNAL') {
-      newNavBarItem = {
-        itemType: 'INTERNAL',
-        itemOrder: localContent.navbarItems.length,
-        text: itemProps.text,
-        htmlPage: {
-          path: itemProps.href,
-          sections: [],
-          title: itemProps.text
-        }
-      }
-    } else {
-      newNavBarItem = {
-        itemType: 'EXTERNAL',
-        itemOrder: localContent.navbarItems.length,
-        text: itemProps.text,
-        href: itemProps.href
-      }
-    }
     const updatedLocalContent = {
       ...localContent,
-      navbarItems: [...localContent.navbarItems, newNavBarItem]
+      pages: [...localContent.pages, newPage]
     }
     updateLocalContent(updatedLocalContent)
-    setSelectedNavOpt({ label: newNavBarItem.text, value: newNavBarItem.text || 'Landing page' })
+    setSelectedPage(newPage)
   }
 
-  const deleteNavItem = (navItemText: string) => {
+  const deletePage = (path: string) => {
     if (!localContent) {
       return
     }
-    const updatedNavBarItems = [...localContent.navbarItems]
-    const matchedNavItemIndex = updatedNavBarItems.findIndex(navItem => navItem.text === navItemText)
-    if (matchedNavItemIndex === -1) {
+    const updatedPages = [...localContent.pages]
+    const matchedPageIndex = updatedPages.findIndex(page => page.path === path)
+    if (matchedPageIndex === -1) {
       return
     }
-    updatedNavBarItems.splice(matchedNavItemIndex, 1)
+    updatedPages.splice(matchedPageIndex, 1)
     const updatedLocalContent = {
       ...localContent,
-      navbarItems: updatedNavBarItems
+      pages: updatedPages
     }
 
     updateLocalContent(updatedLocalContent)
-    setSelectedNavOpt(landingPageOption)
+    setSelectedPage(updatedLocalContent.landingPage)
   }
 
-  /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
-  const updatePage = (page: HtmlPage, navItemText?: string) => {
+  /** updates the global SiteContent object with the given HtmlPage */
+  const updatePage = (page: HtmlPage, isLandingPage: boolean) => {
     if (!localContent) {
       return
     }
     let updatedLocalContent
-    if (!navItemText) {
+    if (isLandingPage) {
       updatedLocalContent = {
         ...localContent,
         landingPage: page
       }
     } else {
-      const updatedNavBarItems = [...localContent.navbarItems]
-      const matchedNavItem = navBarItems.find(navItem => navItem.text === navItemText) as NavbarItemInternal
-      if (!matchedNavItem) {
-        return
-      }
-      updatedNavBarItems[matchedNavItem.itemOrder] = {
-        ...matchedNavItem,
-        htmlPage: page
-      }
+      const updatedPages = [...localContent.pages]
+      updatedPages.filter(p => p.path !== page.path).concat(page)
+
       updatedLocalContent = {
         ...localContent,
-        navbarItems: updatedNavBarItems
+        pages: updatedPages
       }
     }
     updateLocalContent(updatedLocalContent)
@@ -211,16 +193,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
-  const currentNavBarItem = selectedNavOpt.value ? navBarItems
-    .find(navItem => navItem.text === selectedNavOpt.value) : null
-  const pageToRender = currentNavBarItem ?
-    (currentNavBarItem as NavbarItemInternal).htmlPage : localContent?.landingPage
+  const pageOpts: { label: string, value: string }[] = (localContent?.pages || [])
+    .map(page => ({ label: page.title, value: page.path }))
 
-  const pageOpts: {label: string, value: string}[] = navBarItems
-    .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
-  const isLandingPage = selectedNavOpt === landingPageOption
+  const isLandingPage = selectedPage.path === localContent?.landingPage.path
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
@@ -269,10 +247,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       <div className="px-2">
         <div className="d-flex flex-grow-1 mb-1">
           <div style={{ width: 250 }}>
-            <Select options={pageOpts} value={selectedNavOpt}
+            <Select
+              options={pageOpts}
+              value={pageOpts.find(opt => opt.value === selectedPage.path)}
               isDisabled={hasInvalidSection} aria-label={'Select a page'}
               onChange={e => {
-                setSelectedNavOpt(e ?? landingPageOption)
+                setSelectedPage(localContent?.pages.find(p => p.path === e?.value) || localContent!.landingPage)
               }}/>
           </div>
           <Button className="btn btn-secondary"
@@ -314,7 +294,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         </div>
       </div>}
       {localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
-        { pageToRender &&
+        {selectedPage &&
           <Tabs
             activeKey={activeTab ?? undefined}
             className="mb-1"
@@ -329,13 +309,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             >
               <ErrorBoundary>
                 <div>
-                  {pageToRender &&
+                  {selectedPage &&
                       <ApiProvider api={previewApi}>
-                        <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                        <HtmlPageEditView htmlPage={selectedPage} readOnly={readOnly}
                           portalEnvContext={portalEnvContext}
                           siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                           footerSection={localContent.footerSection} updateFooter={updateFooter}
-                          updatePage={page => updatePage(page, currentNavBarItem?.text)} useJsonEditor={false}/>
+                          updatePage={page => updatePage(page, isLandingPage)} useJsonEditor={false}/>
                       </ApiProvider>}
                 </div>
               </ErrorBoundary>
@@ -347,13 +327,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             >
               <ErrorBoundary>
                 <div>
-                  {pageToRender &&
+                  {selectedPage &&
                       <ApiProvider api={previewApi}>
-                        <HtmlPageEditView portalEnvContext={portalEnvContext} htmlPage={pageToRender}
+                        <HtmlPageEditView portalEnvContext={portalEnvContext} htmlPage={selectedPage}
                           readOnly={readOnly}
                           siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                           footerSection={localContent.footerSection} updateFooter={updateFooter}
-                          updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
+                          updatePage={page => updatePage(page, isLandingPage)}/>
                       </ApiProvider>}
                 </div>
               </ErrorBoundary>
@@ -365,7 +345,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             >
               <ErrorBoundary>
                 <ApiProvider api={previewApi}>
-                  { pageToRender.sections.map((section: HtmlSection) =>
+                  {selectedPage.sections.map((section: HtmlSection) =>
                     <HtmlSectionView section={section} key={section.id}/>)
                   }
                   <SiteFooter footerSection={localContent.footerSection}/>
@@ -373,24 +353,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               </ErrorBoundary>
             </Tab>
           </Tabs> }
-        { currentNavBarItem?.itemType === 'EXTERNAL' && <div className="mt-2">
-          <form className="container">
-            <label htmlFor="externalHref">External link</label>
-            <input type="text" id="externalHref" className="form-control"
-              value={(currentNavBarItem as NavbarItemExternal).href}
-              onChange={e => {
-                const updatedNavItem = { ...currentNavBarItem, href: e.target.value }
-                const updatedNavBarItems = [...localContent.navbarItems]
-                updatedNavBarItems[updatedNavItem.itemOrder] = updatedNavItem
-                const updatedLocalContent = {
-                  ...localContent,
-                  navbarItems: updatedNavBarItems
-                }
-                updateLocalContent(updatedLocalContent)
-              }}/>
-          </form>
-        </div>
-        }
         { showVersionSelector &&
           <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode}
             stableId={siteContent.stableId} current={siteContent}
@@ -399,13 +361,15 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             onDismiss={() => setShowVersionSelector(false)}/>
         }
         { showAddPageModal &&
-          <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
-            insertNewNavItem={insertNewNavItem}
-            onDismiss={() => setShowAddPageModal(false)}/>
+            <AddPageModal
+              insertNewPage={insertNewPage}
+              onDismiss={() => setShowAddPageModal(false)}/>
         }
-        { (showDeletePageModal && currentNavBarItem) &&
-          <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
-            onDismiss={() => setShowDeletePageModal(false)}/>
+        {(showDeletePageModal && selectedPage) &&
+            <DeleteNavItemModal
+              page={selectedPage}
+              deletePage={() => deletePage(selectedPage.path)}
+              onDismiss={() => setShowDeletePageModal(false)}/>
         }
         { showAddPreRegModal &&
           <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>

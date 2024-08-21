@@ -6,11 +6,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
-import bio.terra.pearl.populate.dto.site.HtmlPagePopDto;
-import bio.terra.pearl.populate.dto.site.HtmlSectionPopDto;
-import bio.terra.pearl.populate.dto.site.LocalizedSiteContentPopDto;
-import bio.terra.pearl.populate.dto.site.NavbarItemPopDto;
-import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
+import bio.terra.pearl.populate.dto.site.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +51,8 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
             NavbarItemPopDto popItem = objectMapper.readValue(navPopulateString, NavbarItemPopDto.class);
             BeanUtils.copyProperties(popItem, navItem);
         }
-        navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
+        // todo: fix
+//        navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
     }
 
     private void initializeLandingPage(LocalizedSiteContentPopDto lscPopDto, FilePopulateContext context) throws IOException {

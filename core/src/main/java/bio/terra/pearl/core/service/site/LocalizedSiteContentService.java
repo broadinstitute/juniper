@@ -8,10 +8,11 @@ import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class LocalizedSiteContentService extends ImmutableEntityService<LocalizedSiteContent, LocalizedSiteContentDao> {
@@ -37,9 +38,23 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             localSite.setFooterSectionId(footer.getId());
             localSite.setFooterSection(footer);
         }
+        List<HtmlPage> pages = localSite.getPages();
+        for (int i = 0; i < pages.size(); i++) {
+            HtmlPage page = pages.get(i);
+            page.setLocalizedSiteContentId(localSite.getId());
+            page = htmlPageService.create(page);
+            pages.set(i, page);
+        }
         LocalizedSiteContent savedSite = dao.create(localSite);
         for (int i = 0; i < localSite.getNavbarItems().size(); i++) {
             NavbarItem navItem = localSite.getNavbarItems().get(i);
+            if (navItem.getHtmlPagePath() != null) {
+                pages.stream()
+                        .filter(p -> p.getPath().equals(navItem.getHtmlPagePath()))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Navbar item page path not found"));
+            }
+
             navItem.setItemOrder(i);
             navItem.setLocalizedSiteContentId(savedSite.getId());
             NavbarItem savedItem = navbarItemService.create(navItem);

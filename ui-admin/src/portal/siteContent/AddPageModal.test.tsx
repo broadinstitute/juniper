@@ -1,14 +1,17 @@
 import { userEvent } from '@testing-library/user-event'
 import { mockPortalEnvironment } from 'test-utils/mocking-utils'
-import AddNavbarItemModal from './AddNavbarItemModal'
-import { render, screen } from '@testing-library/react'
+import AddPageModal from 'portal/siteContent/AddPageModal'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import React from 'react'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AddPageModal', () => {
   test('disables Create button when title and path aren\'t filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
       insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
@@ -24,7 +27,7 @@ describe('AddPageModal', () => {
 
   test('enables Create button when title and path are filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
       insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
@@ -48,7 +51,7 @@ describe('AddPageModal', () => {
   test('Create button calls insertNewPage with a new page', async () => {
     //Arrange
     const mockInsertNewPageFn = jest.fn()
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
       insertNewNavItem={mockInsertNewPageFn}
       portalEnv={mockPortalEnvironment('sandbox')}

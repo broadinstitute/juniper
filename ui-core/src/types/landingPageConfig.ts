@@ -9,6 +9,7 @@ export type SiteContent = {
 export type LocalSiteContent = {
   language: string
   navbarItems: NavbarItem[]
+  pages: HtmlPage[]
   landingPage: HtmlPage
   navLogoCleanFileName: string
   navLogoVersion: number
@@ -52,8 +53,9 @@ export type NavbarItem =
   | NavbarItemInternalAnchor
   | NavbarItemMailingList
   | NavbarItemExternal
+  | NavbarItemGroup
 
-export type NavBarItemType = 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
+export type NavBarItemType = 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL' | 'GROUP'
 
 export type BaseNavBarItem = {
   id?: string
@@ -65,6 +67,12 @@ export type BaseNavBarItem = {
 export type NavbarItemInternal = BaseNavBarItem & {
   itemType: 'INTERNAL'
   htmlPage: HtmlPage
+  htmlPagePath: string
+}
+
+export type NavbarItemGroup = BaseNavBarItem & {
+  itemType: 'GROUP'
+  items: NavbarItem[]
 }
 
 export type NavbarItemInternalAnchor = BaseNavBarItem & {

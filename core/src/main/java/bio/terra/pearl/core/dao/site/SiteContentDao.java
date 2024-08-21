@@ -5,12 +5,13 @@ import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.HtmlSection;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.model.site.SiteContent;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
@@ -63,8 +64,15 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
             List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
             List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
             navbarItems.forEach(item -> {
-                item.setHtmlPage(htmlPages.stream().filter(page -> page.getId().equals(item.getHtmlPageId()))
+                item.setHtmlPage(htmlPages.stream().filter(page -> page.getPath().equals(item.getHtmlPagePath()))
                         .findFirst().orElse(null));
+
+                // get the children of this item, if they exist
+                item.setItems(
+                        navbarItems
+                                .stream()
+                                .filter(childItem -> item.getId().equals(childItem.getParentNavbarItemId()))
+                                .toList());
             });
             htmlPages.forEach(page -> {
                 page.getSections().addAll(htmlSections.stream().filter(section ->
@@ -74,7 +82,12 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
             localSite.setLandingPage(htmlPages.stream()
                     .filter(page -> page.getId().equals(localSite.getLandingPageId()))
                     .findFirst().orElse(null));
-            localSite.getNavbarItems().addAll(navbarItems);
+            localSite
+                    .getNavbarItems()
+                    .addAll(
+                            // add only the top level items, the children are already attached
+                            navbarItems.stream().filter(item -> item.getParentNavbarItemId() == null).toList()
+                    );
             if (localSite.getFooterSectionId() != null) {
                 localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
             }
