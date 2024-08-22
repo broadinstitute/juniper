@@ -1,4 +1,7 @@
-import React from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import {
   HtmlPage,
   NavbarItem,
@@ -10,12 +13,49 @@ import {
   SiteContent
 } from '@juniper/ui-core'
 import { PortalEnvContext } from 'portal/PortalRouter'
-import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
 import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faX } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faPlus,
+  faX
+} from '@fortawesome/free-solid-svg-icons'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable
+} from '@tanstack/react-table'
+import { isNil } from 'lodash'
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
+import { basicTableLayout } from 'util/tableUtils'
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle
+} from 'react-bootstrap'
+import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
+import Api from 'api/api'
+import { useConfig } from 'providers/ConfigProvider'
+import { isEmpty } from 'lodash/fp'
 
+
+type EditableNavbarItem = Partial<NavbarItem> & { isEditing: boolean }
+type NavbarItemRow = NavbarItem | EditableNavbarItem
+
+const isEditable = (row: NavbarItemRow): row is EditableNavbarItem => {
+  return !isNil((row as EditableNavbarItem).isEditing)
+}
+
+const NavbarTypeOptions: { label: string, value: NavBarItemType }[] = [
+  { value: 'INTERNAL', label: 'Internal' },
+  { value: 'INTERNAL_ANCHOR', label: 'Internal Anchor' },
+  { value: 'MAILING_LIST', label: 'Mailing List' },
+  { value: 'EXTERNAL', label: 'External' },
+  { value: 'GROUP', label: 'Dropdown' }
+]
 
 export function NavbarEditor({
   siteContent,
@@ -27,15 +67,35 @@ export function NavbarEditor({
   createNewVersion: (workingContent: SiteContent) => void
 }) {
   const {
+    portal, portalEnv
+  } = portalEnvContext
+
+  const {
     defaultLanguage, languageOnChange, selectedLanguageOption,
     selectLanguageInputId, languageOptions
   } = useLanguageSelectorFromParam()
 
-  const {
-    portal,
-    portalEnv
-  } = portalEnvContext
+  const zoneConfig = useConfig()
 
+
+  const participantLink = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
+    portalEnvContext.portal.shortcode, portalEnv.environmentName)
+
+  const [newNavbarItem, setNewNavbarItem] = useState<EditableNavbarItem>({ isEditing: false })
+  const [navbarItemSelectedForDeletion, setNavbarItemSelectedForDeletion] = useState<NavbarItem>()
+
+  const onNewNavbarItemChange = (field: keyof EditableNavbarItem, value: string | boolean) => {
+    setNewNavbarItem({
+      ...newNavbarItem,
+      [field]: value
+    })
+  }
+  const saveNewNavbarItem = async (newNavbarItem: NavbarItem) => {
+    const newMappings = [...navbarItems, newNavbarItem]
+
+    setNavbarItems(newMappings)
+    setNewNavbarItem({ isEditing: false })
+  }
 
   const localContent = siteContent
     .localizedSiteContents
@@ -44,82 +104,176 @@ export function NavbarEditor({
   const pages = localContent?.pages || []
   const [navbarItems, setNavbarItems] = React.useState<NavbarItem[]>(localContent?.navbarItems || [])
 
+
+  const columns = useMemo<ColumnDef<NavbarItemRow>[]>(() => [
+    {
+      header: 'Type',
+      accessorKey: 'itemType',
+      cell: ({ row }) => {
+        const value = row.original.itemType
+        if (isEditable(row.original)) {
+          return row.original.isEditing && <Select
+            aria-label={'New Navbar Item Type'}
+            placeholder={'Select item type'}
+            options={NavbarTypeOptions}
+            value={NavbarTypeOptions.find(option => option.value === value)}
+            onChange={e => e && onNewNavbarItemChange('itemType', e.value as NavBarItemType)}
+          />
+        }
+        return value
+      }
+    },
+    {
+      header: 'Name',
+      accessorKey: 'text',
+      cell: ({ row }) => {
+        const value = row.original.text
+        if (isEditable(row.original)) {
+          return row.original.isEditing && <NavbarTextEditor
+            key={row.index}
+            navbarItem={newNavbarItem as NavbarItem}
+            updateNavbarItem={newItem => {
+              setNewNavbarItem(old => {
+                return { ...old, ...newItem }
+              })
+            }}/>
+        }
+        return value
+      }
+    },
+    {
+      header: 'Destination',
+      accessorKey: 'targetField',
+      cell: ({ row }) => {
+        if (isEditable(row.original) && row.original.itemType) {
+          return row.original.isEditing && <NavbarDestinationEditor
+            navbarItem={row.original as NavbarItem}
+            updateNavbarItem={newItem => {
+              setNewNavbarItem(old => {
+                return { ...old, ...newItem }
+              })
+            }}
+            pages={pages}
+          />
+        }
+        return <NavbarDestination navbarItem={row.original as NavbarItem} pages={pages}
+          participantUrl={participantLink}/>
+      }
+    },
+    {
+      header: 'Actions',
+      id: 'actions',
+      cell: ({ row }) => {
+        if (isEditable(row.original)) {
+          if (!row.original.isEditing) {
+            return <button
+              className='btn btn-primary border-0'
+              onClick={() => onNewNavbarItemChange('isEditing', true)}>
+              <FontAwesomeIcon icon={faPlus} aria-label={'Create New Answer Mapping'}/>
+            </button>
+          }
+
+          return <>
+            <button
+              className='btn btn-success me-2'
+              disabled={!isValidNavbarItem(row.original as NavbarItem, pages)}
+              onClick={() => {
+                const newItem = {
+                  ...row.original,
+                  isEditing: undefined
+                }
+                saveNewNavbarItem(newItem as NavbarItem)
+              }}>
+              <FontAwesomeIcon icon={faCheck} aria-label={'Accept New Answer Mapping'}/>
+            </button>
+            <button className='btn btn-danger' onClick={() => onNewNavbarItemChange('isEditing', false)}>
+              <FontAwesomeIcon icon={faX} aria-label={'Cancel New Answer Mapping'}/>
+            </button>
+          </>
+        }
+        return <button className='btn btn-outline-danger border-0' onClick={() => {
+          setNavbarItemSelectedForDeletion(row.original as NavbarItem)
+        }}>
+          <FontAwesomeIcon icon={faTrashCan} aria-label={'Delete Answer Mapping'}/>
+        </button>
+      }
+    }
+  ], [newNavbarItem, navbarItems])
+
+  const data = useMemo(
+    () => (navbarItems as NavbarItemRow[]).concat(newNavbarItem),
+    [navbarItems, newNavbarItem])
+
+  const table = useReactTable<NavbarItemRow>({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel()
+  })
+
   // TODO list:
   //  - Add navbar preview
   //  - Add individual navbar item editor
   //  - Add drag'n'drop reordering
   //  - Add navbar group editor (with drag'n'drop)
-  return <div className='ms-2'>
-    {languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
-      <Select
-        options={languageOptions}
-        value={selectedLanguageOption}
-        inputId={selectLanguageInputId}
-        aria-label={'Select a language'}
-        onChange={languageOnChange}
-      />
-    </div>}
-    <button
-      disabled={navbarItems.some(item => !isValidNavbarItem(item, pages))}
-      className='btn btn-primary mt-2'
-      onClick={() => {
-        createNewVersion({
-          ...siteContent,
-          localizedSiteContents: siteContent.localizedSiteContents.map(lsc => {
-            if (lsc.language === (selectedLanguageOption?.value?.languageCode || defaultLanguage.languageCode)) {
-              return {
-                ...lsc,
-                navbarItems
-              }
-            }
-            return lsc
-          })
-        })
-      }}
+  return <div className='m-2'>
+    <div className="d-flex flex-row">
+      {languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
+        <Select
+          options={languageOptions}
+          value={selectedLanguageOption}
+          inputId={selectLanguageInputId}
+          aria-label={'Select a language'}
+          onChange={languageOnChange}
+        />
+      </div>}
+      <div className="d-flex flex-grow-1 justify-content-end">
+        <button
+          disabled={navbarItems.some(item => !isValidNavbarItem(item, pages))}
+          className='btn btn-primary mt-2'
+          onClick={() => {
+            createNewVersion({
+              ...siteContent,
+              localizedSiteContents: siteContent.localizedSiteContents.map(lsc => {
+                if (lsc.language === (selectedLanguageOption?.value?.languageCode || defaultLanguage.languageCode)) {
+                  return {
+                    ...lsc,
+                    navbarItems
+                  }
+                }
+                return lsc
+              })
+            })
+          }}
+        >
+          Save
+        </button>
+      </div>
+
+    </div>
+
+    {localContent && <div
+      className="w-100 my-4"
     >
-      Save
-    </button>
-    {localContent
-      ? <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={{
+      <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={{
         ...localContent,
         navbarItems
       }}/>
-      : <p>Not configured for this language</p>}
+    </div>}
 
-    <div>
-      {navbarItems.map((item, idx) => <NavbarItemEditor
-        key={idx}
-        pages={pages}
-        navbarItem={item}
-        updateNavbarItem={newItem => {
-          setNavbarItems(items => {
-            const newItems = items.slice()
-            newItems[idx] = newItem
-            return newItems
-          })
-        }}
-        deleteNavbarItem={() => setNavbarItems(items => items.filter((_, i) => i !== idx))}
-      />)}
+    <div className="m-3">
+      {basicTableLayout(table, { tdClass: 'col-1' })}
     </div>
 
-    <button
-      className='btn btn-primary mt-2'
-      onClick={() => {
-        setNavbarItems([...navbarItems, {} as NavbarItem])
-      }}>
-      Add Item
-    </button>
+    {navbarItemSelectedForDeletion && <DeleteNavbarItemModal
+      onCancel={() => setNavbarItemSelectedForDeletion(undefined)}
+      onConfirm={() => {
+        setNavbarItems(navbarItems.filter(item => item !== navbarItemSelectedForDeletion))
+        setNavbarItemSelectedForDeletion(undefined)
+      }}
+    />}
 
   </div>
 }
-
-const NavbarTypeOptions: { label: string, value: NavBarItemType }[] = [
-  { value: 'INTERNAL', label: 'Internal' },
-  { value: 'INTERNAL_ANCHOR', label: 'Internal Anchor' },
-  { value: 'MAILING_LIST', label: 'Mailing List' },
-  { value: 'EXTERNAL', label: 'External' },
-  { value: 'GROUP', label: 'Dropdown' }
-]
 
 const isValidNavbarItem = (item: NavbarItem, pages: HtmlPage[]) => {
   if ((item.text || '').trim() === '') {
@@ -143,99 +297,106 @@ const isValidNavbarItem = (item: NavbarItem, pages: HtmlPage[]) => {
   }
 }
 
-const NavbarItemEditor = (
+
+const NavbarTextEditor = (
+  {
+    navbarItem,
+    updateNavbarItem
+  }: {
+    navbarItem: NavbarItem,
+    updateNavbarItem: (item: NavbarItem) => void
+  }
+) => {
+  const [textValue, setTextValue] = useState(navbarItem.text)
+
+
+  return <input
+    className="form-control"
+    placeholder={'Name'}
+    disabled={isEmpty(navbarItem.itemType)}
+    value={navbarItem.text}
+    onChange={e => {
+      setTextValue(e.target.value)
+    }}
+    onBlur={() => {
+      updateNavbarItem({ ...navbarItem, text: textValue })
+    }}
+  />
+}
+
+const NavbarDestination = (
+  {
+    navbarItem,
+    pages,
+    participantUrl
+  }: {
+    navbarItem: NavbarItem,
+    pages: HtmlPage[]
+    participantUrl: string
+  }
+) => {
+  if (navbarItem.itemType === 'INTERNAL') {
+    const page = pages.find(page => page.path === (navbarItem as NavbarItemInternal).htmlPagePath)
+    if (!page) {
+      return <span className={'fst-italic'}>could not find page</span>
+    }
+
+    return <a href={`${participantUrl}/${page.path}`}>{page.title}</a>
+  } else if (navbarItem.itemType === 'EXTERNAL') {
+    const href = (navbarItem as NavbarItemExternal).href
+    return <a href={href}>External link</a>
+  } else if (navbarItem.itemType === 'INTERNAL_ANCHOR') {
+    const href = (navbarItem as NavbarItemInternalAnchor).href
+    return <a href={href}>External link</a>
+  } else if (navbarItem.itemType === 'MAILING_LIST') {
+    return <span>Mailing List</span>
+  } else if (navbarItem.itemType === 'GROUP') {
+    return <></>
+  }
+  return <></>
+}
+
+
+const NavbarDestinationEditor = (
   {
     navbarItem,
     updateNavbarItem,
-    pages,
-    deleteNavbarItem,
-    isPartOfGroup
-  } : {
+    pages
+  }: {
     navbarItem: NavbarItem
     updateNavbarItem: (item: NavbarItem) => void,
-    pages: HtmlPage[],
-    deleteNavbarItem?: () => void,
-    isPartOfGroup?: boolean
+    pages: HtmlPage[]
   }
 ) => {
-  const options = NavbarTypeOptions.filter(opt => {
-    // can't have a group inside a group
-    if (isPartOfGroup) {
-      return opt.value !== 'GROUP'
-    }
-    return true
-  })
-
   return <>
-    <div className="d-flex flex-row align-items-end">
-      <div className="me-2">
-        <label>Type</label>
-        <Select
-          value={options.find(opt => opt.value === navbarItem.itemType)}
-          options={options}
-          onChange={val => {
-            switch (val?.value) {
-              case 'INTERNAL':
-                updateNavbarItem({ ...navbarItem, itemType: 'INTERNAL', htmlPagePath: '' } as NavbarItemInternal)
-                break
-              case 'INTERNAL_ANCHOR':
-                updateNavbarItem({ ...navbarItem, itemType: 'INTERNAL_ANCHOR', href: '' } as NavbarItemInternalAnchor)
-                break
-              case 'MAILING_LIST':
-                updateNavbarItem({ ...navbarItem, itemType: 'MAILING_LIST' })
-                break
-              case 'EXTERNAL':
-                updateNavbarItem({ ...navbarItem, itemType: 'EXTERNAL', href: '' } as NavbarItemExternal)
-                break
-              case 'GROUP':
-                updateNavbarItem({ ...navbarItem, itemType: 'GROUP', items: [{}] } as NavbarItemGroup)
-                break
-            }
-          }}/>
-      </div>
-      <div className="me-2">
-        <label>Text</label>
-        <input className="form-control " value={navbarItem.text} onChange={e => {
-          updateNavbarItem({ ...navbarItem, text: e.target.value })
-        }}/>
-      </div>
+    {navbarItem.itemType === 'INTERNAL' && <NavbarPageSelector
+      navbarItem={navbarItem as NavbarItemInternal}
+      updateNavbarItem={updateNavbarItem}
+      pages={pages}
+    />}
 
-      {navbarItem.itemType === 'INTERNAL' && <NavbarItemInternalEditor
-        navbarItem={navbarItem as NavbarItemInternal}
-        updateNavbarItem={updateNavbarItem}
-        pages={pages}
-      />}
+    {navbarItem.itemType === 'EXTERNAL' && <NavbarHrefEditor
+      navbarItem={navbarItem as NavbarItemExternal}
+      updateNavbarItem={updateNavbarItem}
+    />}
 
-      {navbarItem.itemType === 'EXTERNAL' && <NavbarItemExternalEditor
-        navbarItem={navbarItem as NavbarItemExternal}
-        updateNavbarItem={updateNavbarItem}
-      />}
+    {navbarItem.itemType === 'INTERNAL_ANCHOR' && <NavbarHrefEditor
+      navbarItem={navbarItem as NavbarItemInternalAnchor}
+      updateNavbarItem={updateNavbarItem}
+    />}
 
-      {navbarItem.itemType === 'INTERNAL_ANCHOR' && <NavbarItemInternalAnchorEditor
-        navbarItem={navbarItem as NavbarItemInternalAnchor}
-        updateNavbarItem={updateNavbarItem}
-      />}
+    {/* MAILING_LIST type doesn't need any additional configuration. */}
 
-      {/* MAILING_LIST type doesn't need any additional configuration. */}
-
-      <button
-        className='btn btn-link'
-        onClick={deleteNavbarItem}>
-        <FontAwesomeIcon icon={faX}/>
-      </button>
-    </div>
-
-    <div className="ms-4">
-      {navbarItem.itemType === 'GROUP' && <NavbarItemGroupEditor
-        navbarItem={navbarItem as NavbarItemGroup}
-        updateNavbarItem={updateNavbarItem}
-        pages={pages}/>}
-    </div>
+    {navbarItem.itemType === 'GROUP' && <NavbarGroupAddNew
+      navbarItem={navbarItem as NavbarItemGroup}
+      updateNavbarItem={updateNavbarItem}
+    />}
 
   </>
 }
 
-const NavbarItemInternalEditor = (
+
+const NavbarPageSelector = (
   {
     navbarItem,
     updateNavbarItem,
@@ -248,90 +409,102 @@ const NavbarItemInternalEditor = (
 ) => {
   const currentPage = pages.find(page => page.path === navbarItem.htmlPagePath)
 
-  return <>
-    <div>
-      <label>Page</label>
-      <Select
-        value={currentPage && { value: navbarItem.htmlPagePath, label: currentPage.title }}
-        options={pages.map(page => ({ value: page.path, label: page.title || 'Landing Page' }))}
-        onChange={val => {
-          updateNavbarItem({ ...navbarItem, htmlPagePath: val?.value || '' })
-        }}
-      />
-    </div>
-  </>
+  return <Select
+    placeholder={'Select a page'}
+    value={currentPage && { value: navbarItem.htmlPagePath, label: currentPage.title }}
+    options={pages.map(page => ({ value: page.path, label: page.title || 'Landing Page' }))}
+    onChange={val => {
+      updateNavbarItem({ ...navbarItem, htmlPagePath: val?.value || '' })
+    }}
+  />
 }
 
-const NavbarItemGroupEditor = (
+const NavbarGroupAddNew = (
   {
     navbarItem,
-    updateNavbarItem,
-    pages
+    updateNavbarItem
   } : {
     navbarItem: NavbarItemGroup,
-    updateNavbarItem: (item: NavbarItem) => void,
-    pages: HtmlPage[]
+    updateNavbarItem: (item: NavbarItem) => void
   }
 ) => {
-  return <div className="ms-2">
-    {navbarItem.items.map((item, idx) => <NavbarItemEditor
-      key={idx}
-      pages={pages}
-      navbarItem={item}
-      isPartOfGroup={true}
-      updateNavbarItem={item => {
-        const newItems = navbarItem.items.slice()
-        newItems[idx] = item
-        updateNavbarItem({ ...navbarItem, items: newItems })
-      }}
-      deleteNavbarItem={() => {
-        updateNavbarItem({ ...navbarItem, items: navbarItem.items.filter((_, i) => i !== idx) })
-      }}
-    />)}
-    <button
-      className='btn btn-primary mt-2'
-      onClick={() => {
-        updateNavbarItem({ ...navbarItem, items: navbarItem.items.concat({} as NavbarItem) })
-      }}>
+  // should be "add new item" button
+  return <button
+    className='btn btn-primary mt-2'
+    onClick={() => {
+      updateNavbarItem({ ...navbarItem, items: navbarItem.items.concat({} as NavbarItem) })
+    }}>
       Add Item
-    </button>
-  </div>
+  </button>
+  // return <div className="ms-2">
+  //   {navbarItem.items.map((item, idx) => <NavbarItemEditor
+  //     key={idx}
+  //     pages={pages}
+  //     navbarItem={item}
+  //     isPartOfGroup={true}
+  //     updateNavbarItem={item => {
+  //       const newItems = navbarItem.items.slice()
+  //       newItems[idx] = item
+  //       updateNavbarItem({ ...navbarItem, items: newItems })
+  //     }}
+  //     deleteNavbarItem={() => {
+  //       updateNavbarItem({ ...navbarItem, items: navbarItem.items.filter((_, i) => i !== idx) })
+  //     }}
+  //   />)}
+  //   <button
+  //     className='btn btn-primary mt-2'
+  //     onClick={() => {
+  //       updateNavbarItem({ ...navbarItem, items: navbarItem.items.concat({} as NavbarItem) })
+  //     }}>
+  //     Add Item
+  //   </button>
+  // </div>
 }
 
-const NavbarItemExternalEditor = (
+
+const NavbarHrefEditor = (
   {
     navbarItem,
     updateNavbarItem
   } : {
-    navbarItem: NavbarItemExternal,
+    navbarItem: NavbarItemInternalAnchor | NavbarItemExternal,
     updateNavbarItem: (item: NavbarItem) => void
   }
 ) => {
-  return <>
-    <div>
-      <label>URL</label>
-      <input className="form-control" value={navbarItem.href} onChange={e => {
-        updateNavbarItem({ ...navbarItem, href: e.target.value })
-      }}/>
-    </div>
-  </>
+  const [textValue, setTextValue] = useState(navbarItem.text)
+
+  return <input
+    className="form-control"
+    placeholder={'URL'}
+    value={navbarItem.href}
+    onChange={e => {
+      setTextValue(e.target.value)
+    }}
+    onBlur={() => {
+      updateNavbarItem({ ...navbarItem, href: textValue })
+    }}
+  />
 }
 
-const NavbarItemInternalAnchorEditor = (
-  {
-    navbarItem,
-    updateNavbarItem
-  } : {
-    navbarItem: NavbarItemInternalAnchor,
-    updateNavbarItem: (item: NavbarItem) => void
-  }
+const DeleteNavbarItemModal = (
+  { onConfirm, onCancel }: { onConfirm: () => void, onCancel: () => void }
 ) => {
-  return <>
-    <div>
-      <label>URL</label>
-      <input className="form-control" value={navbarItem.href} onChange={e => {
-        updateNavbarItem({ ...navbarItem, href: e.target.value })
-      }}/>
-    </div>
-  </>
+  return <Modal onHide={onCancel} show={true}>
+    <ModalHeader>
+      <ModalTitle>
+        Are you sure you want to delete this navbar item?
+      </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+      This action cannot be undone.
+    </ModalBody>
+    <ModalFooter>
+      <button className='btn btn-danger' onClick={onConfirm}>
+        Yes
+      </button>
+      <button className='btn btn-secondary' onClick={onCancel}>
+        No
+      </button>
+    </ModalFooter>
+  </Modal>
 }

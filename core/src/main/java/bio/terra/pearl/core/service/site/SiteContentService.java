@@ -93,7 +93,9 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
     protected void cleanForCopying(NavbarItem navbarItem) {
         navbarItem.cleanForCopying();
         cleanForCopying(navbarItem.getHtmlPage());
-        navbarItem.getItems().stream().forEach(item -> cleanForCopying(item));
+        if (navbarItem.getItems() != null) {
+            navbarItem.getItems().stream().forEach(item -> cleanForCopying(item));
+        }
     }
 
     protected  void cleanForCopying(HtmlPage htmlPage) {

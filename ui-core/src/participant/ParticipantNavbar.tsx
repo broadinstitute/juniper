@@ -41,7 +41,8 @@ import {
 import { useApiContext } from 'src/participant/ApiProvider'
 import { MailingListModal } from 'src/participant/landing/MailingListModal'
 
-const navLinkClasses = 'nav-link fs-5 ms-lg-3'
+const topLevelNavLinkClasses = 'nav-link fs-5 ms-lg-3'
+const groupedNavLinkClasses = 'nav-link fs-5'
 
 
 type NavbarProps = JSX.IntrinsicElements['nav'] & {
@@ -69,7 +70,8 @@ export function ParticipantNavbar(props: NavbarProps) {
     profile,
     proxyRelations,
     doChangePassword,
-    doLogout
+    doLogout,
+    ...navProps
   } = props
 
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
@@ -99,7 +101,7 @@ export function ParticipantNavbar(props: NavbarProps) {
   const Api = useApiContext()
 
 
-  return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
+  return <nav {...navProps} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
         <img className="Navbar-logo" style={{ height: '30px', maxHeight: '30px' }}
@@ -202,7 +204,11 @@ const MailingListNavLink = (props: MailingListNavLinkProps) => {
 /** renders a single navBarItem. This will likely get split out into subcomponents for each type as they are
  * implemented
  */
-export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
+export function CustomNavLink({ navLink, isGrouped = false }: {
+  navLink: NavbarItem,
+  isGrouped?: boolean
+}) {
+  const navLinkClasses = isGrouped ? groupedNavLinkClasses : topLevelNavLinkClasses
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
     return <NavLink to={`/${navLink.htmlPagePath}`} className={navLinkClasses}>{navLink.text}</NavLink>
@@ -225,8 +231,12 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
       >
         {navLink.text}
       </button>
-      <div className="dropdown-menu border-0 bg-transparent">
-        {navLink.items.map((item, index) => <CustomNavLink key={index} navLink={item}/>)}
+      <div className="dropdown-menu">
+        {navLink.items.map((item, index) =>
+          <div className="dropdown-item" key={index}>
+            <CustomNavLink key={index} navLink={item} isGrouped={true}/>
+          </div>
+        )}
       </div>
     </div>
   }
@@ -293,7 +303,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
           aria-expanded="false"
           aria-label="Select a language"
           className={classNames(
-            navLinkClasses,
+            topLevelNavLinkClasses,
             'btn btn-text dropdown-toggle text-start'
           )}
           data-bs-toggle="dropdown"
@@ -353,7 +363,7 @@ export const AccountOptionsDropdown = (
           aria-expanded="false"
           aria-label={`account options for ${user.username}`}
           className={classNames(
-            navLinkClasses,
+            topLevelNavLinkClasses,
             'btn btn-text dropdown-toggle text-start'
           )}
           data-bs-toggle="dropdown"
