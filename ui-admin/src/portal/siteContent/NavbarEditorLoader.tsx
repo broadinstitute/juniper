@@ -32,17 +32,17 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       Store.addNotification(failureNotification('Could not load site content'))
     })
   }
-  //
-  // const loadSiteContent = async (stableId: string, version: number) => {
-  //   setIsLoading(true)
-  //   Api.getSiteContent(portalShortcode, stableId, version).then(response => {
-  //     setSiteContent(response)
-  //     setIsLoading(false)
-  //   }).catch(() => {
-  //     Store.addNotification(failureNotification('Could not load site content'))
-  //   })
-  // }
-  //
+
+  const loadSiteContent = async (stableId: string, version: number) => {
+    setIsLoading(true)
+    Api.getSiteContent(portalShortcode, stableId, version).then(response => {
+      setSiteContent(response)
+      setIsLoading(false)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Could not load site content'))
+    })
+  }
+
   /** saves the current content as a new version, and updates the portal environment to use it */
   const createNewVersion = async (workingContent: SiteContent) => {
     let newVersion: SiteContent
@@ -94,6 +94,8 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
         key={`${siteContent.stableId}-${siteContent.version}`}
         portalEnvContext={portalEnvContext}
         createNewVersion={createNewVersion}
+        loadSiteContent={loadSiteContent}
+        switchToVersion={switchToVersion}
       /> }
     { isLoading && <LoadingSpinner/> }
   </>

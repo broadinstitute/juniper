@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -17,13 +18,18 @@ import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCaretDown,
+  faCaretUp,
   faCheck,
+  faClockRotateLeft,
   faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
 import {
   ColumnDef,
   getCoreRowModel,
+  getExpandedRowModel,
+  Row,
   useReactTable
 } from '@tanstack/react-table'
 import { isNil } from 'lodash'
@@ -39,13 +45,17 @@ import {
 import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
 import Api from 'api/api'
 import { useConfig } from 'providers/ConfigProvider'
+import { Button } from 'components/forms/Button'
+import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
+import { Link } from 'react-router-dom'
+import SiteContentVersionSelector from 'portal/siteContent/SiteContentVersionSelector'
 import { isEmpty } from 'lodash/fp'
 
 
 type EditableNavbarItem = Partial<NavbarItem> & { isEditing: boolean }
 type NavbarItemRow = NavbarItem | EditableNavbarItem
 
-const isEditable = (row: NavbarItemRow): row is EditableNavbarItem => {
+const isRowEditable = (row: NavbarItemRow): row is EditableNavbarItem => {
   return !isNil((row as EditableNavbarItem).isEditing)
 }
 
@@ -60,11 +70,16 @@ const NavbarTypeOptions: { label: string, value: NavBarItemType }[] = [
 export function NavbarEditor({
   siteContent,
   portalEnvContext,
-  createNewVersion
-} : {
+  createNewVersion,
+  loadSiteContent,
+  switchToVersion
+}: {
   siteContent: SiteContent
   portalEnvContext: PortalEnvContext
   createNewVersion: (workingContent: SiteContent) => void
+  loadSiteContent: (stableId: string, version: number, language?: string) => void
+  switchToVersion: (id: string, stableId: string, version: number) => void
+
 }) {
   const {
     portal, portalEnv
@@ -77,12 +92,22 @@ export function NavbarEditor({
 
   const zoneConfig = useConfig()
 
+  const isEditable = portalEnv.environmentName === 'sandbox'
 
   const participantLink = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
     portalEnvContext.portal.shortcode, portalEnv.environmentName)
 
+  const showParticipantView = () => {
+    window.open(participantLink, '_blank')
+  }
+
   const [newNavbarItem, setNewNavbarItem] = useState<EditableNavbarItem>({ isEditing: false })
+
+  // map of HTML page paths to their respective pages
+  const [newGroupedItems, setNewGroupedItems] = useState<Record<string, EditableNavbarItem>>({})
+
   const [navbarItemSelectedForDeletion, setNavbarItemSelectedForDeletion] = useState<NavbarItem>()
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
 
   const onNewNavbarItemChange = (field: keyof EditableNavbarItem, value: string | boolean) => {
     setNewNavbarItem({
@@ -90,11 +115,76 @@ export function NavbarEditor({
       [field]: value
     })
   }
-  const saveNewNavbarItem = async (newNavbarItem: NavbarItem) => {
+
+  const onNewGroupedNavbarItemChange = (parent: string, field: keyof EditableNavbarItem, value: string | boolean) => {
+    setNewGroupedItems(old => {
+      return {
+        ...old,
+        [parent]: {
+          ...old[parent],
+          [field]: value
+        }
+      }
+    })
+  }
+
+  const onRowFieldChange = (row: Row<NavbarItemRow>, field: keyof NavbarItemRow, value: string | boolean) => {
+    const parentRow = row.getParentRow()
+    if (!isNil(parentRow)) {
+      onNewGroupedNavbarItemChange(parentRow.original.text as string, field, value)
+    } else {
+      onNewNavbarItemChange(field, value)
+    }
+  }
+
+  const onRowChange = (row: Row<NavbarItemRow>, newRow: NavbarItem) => {
+    const parentRow = row.getParentRow()
+    if (!isNil(parentRow)) {
+      setNewGroupedItems(
+        old => {
+          return {
+            ...old,
+            [parentRow.original.text as string]: {
+              ...old[parentRow.original.text as string],
+              ...newRow
+            }
+          }
+        }
+      )
+    } else {
+      setNewNavbarItem(old => {
+        return { ...old, ...newRow }
+      })
+    }
+  }
+
+  const saveNewNavbarItem = (newNavbarItem: NavbarItem) => {
     const newMappings = [...navbarItems, newNavbarItem]
 
     setNavbarItems(newMappings)
     setNewNavbarItem({ isEditing: false })
+  }
+
+  const saveNewGroupedItem = (parent: Row<NavbarItemRow>, newItem: NavbarItem) => {
+    setNewGroupedItems(old => {
+      delete old[parent.original.text as string]
+      return old
+    })
+
+    setNavbarItems(() => {
+      return navbarItems.map(item => {
+        if (item.text === parent.original.text) {
+          return {
+            ...item,
+            items: [
+              ...(item as NavbarItemGroup).items,
+              newItem
+            ]
+          } as NavbarItemGroup
+        }
+        return item
+      })
+    })
   }
 
   const localContent = siteContent
@@ -107,20 +197,43 @@ export function NavbarEditor({
 
   const columns = useMemo<ColumnDef<NavbarItemRow>[]>(() => [
     {
+      id: 'expanded',
+      header: '',
+      accessorKey: 'expanded',
+      cell: ({ row }) => {
+        if (row.depth === 0 && !row.getCanExpand()) {
+          return <></>
+        }
+        return <div
+          style={{
+            paddingLeft: `${row.depth * 2}rem`
+          }}
+        >
+          <button
+            className="btn btn-link"
+            onClick={() => row.toggleExpanded()}
+            disabled={!row.getCanExpand()}
+          >
+            {row.getIsExpanded() ? <FontAwesomeIcon icon={faCaretUp}/> : <FontAwesomeIcon icon={faCaretDown}/>}
+          </button>
+        </div>
+      }
+    },
+    {
       header: 'Type',
       accessorKey: 'itemType',
       cell: ({ row }) => {
         const value = row.original.itemType
-        if (isEditable(row.original)) {
+        if (isRowEditable(row.original)) {
           return row.original.isEditing && <Select
             aria-label={'New Navbar Item Type'}
             placeholder={'Select item type'}
             options={NavbarTypeOptions}
             value={NavbarTypeOptions.find(option => option.value === value)}
-            onChange={e => e && onNewNavbarItemChange('itemType', e.value as NavBarItemType)}
+            onChange={e => e && onRowFieldChange(row, 'itemType', e.value as NavBarItemType)}
           />
         }
-        return value
+        return NavbarTypeOptions.find(option => option.value === value)?.label
       }
     },
     {
@@ -128,14 +241,12 @@ export function NavbarEditor({
       accessorKey: 'text',
       cell: ({ row }) => {
         const value = row.original.text
-        if (isEditable(row.original)) {
+        if (isRowEditable(row.original)) {
           return row.original.isEditing && <NavbarTextEditor
             key={row.index}
-            navbarItem={newNavbarItem as NavbarItem}
+            navbarItem={row.original as NavbarItem}
             updateNavbarItem={newItem => {
-              setNewNavbarItem(old => {
-                return { ...old, ...newItem }
-              })
+              onRowChange(row, newItem)
             }}/>
         }
         return value
@@ -145,30 +256,32 @@ export function NavbarEditor({
       header: 'Destination',
       accessorKey: 'targetField',
       cell: ({ row }) => {
-        if (isEditable(row.original) && row.original.itemType) {
+        if (isRowEditable(row.original) && row.original.itemType) {
           return row.original.isEditing && <NavbarDestinationEditor
             navbarItem={row.original as NavbarItem}
             updateNavbarItem={newItem => {
-              setNewNavbarItem(old => {
-                return { ...old, ...newItem }
-              })
+              onRowChange(row, newItem)
             }}
             pages={pages}
           />
         }
-        return <NavbarDestination navbarItem={row.original as NavbarItem} pages={pages}
-          participantUrl={participantLink}/>
+        return <NavbarDestination
+          navbarItem={row.original as NavbarItem} pages={pages}
+          participantUrl={participantLink}
+        />
       }
     },
     {
       header: 'Actions',
       id: 'actions',
       cell: ({ row }) => {
-        if (isEditable(row.original)) {
+        if (isRowEditable(row.original)) {
           if (!row.original.isEditing) {
             return <button
               className='btn btn-primary border-0'
-              onClick={() => onNewNavbarItemChange('isEditing', true)}>
+              onClick={() => {
+                onRowFieldChange(row, 'isEditing' as keyof NavbarItemRow, true)
+              }}>
               <FontAwesomeIcon icon={faPlus} aria-label={'Create New Answer Mapping'}/>
             </button>
           }
@@ -176,17 +289,26 @@ export function NavbarEditor({
           return <>
             <button
               className='btn btn-success me-2'
-              disabled={!isValidNavbarItem(row.original as NavbarItem, pages)}
+              disabled={
+                !isValidNavbarItem(row.original as NavbarItem, pages)
+                && !navbarItems.some(item => item.text === row.original.text)
+              }
               onClick={() => {
                 const newItem = {
                   ...row.original,
                   isEditing: undefined
                 }
-                saveNewNavbarItem(newItem as NavbarItem)
+                const parent = row.getParentRow()
+                if (!isNil(parent)) {
+                  saveNewGroupedItem(parent, newItem as NavbarItem)
+                } else {
+                  saveNewNavbarItem(newItem as NavbarItem)
+                }
               }}>
               <FontAwesomeIcon icon={faCheck} aria-label={'Accept New Answer Mapping'}/>
             </button>
-            <button className='btn btn-danger' onClick={() => onNewNavbarItemChange('isEditing', false)}>
+            <button className='btn btn-danger'
+              onClick={() => onRowFieldChange(row, 'isEditing' as keyof NavbarItemRow, false)}>
               <FontAwesomeIcon icon={faX} aria-label={'Cancel New Answer Mapping'}/>
             </button>
           </>
@@ -198,24 +320,89 @@ export function NavbarEditor({
         </button>
       }
     }
-  ], [newNavbarItem, navbarItems])
+  ], [newNavbarItem, navbarItems, newGroupedItems])
 
   const data = useMemo(
     () => (navbarItems as NavbarItemRow[]).concat(newNavbarItem),
-    [navbarItems, newNavbarItem])
+    [navbarItems, newNavbarItem, newGroupedItems])
 
   const table = useReactTable<NavbarItemRow>({
     data,
     columns,
+    getSubRows: (row: NavbarItemRow) => {
+      if (row.itemType === 'GROUP') {
+        const items: NavbarItemRow[] = (row as NavbarItemGroup).items
+        if (row.text && Object.hasOwn(newGroupedItems, row.text)) {
+          return items.concat(newGroupedItems[row.text])
+        } else {
+          return items.concat({ isEditing: false })
+        }
+      }
+      return []
+    },
+    enableExpanding: true,
+    getExpandedRowModel: getExpandedRowModel(),
     getCoreRowModel: getCoreRowModel()
   })
 
-  // TODO list:
-  //  - Add navbar preview
-  //  - Add individual navbar item editor
-  //  - Add drag'n'drop reordering
-  //  - Add navbar group editor (with drag'n'drop)
+  useEffect(() => {
+    table.toggleAllRowsExpanded(true)
+  }, [])
+
   return <div className='m-2'>
+    <div className="d-flex p-2">
+      <div className="d-flex flex-grow-1 align-items-center">
+        <h5>Navbar
+          <span className="fs-6 text-muted fst-italic me-2 ms-2">
+            (v{siteContent.version})
+          </span>
+          {isEditable && <button className="btn btn-secondary"
+            onClick={() => setShowVersionSelector(!showVersionSelector)}>
+            <FontAwesomeIcon icon={faClockRotateLeft}/> History
+          </button>}
+          <Button variant="secondary" className="ms-5" onClick={() => showParticipantView()}>
+            Participant view <FontAwesomeIcon icon={faExternalLink}/>
+          </Button>
+        </h5>
+      </div>
+      <div className="d-flex flex-grow-1 justify-content-end align-items-center">
+        {
+          isEditable && <>
+            <Button
+              className="me-md-2"
+              variant="primary"
+              disabled={navbarItems.some(item => !isValidNavbarItem(item, pages))}
+              onClick={() => {
+                createNewVersion({
+                  ...siteContent,
+                  localizedSiteContents: siteContent.localizedSiteContents.map(lsc => {
+                    if (lsc.language === (
+                      selectedLanguageOption?.value?.languageCode
+                            || defaultLanguage.languageCode)
+                    ) {
+                      return {
+                        ...lsc,
+                        navbarItems
+                      }
+                    }
+                    return lsc
+                  })
+                })
+              }}
+            >
+                    Save
+            </Button>
+            {
+              // eslint-disable-next-line
+              // @ts-ignore  Link to type also supports numbers for back operations
+              <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+            }
+          </>
+        }
+      </div>
+    </div>
+
+
     <div className="d-flex flex-row">
       {languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
         <Select
@@ -226,51 +413,42 @@ export function NavbarEditor({
           onChange={languageOnChange}
         />
       </div>}
-      <div className="d-flex flex-grow-1 justify-content-end">
-        <button
-          disabled={navbarItems.some(item => !isValidNavbarItem(item, pages))}
-          className='btn btn-primary mt-2'
-          onClick={() => {
-            createNewVersion({
-              ...siteContent,
-              localizedSiteContents: siteContent.localizedSiteContents.map(lsc => {
-                if (lsc.language === (selectedLanguageOption?.value?.languageCode || defaultLanguage.languageCode)) {
-                  return {
-                    ...lsc,
-                    navbarItems
-                  }
-                }
-                return lsc
-              })
-            })
-          }}
-        >
-          Save
-        </button>
-      </div>
 
     </div>
 
-    {localContent && <div
-      className="w-100 my-4"
-    >
-      <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={{
-        ...localContent,
-        navbarItems
-      }}/>
-    </div>}
+
+    {
+      localContent && <div
+        className="w-100 my-4"
+      >
+        <NavbarPreview portal={portal} portalEnv={portalEnv} localContent={{
+          ...localContent,
+          navbarItems
+        }}/>
+      </div>
+    }
 
     <div className="m-3">
       {basicTableLayout(table, { tdClass: 'col-1' })}
     </div>
 
-    {navbarItemSelectedForDeletion && <DeleteNavbarItemModal
-      onCancel={() => setNavbarItemSelectedForDeletion(undefined)}
-      onConfirm={() => {
-        setNavbarItems(navbarItems.filter(item => item !== navbarItemSelectedForDeletion))
-        setNavbarItemSelectedForDeletion(undefined)
-      }}
-    />}
+    {
+      navbarItemSelectedForDeletion && <DeleteNavbarItemModal
+        onCancel={() => setNavbarItemSelectedForDeletion(undefined)}
+        onConfirm={() => {
+          setNavbarItems(navbarItems.filter(item => item !== navbarItemSelectedForDeletion))
+          setNavbarItemSelectedForDeletion(undefined)
+        }}
+      />
+    }
+
+    {showVersionSelector &&
+        <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode}
+          stableId={siteContent.stableId} current={siteContent}
+          loadSiteContent={loadSiteContent} portalEnv={portalEnv}
+          switchToVersion={switchToVersion}
+          onDismiss={() => setShowVersionSelector(false)}/>
+    }
 
   </div>
 }
@@ -350,8 +528,6 @@ const NavbarDestination = (
     return <a href={href}>External link</a>
   } else if (navbarItem.itemType === 'MAILING_LIST') {
     return <span>Mailing List</span>
-  } else if (navbarItem.itemType === 'GROUP') {
-    return <></>
   }
   return <></>
 }
@@ -365,7 +541,7 @@ const NavbarDestinationEditor = (
   }: {
     navbarItem: NavbarItem
     updateNavbarItem: (item: NavbarItem) => void,
-    pages: HtmlPage[]
+    pages: HtmlPage[],
   }
 ) => {
   return <>
@@ -385,12 +561,7 @@ const NavbarDestinationEditor = (
       updateNavbarItem={updateNavbarItem}
     />}
 
-    {/* MAILING_LIST type doesn't need any additional configuration. */}
-
-    {navbarItem.itemType === 'GROUP' && <NavbarGroupAddNew
-      navbarItem={navbarItem as NavbarItemGroup}
-      updateNavbarItem={updateNavbarItem}
-    />}
+    {/*  Mailing list and group types don't need any more info at time of creation*/}
 
   </>
 }
@@ -419,54 +590,12 @@ const NavbarPageSelector = (
   />
 }
 
-const NavbarGroupAddNew = (
-  {
-    navbarItem,
-    updateNavbarItem
-  } : {
-    navbarItem: NavbarItemGroup,
-    updateNavbarItem: (item: NavbarItem) => void
-  }
-) => {
-  // should be "add new item" button
-  return <button
-    className='btn btn-primary mt-2'
-    onClick={() => {
-      updateNavbarItem({ ...navbarItem, items: navbarItem.items.concat({} as NavbarItem) })
-    }}>
-      Add Item
-  </button>
-  // return <div className="ms-2">
-  //   {navbarItem.items.map((item, idx) => <NavbarItemEditor
-  //     key={idx}
-  //     pages={pages}
-  //     navbarItem={item}
-  //     isPartOfGroup={true}
-  //     updateNavbarItem={item => {
-  //       const newItems = navbarItem.items.slice()
-  //       newItems[idx] = item
-  //       updateNavbarItem({ ...navbarItem, items: newItems })
-  //     }}
-  //     deleteNavbarItem={() => {
-  //       updateNavbarItem({ ...navbarItem, items: navbarItem.items.filter((_, i) => i !== idx) })
-  //     }}
-  //   />)}
-  //   <button
-  //     className='btn btn-primary mt-2'
-  //     onClick={() => {
-  //       updateNavbarItem({ ...navbarItem, items: navbarItem.items.concat({} as NavbarItem) })
-  //     }}>
-  //     Add Item
-  //   </button>
-  // </div>
-}
-
 
 const NavbarHrefEditor = (
   {
     navbarItem,
     updateNavbarItem
-  } : {
+  }: {
     navbarItem: NavbarItemInternalAnchor | NavbarItemExternal,
     updateNavbarItem: (item: NavbarItem) => void
   }

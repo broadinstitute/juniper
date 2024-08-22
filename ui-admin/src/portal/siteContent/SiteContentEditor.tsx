@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -79,10 +78,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const selectedPage = useMemo(
     () => localContent?.pages.find(p => p.path === selectedPagePath) || localContent?.landingPage,
     [localContent, selectedPagePath])
-
-  useEffect(() => {
-    console.log('selectedPage', selectedPage)
-  }, [selectedPage])
 
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
