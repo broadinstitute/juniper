@@ -9,6 +9,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
             List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
             List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
             navbarItems.forEach(item -> {
-                item.setHtmlPage(htmlPages.stream().filter(page -> page.getPath().equals(item.getHtmlPagePath()))
+                item.setHtmlPage(htmlPages.stream().filter(page -> Objects.nonNull(page.getPath()) && page.getPath().equals(item.getHtmlPagePath()))
                         .findFirst().orElse(null));
 
                 // get the children of this item, if they exist

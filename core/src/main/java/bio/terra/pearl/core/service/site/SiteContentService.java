@@ -82,6 +82,7 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
     protected void cleanForCopying(LocalizedSiteContent lsc) {
         lsc.cleanForCopying();
         lsc.getNavbarItems().stream().forEach(navbarItem -> cleanForCopying(navbarItem));
+        lsc.getPages().stream().forEach(page -> cleanForCopying(page));
         cleanForCopying(lsc.getFooterSection());
         lsc.setFooterSectionId(null);
         cleanForCopying(lsc.getLandingPage());
@@ -92,12 +93,14 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
     protected void cleanForCopying(NavbarItem navbarItem) {
         navbarItem.cleanForCopying();
         cleanForCopying(navbarItem.getHtmlPage());
+        navbarItem.getItems().stream().forEach(item -> cleanForCopying(item));
     }
 
     protected  void cleanForCopying(HtmlPage htmlPage) {
         if (htmlPage != null) {
             htmlPage.cleanForCopying();
             htmlPage.setLocalizedSiteContentId(null);
+            htmlPage.setId(null);
             htmlPage.getSections().stream().forEach(section -> cleanForCopying(section));
         }
     }

@@ -20,18 +20,20 @@ public class NavbarItemService extends ImmutableEntityService<NavbarItem, Navbar
     @Transactional
     @Override
     public NavbarItem create(NavbarItem item) {
+        NavbarItem savedItem = dao.create(item);
+
         List<NavbarItem> groupedItems = item.getItems();
         if (groupedItems != null && !groupedItems.isEmpty()) {
             for (int i = 0; i < groupedItems.size(); i++) {
                 NavbarItem groupedItem = groupedItems.get(i);
-                groupedItem.setParentNavbarItemId(item.getId());
+                groupedItem.setParentNavbarItemId(savedItem.getId());
+                groupedItem.setLocalizedSiteContentId(savedItem.getLocalizedSiteContentId());
                 groupedItem.setItemOrder(i);
                 groupedItem = this.create(groupedItem);
                 groupedItems.set(i, groupedItem);
             }
         }
-        item = dao.create(item);
-        return item;
+        return savedItem;
     }
 
     public void deleteByLocalSiteId(UUID localSiteId, Set<CascadeProperty> cascades) {
