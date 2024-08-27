@@ -21,7 +21,7 @@ import {
   faUser
 } from '@fortawesome/free-solid-svg-icons'
 
-import { useI18n } from 'src/participant/I18nProvider'
+import { useI18n } from './I18nProvider'
 import {
   Portal,
   PortalEnvironment,
@@ -38,8 +38,8 @@ import {
   ParticipantUser,
   Profile
 } from 'src/types/user'
-import { useApiContext } from 'src/participant/ApiProvider'
-import { MailingListModal } from 'src/participant/landing/MailingListModal'
+import { useApiContext } from './ApiProvider'
+import { MailingListModal } from './landing/MailingListModal'
 
 const topLevelNavLinkClasses = 'nav-link fs-5 ms-lg-3'
 const groupedNavLinkClasses = 'nav-link fs-5'
@@ -231,7 +231,10 @@ export function CustomNavLink({ navLink, isGrouped = false }: {
       >
         {navLink.text}
       </button>
-      <div className="dropdown-menu">
+      <div
+        className="dropdown-menu"
+        data-test-id={`dropdown-menu-${navLink.itemOrder}`}
+      >
         {navLink.items.map((item, index) =>
           <div className="dropdown-item" key={index}>
             <CustomNavLink key={index} navLink={item} isGrouped={true}/>

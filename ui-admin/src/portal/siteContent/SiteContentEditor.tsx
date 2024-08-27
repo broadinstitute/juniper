@@ -2,11 +2,15 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import Api, { HtmlSection } from 'api/api'
+import Api, {
+  HtmlSection,
+  NavbarItem
+} from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faClockRotateLeft,
+  faCompass,
   faGlobe,
   faImage,
   faPalette,
@@ -31,6 +35,7 @@ import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
 import {
+  Modal,
   Tab,
   Tabs
 } from 'react-bootstrap'
@@ -38,11 +43,11 @@ import DeleteNavItemModal from './DeleteNavItemModal'
 import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
-import Modal from 'react-bootstrap/Modal'
 
 import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
+import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
 
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
@@ -75,9 +80,11 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedPagePath, setSelectedPagePath] = useState<string>()
 
+  const isLandingPage = selectedPagePath === undefined || selectedPagePath === localContent?.landingPage.path
+
   const selectedPage = useMemo(
-    () => localContent?.pages.find(p => p.path === selectedPagePath) || localContent?.landingPage,
-    [localContent, selectedPagePath])
+    () => isLandingPage ? localContent?.landingPage : localContent?.pages.find(p => p.path === selectedPagePath),
+    [localContent, selectedPagePath, isLandingPage])
 
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
@@ -154,28 +161,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
   /** updates the global SiteContent object with the given HtmlPage */
-  const updatePage = (page: HtmlPage, isLandingPage: boolean) => {
+  const updatePage = (updatedPage: HtmlPage, isLandingPage: boolean) => {
     if (!localContent) {
-      console.log('No local content')
       return
     }
     let updatedLocalContent
     if (isLandingPage) {
       updatedLocalContent = {
         ...localContent,
-        landingPage: page
+        landingPage: updatedPage
       }
     } else {
-      console.log('updating page')
       const updatedPages = [...localContent.pages]
 
-      const matchedPageIndex = updatedPages.findIndex(p => p.path === page.path)
-      console.log('matchedPageIndex', matchedPageIndex)
+      const matchedPageIndex = updatedPages.findIndex(p => p.path === updatedPage.path)
       if (matchedPageIndex === -1) {
         return
       }
 
-      updatedPages[matchedPageIndex] = page
+      updatedPages[matchedPageIndex] = updatedPage
 
       updatedLocalContent = {
         ...localContent,
@@ -196,6 +200,17 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     updateLocalContent(updatedLocalContent)
   }
 
+  const updateNavbarItems = (items: NavbarItem[]) => {
+    if (!localContent) {
+      return
+    }
+    const updatedLocalContent = {
+      ...localContent,
+      navbarItems: items
+    }
+    updateLocalContent(updatedLocalContent)
+  }
+
   const participantViewClick = () => {
     if (hasInvalidSection || (siteContent !== workingContent)) {
       setShowUnsavedPreviewModal(true)
@@ -212,10 +227,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
-  const pageOpts: { label: string, value: string }[] = (localContent?.pages || [])
-    .map(page => ({ label: page.title || 'Landing Page', value: page.path }))
+  const pageOpts: {
+    label: string,
+    value: string
+  }[] = (localContent?.landingPage ? [localContent.landingPage] : [])
+    .concat(localContent?.pages || [])
+    .map(page => ({ label: page.title || 'Landing page', value: page.path }))
 
-  const isLandingPage = selectedPagePath === undefined || selectedPagePath === localContent?.landingPage.path
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
@@ -288,18 +306,23 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           </Button>
           { languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
-              isDisabled={hasInvalidSection} aria-label={'Select a language'}
+              isDisabled={hasInvalidSection}
+              aria-label={'Select a language'}
+              data-testid="editor-language-selector"
               onChange={languageOnChange}/>
           </div> }
           <div className="d-flex ms-auto">
+            <Link to="./navbar" className="btn btn-light me-2">
+              <FontAwesomeIcon icon={faCompass} className="fa-lg"/> Navbar
+            </Link>
             <Button variant="light" onClick={() => setShowBrandingModal(true)}>
-              Branding <FontAwesomeIcon icon={faPalette} className="fa-lg"/>
+              <FontAwesomeIcon icon={faPalette} className="fa-lg"/> Branding
             </Button>
             <Link to="../media" className="btn btn-light ms-2">
-              Media <FontAwesomeIcon icon={faImage} className="fa-lg"/>
+              <FontAwesomeIcon icon={faImage} className="fa-lg"/> Media
             </Link>
             <Button variant="light" onClick={() => setShowTranslationModal(true)} className="ms-2">
-              Translations <FontAwesomeIcon icon={faGlobe} className="fa-lg"/>
+              <FontAwesomeIcon icon={faGlobe} className="fa-lg"/> Translations
             </Button>
           </div>
         </div>
@@ -331,6 +354,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                   {selectedPage &&
                       <ApiProvider api={previewApi}>
                         <HtmlPageEditView
+                          localSiteContent={localContent}
+                          updateNavbarItems={updateNavbarItems}
                           htmlPage={selectedPage}
                           readOnly={readOnly}
                           portalEnvContext={portalEnvContext}
@@ -353,7 +378,11 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 <div>
                   {selectedPage &&
                       <ApiProvider api={previewApi}>
-                        <HtmlPageEditView portalEnvContext={portalEnvContext} htmlPage={selectedPage}
+                        <HtmlPageEditView
+                          portalEnvContext={portalEnvContext}
+                          localSiteContent={localContent}
+                          updateNavbarItems={updateNavbarItems}
+                          htmlPage={selectedPage}
                           readOnly={readOnly}
                           siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                           footerSection={localContent.footerSection} updateFooter={updateFooter}
@@ -369,6 +398,11 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             >
               <ErrorBoundary>
                 <ApiProvider api={previewApi}>
+                  <NavbarPreview
+                    portal={portalEnvContext.portal}
+                    portalEnv={portalEnv}
+                    localContent={localContent}
+                  />
                   {selectedPage.sections.map((section: HtmlSection) =>
                     <HtmlSectionView section={section} key={section.id}/>)
                   }

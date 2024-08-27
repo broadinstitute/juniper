@@ -13,6 +13,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,8 +54,19 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
             NavbarItemPopDto popItem = objectMapper.readValue(navPopulateString, NavbarItemPopDto.class);
             BeanUtils.copyProperties(popItem, navItem);
         }
-        // todo: fix
-//        navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
+
+        if (Objects.nonNull(navItem.getHtmlPageDto())) {
+            navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
+            navItem.setHtmlPagePath(navItem.getHtmlPageDto().getPath());
+        }
+
+        if (Objects.nonNull(navItem.getItemDtos())) {
+            for (NavbarItemPopDto itemDto : navItem.getItemDtos()) {
+                initializeNavItem(itemDto, config);
+            }
+
+            navItem.setItems(new ArrayList<>(navItem.getItemDtos()));
+        }
     }
 
     private void initializeLandingPage(LocalizedSiteContentPopDto lscPopDto, FilePopulateContext context) throws IOException {
@@ -90,6 +104,9 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
             initializeLandingPage(lsc, context);
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
                 initializeNavItem(navItem, context);
+
+                // if a navbar item has any html pages in its dto, add it to the top level pages list
+                lsc.getPages().addAll(getPages(navItem));
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
@@ -98,6 +115,21 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
 
         popDto.getLocalizedSiteContents().clear();
         popDto.getLocalizedSiteContents().addAll(popDto.getLocalizedSiteContentDtos());
+    }
+
+    private List<HtmlPage> getPages(NavbarItemPopDto navbarItemPopDto) {
+        List<HtmlPage> pages = new ArrayList<>();
+        if (Objects.nonNull(navbarItemPopDto.getHtmlPageDto())) {
+            pages.add(parseHtmlPageDto(navbarItemPopDto.getHtmlPageDto()));
+        }
+
+        if (Objects.nonNull(navbarItemPopDto.getItemDtos())) {
+            for (NavbarItemPopDto itemDto : navbarItemPopDto.getItemDtos()) {
+                pages.addAll(getPages(itemDto));
+            }
+        }
+
+        return pages;
     }
 
     @Override

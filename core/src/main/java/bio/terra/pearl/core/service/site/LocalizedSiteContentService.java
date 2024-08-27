@@ -49,12 +49,8 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
         }
         for (int i = 0; i < localSite.getNavbarItems().size(); i++) {
             NavbarItem navItem = localSite.getNavbarItems().get(i);
-            if (navItem.getHtmlPagePath() != null) {
-                pages.stream()
-                        .filter(p -> p.getPath().equals(navItem.getHtmlPagePath()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(navItem.getHtmlPagePath())));
-            }
+
+            validateNavbarItem(navItem, pages);
 
             navItem.setItemOrder(i);
             navItem.setLocalizedSiteContentId(savedSite.getId());
@@ -71,6 +67,21 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
         savedSite.setLandingPage(landingPage);
         savedSite.setFooterSection(localSite.getFooterSection());
         return savedSite;
+    }
+
+    private void validateNavbarItem(NavbarItem item, List<HtmlPage> pages) {
+        if (item.getHtmlPagePath() != null) {
+            pages.stream()
+                    .filter(p -> p.getPath().equals(item.getHtmlPagePath()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(item.getHtmlPagePath())));
+        }
+
+        if (item.getItems() != null) {
+            for (NavbarItem groupedItem : item.getItems()) {
+                validateNavbarItem(groupedItem, pages);
+            }
+        }
     }
 
     @Override

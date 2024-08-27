@@ -5,7 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter @Setter @NoArgsConstructor
 public class NavbarItemPopDto extends NavbarItem {
     private String populateFileName;
+
+    // kept here for legacy reasons
+    private HtmlPagePopDto htmlPageDto;
+
+    // for grouped navbars
+    private List<NavbarItemPopDto> itemDtos = new ArrayList<>();
 }

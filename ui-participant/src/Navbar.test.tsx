@@ -13,17 +13,16 @@ import {
   PortalStudy
 } from 'api/api'
 
-import Navbar, {
+import {
   AccountOptionsDropdown,
+  asMockedFn,
   CustomNavLink,
   getMainJoinLink,
-  LanguageDropdown
-} from './Navbar'
-import {
-  asMockedFn,
+  LanguageDropdown,
   MockI18nProvider,
   setupRouterTest
 } from '@juniper/ui-core'
+
 import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
@@ -32,6 +31,9 @@ import {
   mockUsePortalEnv
 } from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
+import Navbar from 'Navbar'
+import { mockUser } from 'test-utils/test-proxy-environment'
+import { NavbarItemGroup } from '@juniper/ui-core/build'
 
 jest.mock('oidc-client-ts')
 jest.mock('providers/UserProvider')
@@ -51,6 +53,7 @@ describe('CustomNavLink', () => {
       itemType: 'INTERNAL',
       text: 'Internal link',
       itemOrder: 1,
+      htmlPagePath: 'testPage',
       htmlPage: {
         path: 'testPage'
       } as HtmlPage
@@ -121,6 +124,39 @@ describe('CustomNavLink', () => {
     const modal = document.querySelector('.modal') as HTMLElement
     expect(link).toHaveAttribute('data-bs-toggle', 'modal')
     expect(link).toHaveAttribute('data-bs-target', `#${CSS.escape(modal.getAttribute('id') as string)}`)
+  })
+
+  it('renders group links', async () => {
+    const navbarItem: NavbarItemGroup = {
+      id: 'foo',
+      itemType: 'GROUP',
+      text: 'Learn more',
+      itemOrder: 1,
+      items: [
+        {
+          id: 'foo',
+          itemType: 'MAILING_LIST',
+          itemOrder: 1,
+          text: 'Join our mailing list'
+        }
+      ]
+    }
+
+    render(<MockI18nProvider>
+      <CustomNavLink navLink={navbarItem}/>
+    </MockI18nProvider>)
+
+    const link = screen.getByText('Learn more')
+
+    expect(link).toHaveClass('dropdown-toggle')
+
+    const dropdownItem = screen.getByText('Join our mailing list')
+
+    // because of how bootstrap dropdowns works, it's hard
+    // to test on visibility etc. so just make sure
+    // this child element is rendered as a dropdown-item
+    expect(dropdownItem).toBeInTheDocument()
+    expect(dropdownItem).toHave('dropdown-item')
   })
 })
 
@@ -252,7 +288,14 @@ describe('AccountOptionsDropdown', () => {
 
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider>
-        <AccountOptionsDropdown/>
+        <AccountOptionsDropdown
+          user={mockUser}
+          proxyRelations={[]}
+          doChangePassword={() => {
+          }}
+          doLogout={() => {
+          }}
+        />
       </MockI18nProvider>
     )
 
@@ -277,7 +320,14 @@ describe('AccountOptionsDropdown', () => {
 
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider selectedLanguage={'es'}>
-        <AccountOptionsDropdown/>
+        <AccountOptionsDropdown
+          user={mockUser}
+          proxyRelations={[]}
+          doChangePassword={() => {
+          }}
+          doLogout={() => {
+          }}
+        />
       </MockI18nProvider>
     )
 
