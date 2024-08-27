@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class LocalizedSiteContentPopDto extends LocalizedSiteContent {
     private String landingPageFileName;
-    // todo: implement logic to allow populating page separately from nav items
+
     private List<HtmlPagePopDto> pageDtos = new ArrayList<>();
     private List<NavbarItemPopDto> navbarItemDtos = new ArrayList<>();
     private String footerSectionFile;

@@ -102,6 +102,11 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
         popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
             initializeLandingPage(lsc, context);
+
+            for (HtmlPagePopDto page : lsc.getPageDtos()) {
+                lsc.getPages().add(parseHtmlPageDto(page));
+            }
+
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
                 initializeNavItem(navItem, context);
 

@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,10 +59,15 @@ public class SiteContentExtractor {
 
     public LocalizedSiteContentPopDto convertLocalizedSiteContent(LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         LocalizedSiteContentPopDto localPopDto = new LocalizedSiteContentPopDto();
-        BeanUtils.copyProperties(lsc, localPopDto, "id", "siteContentId", "navbarItems", "footerSection", "footerSectionId", "landingPage", "landingPageId");
+        BeanUtils.copyProperties(lsc, localPopDto, "id", "siteContentId", "navbarItems", "pages", "footerSection", "footerSectionId", "landingPage", "landingPageId");
         for (NavbarItem navbarItem : lsc.getNavbarItems()) {
             localPopDto.getNavbarItemDtos().add(convertNavbarItem(navbarItem, lsc, filePath, context));
         }
+        for (HtmlPage page : lsc.getPages()) {
+            HtmlPagePopDto pagePopDto = convertHtmlPage(page);
+            localPopDto.getPageDtos().add(pagePopDto);
+        }
+
         if (lsc.getFooterSection() != null) {
             String footerFile = "%s/footer.json".formatted(lsc.getLanguage());
             localPopDto.setFooterSectionFile(footerFile);
@@ -82,15 +88,22 @@ public class SiteContentExtractor {
     public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         NavbarItemPopDto navbarItemPopDto = new NavbarItemPopDto();
         if (navbarItem.getItemType().equals(NavbarItemType.INTERNAL)) {
-            String navbarFile = "%s/page-%s.json".formatted(lsc.getLanguage(), navbarItem.getHtmlPage().getPath());
+            String navbarFile = "%s/navbar-item-%s.json".formatted(lsc.getLanguage(), navbarItem.getHtmlPagePath());
             navbarItemPopDto.setPopulateFileName(navbarFile);
 
             NavbarItemPopDto itemFileDto = new NavbarItemPopDto();
             BeanUtils.copyProperties(navbarItem, itemFileDto, "id", "localizedSiteContentId", "htmlPage");
-            // todo: fix
-            //            itemFileDto.setHtmlPageDto(convertHtmlPage(navbarItem.getHtmlPage()));
             String navbarAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(itemFileDto);
             context.writeFileForEntity(filePath + "/" + navbarFile, navbarAsString, navbarItem.getId());
+        } else if (navbarItem.getItemType().equals(NavbarItemType.GROUP)) {
+            List<NavbarItemPopDto> itemDtos = new ArrayList<>();
+
+            for (NavbarItem childItem : navbarItem.getItems()) {
+                itemDtos.add(convertNavbarItem(childItem, lsc, filePath, context));
+            }
+
+            BeanUtils.copyProperties(navbarItem, navbarItemPopDto, "id", "localizedSiteContentId", "items");
+            navbarItemPopDto.setItemDtos(itemDtos);
         } else {
             BeanUtils.copyProperties(navbarItem, navbarItemPopDto, "id", "localizedSiteContentId");
         }
