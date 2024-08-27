@@ -15,7 +15,7 @@ import { faLightbulb, faUsersViewfinder } from '@fortawesome/free-solid-svg-icon
 import { FormOptions } from './FormOptionsModal'
 import { useUser } from '../../user/UserProvider'
 
-const QUESTIONNAIRE_TEMPLATE = '{"pages":[]}'
+const QUESTIONNAIRE_TEMPLATE = '{"pages":[{"elements":[]}]}'
 const randomSuffix = Math.random().toString(36).substring(2, 15)
 const HTML_TEMPLATE = `{"pages":[{"elements":[{"type":"html","name":"outreach_content_${randomSuffix}"}]}]}`
 
