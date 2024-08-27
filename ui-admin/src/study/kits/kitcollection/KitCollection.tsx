@@ -3,13 +3,12 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Button } from 'components/forms/Button'
 import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
-import { dateToDefaultString, Enrollee, KitCollectionStep } from '@juniper/ui-core'
+import { dateToDefaultString, Enrollee, KitCollectionStepWrapper } from '@juniper/ui-core'
 import { TextInput } from 'components/forms/TextInput'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import { useUser } from 'user/UserProvider'
 import { BarcodeScanner } from './BarcodeScanner'
-
 
 export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {
   //Step 1 state
@@ -69,7 +68,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       that all information is correct before submitting.
     </div>
 
-    <KitCollectionStep
+    <KitCollectionStepWrapper
       title={'Step 1'}
       status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
@@ -102,9 +101,9 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       { enrolleeCodeError &&
         <div className="text-danger">{enrolleeCodeError}</div>
       }
-    </KitCollectionStep>
+    </KitCollectionStepWrapper>
 
-    <KitCollectionStep
+    <KitCollectionStepWrapper
       title={'Step 2'}
       status={isEnrolleeIdentityConfirmed && enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
@@ -123,9 +122,9 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
         disabled={!enrollee} onClick={() => setIsEnrolleeIdentityConfirmed(true)}>
             Mark as confirmed
       </Button>
-    </KitCollectionStep>
+    </KitCollectionStepWrapper>
 
-    <KitCollectionStep
+    <KitCollectionStepWrapper
       title={'Step 3'}
       status={kitId ? 'COMPLETE' : 'INCOMPLETE'}
     >
@@ -152,7 +151,7 @@ export const KitCollection = ({ studyEnvContext }: { studyEnvContext: StudyEnvCo
       { kitCodeError &&
             <div className="text-danger">{kitCodeError}</div>
       }
-    </KitCollectionStep>
+    </KitCollectionStepWrapper>
     <div className="d-flex justify-content-end">
       <Button disabled={!(kitId && enrollee)} variant={'primary'}
         onClick={() => {
