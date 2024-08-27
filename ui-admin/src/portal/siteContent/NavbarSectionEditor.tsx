@@ -106,9 +106,18 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
           if (!e) { return }
 
           if (e.value === 'GROUP') {
-            updateItem({ ...navbarItem, itemType: e.value, items: [] } as NavbarItemGroup)
+            updateItem({
+              text: navbarItem.text,
+              itemOrder: navbarItem.itemOrder,
+              itemType: e.value,
+              items: []
+            } as NavbarItemGroup)
           } else {
-            updateItem({ ...navbarItem, itemType: e.value } as NavbarItem)
+            updateItem({
+              text: navbarItem.text,
+              itemOrder: navbarItem.itemOrder,
+              itemType: e.value
+            } as NavbarItem)
           }
         }}
       />
