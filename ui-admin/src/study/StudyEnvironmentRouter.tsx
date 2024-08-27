@@ -49,6 +49,7 @@ import { previewApi } from 'util/apiContextUtils'
 import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 import FamilyRouter from './families/FamilyRouter'
+import { KitCollection } from './kits/KitCollection'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -112,6 +113,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="families/*" element={<FamilyRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
+          <Route path="collectKit/*" element={<KitCollection studyEnvContext={studyEnvContext}/>}/>
           <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
           <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
           <Route path="alerts" element={<DashboardSettings currentEnv={portalEnv}
