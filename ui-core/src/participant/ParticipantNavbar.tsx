@@ -233,7 +233,7 @@ export function CustomNavLink({ navLink, isGrouped = false }: {
       </button>
       <div
         className="dropdown-menu"
-        data-test-id={`dropdown-menu-${navLink.itemOrder}`}
+        data-testid={`dropdown-menu-${navLink.itemOrder}`}
       >
         {navLink.items.map((item, index) =>
           <div className="dropdown-item" key={index}>

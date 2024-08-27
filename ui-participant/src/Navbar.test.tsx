@@ -20,10 +20,9 @@ import {
   getMainJoinLink,
   LanguageDropdown,
   MockI18nProvider,
+  NavbarItemGroup,
   setupRouterTest
 } from '@juniper/ui-core'
-
-import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
 import {
@@ -32,8 +31,8 @@ import {
 } from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
 import Navbar from 'Navbar'
-import { mockUser } from 'test-utils/test-proxy-environment'
-import { NavbarItemGroup } from '@juniper/ui-core/build'
+import { UserManager } from 'oidc-client-ts'
+import { mockPortalEnvContextT } from '@juniper/ui-admin/src/test-utils/mocking-utils'
 
 jest.mock('oidc-client-ts')
 jest.mock('providers/UserProvider')
@@ -150,13 +149,19 @@ describe('CustomNavLink', () => {
 
     expect(link).toHaveClass('dropdown-toggle')
 
-    const dropdownItem = screen.getByText('Join our mailing list')
+    // gets the dropdown menu for the item with itemOrder 1
+    const dropdownMenu = screen.queryByTestId('dropdown-menu-1')
 
     // because of how bootstrap dropdowns works, it's hard
     // to test on visibility etc. so just make sure
-    // this child element is rendered as a dropdown-item
-    expect(dropdownItem).toBeInTheDocument()
-    expect(dropdownItem).toHave('dropdown-item')
+    // that the dropdown menu is rendered with the correct classes
+    expect(dropdownMenu).toBeInTheDocument()
+    expect(dropdownMenu).toHaveClass('dropdown-menu')
+
+    const child = dropdownMenu!.querySelector('.dropdown-item')
+
+    expect(child).toBeInTheDocument()
+    expect(child).toHaveTextContent('Join our mailing list')
   })
 })
 
@@ -284,12 +289,13 @@ describe('Navbar', () => {
 
 describe('AccountOptionsDropdown', () => {
   it('displays user account options when clicked', async () => {
-    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    const userContext = mockUseUser(false)
+    asMockedFn(useUser).mockReturnValue(userContext)
 
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider>
         <AccountOptionsDropdown
-          user={mockUser}
+          user={userContext.user ?? undefined}
           proxyRelations={[]}
           doChangePassword={() => {
           }}
@@ -318,16 +324,13 @@ describe('AccountOptionsDropdown', () => {
     jest.spyOn(UserManager.prototype, 'signinRedirect').mockImplementation(mockSigninRedirect)
     asMockedFn(useUser).mockReturnValue(mockUseUser(false))
 
+    asMockedFn(usePortalEnv).mockReturnValue(mockPortalEnvContextT())
+
+
+    // we need full navbar to test functionality fully
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider selectedLanguage={'es'}>
-        <AccountOptionsDropdown
-          user={mockUser}
-          proxyRelations={[]}
-          doChangePassword={() => {
-          }}
-          doLogout={() => {
-          }}
-        />
+        <Navbar/>
       </MockI18nProvider>
     )
 

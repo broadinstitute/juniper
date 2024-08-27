@@ -227,6 +227,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
+
   const pageOpts: {
     label: string,
     value: string
@@ -307,8 +308,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           { languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection}
-              aria-label={'Select a language'}
-              data-testid="editor-language-selector"
+              aria-label={'Change site content editor language'}
               onChange={languageOnChange}/>
           </div> }
           <div className="d-flex ms-auto">
