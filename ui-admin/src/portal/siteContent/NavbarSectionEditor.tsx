@@ -98,7 +98,7 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
     <div style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
       <label className='form-label fw-semibold mb-2'>Navbar Item Type</label>
       <Select
-        aria-label={'Navbar Item Type'}
+        aria-label={'Type'}
         placeholder={'Select item type'}
         options={NavbarTypeOptions}
         value={NavbarTypeOptions.find(option => option.value === navbarItem.itemType)}
@@ -121,7 +121,7 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
           }
         }}
       />
-      <TextInput label="Navbar Item Text" className="mb-2" value={navbarItem.text} onChange={value => {
+      <TextInput label="Text" className="mb-2" value={navbarItem.text} onChange={value => {
         updateItem({ ...navbarItem, text: value })
       }}/>
       {(navbarItem.itemType === 'EXTERNAL' || navbarItem.itemType === 'INTERNAL_ANCHOR') &&
@@ -129,7 +129,7 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
             updateItem({ ...navbarItem, href: value })
           }}/>}
       {navbarItem.itemType === 'INTERNAL' && <div>
-        <label className='form-label fw-semibold mb-2'>Select Page</label>
+        <label className='form-label fw-semibold mb-2'>Destination</label>
         <Select
           aria-label={'Select Page'}
           placeholder={'Select page'}
