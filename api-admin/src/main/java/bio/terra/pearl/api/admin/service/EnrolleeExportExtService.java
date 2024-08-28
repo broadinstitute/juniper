@@ -7,9 +7,10 @@ import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExportExtService {
@@ -31,27 +32,12 @@ public class EnrolleeExportExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public void export(
-<<<<<<< Updated upstream
-      PortalStudyEnvAuthContext authContext, ExportOptions options, OutputStream os) {
-    enrolleeExportService.export(options, authContext.getStudyEnvironment().getId(), os);
-=======
-      ExportOptions options,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      OutputStream os,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    try {
-      enrolleeExportService.export(options, studyEnv.getId(), os);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
->>>>>>> Stashed changes
+          PortalStudyEnvAuthContext authContext, ExportOptions options, OutputStream os) {
+      try {
+          enrolleeExportService.export(options, authContext.getStudyEnvironment().getId(), os);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
   @EnforcePortalStudyEnvPermission(permission = "BASE")
