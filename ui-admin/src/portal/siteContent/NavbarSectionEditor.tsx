@@ -10,9 +10,18 @@ import {
 } from '@juniper/ui-core'
 import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
-import { Button } from 'components/forms/Button'
+import {
+  Button,
+  IconButton
+} from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faChevronDown,
+  faChevronUp,
+  faCode,
+  faPlus,
+  faTimes
+} from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { TextInput } from 'components/forms/TextInput'
 
@@ -32,8 +41,53 @@ export function NavbarSectionEditor(
   const navbarContentId = useId()
   const navbarContentSelector = `#${navbarContentId}`
 
+  return <>
+    <div className="d-flex flex-grow-1 mb-1">
+      <Select
+        className='w-100'
+        options={[{ label: 'Navbar', value: 'Navbar' }]}
+        value={{ label: 'Navbar', value: 'Navbar' }}
+        aria-label={'Select section type'}
+        isDisabled={true}
+      />
+      <IconButton icon={faCode}
+        aria-label={'Switch to JSON editor'}
+        disabled={true}
+        className="ms-2"
+        variant="light"
+        onClick={() => {
 
-  return <div>
+        }}
+      />
+      <IconButton
+        aria-label="Move this section before the previous one"
+        className="ms-2"
+        disabled={true}
+        icon={faChevronUp}
+        variant="light"
+        onClick={() => {
+        }}
+      />
+      <IconButton
+        aria-label="Move this section after the next one"
+        className="ms-2"
+        disabled={true}
+        icon={faChevronDown}
+        variant="light"
+        onClick={() => {
+        }}
+      />
+      <IconButton
+        aria-label="Delete this section"
+        className="ms-2"
+        disabled={true}
+        icon={faTimes}
+        variant="light"
+        onClick={() => {
+        }}
+      />
+    </div>
+
     <CollapsibleSectionButton
       targetSelector={navbarContentSelector}
       sectionLabel={`Navbar Items (${navbarItems.length})`}/>
@@ -76,7 +130,7 @@ export function NavbarSectionEditor(
       }}><FontAwesomeIcon icon={faPlus}/> Add Navbar Item
       </Button>
     </div>
-  </div>
+  </>
 }
 
 const NavbarTypeOptions: { label: string, value: NavBarItemType }[] = [
@@ -95,56 +149,60 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
 }) => {
   const pageOptions = localSiteContent.pages.map(page => ({ value: page.path, label: page.title }))
   return (
-    <div style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
-      <label className='form-label fw-semibold mb-2'>Navbar Item Type</label>
-      <Select
-        aria-label={'Type'}
-        placeholder={'Select item type'}
-        options={NavbarTypeOptions}
-        value={NavbarTypeOptions.find(option => option.value === navbarItem.itemType)}
-        onChange={e => {
-          if (!e) { return }
-
-          if (e.value === 'GROUP') {
-            updateItem({
-              text: navbarItem.text,
-              itemOrder: navbarItem.itemOrder,
-              itemType: e.value,
-              items: []
-            } as NavbarItemGroup)
-          } else {
-            updateItem({
-              text: navbarItem.text,
-              itemOrder: navbarItem.itemOrder,
-              itemType: e.value
-            } as NavbarItem)
-          }
-        }}
-      />
-      <TextInput label="Text" className="mb-2" value={navbarItem.text} onChange={value => {
-        updateItem({ ...navbarItem, text: value })
-      }}/>
-      {(navbarItem.itemType === 'EXTERNAL' || navbarItem.itemType === 'INTERNAL_ANCHOR') &&
-          <TextInput label="Navbar Link" className="mb-2" value={navbarItem.href} onChange={value => {
-            updateItem({ ...navbarItem, href: value })
-          }}/>}
-      {navbarItem.itemType === 'INTERNAL' && <div>
-        <label className='form-label fw-semibold mb-2'>Destination</label>
+    <>
+      <div style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
+        <label className='form-label fw-semibold mb-2'>Navbar Item Type</label>
         <Select
-          aria-label={'Select Page'}
-          placeholder={'Select page'}
-          options={pageOptions}
-          value={pageOptions.find(option => option.value === navbarItem.htmlPagePath)}
-          onChange={e => e && updateItem({ ...navbarItem, htmlPagePath: e.value } as NavbarItem)}
-        />
-      </div>}
+          aria-label={'Type'}
+          placeholder={'Select item type'}
+          options={NavbarTypeOptions}
+          value={NavbarTypeOptions.find(option => option.value === navbarItem.itemType)}
+          onChange={e => {
+            if (!e) {
+              return
+            }
 
-      {navbarItem.itemType === 'GROUP' && <NavbarDropdownEditor
-        localSiteContent={localSiteContent}
-        navbarItem={navbarItem}
-        updateItem={updateItem}
-      />}
-    </div>
+            if (e.value === 'GROUP') {
+              updateItem({
+                text: navbarItem.text,
+                itemOrder: navbarItem.itemOrder,
+                itemType: e.value,
+                items: []
+              } as NavbarItemGroup)
+            } else {
+              updateItem({
+                text: navbarItem.text,
+                itemOrder: navbarItem.itemOrder,
+                itemType: e.value
+              } as NavbarItem)
+            }
+          }}
+        />
+        <TextInput label="Text" className="mb-2" value={navbarItem.text} onChange={value => {
+          updateItem({ ...navbarItem, text: value })
+        }}/>
+        {(navbarItem.itemType === 'EXTERNAL' || navbarItem.itemType === 'INTERNAL_ANCHOR') &&
+            <TextInput label="Navbar Link" className="mb-2" value={navbarItem.href} onChange={value => {
+              updateItem({ ...navbarItem, href: value })
+            }}/>}
+        {navbarItem.itemType === 'INTERNAL' && <div>
+          <label className='form-label fw-semibold mb-2'>Destination</label>
+          <Select
+            aria-label={'Select Page'}
+            placeholder={'Select page'}
+            options={pageOptions}
+            value={pageOptions.find(option => option.value === navbarItem.htmlPagePath)}
+            onChange={e => e && updateItem({ ...navbarItem, htmlPagePath: e.value } as NavbarItem)}
+          />
+        </div>}
+
+        {navbarItem.itemType === 'GROUP' && <NavbarDropdownEditor
+          localSiteContent={localSiteContent}
+          navbarItem={navbarItem}
+          updateItem={updateItem}
+        />}
+      </div>
+    </>
   )
 }
 
@@ -157,7 +215,7 @@ const NavbarDropdownEditor = ({ localSiteContent, navbarItem, updateItem }: {
   return (
     <div style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
       <label className='form-label fw-semibold mb-2'>Dropdown Items</label>
-      {navbarItem.items.map((groupItem, i) => (
+      {navbarItem.items?.map((groupItem, i) => (
         <div key={i}>
           <div className="d-flex justify-content-between align-items-center">
             <span className="h6">Edit dropdown item</span>

@@ -1,7 +1,6 @@
 import mixpanel from 'mixpanel-browser'
 import React, {
   useEffect,
-  useId,
   useRef
 } from 'react'
 import {
@@ -40,6 +39,7 @@ import {
 } from 'src/types/user'
 import { useApiContext } from './ApiProvider'
 import { MailingListModal } from './landing/MailingListModal'
+import _uniqueId from 'lodash/uniqueId'
 
 const topLevelNavLinkClasses = 'nav-link fs-5 ms-lg-3'
 const groupedNavLinkClasses = 'nav-link fs-5'
@@ -187,16 +187,17 @@ export function ParticipantNavbar(props: NavbarProps) {
 type MailingListNavLinkProps = JSX.IntrinsicElements['a']
 
 const MailingListNavLink = (props: MailingListNavLinkProps) => {
-  const modalId = useId()
+  const mailingListModalId = useRef(_uniqueId('mailingListModel'))
+
 
   return (
     <>
       <a
         {...props}
         data-bs-toggle="modal"
-        data-bs-target={`#${CSS.escape(modalId)}`}
+        data-bs-target={`#${CSS.escape(mailingListModalId.current)}`}
       />
-      <MailingListModal id={modalId}/>
+      <MailingListModal id={mailingListModalId.current}/>
     </>
   )
 }
@@ -235,7 +236,7 @@ export function CustomNavLink({ navLink, isGrouped = false }: {
         className="dropdown-menu"
         data-testid={`dropdown-menu-${navLink.itemOrder}`}
       >
-        {navLink.items.map((item, index) =>
+        {navLink.items?.map((item, index) =>
           <div className="dropdown-item" key={index}>
             <CustomNavLink key={index} navLink={item} isGrouped={true}/>
           </div>

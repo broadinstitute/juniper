@@ -78,12 +78,7 @@ public class SiteContentExtService {
     siteContent.setStableId(stableId);
     SiteContent newSiteContent = siteContentService.createNewVersion(siteContent);
 
-    return loadSiteContent(
-            newSiteContent.getId(),
-            portalEnvironmentService
-                .findOne(portal.getShortcode(), EnvironmentName.sandbox)
-                .orElseThrow(() -> new IllegalStateException("Portal environment not found")))
-        .orElseThrow(() -> new IllegalStateException("Failed to load created site content"));
+    return newSiteContent;
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {
