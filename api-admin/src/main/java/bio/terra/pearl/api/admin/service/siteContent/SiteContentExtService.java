@@ -10,10 +10,11 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SiteContentExtService {
@@ -76,7 +77,14 @@ public class SiteContentExtService {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     siteContent.setPortalId(portal.getId());
     siteContent.setStableId(stableId);
-    return siteContentService.createNewVersion(siteContent);
+    SiteContent newSiteContent = siteContentService.createNewVersion(siteContent);
+
+    return loadSiteContent(
+            newSiteContent.getId(),
+            portalEnvironmentService
+                    .findOne(portal.getShortcode(), EnvironmentName.sandbox)
+                    .orElseThrow(() -> new IllegalStateException("Portal environment not found")))
+            .orElseThrow(() -> new IllegalStateException("Failed to load created site content"));
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {
