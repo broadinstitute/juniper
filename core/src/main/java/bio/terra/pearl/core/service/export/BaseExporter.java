@@ -30,7 +30,7 @@ public abstract class BaseExporter {
         this.columnEmptyValueMap = makeEmptyValueMap();
     }
 
-    public abstract void export(OutputStream os);
+    public abstract void export(OutputStream os) throws IOException;
 
     protected List<String> getColumnKeys() {
         List<String> columnKeys = new ArrayList<>();
