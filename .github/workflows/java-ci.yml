@@ -21,7 +21,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres
@@ -95,7 +95,7 @@ jobs:
   # Run DSP App Sec Trivy Scanner on PRs
   dispatch-trivy:
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     if: github.event_name == 'pull_request'
 
@@ -109,7 +109,7 @@ jobs:
 
   dispatch-tag:
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Only tag a new release if prior steps were successful and triggering commit is a merge to mainline
     if: success() && github.ref == 'refs/heads/development'

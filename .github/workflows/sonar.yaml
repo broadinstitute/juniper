@@ -10,7 +10,7 @@ on:
 jobs:
   sonar-java:
     name: SonarCloud Java
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -50,7 +50,7 @@ jobs:
 
   sonar-typescript:
     name: SonarCloud TypeScript
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         subproject: ['ui-admin', 'ui-core', 'ui-participant']
