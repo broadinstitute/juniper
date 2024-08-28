@@ -18,6 +18,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _cloneDeep from 'lodash/cloneDeep'
 import { userHasPermission, useUser } from 'user/UserProvider'
 import { Button } from 'components/forms/Button'
+import { isEmpty } from 'lodash'
+import Modal from 'react-bootstrap/Modal'
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 export const emptyChangeSet: PortalEnvironmentChange = {
   siteContentChange: { changed: false },
@@ -99,6 +102,7 @@ type EnvironmentDiffProps = {
 export default function PortalEnvDiffView(
   { changeSet, destEnvName, applyChanges, sourceEnvName, portal }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
   const { user } = useUser()
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
     const matchedIndex = selectedChanges.studyEnvChanges
@@ -230,7 +234,14 @@ export default function PortalEnvDiffView(
     </div>
     <div className="d-flex justify-content-center mt-2 pb-5">
       { userHasPermission(user, portal.id, 'publish') && <>
-        <Button variant="primary" onClick={() => applyChanges(selectedChanges)}>
+        <Button variant="primary" onClick={() => {
+          if (isEmpty(selectedChanges.configChanges) &&
+              isEmpty(selectedChanges.studyEnvChanges.filter(studyChange => !isEmpty(studyChange.configChanges)))) {
+            applyChanges(selectedChanges)
+          } else {
+            setShowConfirmModal(true)
+          }
+        }}>
           Publish changes to {destEnvName}
         </Button>
         {
@@ -244,7 +255,77 @@ export default function PortalEnvDiffView(
            To publish selected changes, you must have the &quot;publish&quot; permission, or contact support
          </div>
       }
+      { showConfirmModal &&
+        <ConfirmConfigChangesModal portal={portal} selectedChanges={selectedChanges} applyChanges={applyChanges}
+          onDismiss={() => setShowConfirmModal(false)}/>
+      }
     </div>
   </div>
+}
+
+const ConfirmConfigChangesModal = ({ portal, selectedChanges, applyChanges, onDismiss }: {
+  portal: Portal
+  selectedChanges: PortalEnvironmentChange,
+  applyChanges: (changeSet: PortalEnvironmentChange) => void,
+  onDismiss: () => void
+}) => {
+  return <Modal className="modal-lg" show={true} onHide={onDismiss}>
+    <Modal.Header closeButton>
+      <Modal.Title>Confirm Publish</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <div className="mb-2">
+        Some of the changes that you are about to publish may significantly impact study operations.
+        Please review the following items and confirm that you want to proceed:
+      </div>
+
+      <SensitiveConfigChangeList configChanges={selectedChanges.configChanges} title="Portal Configuration"/>
+
+      {selectedChanges.studyEnvChanges.map(studyChanges => {
+        const studyName = portal.portalStudies.find(portalStudy =>
+          portalStudy.study.shortcode === studyChanges.studyShortcode)?.study.name || studyChanges.studyShortcode
+
+        return <SensitiveConfigChangeList
+          key={studyChanges.studyShortcode}
+          configChanges={studyChanges.configChanges}
+          title={`${studyName} Study Configuration`}/>
+      })}
+
+      <div className="mt-3">Are you sure that you want to proceed?</div>
+    </Modal.Body>
+    <Modal.Footer>
+      <LoadingSpinner isLoading={false}>
+        <button className="btn btn-primary" onClick={() => {
+          applyChanges(selectedChanges)
+        }}>Publish</button>
+        <button className="btn btn-secondary" onClick={() => {
+          onDismiss()
+        }}>Cancel</button>
+      </LoadingSpinner>
+    </Modal.Footer>
+  </Modal>
+}
+
+type ConfigChangeListProps = {
+  configChanges: ConfigChange[],
+  title: string
+}
+
+const SensitiveConfigChangeList = ({ configChanges, title }: ConfigChangeListProps) => {
+  return configChanges.length > 0 ? (
+    <>
+      <label className="d-flex h4 mt-1">{title}</label>
+      {configChanges.map(configChange => (
+        <div className="d-flex" key={configChange.propertyName}>
+          <div className="fw-semibold">{configChange.propertyName}:</div>
+          <div className="ms-2">
+            {configChange.oldValue.toString()}
+            <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
+            {configChange.newValue.toString()}
+          </div>
+        </div>
+      ))}
+    </>
+  ) : null
 }
 
