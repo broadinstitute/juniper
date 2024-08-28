@@ -58,7 +58,7 @@ describe('PortalEnvDiff', () => {
     expect(spyApplyChanges).toHaveBeenCalledWith(changeSet)
   })
 
-  it('prompts for confirmation when pubhlishing sensitive config changes', async () => {
+  it('prompts for confirmation when publishing sensitive config changes', async () => {
     const { portal } = mockPortalContext()
     const changeSet: PortalEnvironmentChange = {
       ...emptyChangeSet,
