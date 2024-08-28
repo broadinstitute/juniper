@@ -20,7 +20,7 @@ import { userHasPermission, useUser } from 'user/UserProvider'
 import { Button } from 'components/forms/Button'
 import { isEmpty } from 'lodash'
 import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 export const emptyChangeSet: PortalEnvironmentChange = {
   siteContentChange: { changed: false },
@@ -306,12 +306,10 @@ const ConfirmConfigChangesModal = ({ portal, selectedChanges, applyChanges, onDi
   </Modal>
 }
 
-type ConfigChangeListProps = {
+const SensitiveConfigChangeList = ({ configChanges, title }: {
   configChanges: ConfigChange[],
   title: string
-}
-
-const SensitiveConfigChangeList = ({ configChanges, title }: ConfigChangeListProps) => {
+}) => {
   return configChanges.length > 0 ? (
     <>
       <label className="d-flex h4 mt-1">{title}</label>
