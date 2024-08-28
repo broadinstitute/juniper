@@ -269,22 +269,21 @@ const BasicQueryBuilder = ({
           valueEditor: CustomValueEditor,
           operatorSelector: OperatorSelector
         }}
-        operators={operators}
+        getDefaultOperator={'='}
+        operators={[
+          { name: '=', label: 'equals' },
+          { name: '!=', label: 'not equals' },
+          { name: '<', label: 'less than' },
+          { name: '<=', label: 'less than or equal to' },
+          { name: '>', label: 'greater than' },
+          { name: '>=', label: 'greater than or equal to' },
+          { name: 'contains', label: 'contains' }
+        ]}
         query={query || { combinator: 'and', rules: [] }}
         onQueryChange={q => updateQuery(q)}/>
     </div>
   </LoadingSpinner>
 }
-
-const operators = [
-  { name: '=', label: 'equals' },
-  { name: '!=', label: 'not equals' },
-  { name: '<', label: 'less than' },
-  { name: '<=', label: 'less than or equal to' },
-  { name: '>', label: 'greater than' },
-  { name: '>=', label: 'greater than or equal to' },
-  { name: 'contains', label: 'contains' }
-]
 
 // Converts our facet type to a react-querybuilder field definition. Works in
 // tandem with CustomFieldSelector and CustomValueEditor to render our custom
@@ -371,17 +370,17 @@ const CustomValueEditor = (props: ValueEditorProps) => {
 }
 
 const OperatorSelector = (props: OperatorSelectorProps) => {
-  const options = props.options.map(op => {
-    return { label: op.label, value: op.label }
-  })
+  const options = props.options as { name: string, label: string }[]
+
+  const selectedOptions = options.find(o => o.name === props.value)
 
   return <div className="w-50">
     <Select
       options={options}
-      value={{ label: props.value || '', value: props.value || '' }}
+      value={selectedOptions ? { value: selectedOptions.name, label: selectedOptions.label } : undefined}
       onChange={newVal => {
-        if (newVal?.label != props.value) {
-          props.handleOnChange(newVal?.label || '')
+        if (newVal?.name != props.value) {
+          props.handleOnChange(newVal?.name || '')
         }
       }}
     />
