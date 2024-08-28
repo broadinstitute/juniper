@@ -10,7 +10,6 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faClockRotateLeft,
-  faCompass,
   faGlobe,
   faImage,
   faPalette,
@@ -312,9 +311,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               onChange={languageOnChange}/>
           </div> }
           <div className="d-flex ms-auto">
-            <Link to="./navbar" className="btn btn-light me-2">
-              <FontAwesomeIcon icon={faCompass} className="fa-lg"/> Navbar
-            </Link>
             <Button variant="light" onClick={() => setShowBrandingModal(true)}>
               <FontAwesomeIcon icon={faPalette} className="fa-lg"/> Branding
             </Button>
