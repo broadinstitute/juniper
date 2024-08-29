@@ -52,7 +52,7 @@ describe('CustomNavLink', () => {
       itemType: 'INTERNAL',
       text: 'Internal link',
       itemOrder: 1,
-      htmlPagePath: 'testPage',
+      internalPath: 'testPage',
       htmlPage: {
         path: 'testPage'
       } as HtmlPage

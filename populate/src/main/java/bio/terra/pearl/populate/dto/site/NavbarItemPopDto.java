@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.dto.site;
 
+import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ public class NavbarItemPopDto extends NavbarItem {
     private String populateFileName;
 
     // kept here for legacy reasons
+    private HtmlPage htmlPage;
     private HtmlPagePopDto htmlPageDto;
 
     // for grouped navbars

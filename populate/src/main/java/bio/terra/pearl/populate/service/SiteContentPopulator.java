@@ -57,7 +57,7 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
 
         if (Objects.nonNull(navItem.getHtmlPageDto())) {
             navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
-            navItem.setHtmlPagePath(navItem.getHtmlPageDto().getPath());
+            navItem.setInternalPath(navItem.getHtmlPageDto().getPath());
         }
 
         if (Objects.nonNull(navItem.getItemDtos())) {

@@ -7,7 +7,7 @@ databaseChangeLog:
             tableName: navbar_item
             columns:
               - column:
-                  name: html_page_path
+                  name: internal_path
                   type: text
                   constraints:
                     nullable: true
@@ -20,7 +20,7 @@ databaseChangeLog:
                   constraints:
                     nullable: true
         - sql:
-            sql: "UPDATE navbar_item SET html_page_path = (SELECT path FROM html_page WHERE id = html_page_id) WHERE html_page_id IS NOT NULL"
+            sql: "UPDATE navbar_item SET internal_path = (SELECT path FROM html_page WHERE id = html_page_id) WHERE html_page_id IS NOT NULL"
         - dropColumn:
             tableName: navbar_item
             columnName: html_page_id

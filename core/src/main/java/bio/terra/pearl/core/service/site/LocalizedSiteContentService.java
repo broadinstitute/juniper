@@ -58,12 +58,6 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             navItem.setItemOrder(i);
             navItem.setLocalizedSiteContentId(savedSite.getId());
             NavbarItem savedItem = navbarItemService.create(navItem);
-            if (savedItem.getHtmlPagePath() != null) {
-                savedItem.setHtmlPage(pages.stream()
-                        .filter(p -> p.getPath().equals(savedItem.getHtmlPagePath()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(savedItem.getHtmlPagePath()))));
-            }
             savedSite.getNavbarItems().add(savedItem);
         }
         HtmlPage landingPage = localSite.getLandingPage();
@@ -79,11 +73,11 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
     }
 
     private void validateNavbarItem(NavbarItem item, List<HtmlPage> pages) {
-        if (item.getHtmlPagePath() != null) {
+        if (item.getInternalPath() != null) {
             pages.stream()
-                    .filter(p -> p.getPath().equals(item.getHtmlPagePath()))
+                    .filter(p -> p.getPath().equals(item.getInternalPath()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(item.getHtmlPagePath())));
+                    .orElseThrow(() -> new IllegalArgumentException("Navbar item page path (%s) not found".formatted(item.getInternalPath())));
         }
 
         if (item.getItems() != null) {

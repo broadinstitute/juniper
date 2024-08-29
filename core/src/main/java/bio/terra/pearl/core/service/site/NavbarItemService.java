@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,17 +23,18 @@ public class NavbarItemService extends ImmutableEntityService<NavbarItem, Navbar
     public NavbarItem create(NavbarItem item) {
         NavbarItem savedItem = dao.create(item);
 
-        List<NavbarItem> groupedItems = item.getItems();
-        if (groupedItems != null && !groupedItems.isEmpty()) {
-            for (int i = 0; i < groupedItems.size(); i++) {
-                NavbarItem groupedItem = groupedItems.get(i);
+        List<NavbarItem> savedItems = new ArrayList<>();
+        if (item.getItems() != null && !item.getItems().isEmpty()) {
+            for (int i = 0; i < item.getItems().size(); i++) {
+                NavbarItem groupedItem = item.getItems().get(i);
                 groupedItem.setParentNavbarItemId(savedItem.getId());
                 groupedItem.setLocalizedSiteContentId(savedItem.getLocalizedSiteContentId());
                 groupedItem.setItemOrder(i);
                 groupedItem = this.create(groupedItem);
-                groupedItems.set(i, groupedItem);
+                savedItems.add(groupedItem);
             }
         }
+        savedItem.setItems(savedItems);
         return savedItem;
     }
 

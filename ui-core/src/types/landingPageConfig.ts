@@ -66,8 +66,7 @@ export type BaseNavBarItem = {
 
 export type NavbarItemInternal = BaseNavBarItem & {
   itemType: 'INTERNAL'
-  htmlPage: HtmlPage
-  htmlPagePath: string
+  internalPath: string
 }
 
 export type NavbarItemGroup = BaseNavBarItem & {

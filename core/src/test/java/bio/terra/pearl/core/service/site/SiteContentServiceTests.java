@@ -138,7 +138,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
         NavbarItem navbarItem = NavbarItem.builder()
                 .itemType(NavbarItemType.INTERNAL)
-                .htmlPagePath("about-us").build();
+                .internalPath("about-us").build();
 
         NavbarItem groupedItem = NavbarItem.builder()
                 .itemType(NavbarItemType.GROUP)
@@ -147,7 +147,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
                         NavbarItem.builder()
                                 .itemType(NavbarItemType.INTERNAL)
                                 .text("FAQ")
-                                .htmlPagePath("faq")
+                                .internalPath("faq")
                                 .build(),
                         NavbarItem.builder()
                                 .itemType(NavbarItemType.EXTERNAL)
@@ -181,7 +181,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
         NavbarItem savedNavbarItem = savedLsc.getNavbarItems().get(0);
         assertNotNull(savedNavbarItem.getId());
-        assertEquals("about-us", savedNavbarItem.getHtmlPagePath());
+        assertEquals("about-us", savedNavbarItem.getInternalPath());
         assertEquals(0, savedNavbarItem.getItemOrder());
 
         NavbarItem savedGroupedItem = savedLsc.getNavbarItems().get(1);
@@ -191,7 +191,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
         NavbarItem savedFaqItem = savedGroupedItem.getItems().get(0);
         assertNotNull(savedFaqItem.getId());
-        assertEquals("faq", savedFaqItem.getHtmlPagePath());
+        assertEquals("faq", savedFaqItem.getInternalPath());
         // should be 0 because it's the first item in the group
         assertEquals(0, savedFaqItem.getItemOrder());
 
@@ -215,7 +215,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
         NavbarItem navbarItem = NavbarItem.builder()
                 .itemType(NavbarItemType.INTERNAL)
-                .htmlPagePath("doesnt-exist")
+                .internalPath("doesnt-exist")
                 .build();
 
         LocalizedSiteContent lsc = LocalizedSiteContent.builder()
@@ -240,7 +240,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
                         NavbarItem.builder()
                                 .itemType(NavbarItemType.INTERNAL)
                                 .text("aaaaa")
-                                .htmlPagePath("doesnt-exist")
+                                .internalPath("doesnt-exist")
                                 .build()
                 )))
                 .build();

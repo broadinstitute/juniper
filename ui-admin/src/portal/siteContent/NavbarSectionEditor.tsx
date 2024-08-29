@@ -123,7 +123,7 @@ export function NavbarSectionEditor(
         newItems.push({
           itemType: 'INTERNAL',
           text: '',
-          htmlPagePath: '',
+          internalPath: '',
           itemOrder: navbarItems.length
         } as NavbarItem)
         updateNavbarItems(newItems)
@@ -191,8 +191,8 @@ const NavbarEditor = ({ localSiteContent, navbarItem, updateItem }: {
             aria-label={'Select Page'}
             placeholder={'Select page'}
             options={pageOptions}
-            value={pageOptions.find(option => option.value === navbarItem.htmlPagePath)}
-            onChange={e => e && updateItem({ ...navbarItem, htmlPagePath: e.value } as NavbarItem)}
+            value={pageOptions.find(option => option.value === navbarItem.internalPath)}
+            onChange={e => e && updateItem({ ...navbarItem, internalPath: e.value } as NavbarItem)}
           />
         </div>}
 
@@ -243,7 +243,7 @@ const NavbarDropdownEditor = ({ localSiteContent, navbarItem, updateItem }: {
         newItems.push({
           itemType: 'INTERNAL',
           text: '',
-          htmlPagePath: '',
+          internalPath: '',
           itemOrder: navbarItem.items.length
         } as NavbarItem)
         updateItem({ ...navbarItem, items: newItems })

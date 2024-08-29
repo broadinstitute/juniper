@@ -212,7 +212,7 @@ export function CustomNavLink({ navLink, isGrouped = false }: {
   const navLinkClasses = isGrouped ? groupedNavLinkClasses : topLevelNavLinkClasses
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPagePath}`} className={navLinkClasses}>{navLink.text}</NavLink>
+    return <NavLink to={`/${navLink.internalPath}`} className={navLinkClasses}>{navLink.text}</NavLink>
   } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
     return <HashLink to={navLink.href} className={navLinkClasses}>{navLink.text}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {

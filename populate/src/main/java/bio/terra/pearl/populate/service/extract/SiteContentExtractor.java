@@ -88,7 +88,7 @@ public class SiteContentExtractor {
     public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         NavbarItemPopDto navbarItemPopDto = new NavbarItemPopDto();
         if (navbarItem.getItemType().equals(NavbarItemType.INTERNAL)) {
-            String navbarFile = "%s/navbar-item-%s.json".formatted(lsc.getLanguage(), navbarItem.getHtmlPagePath());
+            String navbarFile = "%s/navbar-item-%s.json".formatted(lsc.getLanguage(), navbarItem.getInternalPath());
             navbarItemPopDto.setPopulateFileName(navbarFile);
 
             NavbarItemPopDto itemFileDto = new NavbarItemPopDto();
