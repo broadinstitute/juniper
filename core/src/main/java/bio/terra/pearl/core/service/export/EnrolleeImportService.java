@@ -167,26 +167,26 @@ public class EnrolleeImportService {
      */
     public List<Map<String, String>> generateImportMaps(InputStream in, ImportFileFormat fileFormat) {
         List<Map<String, String>> importMaps = new ArrayList<>();
-        char separator = TSV_DELIMITER;
-        if (fileFormat == ImportFileFormat.CSV) {
-            separator = CSV_DELIMITER;
-        }
         Iterable<CSVRecord> parser;
 
         try {
-            parser = CSVFormat.DEFAULT.builder().setDelimiter(separator).build().parse(new InputStreamReader(in));
+            CSVFormat format = fileFormat == ImportFileFormat.TSV ? CSVFormat.TDF : CSVFormat.DEFAULT;
+
+            parser = format.builder().setRecordSeparator('\n').build().parse(new InputStreamReader(in));
         } catch (IOException e) {
             throw new RuntimeException("Error parsing input stream", e);
         }
 
+        List<String> header = new ArrayList<>();
         for (CSVRecord record : parser) {
             if (record.getRecordNumber() == 1) {
+                header = record.toList();
                 // skip the header row
                 continue;
             }
             Map<String, String> enrolleeMap = new HashMap<>();
             for (int i = 0; i < record.size(); i++) {
-                enrolleeMap.put(String.valueOf(i), record.get(i));
+                enrolleeMap.put(header.get(i), record.get(i));
             }
             importMaps.add(enrolleeMap);
         }
