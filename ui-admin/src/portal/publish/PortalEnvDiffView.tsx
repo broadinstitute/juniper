@@ -10,7 +10,7 @@ import {
   ConfigChangeListView,
   ConfigChanges,
   renderNotificationConfig,
-  renderPortalLanguage,
+  renderPortalLanguage, valuePresent,
   VersionChangeView
 } from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -282,15 +282,17 @@ const ConfirmConfigChangesModal = ({ portal, selectedChanges, applyChanges, onDi
 
       <SensitiveConfigChangeList configChanges={selectedChanges.configChanges} title="Portal Configuration"/>
 
-      {selectedChanges.studyEnvChanges.map(studyChanges => {
-        const studyName = portal.portalStudies.find(portalStudy =>
-          portalStudy.study.shortcode === studyChanges.studyShortcode)?.study.name || studyChanges.studyShortcode
+      <div className="mt-2">
+        {selectedChanges.studyEnvChanges.map(studyChanges => {
+          const studyName = portal.portalStudies.find(portalStudy =>
+            portalStudy.study.shortcode === studyChanges.studyShortcode)?.study.name || studyChanges.studyShortcode
 
-        return <SensitiveConfigChangeList
-          key={studyChanges.studyShortcode}
-          configChanges={studyChanges.configChanges}
-          title={`${studyName} Study Configuration`}/>
-      })}
+          return <SensitiveConfigChangeList
+            key={studyChanges.studyShortcode}
+            configChanges={studyChanges.configChanges}
+            title={`${studyName} Study Configuration`}/>
+        })}
+      </div>
 
       <div className="mt-3">Are you sure that you want to proceed?</div>
     </Modal.Body>
@@ -311,6 +313,7 @@ const SensitiveConfigChangeList = ({ configChanges, title }: {
   configChanges: ConfigChange[],
   title: string
 }) => {
+  const noVal = <span className="text-muted fst-italic">none</span>
   return configChanges.length > 0 ? (
     <>
       <label className="d-flex h4 mt-1">{title}</label>
@@ -318,9 +321,9 @@ const SensitiveConfigChangeList = ({ configChanges, title }: {
         <div className="d-flex" key={configChange.propertyName}>
           <div className="fw-semibold">{configChange.propertyName}:</div>
           <div className="ms-2">
-            {configChange.oldValue.toString()}
+            {valuePresent(configChange.oldValue) ? configChange.oldValue.toString() : noVal}
             <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
-            {configChange.newValue.toString()}
+            {valuePresent(configChange.newValue) ? configChange.newValue.toString() : noVal}
           </div>
         </div>
       ))}
