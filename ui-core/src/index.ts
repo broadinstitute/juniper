@@ -7,7 +7,7 @@ export { EditAddress } from './components/EditAddress'
 export * from './components/forms/PagedSurveyView'
 export { SurveyAutoCompleteButton } from './components/forms/SurveyAutoCompleteButton'
 export { SurveyReviewModeButton } from './components/forms/ReviewModeButton'
-export { KitCollectionStep } from './components/kits/KitCollectionStep'
+export { KitCollectionStepWrapper } from './components/kits/KitCollectionStepWrapper'
 export { createAddressValidator } from './surveyjs/address-validator'
 
 export * from './types/forms'

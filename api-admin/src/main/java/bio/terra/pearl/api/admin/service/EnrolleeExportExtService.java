@@ -1,10 +1,8 @@
 package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportOptions;
@@ -30,36 +28,19 @@ public class EnrolleeExportExtService {
     this.dictionaryExportService = dictionaryExportService;
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public void export(
-      ExportOptions options,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      OutputStream os,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    enrolleeExportService.export(options, studyEnv.getId(), os);
+      PortalStudyEnvAuthContext authContext, ExportOptions options, OutputStream os) {
+    enrolleeExportService.export(options, authContext.getStudyEnvironment().getId(), os);
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
   public void exportDictionary(
-      ExportOptions exportOptions,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      OutputStream os,
-      AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-    try {
-      dictionaryExportService.exportDictionary(exportOptions, portal.getId(), studyEnv.getId(), os);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+      PortalStudyEnvAuthContext authContext, ExportOptions exportOptions, OutputStream os) {
+    dictionaryExportService.exportDictionary(
+        exportOptions,
+        authContext.getPortal().getId(),
+        authContext.getStudyEnvironment().getId(),
+        os);
   }
 }

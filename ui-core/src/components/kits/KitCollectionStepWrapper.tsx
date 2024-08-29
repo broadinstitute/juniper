@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react'
 import { StepStatus, stepStatusToIcon } from '../../kitCollectionUtils'
 
-export const KitCollectionStep = ({ title, status, children, disabled }: {
+export const KitCollectionStepWrapper = ({ title, status, children, disabled }: {
     title: string, status: StepStatus, children: ReactNode, disabled?: boolean
 }) => {
   return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white"
