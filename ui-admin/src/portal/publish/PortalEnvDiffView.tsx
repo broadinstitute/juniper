@@ -235,8 +235,9 @@ export default function PortalEnvDiffView(
     <div className="d-flex justify-content-center mt-2 pb-5">
       { userHasPermission(user, portal.id, 'publish') && <>
         <Button variant="primary" onClick={() => {
+          // check for portal env and study env config changes. if empty, immediately apply changes
           if (isEmpty(selectedChanges.configChanges) &&
-              isEmpty(selectedChanges.studyEnvChanges.filter(studyChange => !isEmpty(studyChange.configChanges)))) {
+              selectedChanges.studyEnvChanges.every(studyChange => isEmpty(studyChange.configChanges))) {
             applyChanges(selectedChanges)
           } else {
             setShowConfirmModal(true)
