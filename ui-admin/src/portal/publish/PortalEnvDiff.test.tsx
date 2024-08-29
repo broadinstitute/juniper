@@ -50,7 +50,7 @@ describe('PortalEnvDiff', () => {
     expect(spyApplyChanges).toHaveBeenCalledTimes(1)
     expect(spyApplyChanges).toHaveBeenCalledWith(emptyChangeSet)
 
-    // if we save after clicking the password field, we should save with a config change
+    // if we save after clicking on a language field, we should save with a language change
     await userEvent.click(screen.getByText('Spanish (es)'))
     await userEvent.click(screen.getByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
 
@@ -76,7 +76,7 @@ describe('PortalEnvDiff', () => {
     expect(screen.queryAllByText('no changes')).toHaveLength(5)
     expect(screen.queryAllByRole('checkbox')).toHaveLength(1)
 
-    // if we save after clicking the password field, we should save with a config change
+    // if we save after clicking the password field, we should be prompted for confirmation
     await userEvent.click(screen.getByText('password:'))
     await userEvent.click(screen.getByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
 

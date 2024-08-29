@@ -5,6 +5,7 @@ import StudyContent from './StudyContent'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import Api from 'api/api'
 import { setupRouterTest } from '@juniper/ui-core'
+import { userEvent } from '@testing-library/user-event'
 
 test('renders surveys in-order', async () => {
   const studyEnvContext = mockStudyEnvContext()
@@ -39,7 +40,7 @@ test('renders a Create Survey modal', async () => {
   render(RoutedComponent)
   await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const addSurveyButton = screen.getByTestId('addResearchSurvey')
-  fireEvent.click(addSurveyButton)
+  await userEvent.click(addSurveyButton)
   expect(screen.getByText('Create new research form')).toBeInTheDocument()
   expect(screen.getByText('Name')).toBeInTheDocument()
   expect(screen.getByText('Stable ID')).toBeInTheDocument()
