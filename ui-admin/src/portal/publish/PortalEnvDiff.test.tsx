@@ -81,6 +81,10 @@ describe('PortalEnvDiff', () => {
     await userEvent.click(screen.getByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
 
     await screen.getByText('Confirm Publish')
+
+    // at this time, changes should not have been published
+    expect(spyApplyChanges).toHaveBeenCalledTimes(0)
+
     await userEvent.click(screen.getByText('Publish'))
 
     expect(spyApplyChanges).toHaveBeenCalledTimes(1)
