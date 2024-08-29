@@ -7,10 +7,9 @@ import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.io.OutputStream;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExportExtService {
@@ -32,12 +31,12 @@ public class EnrolleeExportExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public void export(
-          PortalStudyEnvAuthContext authContext, ExportOptions options, OutputStream os) {
-      try {
-          enrolleeExportService.export(options, authContext.getStudyEnvironment().getId(), os);
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
+      PortalStudyEnvAuthContext authContext, ExportOptions options, OutputStream os) {
+    try {
+      enrolleeExportService.export(options, authContext.getStudyEnvironment().getId(), os);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @EnforcePortalStudyEnvPermission(permission = "BASE")

@@ -23,20 +23,21 @@ public class TsvExporter extends BaseExporter {
      */
     @Override
     public void export(OutputStream os) throws IOException {
-        ICSVWriter writer = new CSVWriterBuilder(new OutputStreamWriter(os))
+        try (ICSVWriter writer = new CSVWriterBuilder(new OutputStreamWriter(os))
                 .withSeparator(DELIMITER)
-                .build();
-        List<String> columnKeys = getColumnKeys();
-        List<String> headerRowValues = getHeaderRow();
-        List<String> subHeaderRowValues = getSubHeaderRow();
+                .build()) {
+            List<String> columnKeys = getColumnKeys();
+            List<String> headerRowValues = getHeaderRow();
+            List<String> subHeaderRowValues = getSubHeaderRow();
 
-        writer.writeNext(headerRowValues.toArray(String[]::new));
-        writer.writeNext(subHeaderRowValues.toArray(String[]::new));
-        for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
-            writer.writeNext(rowValues.toArray(String[]::new));
+            writer.writeNext(headerRowValues.toArray(String[]::new));
+            writer.writeNext(subHeaderRowValues.toArray(String[]::new));
+            for (Map<String, String> enrolleeMap : enrolleeMaps) {
+                List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
+                writer.writeNext(rowValues.toArray(String[]::new));
+            }
+            writer.flush();
         }
-        writer.flush();
         // do not close os -- that's the caller's responsibility
     }
     
