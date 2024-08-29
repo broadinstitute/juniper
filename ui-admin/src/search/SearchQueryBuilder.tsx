@@ -270,20 +270,22 @@ const BasicQueryBuilder = ({
           operatorSelector: OperatorSelector
         }}
         getDefaultOperator={'='}
-        operators={[
-          { name: '=', label: 'equals' },
-          { name: '!=', label: 'not equals' },
-          { name: '<', label: 'less than' },
-          { name: '<=', label: 'less than or equal to' },
-          { name: '>', label: 'greater than' },
-          { name: '>=', label: 'greater than or equal to' },
-          { name: 'contains', label: 'contains' }
-        ]}
+        operators={operators}
         query={query || { combinator: 'and', rules: [] }}
         onQueryChange={q => updateQuery(q)}/>
     </div>
   </LoadingSpinner>
 }
+
+const operators = [
+  { name: '=', label: 'equals' },
+  { name: '!=', label: 'not equals' },
+  { name: '<', label: 'less than' },
+  { name: '<=', label: 'less than or equal to' },
+  { name: '>', label: 'greater than' },
+  { name: '>=', label: 'greater than or equal to' },
+  { name: 'contains', label: 'contains' }
+]
 
 // Converts our facet type to a react-querybuilder field definition. Works in
 // tandem with CustomFieldSelector and CustomValueEditor to render our custom
