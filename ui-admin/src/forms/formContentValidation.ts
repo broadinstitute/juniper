@@ -82,7 +82,7 @@ export const validateElementNames = (elements: (Question | HtmlElement)[]) => {
 
   //It's hard to reference individual elements that don't have names, so just return the count.
   if (invalidElements.length === 1) {
-    errorMessages.push(`1 element is missing a 'name' field.`)
+    errorMessages.push(`1 element is missing a 'name' (stable ID) field.`)
   } else if (invalidElements.length > 1) {
     errorMessages.push(`${invalidElements.length} elements are missing a 'name' field.`)
   }

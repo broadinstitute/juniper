@@ -35,8 +35,12 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   }
 
   return <div className="mt-3 container w-100">
+    <div className="d-flex">
+      {renderNewElementButton(content, onChange, -1, currentPageNo, 'question')}
+      {renderNewElementButton(content, onChange, -1, currentPageNo, 'panel')}
+    </div>
     <>
-      {currentPage.elements.map((element, elementIndex) => (
+      {currentPage && currentPage.elements && currentPage.elements.map((element, elementIndex) => (
         <div key={elementIndex} className="container">
           <SplitFormElementDesigner currentPageNo={currentPageNo}
             elementIndex={elementIndex} editedContent={content}
@@ -62,7 +66,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === content.pages.length - 1}
         onClick={() => handlePageChange('next')}>
-                Next page <FontAwesomeIcon icon={faArrowRight}/>
+        Next page <FontAwesomeIcon icon={faArrowRight}/>
       </Button>
     </div>
   </div>
