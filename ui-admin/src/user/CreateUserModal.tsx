@@ -82,7 +82,7 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
             <div>
               <label className="w-100 mb-3">
                 Portal
-                <Select options={portalOpts} value={selectedPortalOpt}
+                <Select options={portalOpts} value={selectedPortalOpt} isDisabled={portalOpts.length < 2}
                   onChange={opt => setPortalShortcode(opt?.value ?? null)}/>
               </label>
             </div>

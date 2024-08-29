@@ -69,7 +69,7 @@ const EditPortalUserModal = ({ userId, portalShortcode, onDismiss, userUpdated }
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className="btn btn-primary" onClick={updateUser}>Update</button>
+        <button className="btn btn-primary" onClick={updateUser}>Save</button>
         <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>

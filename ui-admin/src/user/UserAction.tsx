@@ -5,7 +5,7 @@ import { Portal } from 'api/api'
 import { AdminUser } from 'api/adminUser'
 import DeleteUserModal from './DeleteUserModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import EditUserModal from './EditUserModal'
+import EditUserModal from './EditPortalUserModal'
 import { Button } from '../components/forms/Button'
 
 /** Handle actions for a given portal user. */

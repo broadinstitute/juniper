@@ -10,7 +10,7 @@ import { AdminUser, Role } from 'api/adminUser'
 import { RoleTable } from './RolesList'
 import InfoPopup from '../components/forms/InfoPopup'
 import Select from 'react-select'
-import EditUserModal from './EditUserModal'
+import EditUserModal from './EditPortalUserModal'
 import { Button } from '../components/forms/Button'
 
 

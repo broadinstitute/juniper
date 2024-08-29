@@ -8,15 +8,12 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
-import bio.terra.pearl.core.service.admin.RoleService;
 import bio.terra.pearl.populate.dto.AdminUserPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-
-import javax.xml.crypto.Data;
 
 @Service
 public class AdminUserPopulator extends BasePopulator<AdminUser, AdminUserPopDto, FilePopulateContext> {
