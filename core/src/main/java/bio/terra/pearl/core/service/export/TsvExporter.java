@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import com.opencsv.CSVWriterBuilder;
-import com.opencsv.ICSVWriter;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,21 +23,20 @@ public class TsvExporter extends BaseExporter {
      */
     @Override
     public void export(OutputStream os) throws IOException {
-        try (ICSVWriter writer = new CSVWriterBuilder(new OutputStreamWriter(os))
-                .withSeparator(DELIMITER)
-                .build()) {
-            List<String> columnKeys = getColumnKeys();
-            List<String> headerRowValues = getHeaderRow();
-            List<String> subHeaderRowValues = getSubHeaderRow();
+        CSVPrinter writer = CSVFormat.TDF.builder().setRecordSeparator('\n').build().print(new OutputStreamWriter(os));
 
-            writer.writeNext(headerRowValues.toArray(String[]::new));
-            writer.writeNext(subHeaderRowValues.toArray(String[]::new));
-            for (Map<String, String> enrolleeMap : enrolleeMaps) {
-                List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
-                writer.writeNext(rowValues.toArray(String[]::new));
-            }
-            writer.flush();
+        List<String> columnKeys = getColumnKeys();
+        List<String> headerRowValues = getHeaderRow();
+        List<String> subHeaderRowValues = getSubHeaderRow();
+
+        writer.printRecord(headerRowValues);
+        writer.printRecord(subHeaderRowValues);
+        for (Map<String, String> enrolleeMap : enrolleeMaps) {
+            List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
+            writer.printRecord(rowValues);
         }
+
+        writer.flush();
         // do not close os -- that's the caller's responsibility
     }
     
