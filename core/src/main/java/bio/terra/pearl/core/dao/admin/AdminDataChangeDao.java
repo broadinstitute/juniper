@@ -21,4 +21,8 @@ public class AdminDataChangeDao extends BaseJdbiDao<AdminDataChange> {
     public void deleteByPortalId(UUID portalId) {
         deleteByProperty("portal_id", portalId);
     }
+
+    public void deleteByResponsibleAdminUserId(UUID adminUserId) {
+        deleteByProperty("responsible_admin_user_id", adminUserId);
+    }
 }

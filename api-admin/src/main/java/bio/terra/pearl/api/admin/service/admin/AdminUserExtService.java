@@ -106,6 +106,7 @@ public class AdminUserExtService {
   @Transactional
   public AdminUser createAdminUser(
       PortalAuthContext authContext, String username, List<String> roleNames) {
+    authorizeRoles(authContext, roleNames);
     AdminUser newUser = AdminUser.builder().username(username).superuser(false).build();
     newUser
         .getPortalAdminUsers()
@@ -121,10 +122,7 @@ public class AdminUserExtService {
     return adminUser;
   }
 
-  @EnforcePortalPermission(permission = "admin_user_edit")
-  public List<String> setPortalUserRoles(
-      PortalAuthContext authContext, UUID adminUserId, List<String> roleNames) {
-
+  protected void authorizeRoles(PortalAuthContext authContext, List<String> roleNames) {
     if (!authContext.getOperator().isSuperuser()) {
       // regular users can only assign roles they have themselves
       PortalAdminUser operatorPaUser =
@@ -143,6 +141,13 @@ public class AdminUserExtService {
             }
           });
     }
+  }
+
+  @EnforcePortalPermission(permission = "admin_user_edit")
+  public List<String> setPortalUserRoles(
+      PortalAuthContext authContext, UUID adminUserId, List<String> roleNames) {
+
+    authorizeRoles(authContext, roleNames);
     // looking up the portalAdminUser of the target by the portal from the authContext
     // confirms they are in a portal the operator has access and permission to edit users
     PortalAdminUser paUser =

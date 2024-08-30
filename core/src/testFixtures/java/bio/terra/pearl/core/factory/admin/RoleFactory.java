@@ -3,6 +3,8 @@ package bio.terra.pearl.core.factory.admin;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.admin.RoleService;
 import java.util.List;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +19,7 @@ public class RoleFactory {
     }
 
     public Role buildPersisted(String testName) {
-        Role role = builder(testName).build();
+        Role role = builder(testName + "_" + RandomStringUtils.randomAlphabetic(4)).build();
         return roleService.create(role);
     }
 

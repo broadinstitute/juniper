@@ -4,9 +4,7 @@ import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.model.admin.*;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
 
-import java.time.Instant;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,17 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminUserService extends AdminDataAuditedService<AdminUser, AdminUserDao> {
     private final PortalAdminUserService portalAdminUserService;
     private final PortalAdminUserRoleService portalAdminUserRoleService;
+    private final AdminDataChangeService adminDataChangeService;
     private final ObjectMapper objectMapper;
 
     public AdminUserService(AdminUserDao adminUserDao,
                             PortalAdminUserService portalAdminUserService,
                             PortalAdminUserRoleService portalAdminUserRoleService,
                             AdminDataChangeService adminDataChangeService,
-                            ObjectMapper objectMapper, ObjectMapper objectMapper1) {
+                            ObjectMapper objectMapper) {
         super(adminUserDao, adminDataChangeService, objectMapper);
         this.portalAdminUserService = portalAdminUserService;
         this.portalAdminUserRoleService = portalAdminUserRoleService;
-        this.objectMapper = objectMapper1;
+        this.adminDataChangeService = adminDataChangeService;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<AdminUser> findByUsername(String username) {
@@ -58,6 +58,7 @@ public class AdminUserService extends AdminDataAuditedService<AdminUser, AdminUs
     @Override
     public void delete(UUID adminUserId, DataAuditInfo auditInfo, Set<CascadeProperty> cascade) {
         portalAdminUserService.deleteByUserId(adminUserId, auditInfo);
+        adminDataChangeService.deleteByResponsibleAdminUserId(adminUserId);
         dao.delete(adminUserId);
     }
 

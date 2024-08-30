@@ -11,7 +11,6 @@ import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -107,9 +106,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   public void authUserToPortalWithPermissionAllows(TestInfo info) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
     Portal portal = portalFactory.buildPersisted(getTestName(info));
-    Permission deletePortalPermission = permissionFactory.buildPersisted("delete_portal");
-    Role portalDeleterRole =
-        roleFactory.buildPersisted("portal_deleter", List.of(deletePortalPermission.getName()));
+    Role portalDeleterRole = roleFactory.buildPersisted("portal_deleter", List.of("delete_portal"));
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     PortalAdminUser portalAdminUser =
         portalAdminUserService.create(

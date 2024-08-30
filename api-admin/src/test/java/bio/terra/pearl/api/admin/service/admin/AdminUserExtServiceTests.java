@@ -11,6 +11,7 @@ import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.factory.admin.AdminUserBundle;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
@@ -31,6 +32,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalAdminUserFactory portalAdminUserFactory;
   @Autowired private PortalFactory portalFactory;
   @Autowired private PortalAdminUserRoleService portalAdminUserRoleService;
+  @Autowired private RoleFactory roleFactory;
 
   @Test
   public void testAllMethodsAnnotated() {
@@ -80,6 +82,47 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
             .findFirst()
             .get();
     assertThat(adminRole.getPermissions().size(), greaterThan(0));
+  }
+
+  @Test
+  @Transactional
+  public void testSetRolesLimitedByOperator(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Role role1 = roleFactory.buildPersisted(getTestName(info));
+    Role role2 = roleFactory.buildPersisted(getTestName(info));
+
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of(role1.getName()));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(getTestName(info), portal, List.of());
+
+    adminUserExtService.setPortalUserRoles(
+        PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+        userBundle.portalAdminUsers().get(0).getId(),
+        List.of(role1.getName()));
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
+        is(true));
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), role2.getName()),
+        is(false));
+
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            adminUserExtService.setPortalUserRoles(
+                PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+                userBundle.portalAdminUsers().get(0).getId(),
+                List.of(role2.getName())));
+
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), role2.getName()),
+        is(true));
   }
 
   /** Important enough that it's worth a separate test beyond the annotation check */

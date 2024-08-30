@@ -16,4 +16,9 @@ public class AdminDataChangeService extends ImmutableEntityService<AdminDataChan
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
     }
+
+    /** Note this does not accept a audit info since this is only used in populate contexts */
+    public void deleteByResponsibleAdminUserId(UUID adminUserId) {
+        dao.deleteByResponsibleAdminUserId(adminUserId);
+    }
 }
