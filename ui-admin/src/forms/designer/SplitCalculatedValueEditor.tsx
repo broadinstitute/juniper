@@ -13,7 +13,6 @@ import { IconButton } from 'components/forms/Button'
 import { faCode } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { CalculatedValue } from 'survey-core'
 import { Textarea } from 'components/forms/Textarea'
 
 /* Note that this component is memoized using React.memo
@@ -23,6 +22,12 @@ import { Textarea } from 'components/forms/Textarea'
  * of re-renders that take place. The SurveyComponent from SurveyJS in particular
  * is sluggish when undergoing many simultaneous re-renders.
  */
+
+type CalculatedValue = {
+  name: string,
+  expression: string,
+  includeIntoResult: boolean
+}
 
 export const SplitCalculatedValueEditor = ({
   editedContent, onChange, calculatedValueIndex
@@ -47,7 +52,7 @@ export const SplitCalculatedValueEditor = ({
       newContent.calculatedValues = newContent
         .calculatedValues
         .concat(new Array(calculatedValueIndex - newContent.calculatedValues.length + 1)
-          .fill(new CalculatedValue()))
+          .fill(createNewCalculatedValue()))
     }
 
     newContent.calculatedValues[calculatedValueIndex] = newCalculatedValue
@@ -56,11 +61,10 @@ export const SplitCalculatedValueEditor = ({
 
 
   const copyCalculatedValue = () => {
-    const newValue = new CalculatedValue()
+    const newValue = createNewCalculatedValue()
 
     newValue.expression = calculatedValue.expression
     newValue.name = calculatedValue.name
-    newValue.includeIntoResult = calculatedValue.includeIntoResult
 
     return newValue
   }
@@ -195,8 +199,7 @@ export const SplitCalculatedValueEditor = ({
         model={surveyModel}
         readOnly={false}
       />
-      <p className="fw-bold">Result</p>
-      {previewResult}
+      <span className="fw-bold">Result:</span> {previewResult}
     </div>
   </div>
 }
@@ -205,7 +208,9 @@ SplitCalculatedValueEditor.displayName = 'SplitCalculatedValueEditor'
 
 
 const createNewCalculatedValue = () => {
-  const calculatedValue = new CalculatedValue()
-  calculatedValue.includeIntoResult = true
-  return calculatedValue
+  return {
+    name: '',
+    expression: '',
+    includeIntoResult: true
+  }
 }

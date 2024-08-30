@@ -80,6 +80,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
     })
   }
 
+  console.log('formContentClone', formContentClone)
   const model = new SurveyModel(formContentClone)
   applyDefaultSurveyConfig(model)
   return model
