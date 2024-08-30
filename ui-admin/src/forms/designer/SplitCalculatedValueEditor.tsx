@@ -1,10 +1,11 @@
 import {
   FormContent,
   FormElement,
+  FormPanel,
+  Question,
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, {
-  memo,
   useMemo,
   useState
 } from 'react'
@@ -12,7 +13,6 @@ import { IconButton } from 'components/forms/Button'
 import { faCode } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { isEqual } from 'lodash'
 import { CalculatedValue } from 'survey-core'
 import { Textarea } from 'components/forms/Textarea'
 
@@ -24,7 +24,7 @@ import { Textarea } from 'components/forms/Textarea'
  * is sluggish when undergoing many simultaneous re-renders.
  */
 
-export const SplitCalculatedValueEditor = memo(({
+export const SplitCalculatedValueEditor = ({
   editedContent, onChange, calculatedValueIndex
 }: {
   calculatedValueIndex: number,
@@ -79,9 +79,47 @@ export const SplitCalculatedValueEditor = memo(({
     updateCalculatedValue(newCalculatedValue)
   }
 
-  const questionsUsedInCalculatedValue: FormElement[] = useMemo(() => {
+  const extractQuestionNames = (expression: string) => {
+    // expression example: {question1} + {question2} + funciton({question3})
+
+    const regex = /{([^}]+)}/g
+
+    const matches = []
+
+    let match
+    while ((match = regex.exec(expression)) !== null) {
+      matches.push(match[1])
+    }
+
+    return matches
+  }
+
+  const isQuestion = (element: FormElement): element is Question => {
+    return 'type' in element && element.type !== 'panel' && element.type !== 'html'
+  }
+
+  const isPanel = (element: FormElement): element is FormPanel => {
+    return 'type' in element && element.type === 'panel'
+  }
+
+  const findQuestionsWithNames = (element: FormElement, names: string[]): Question[] => {
+    if (isQuestion(element)) {
+      if (names.includes(element.name)) {
+        return [element]
+      }
+    } else if (isPanel(element)) {
+      return element.elements.flatMap(elem => findQuestionsWithNames(elem, names))
+    }
     return []
-  }, [])
+  }
+
+  const questionsUsedInCalculatedValue: FormElement[] = useMemo(() => {
+    const questionNames = extractQuestionNames(calculatedValue.expression)
+
+    return editedContent.pages.flatMap(page =>
+      page.elements.flatMap(element => findQuestionsWithNames(element, questionNames))
+    )
+  }, [calculatedValue.expression, editedContent.pages])
 
   // Chop the survey down to just the specific question that we're editing, so we can display
   // a preview using the SurveyJS survey component.
@@ -92,6 +130,20 @@ export const SplitCalculatedValueEditor = memo(({
     calculatedValues: [calculatedValue]
   }
   const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
+
+  const [previewResult, setPreviewResult] = useState('')
+
+  surveyModel.onVariableChanged.add((sender, options) => {
+    console.log(options)
+    if (options.name === calculatedValue.name) {
+      setPreviewResult(options.value)
+    }
+  })
+
+  surveyModel.onValueChanged.add((sender, options) => {
+    console.log(options)
+  })
+
 
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
@@ -139,17 +191,15 @@ export const SplitCalculatedValueEditor = memo(({
 
     <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
-      <SurveyComponent model={surveyModel} readOnly={false}/>
+      <SurveyComponent
+        model={surveyModel}
+        readOnly={false}
+      />
+      <p className="fw-bold">Result</p>
+      {previewResult}
     </div>
   </div>
-}, (prevProps, nextProps) => {
-  // Only re-render if the calculated value has changed. Note that React.memo only does a shallow object comparison
-  // by default, which is why we have this custom propsAreEqual that uses lodash isEqual, which does a deep comparison.
-  return isEqual(
-    prevProps?.editedContent?.calculatedValues?.at(prevProps.calculatedValueIndex) || new CalculatedValue(),
-    nextProps?.editedContent?.calculatedValues?.at(nextProps.calculatedValueIndex) || new CalculatedValue())
-  && prevProps.calculatedValueIndex === nextProps.calculatedValueIndex
-})
+}
 
 SplitCalculatedValueEditor.displayName = 'SplitCalculatedValueEditor'
 
