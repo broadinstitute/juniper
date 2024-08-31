@@ -14,17 +14,17 @@ public class RoleFactory {
     @Autowired
     private RoleService roleService;
 
-    private Role.RoleBuilder builder(String testName) {
-        return Role.builder().name(testName);
+    private Role.RoleBuilder builder(String roleName) {
+        return Role.builder().name(roleName).description(roleName + "_" + RandomStringUtils.randomAlphabetic(4));
     }
 
-    public Role buildPersisted(String testName) {
-        Role role = builder(testName + "_" + RandomStringUtils.randomAlphabetic(4)).build();
+    public Role buildPersisted(String roleName) {
+        Role role = builder(roleName).build();
         return roleService.create(role);
     }
 
-    public Role buildPersisted(String testName, List<String> permissions) {
-        Role role = builder(testName).build();
+    public Role buildPersisted(String roleName, List<String> permissions) {
+        Role role = builder(roleName).build();
         return roleService.create(role, permissions);
     }
 }

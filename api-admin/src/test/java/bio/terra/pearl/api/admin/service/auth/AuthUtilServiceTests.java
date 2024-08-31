@@ -106,7 +106,9 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   public void authUserToPortalWithPermissionAllows(TestInfo info) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
     Portal portal = portalFactory.buildPersisted(getTestName(info));
-    Role portalDeleterRole = roleFactory.buildPersisted("portal_deleter", List.of("delete_portal"));
+    permissionFactory.buildPersisted("delete_portal");
+    Role portalDeleterRole =
+        roleFactory.buildPersisted(getTestName(info), List.of("delete_portal"));
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     PortalAdminUser portalAdminUser =
         portalAdminUserService.create(
