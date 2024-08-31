@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import StudyContent from './StudyContent'
-import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
+import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey, renderInPortalRouter } from 'test-utils/mocking-utils'
 import Api from 'api/api'
 import { setupRouterTest } from '@juniper/ui-core'
 
@@ -48,8 +48,8 @@ test('renders a Create Survey modal', async () => {
 test('renders a Create Outreach Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
   jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue([])
-  const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+
+  renderInPortalRouter(studyEnvContext.portal, <StudyContent studyEnvContext={studyEnvContext}/>)
   await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const addSurveyButton = screen.getByTestId('addOutreachSurvey')
   fireEvent.click(addSurveyButton)
