@@ -89,40 +89,39 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   public void testSetRolesLimitedByOperator(TestInfo info) {
     Portal portal = portalFactory.buildPersisted(getTestName(info));
     Role role1 = roleFactory.buildPersisted(getTestName(info));
-    Role role2 = roleFactory.buildPersisted(getTestName(info));
 
     AdminUserBundle operatorBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
-            getTestName(info), portal, List.of(role1.getName()));
+            getTestName(info), portal, List.of("study_admin"));
 
     AdminUserBundle userBundle =
         portalAdminUserFactory.buildPersistedWithRoles(getTestName(info), portal, List.of());
 
     adminUserExtService.setPortalUserRoles(
         PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
-        userBundle.portalAdminUsers().get(0).getId(),
-        List.of(role1.getName()));
+        userBundle.user().getId(),
+        List.of("study_admin"));
     assertThat(
         portalAdminUserFactory.userHasRole(
             userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
-        is(true));
+        is(false));
     assertThat(
         portalAdminUserFactory.userHasRole(
-            userBundle.portalAdminUsers().get(0).getId(), role2.getName()),
-        is(false));
+            userBundle.portalAdminUsers().get(0).getId(), "study_admin"),
+        is(true));
 
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->
             adminUserExtService.setPortalUserRoles(
                 PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
-                userBundle.portalAdminUsers().get(0).getId(),
-                List.of(role2.getName())));
+                userBundle.user().getId(),
+                List.of(role1.getName())));
 
     assertThat(
         portalAdminUserFactory.userHasRole(
-            userBundle.portalAdminUsers().get(0).getId(), role2.getName()),
-        is(true));
+            userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
+        is(false));
   }
 
   /** Important enough that it's worth a separate test beyond the annotation check */
