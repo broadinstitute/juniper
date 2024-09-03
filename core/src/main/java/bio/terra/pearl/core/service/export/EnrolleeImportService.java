@@ -18,7 +18,6 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
-import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -33,12 +32,9 @@ import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,30 +167,37 @@ public class EnrolleeImportService {
      */
     public List<Map<String, String>> generateImportMaps(InputStream in, ImportFileFormat fileFormat) {
         List<Map<String, String>> importMaps = new ArrayList<>();
-        char separator = TSV_DELIMITER;
-        if (fileFormat == ImportFileFormat.CSV) {
-            separator = CSV_DELIMITER;
+        Iterable<CSVRecord> parser;
+
+        try {
+            CSVFormat format = fileFormat == ImportFileFormat.TSV ? CSVFormat.TDF : CSVFormat.DEFAULT;
+
+            parser = format.builder().setRecordSeparator('\n').build().parse(new InputStreamReader(in));
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing input stream", e);
         }
-        CSVParser parser = new CSVParserBuilder()
-                .withSeparator(separator).build();
-        try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(in)).withCSVParser(parser).build()) {
-            String[] headers = csvReader.readNext();
-            String[] line;
-            while ((line = csvReader.readNext()) != null) {
-                if (line[0].equalsIgnoreCase("shortcode")) {
-                    //skip this sub header line
-                    continue;
-                }
-                Map<String, String> enrolleeMap = new HashMap<>();
-                for (int i = 0; i < line.length; i++) {
-                    enrolleeMap.put(headers[i], line[i]);
-                }
-                importMaps.add(enrolleeMap);
+
+        List<String> header = new ArrayList<>();
+        for (CSVRecord record : parser) {
+            if (record.getRecordNumber() == 1) {
+                header = record.toList();
+                // skip the header row
+                continue;
             }
-            return importMaps;
-        } catch (IOException | CsvValidationException e) {
-            throw new InternalServerException("error reading input stream", e);
+
+            if (record.size() != 0 && record.get(0).equalsIgnoreCase("shortcode")) {
+                // skip subheader row
+                continue;
+            }
+
+            Map<String, String> enrolleeMap = new HashMap<>();
+            for (int i = 0; i < record.size(); i++) {
+                enrolleeMap.put(header.get(i), record.get(i));
+            }
+            importMaps.add(enrolleeMap);
         }
+
+        return importMaps;
     }
 
     public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, UUID adminId) {
