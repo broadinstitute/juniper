@@ -37,8 +37,8 @@ dependencies {
     implementation 'org.liquibase:liquibase-core:4.21.1'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
     implementation 'com.sendgrid:sendgrid-java:4.0.1'
     implementation 'com.auth0:java-jwt:4.2.2'
     implementation group: "bio.terra", name: "datarepo-jakarta-client", version: "1.565.0-SNAPSHOT"

@@ -121,8 +121,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
-        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() ->
-                new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
+
+        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() -> new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
 
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();

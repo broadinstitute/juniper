@@ -343,13 +343,13 @@ public class EnrolleeImportService {
                     TaskType.SURVEY,
                     formatter.getModuleName(),
                     1,
-                    null,
-                    true,
+                    List.of(enrollee.getId()),
+                    false,
                     true);
 
             List<ParticipantTask> tasks = surveyTaskDispatcher.assign(assignDto, studyEnv.getId(),
                     new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.assignToExistingEnrollees")));
-            relatedTask = tasks.get(0);
+            relatedTask = tasks.getFirst();
         }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
