@@ -91,6 +91,7 @@
     {
       "creatingAdminUsername": "heartdemostaff@gmail.com",
       "kitTypeName": "SALIVA",
+      "kitOriginType": "SHIPPED",
       "status": "CREATED",
       "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",

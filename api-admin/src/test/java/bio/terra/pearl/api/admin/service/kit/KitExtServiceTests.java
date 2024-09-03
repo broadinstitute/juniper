@@ -6,8 +6,10 @@ import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitOriginType;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import java.util.Arrays;
@@ -29,12 +31,11 @@ public class KitExtServiceTests extends BaseSpringBootTest {
         PermissionDeniedException.class,
         () ->
             kitExtService.requestKits(
-                adminUser,
-                "someportal",
-                "somestudy",
-                EnvironmentName.sandbox,
+                PortalStudyEnvAuthContext.of(
+                    adminUser, "someportal", "somestudy", EnvironmentName.sandbox),
                 Arrays.asList("enrollee1", "enrollee2"),
-                new KitRequestService.KitRequestCreationDto("SALIVA", false)));
+                new KitRequestService.KitRequestCreationDto(
+                    "SALIVA", KitOriginType.SHIPPED, null, false)));
   }
 
   @Test
@@ -47,7 +48,8 @@ public class KitExtServiceTests extends BaseSpringBootTest {
         PermissionDeniedException.class,
         () ->
             kitExtService.getKitRequestsByStudyEnvironment(
-                adminUser, "someportal", "somestudy", EnvironmentName.sandbox));
+                PortalStudyEnvAuthContext.of(
+                    adminUser, "someportal", "somestudy", EnvironmentName.sandbox)));
   }
 
   @Transactional
@@ -60,7 +62,8 @@ public class KitExtServiceTests extends BaseSpringBootTest {
         PermissionDeniedException.class,
         () ->
             kitExtService.refreshKitStatuses(
-                adminUser, "someportal", "somestudy", EnvironmentName.irb));
+                PortalStudyEnvAuthContext.of(
+                    adminUser, "someportal", "somestudy", EnvironmentName.irb)));
   }
 
   @MockBean private AuthUtilService mockAuthUtilService;

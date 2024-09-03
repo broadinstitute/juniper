@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.kit;
 
+import bio.terra.pearl.core.model.kit.KitOriginType;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -26,8 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KitRequestDto {
   private UUID id;
+  private UUID creatingAdminUserId;
+  private UUID collectingAdminUserId;
   private Instant createdAt;
   private KitType kitType;
+  private KitOriginType kitOriginType;
   private KitRequestStatus status;
   private String sentToAddress;
   private Instant labeledAt;
@@ -35,6 +39,7 @@ public class KitRequestDto {
   private Instant receivedAt;
   private String trackingNumber;
   private String returnTrackingNumber;
+  private String kitBarcode;
   private boolean skipAddressValidation;
   private String errorMessage;
   /**
@@ -46,8 +51,11 @@ public class KitRequestDto {
   public KitRequestDto(KitRequest kitRequest, KitType kitType, String enrolleeShortcode,
                        ObjectMapper objectMapper) {
     this.id = kitRequest.getId();
+    this.creatingAdminUserId = kitRequest.getCreatingAdminUserId();
+    this.collectingAdminUserId = kitRequest.getCollectingAdminUserId();
     this.createdAt = kitRequest.getCreatedAt();
     this.kitType = kitType;
+    this.kitOriginType = kitRequest.getKitOriginType();
     this.sentToAddress = kitRequest.getSentToAddress();
     this.status = kitRequest.getStatus();
     this.labeledAt = kitRequest.getLabeledAt();
@@ -55,6 +63,7 @@ public class KitRequestDto {
     this.receivedAt = kitRequest.getReceivedAt();
     this.trackingNumber = kitRequest.getTrackingNumber();
     this.returnTrackingNumber = kitRequest.getReturnTrackingNumber();
+    this.kitBarcode = kitRequest.getKitBarcode();
     this.errorMessage = kitRequest.getErrorMessage();
     this.skipAddressValidation = kitRequest.isSkipAddressValidation();
     this.details = createRequestDetails(kitRequest, objectMapper);
@@ -62,6 +71,10 @@ public class KitRequestDto {
   }
 
   protected static String createRequestDetails(KitRequest kitRequest, ObjectMapper objectMapper) {
+    if(kitRequest.getKitOriginType() != KitOriginType.SHIPPED) {
+      return null;
+    }
+
     ObjectNode rootNode = objectMapper.createObjectNode();
     rootNode.put("requestId", kitRequest.getId().toString());
     try {

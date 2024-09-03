@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: "in_person_kits"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: kit_origin_type, type: text, defaultValue: 'SHIPPED', constraints: { nullable: false } }
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: kit_barcode, type: text, constraints: { nullable: true } }

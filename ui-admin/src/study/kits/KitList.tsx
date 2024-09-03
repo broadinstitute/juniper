@@ -28,6 +28,7 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from '../../user/UserProvider'
 import { KitRequestDetails } from '../participants/KitRequests'
+import { useAdminUserContext } from '../../providers/AdminUserProvider'
 
 type KitStatusTabConfig = {
   statuses: string[],
@@ -47,8 +48,11 @@ const defaultColumns: VisibilityState = {
   'trackingNumber': false,
   'sentAt': false,
   'returnTrackingNumber': false,
+  'creatingAdminUserId': false,
+  'collectingAdminUserId': false,
   'receivedAt': false,
-  'status': false
+  'status': false,
+  'kitOriginType': false
 }
 
 /**
@@ -58,7 +62,7 @@ const statusTabs: KitStatusTabConfig[] = [
   {
     statuses: ['CREATED'],
     key: 'created',
-    additionalColumns: []
+    additionalColumns: ['kitOriginType']
   },
   {
     statuses: ['QUEUED'],
@@ -76,12 +80,20 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
+    statuses: ['COLLECTED'],
+    key: 'collected',
+    additionalColumns: [
+      'creatingAdminUserId',
+      'collectingAdminUserId'
+    ]
+  },
+  {
     statuses: ['RECEIVED'],
     key: 'returned',
     additionalColumns: [
       'labeledAt', 'trackingNumber',
       'sentAt', 'returnTrackingNumber',
-      'receivedAt'
+      'receivedAt', 'kitOriginType'
     ]
   },
   {
@@ -194,6 +206,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   const [currentTab, setCurrentTab] = useState(tab)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
   const [sorting, setSorting] = useState<SortingState>([])
+  const { users } = useAdminUserContext()
 
   if (tab !== currentTab) {
     setColumnVisibility(initialColumnVisibility)
@@ -227,6 +240,20 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Tracking Number',
     accessorKey: 'trackingNumber',
+    enableColumnFilter: false
+  }, {
+    header: 'Kit Origin',
+    accessorKey: 'kitOriginType',
+    enableColumnFilter: false
+  }, {
+    header: 'Requested By',
+    accessorKey: 'creatingAdminUserId',
+    cell: data => users.find(user => user.id === data.getValue())?.username,
+    enableColumnFilter: false
+  }, {
+    header: 'Collected By',
+    accessorKey: 'collectingAdminUserId',
+    cell: data => users.find(user => user.id === data.getValue())?.username,
     enableColumnFilter: false
   }, {
     header: 'Sent',

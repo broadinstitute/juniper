@@ -28,6 +28,13 @@ import {
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
+  if (!sentToAddressJson) {
+    return <div className="text-muted fst-italic">n/a<InfoPopup content={
+      <div>
+        <div className="d=flex">Kits assigned to a participant in person will not have a shipping address</div>
+      </div>
+    } placement='left'/></div>
+  }
   const address = JSON.parse(sentToAddressJson)
   return <div>
     <div>{address.firstName} {address.lastName}</div>
@@ -51,6 +58,9 @@ const columns: ColumnDef<KitRequest, string>[] = [{
 }, {
   header: 'Address',
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
+}, {
+  header: 'Kit Origin',
+  accessorKey: 'kitOriginType'
 }, {
   header: 'Details',
   accessorKey: 'details',

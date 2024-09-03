@@ -31,8 +31,9 @@ describe('KitInstructions', () => {
 
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Step 1: Confirm Eligibility', { exact: false })).toBeInTheDocument()
-    expect(screen.getByLabelText('eligibility-qr')).toBeInTheDocument()
+    expect(screen.getByText('Your kit information')).toBeInTheDocument()
+    expect(screen.getByLabelText('assign-qr')).toBeInTheDocument()
+    expect(screen.queryByLabelText('collect-qr')).not.toBeInTheDocument()
   })
 
   it('renders Consent Required message if enrollee has not consented', () => {
@@ -41,7 +42,9 @@ describe('KitInstructions', () => {
       ...mockUseActiveUser(),
       enrollees: [{
         ...mockUseActiveUser().enrollees[0],
-        consented: false
+        profileId: mockUseActiveUser().ppUser?.profileId || '',
+        consented: false,
+        kitRequests: []
       }]
     })
 
@@ -51,7 +54,7 @@ describe('KitInstructions', () => {
 
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.getByText('Consent Required')).toBeInTheDocument()
-    expect(screen.queryByText('Step 1: Confirm Eligibility', { exact: false })).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('eligibility-qr')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('collect-qr')).not.toBeInTheDocument()
   })
 })

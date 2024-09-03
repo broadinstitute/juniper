@@ -21,6 +21,7 @@
     {
       "creatingAdminUsername": "heartdemostaff@gmail.com",
       "kitTypeName": "SALIVA",
+      "kitOriginType": "SHIPPED",
       "status": "SENT",
       "skipAddressValidation": true,
       "externalKitJson": {

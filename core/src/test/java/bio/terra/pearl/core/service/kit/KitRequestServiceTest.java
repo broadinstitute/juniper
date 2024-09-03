@@ -11,6 +11,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitOriginType;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -76,7 +77,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", false));
+        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", KitOriginType.SHIPPED, null, false));
 
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
@@ -108,7 +109,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         });
 
         assertThrows(PepperApiException.class, () ->
-                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), false))
+                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), KitOriginType.SHIPPED, null, false))
         );
     }
 
@@ -403,7 +404,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(mockPepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         KitRequestDto kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", KitOriginType.SHIPPED, null, true) );
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(mockPepperDSMClient).fetchKitStatus(any(), any());
         Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
@@ -415,7 +416,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(livePepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", KitOriginType.SHIPPED, null, true) );
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
         Mockito.verify(livePepperDSMClient).fetchKitStatus(any(), any());
