@@ -184,6 +184,12 @@ public class EnrolleeImportService {
                 // skip the header row
                 continue;
             }
+
+            if (record.size() != 0 && record.get(0).equalsIgnoreCase("shortcode")) {
+                // skip subheader row
+                continue;
+            }
+
             Map<String, String> enrolleeMap = new HashMap<>();
             for (int i = 0; i < record.size(); i++) {
                 enrolleeMap.put(header.get(i), record.get(i));
