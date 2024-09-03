@@ -28,17 +28,11 @@ const kitScanModeOptions = [
 export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {
   const [enableManualOverride, setEnableManualOverride] = useState(false)
   const [selectedScanMode, setSelectedScanMode] = useState<{ value: string, label: string } | undefined>()
-
-  //Step 1 state
   const [showEnrolleeCodeScanner, setShowEnrolleeCodeScanner] = useState(false)
   const [enrolleeShortcode, setEnrolleeShortcode] = useState<string>()
   const [enrollee, setEnrollee] = useState<Enrollee>()
   const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
-
-  //Step 2 state
   const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
-
-  //Step 3 state
   const [showKitScanner, setShowKitScanner] = useState(false)
   const [kitBarcode, setKitBarcode] = useState<string | undefined>()
   const [kitCodeError, setKitCodeError] = useState<string>()
