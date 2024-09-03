@@ -208,6 +208,29 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
+    public void testAssignKit(TestInfo testInfo) throws JsonProcessingException {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest = kitRequestDao.create(
+                kitRequestFactory.builder(testName)
+                        .creatingAdminUserId(adminUser.getId())
+                        .enrolleeId(enrollee.getId())
+                        .kitTypeId(kitType.getId())
+                        .kitOriginType(KitOriginType.ASSIGNED)
+                        .status(KitRequestStatus.CREATED)
+                        .creatingAdminUserId(adminUser.getId())
+                        .build());
+
+        assertThat(kitRequest.getStatus(), equalTo(KitRequestStatus.CREATED));
+        assertThat(kitRequest.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        assertThat(kitRequest.getCollectingAdminUserId(), equalTo(null));
+    }
+
+    @Transactional
+    @Test
     public void testCollectAssignedKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
