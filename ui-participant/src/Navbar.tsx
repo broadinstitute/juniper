@@ -361,11 +361,6 @@ export const AccountOptionsDropdown = () => {
               {i18n('manageProfiles')}
             </button>
           </NavLink>}
-          <NavLink to="/hub/kits">
-            <button className="dropdown-item" aria-label="manage profiles">
-              Sample Kits
-            </button>
-          </NavLink>
           <button className="dropdown-item" aria-label="change password" onClick={() => {
             mixpanel.track('changePassword', { source: 'navbar' })
             doChangePassword()
