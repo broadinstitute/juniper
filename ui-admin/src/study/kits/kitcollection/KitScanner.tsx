@@ -19,6 +19,8 @@ import {
   faSearch
 } from '@fortawesome/free-solid-svg-icons'
 import { Checkbox } from 'components/forms/Checkbox'
+import { successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
@@ -26,16 +28,17 @@ const kitScanModeOptions = [
 ]
 
 export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) => {
-  const [enableManualOverride, setEnableManualOverride] = useState(false)
   const [selectedScanMode, setSelectedScanMode] = useState<{ value: string, label: string } | undefined>()
   const [showEnrolleeCodeScanner, setShowEnrolleeCodeScanner] = useState(false)
-  const [enrolleeShortcode, setEnrolleeShortcode] = useState<string>()
+  const [showKitScanner, setShowKitScanner] = useState(false)
   const [enrollee, setEnrollee] = useState<Enrollee>()
   const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
   const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
-  const [showKitScanner, setShowKitScanner] = useState(false)
   const [kitBarcode, setKitBarcode] = useState<string | undefined>()
   const [kitCodeError, setKitCodeError] = useState<string>()
+
+  const [enableManualOverride, setEnableManualOverride] = useState(false)
+  const [enrolleeShortcodeOverride, setEnrolleeShortcodeOverride] = useState<string>()
 
   const { user } = useUser()
 
@@ -46,18 +49,19 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
-          enrollee!.shortcode,
-          {
-            kitType: 'SALIVA',
-            kitOriginType: 'ASSIGNED',
-            kitBarcode,
-            skipAddressValidation: false
-          }
+        enrollee.shortcode,
+        {
+          kitType: 'SALIVA',
+          kitOriginType: 'ASSIGNED',
+          kitBarcode,
+          skipAddressValidation: false
+        }
       )
+      Store.addNotification(successNotification('Kit successfully assigned'))
     }, {
       setIsError: error => {
         if (error) {
-          setEnrolleeCodeError('Error creating kit request')
+          setEnrolleeCodeError('Error assigning kit')
         }
       }
     })
@@ -70,15 +74,16 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
-          enrollee!.shortcode,
-          {
-            kitBarcode
-          }
+        enrollee.shortcode,
+        {
+          kitBarcode
+        }
       )
+      Store.addNotification(successNotification('Kit successfully collected'))
     }, {
       setIsError: error => {
         if (error) {
-          setEnrolleeCodeError('Error creating kit request')
+          setEnrolleeCodeError('Error collecting kit')
         }
       }
     })
@@ -157,7 +162,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
       <div className="mb-3">
-        Click to open the camera and scan the enrollee&apos;s barcode
+        Click to open the camera and scan the enrollee&apos;s QR code
         <InfoPopup content={'The enrollee can find their unique QR code by going to their profile'}/>
       </div>
       <Button className="mb-2" disabled={!selectedScanMode} variant={'primary'} onClick={() => {
@@ -185,10 +190,13 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       { enableManualOverride && <div className="d-flex align-items-center">
         <TextInput
           disabled={false}
-          value={enrolleeShortcode}
-          onChange={e => setEnrolleeShortcode(e)}>
+          value={enrolleeShortcodeOverride}
+          onChange={e => setEnrolleeShortcodeOverride(e)}>
         </TextInput>
-        <Button className="ms-2" variant={'primary'} onClick={() => loadEnrollee(enrolleeShortcode!)}>
+        <Button className="ms-2" variant={'primary'} onClick={() => {
+          setEnrolleeCodeError(undefined)
+          loadEnrollee(enrolleeShortcodeOverride!)
+        }}>
           <FontAwesomeIcon icon={faSearch}/>
         </Button>
       </div> }
@@ -253,6 +261,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
           setKitBarcode(undefined)
+          setEnrolleeCodeError(undefined)
+          setEnrolleeShortcodeOverride(undefined)
           setSelectedScanMode(undefined)
           if (selectedScanMode?.value === 'ASSIGN') {
             await assignKit()
