@@ -133,24 +133,20 @@ export const SplitCalculatedValueEditor = ({
     questionTemplates: editedContent.questionTemplates,
     calculatedValues: [calculatedValue]
   }
-  const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
+  const [surveyModel] = useState(() => {
+    const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
+    surveyModel.onVariableChanged.add((sender, options) => {
+      if (options.name === calculatedValue.name) {
+        setPreviewResult(options.value)
+      }
+    })
 
+    surveyModel.showInvisibleElements = true
+    surveyModel.showQuestionNumbers = false
+    return surveyModel
+  })
   const [previewResult, setPreviewResult] = useState('')
 
-  surveyModel.onVariableChanged.add((sender, options) => {
-    console.log(options)
-    if (options.name === calculatedValue.name) {
-      setPreviewResult(options.value)
-    }
-  })
-
-  surveyModel.onValueChanged.add((sender, options) => {
-    console.log(options)
-  })
-
-
-  surveyModel.showInvisibleElements = true
-  surveyModel.showQuestionNumbers = false
 
   return <div key={calculatedValueIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
@@ -195,10 +191,12 @@ export const SplitCalculatedValueEditor = ({
 
     <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
-      <SurveyComponent
-        model={surveyModel}
-        readOnly={false}
-      />
+      {questionsUsedInCalculatedValue.length > 0
+        ? <SurveyComponent
+          model={surveyModel}
+          readOnly={false}
+        />
+        : <p></p>}
       <span className="fw-bold">Result:</span> {previewResult}
     </div>
   </div>
