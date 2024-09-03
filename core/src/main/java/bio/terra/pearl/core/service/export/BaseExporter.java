@@ -4,7 +4,6 @@ import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public abstract class BaseExporter {
         this.columnEmptyValueMap = makeEmptyValueMap();
     }
 
-    public abstract void export(OutputStream os) throws IOException;
+    public abstract void export(OutputStream os);
 
     protected List<String> getColumnKeys() {
         List<String> columnKeys = new ArrayList<>();

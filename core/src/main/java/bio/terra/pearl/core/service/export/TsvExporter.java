@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -11,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TsvExporter extends BaseExporter {
-    public static final Character DELIMITER = '\t';
-
     public TsvExporter(List<ModuleFormatter> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
         super(moduleExportInfos, enrolleeMaps);
     }
@@ -22,22 +21,26 @@ public class TsvExporter extends BaseExporter {
      * can be supported
      */
     @Override
-    public void export(OutputStream os) throws IOException {
-        CSVPrinter writer = CSVFormat.TDF.builder().setRecordSeparator('\n').build().print(new OutputStreamWriter(os));
+    public void export(OutputStream os) {
+        try {
+            CSVPrinter writer = CSVFormat.TDF.builder().setRecordSeparator('\n').build().print(new OutputStreamWriter(os));
 
-        List<String> columnKeys = getColumnKeys();
-        List<String> headerRowValues = getHeaderRow();
-        List<String> subHeaderRowValues = getSubHeaderRow();
+            List<String> columnKeys = getColumnKeys();
+            List<String> headerRowValues = getHeaderRow();
+            List<String> subHeaderRowValues = getSubHeaderRow();
 
-        writer.printRecord(headerRowValues);
-        writer.printRecord(subHeaderRowValues);
-        for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
-            writer.printRecord(rowValues);
+            writer.printRecord(headerRowValues);
+            writer.printRecord(subHeaderRowValues);
+            for (Map<String, String> enrolleeMap : enrolleeMaps) {
+                List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
+                writer.printRecord(rowValues);
+            }
+
+            writer.flush();
+            // do not close os -- that's the caller's responsibility
+        } catch (IOException e) {
+            throw new IOInternalException("Error writing TSV file", e);
         }
-
-        writer.flush();
-        // do not close os -- that's the caller's responsibility
     }
     
 }

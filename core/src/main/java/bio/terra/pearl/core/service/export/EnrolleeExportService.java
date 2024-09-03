@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -81,7 +80,7 @@ public class EnrolleeExportService {
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
      * */
-    public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) throws IOException {
+    public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
 
         List<EnrolleeExportData> enrolleeExportData = loadEnrolleeExportData(studyEnvironmentId, exportOptions);
 
