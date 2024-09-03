@@ -380,6 +380,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     public KitRequest collectKit(AdminUser operator, KitRequest kitRequest, KitRequestStatus status) {
+        if(kitRequest.getKitOriginType() != KitOriginType.ASSIGNED) {
+            throw new IllegalArgumentException("You cannot collect a kit that has not been assigned.");
+        }
+
         KitRequestStatus priorStatus = kitRequest.getStatus();
         kitRequest.setStatus(status);
         kitRequest.setCollectingAdminUserId(operator.getId());

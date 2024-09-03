@@ -192,6 +192,49 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
+    public void testCantCollectShippedKit(TestInfo testInfo) throws JsonProcessingException {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(testName,
+                enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            kitRequestService.collectKit(adminUser, kitRequest, KitRequestStatus.COLLECTED);
+        });
+    }
+
+    @Transactional
+    @Test
+    public void testCollectAssignedKit(TestInfo testInfo) throws JsonProcessingException {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest = kitRequestDao.create(
+                kitRequestFactory.builder(testName)
+                        .creatingAdminUserId(adminUser.getId())
+                        .enrolleeId(enrollee.getId())
+                        .kitTypeId(kitType.getId())
+                        .kitOriginType(KitOriginType.ASSIGNED)
+                        .status(KitRequestStatus.CREATED)
+                        .creatingAdminUserId(adminUser.getId())
+                        .build());
+
+        kitRequestService.collectKit(adminUser, kitRequest, KitRequestStatus.COLLECTED);
+
+        KitRequest collectedKit = kitRequestDao.find(kitRequest.getId()).get();
+
+        assertThat(collectedKit.getStatus(), equalTo(KitRequestStatus.COLLECTED));
+        assertThat(collectedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        assertThat(collectedKit.getCollectingAdminUserId(), equalTo(adminUser.getId()));
+    }
+
+    @Transactional
+    @Test
     void testFindByEnrollees(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
