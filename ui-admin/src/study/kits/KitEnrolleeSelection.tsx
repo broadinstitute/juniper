@@ -25,11 +25,11 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Enrollee, instantToDateString } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
-import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
+import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
-import { useUser } from '../../user/UserProvider'
+import { useUser } from 'user/UserProvider'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>

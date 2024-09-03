@@ -108,6 +108,14 @@ export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest =
   }
 }
 
+export const mockAssignedKitRequest = (kitStatus: string, kitType: string): KitRequest => {
+  return {
+    ...mockKitRequest(kitStatus, kitType),
+    kitOriginType: 'ASSIGNED',
+    kitBarcode: 'assigned-barcode'
+  }
+}
+
 /** mock a kit type */
 export const mockKitType = (kitType: string): KitType => {
   return {

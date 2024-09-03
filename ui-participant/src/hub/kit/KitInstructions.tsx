@@ -144,5 +144,3 @@ const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
     </div>
   </div>
 }
-
-

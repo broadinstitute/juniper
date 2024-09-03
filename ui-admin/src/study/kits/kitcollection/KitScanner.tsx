@@ -18,7 +18,7 @@ import {
   faCircleQuestion,
   faSearch
 } from '@fortawesome/free-solid-svg-icons'
-import { Checkbox } from '../../../components/forms/Checkbox'
+import { Checkbox } from 'components/forms/Checkbox'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
