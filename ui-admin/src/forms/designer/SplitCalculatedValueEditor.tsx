@@ -14,7 +14,7 @@ import { faCode } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { Textarea } from 'components/forms/Textarea'
-
+import { toString } from 'lodash/fp'
 /* Note that this component is memoized using React.memo
  * Since survey pages can contain many elements, we need to be mindful of
  * how many times we re-render these components. Since the parent component state
@@ -133,19 +133,22 @@ export const SplitCalculatedValueEditor = ({
     questionTemplates: editedContent.questionTemplates,
     calculatedValues: [calculatedValue]
   }
-  const [surveyModel] = useState(() => {
+
+  const [previewResult, setPreviewResult] = useState('')
+
+  const surveyModel = useMemo(() => {
     const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
-    surveyModel.onVariableChanged.add((sender, options) => {
+    surveyModel.onVariableChanged.add((_, options) => {
       if (options.name === calculatedValue.name) {
-        setPreviewResult(options.value)
+        console.log(options)
+        setPreviewResult(toString(options.value))
       }
     })
 
     surveyModel.showInvisibleElements = true
     surveyModel.showQuestionNumbers = false
     return surveyModel
-  })
-  const [previewResult, setPreviewResult] = useState('')
+  }, [editedContent, calculatedValue, setPreviewResult])
 
 
   return <div key={calculatedValueIndex} className="row">
@@ -196,7 +199,9 @@ export const SplitCalculatedValueEditor = ({
           model={surveyModel}
           readOnly={false}
         />
-        : <p></p>}
+        : <p>Any questions used in the calculated value will appear here.
+          If you provide answers, you will be able to preview the result
+          below.</p>}
       <span className="fw-bold">Result:</span> {previewResult}
     </div>
   </div>
