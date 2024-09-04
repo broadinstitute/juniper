@@ -1,0 +1,49 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "FAQ",
+  "htmlPageId" : "5c3a9eaf-a525-4b3e-b724-86ea8fd75bf9",
+  "htmlPageDto" : {
+    "title" : "FAQ",
+    "sections" : [ ],
+    "path" : "faq",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Frequently Asked Questions",
+        "background" : "linear-gradient(270deg, #C5248D 0%, #E35C76 50%, #FE7F4B 100%)"
+      }
+    }, {
+      "sectionType" : "FAQ",
+      "sectionConfigJson" : {
+        "title" : "",
+        "backgroundImage" : {
+          "cleanFileName" : "",
+          "version" : 1
+        },
+        "blurb" : "**Welcome to the Heart Hive's new home.**\n\n This is our new website, we haven't moved all of our website content, active studies and user accounts over to the new platform yet. \n\n We're open for new registrations, and existing Heart Hive members will have access to their accounts soon.",
+        "questions" : [ {
+          "question" : "How do I register for the Heart Hive?",
+          "answer" : "You are eligible if you meet any one of these criteria:\n\n* You have a diagnosis of cardiomyopathy or myocarditis\n\n* You have a family history of cardiomyopathy\n\n* You have had genetic testing revealing that you have an inherited risk for cardiomyopathy\n\nHead to our [registration page](/hh_registry/join) where you can set up an account and provide some basic information about yourself."
+        }, {
+          "question" : "I'm registered, what next?",
+          "answer" : "Once you've registered an account - please [log in](/hub) to see if you have any available tasks.\n\nEvery study conducted through the Heart Hive will have its own consent process, explaining the study's purpose, what it will involve and any risks that might be involved. A completed version of the consent will be be available for download at any time via the portal.\n\nDepending on the study, taking park will involve completing surveys, and some will involve genetic analysis via DNA collected from saliva kits mailed out to participants."
+        }, {
+          "question" : "What if I've changed my mind about taking part?",
+          "answer" : "If you would like to delete your account, please [contact us.](mailto:info@thehearthive.org)"
+        }, {
+          "question" : "Can I edit my account details?",
+          "answer" : "Yes, if you've noticed something is wrong in your registration details, [log in](/hub) to your account and from the dashboard, click on the enrollment survey, and edit any details that you need to."
+        }, {
+          "question" : "I've forgotten my password, how can I access my account?",
+          "answer" : "You can reset your password [here](/hub) by selecting Forgot your password? and sending a new verification code to the email address you used to register your account."
+        }, {
+          "question" : "Can I register if I don't have cardiomyopathy but a member of my family does?",
+          "answer" : "Yes, anyone with a family history of cardiomyopathy can register with the Heart Hive."
+        }, {
+          "question" : "How can I find out more about the research studies hosted on the Heart Hive?",
+          "answer" : "If you register for the Heart Hive and are eligible for any studies, you will find full details of any study that might be suitable for you to sign up to."
+        } ]
+      }
+    } ]
+  }
+}

@@ -1,13 +1,16 @@
 {
   "createdAt" : 1699984972.329692000,
   "lastUpdatedAt" : 1700078709.313839000,
-  "name" : "Heart Hive Enrollment",
   "stableId" : "hearthive_heartHiveEnrollment",
+  "name" : "Heart Hive Enrollment",
   "version" : 4,
   "publishedVersion" : 1,
-  "localizedEmailTemplateDtos": [{
-    "language": "en",
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1699984972.329692000,
+    "lastUpdatedAt" : 1700078709.313839000,
+    "language" : "en",
     "subject" : "Welcome  to The Heart Hive Community!",
     "bodyPopulateFile" : "en/hearthive_heartHiveEnrollment-4.html"
-  }]
+  } ]
 }

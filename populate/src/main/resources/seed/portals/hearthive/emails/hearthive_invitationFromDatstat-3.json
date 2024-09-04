@@ -1,0 +1,15 @@
+{
+  "createdAt" : 1719500066.603236000,
+  "lastUpdatedAt" : 1719500066.603236000,
+  "stableId" : "hearthive_invitationFromDatstat",
+  "name" : "Invitation from Datstat",
+  "version" : 3,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1719500066.591268000,
+    "lastUpdatedAt" : 1719500066.591269000,
+    "language" : "en",
+    "subject" : "Register for the new Hearthive",
+    "bodyPopulateFile" : "en/hearthive_invitationFromDatstat-3.html"
+  } ]
+}

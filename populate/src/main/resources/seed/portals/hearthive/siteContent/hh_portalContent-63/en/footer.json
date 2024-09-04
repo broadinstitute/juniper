@@ -1,0 +1,57 @@
+{
+  "sectionType" : "LINK_SECTIONS_FOOTER",
+  "sectionConfigJson" : {
+    "itemSections" : [ {
+      "title" : "Heart Hive",
+      "items" : [ {
+        "type" : "internalLink",
+        "text" : "Home",
+        "href" : "/"
+      }, {
+        "type" : "internalLink",
+        "text" : "FAQ",
+        "href" : "/faq"
+      }, {
+        "type" : "internalLink",
+        "text" : "For Researchers",
+        "href" : "/researchers"
+      }, {
+        "type" : "internalLink",
+        "text" : "Our Supporters",
+        "href" : "/supporters"
+      } ]
+    }, {
+      "title" : "Connect",
+      "items" : [ {
+        "type" : "mailingList",
+        "text" : "Mailing List"
+      }, {
+        "text" : "Twitter",
+        "href" : "https://twitter.com/thehearthive"
+      }, {
+        "text" : "Instagram",
+        "href" : "https://instagram.com/the_heart_hive"
+      }, {
+        "text" : "Facebook",
+        "href" : "https://facebook.com/thehearthive"
+      } ]
+    }, {
+      "title" : "Contact Us",
+      "items" : [ {
+        "text" : "info@thehearthive.org",
+        "href" : "mailto:info@thehearthive.org"
+      } ]
+    }, {
+      "title" : "For Participants",
+      "items" : [ {
+        "type" : "internalLink",
+        "text" : "Log In",
+        "href" : "/hub"
+      }, {
+        "type" : "join",
+        "text" : "Join Heart Hive",
+        "studyShortcode" : "hh_registry"
+      } ]
+    } ]
+  }
+}

@@ -110,7 +110,7 @@
     "sectionType" : "HERO_WITH_IMAGE",
     "sectionConfigJson" : {
       "title" : "Data control and privacy",
-      "blurb": "**You remain in control.** You always have a choice about how your data is used and which researchers will be given access.\n\n**You're protected.** Your data is safeguarded with the highest standards.\n\nClick [here](https://thehearthive.org/api/public/portals/v1/hearthive/env/live/siteMedia/2/privacy_notice.pdf) to view the Heart Hive Privacy Policy.",
+      "blurb" : "**You remain in control.** You always have a choice about how your data is used and which researchers will be given access.\n\n**You're protected.** Your data is safeguarded with the highest standards.\n\nClick [here](https://thehearthive.org/api/public/portals/v1/hearthive/env/live/siteImages/2/privacy_notice.pdf) to view the Heart Hive Privacy Policy.",
       "blurbAlign" : "center",
       "buttons" : [ ]
     }
