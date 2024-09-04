@@ -6,13 +6,15 @@ import {
   isSameAddress,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  MailingAddress, Profile,
+  MailingAddress,
+  Profile,
   SuggestBetterAddressModal,
   useI18n
 } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
 import { isNil } from 'lodash'
+import { ApiErrorResponse } from '@juniper/ui-admin/src/api/api-utils'
 
 
 // skeleton for all profile edit modals
@@ -359,6 +361,24 @@ export function EditMailingAddressModal(props: EditModalProps) {
     }
   }
 
+  const tryValidateAndSave = async () => {
+    // only validate US addresses
+    if (mailingAddress.country === 'US') {
+      try {
+        await validateAndSave()
+      } catch (e) {
+        await Api.log({
+          eventType: 'ERROR',
+          eventDetail: `Failed to validate address: ${(e as ApiErrorResponse).message}`,
+          eventName: 'failedToValidateAddress'
+        })
+      }
+    } else {
+      // if not US, just save whatever they give us
+      onSave(buildUpdatedProfile(mailingAddress))
+    }
+  }
+
   if (validationResults && shouldShowSuggestedAddress(validationResults) && validationResults?.suggestedAddress) {
     return <SuggestBetterAddressModal
       inputtedAddress={mailingAddress}
@@ -385,7 +405,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={i18n('editMailingAddress')}
-    onSave={() => validateAndSave()}
+    onSave={() => tryValidateAndSave()}
     animated={animateModal}
     onDismiss={onDismiss}>
     {
