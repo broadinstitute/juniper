@@ -17,3 +17,18 @@ provider "google" {
   project     = "broad-ddp-dev"
   region      = "us-central1"
 }
+
+data "google_client_config" "provider" {}
+
+data "google_container_cluster" "juniper_cluster" {
+  name     = "juniper-test-cluster-2"
+  location = "us-central1"
+}
+
+provider "kubernetes" {
+  host  = "https://${data.google_container_cluster.juniper_cluster.endpoint}"
+  token = data.google_client_config.provider.access_token
+  cluster_ca_certificate = base64decode(
+    data.google_container_cluster.juniper_cluster.master_auth[0].cluster_ca_certificate,
+  )
+}

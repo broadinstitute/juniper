@@ -5,7 +5,7 @@ metadata:
   labels:
     app: admin
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: admin
@@ -14,7 +14,7 @@ spec:
       labels:
         app: admin
     spec:
-      serviceAccountName: db-d2p-sa
+      serviceAccountName: d2p-db-ksa
       containers:
         - name: cloud-sql-proxy
           # It is recommended to use the latest version of the Cloud SQL Auth Proxy
