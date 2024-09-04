@@ -10,18 +10,9 @@ import {
 } from '@juniper/ui-core'
 import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
-import {
-  Button,
-  IconButton
-} from 'components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faChevronDown,
-  faChevronUp,
-  faCode,
-  faPlus,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { TextInput } from 'components/forms/TextInput'
 
@@ -42,52 +33,6 @@ export function NavbarSectionEditor(
   const navbarContentSelector = `#${navbarContentId}`
 
   return <>
-    <div className="d-flex flex-grow-1 mb-1">
-      <Select
-        className='w-100'
-        options={[{ label: 'Navbar', value: 'Navbar' }]}
-        value={{ label: 'Navbar', value: 'Navbar' }}
-        aria-label={'Select section type'}
-        isDisabled={true}
-      />
-      <IconButton icon={faCode}
-        aria-label={'Switch to JSON editor'}
-        disabled={true}
-        className="ms-2"
-        variant="light"
-        onClick={() => {
-
-        }}
-      />
-      <IconButton
-        aria-label="Move this section before the previous one"
-        className="ms-2"
-        disabled={true}
-        icon={faChevronUp}
-        variant="light"
-        onClick={() => {
-        }}
-      />
-      <IconButton
-        aria-label="Move this section after the next one"
-        className="ms-2"
-        disabled={true}
-        icon={faChevronDown}
-        variant="light"
-        onClick={() => {
-        }}
-      />
-      <IconButton
-        aria-label="Delete this section"
-        className="ms-2"
-        disabled={true}
-        icon={faTimes}
-        variant="light"
-        onClick={() => {
-        }}
-      />
-    </div>
-
     <CollapsibleSectionButton
       targetSelector={navbarContentSelector}
       sectionLabel={`Navbar Items (${navbarItems.length})`}/>

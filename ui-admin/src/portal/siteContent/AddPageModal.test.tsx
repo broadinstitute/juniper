@@ -30,6 +30,8 @@ describe('AddPageModal', () => {
     const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
       insertNewPage={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}
+      portalShortcode={'test'}
     />)
 
     render(RoutedComponent)
@@ -52,6 +54,8 @@ describe('AddPageModal', () => {
     const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
       insertNewPage={mockInsertNewPageFn}
+      portalEnv={mockPortalEnvironment('sandbox')}
+      portalShortcode={'test'}
     />)
 
     render(RoutedComponent)
@@ -69,7 +73,11 @@ describe('AddPageModal', () => {
     expect(mockInsertNewPageFn).toHaveBeenCalledWith({
       title: 'My New Page',
       path: 'newPage',
-      sections: []
+      sections: [{
+        'id': '',
+        'sectionConfig': '{"title":"My New Page","blurb":"Add content here","blurbAlign":"center","buttons":[]}',
+        'sectionType': 'HERO_WITH_IMAGE'
+      }]
     })
   })
 })

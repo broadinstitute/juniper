@@ -64,7 +64,7 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
             List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
             List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
             navbarItems.forEach(item -> {
-                // get the children of this item, if they exist
+                // attach the children of this item, if they exist
                 item.setItems(
                         navbarItems
                                 .stream()

@@ -417,7 +417,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         { showAddPageModal &&
             <AddPageModal
               insertNewPage={insertNewPage}
-              onDismiss={() => setShowAddPageModal(false)}/>
+              onDismiss={() => setShowAddPageModal(false)}
+              portalShortcode={portalEnvContext.portal.shortcode}
+              portalEnv={portalEnv}
+            />
         }
         {(showDeletePageModal && selectedPage) &&
             <DeleteNavItemModal
