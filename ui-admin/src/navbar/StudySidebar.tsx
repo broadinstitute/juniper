@@ -6,7 +6,6 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath,
-  studyEnvDatasetListViewPath,
   studyEnvFormsPath,
   studyEnvImportPath,
   studyEnvMailingListPath,
@@ -16,7 +15,7 @@ import {
   studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
-import { userHasPermission, useUser } from 'user/UserProvider'
+import { useUser } from 'user/UserProvider'
 import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
 
@@ -70,11 +69,6 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
         </li>
-        { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
-          <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>
-        </li>
-        }
       </ul>}/>
       <CollapsableMenu header={'Design & Build'} content={<ul className="list-unstyled">
         <li className="mb-2">
