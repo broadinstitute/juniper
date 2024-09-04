@@ -17,7 +17,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "jest", "@testing-library/jest-dom"],
     "target": "es6"
   }
 }
