@@ -6,6 +6,7 @@ import {
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, {
+  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -140,7 +141,6 @@ export const SplitCalculatedValueEditor = ({
     const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
     surveyModel.onVariableChanged.add((_, options) => {
       if (options.name === calculatedValue.name) {
-        console.log(options)
         setPreviewResult(toString(options.value))
       }
     })
@@ -150,6 +150,14 @@ export const SplitCalculatedValueEditor = ({
     return surveyModel
   }, [editedContent, calculatedValue, setPreviewResult])
 
+  useEffect(() => {
+    console.log('expression')
+    console.log(calculatedValue.expression)
+    console.log('questionsUsedInCalculatedValue')
+    console.log(questionsUsedInCalculatedValue)
+    console.log('previewResult')
+    console.log(previewResult)
+  }, [calculatedValue.expression, questionsUsedInCalculatedValue])
 
   return <div key={calculatedValueIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
@@ -202,7 +210,9 @@ export const SplitCalculatedValueEditor = ({
         : <p>Any questions used in the calculated value will appear here.
           If you provide answers, you will be able to preview the result
           below.</p>}
-      <span className="fw-bold">Result:</span> {previewResult}
+      <span data-testid={`result-${calculatedValueIndex}`}>
+        <span className="fw-bold">Result:</span><span>{previewResult}</span>
+      </span>
     </div>
   </div>
 }

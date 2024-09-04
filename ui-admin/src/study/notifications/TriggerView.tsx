@@ -66,9 +66,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
   const triggerId = useParams().triggerId
   const [trigger, setTrigger] = useState<Trigger>()
   const [workingTrigger, setWorkingTrigger] = useState<Trigger>()
-  console.log(workingTrigger)
   const hasTemplate = !!workingTrigger?.emailTemplate
-  console.log(hasTemplate)
 
   const { isLoading, setIsLoading } = useLoadingEffect(async () => {
     if (!triggerId) { return }
