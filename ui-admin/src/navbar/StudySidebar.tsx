@@ -15,7 +15,6 @@ import {
   studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
-import { useUser } from 'user/UserProvider'
 import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
 
@@ -24,8 +23,6 @@ import { sidebarNavLinkClasses } from './AdminSidebar'
 export const StudySidebar = ({ study, portalList, portalShortcode }:
                                { study: Study, portalList: Portal[], portalShortcode: string }) => {
   const navigate = useNavigate()
-  const user = useUser()
-  const portalId = portalList.find(p => p.shortcode === portalShortcode)?.id
 
   /** updates the selected study -- routes to that study's homepage */
   const setSelectedStudy = (portalShortcode: string, studyShortcode: string) => {
