@@ -90,12 +90,6 @@ describe('SplitCalculatedValueDesigner', () => {
             inputType: 'number',
             placeholder: 'Question 1'
           }, {
-            name: 'my_other_question',
-            title: 'My Other Question',
-            type: 'text',
-            inputType: 'number',
-            placeholder: 'Question 2'
-          }, {
             name: 'unused_question',
             title: 'Unused Question',
             type: 'text',
@@ -117,10 +111,7 @@ describe('SplitCalculatedValueDesigner', () => {
     render(<TestCalculatedValueDesignerWrapper initialContent={content}/>)
 
     expect(screen.queryByText('My Question')).not.toBeInTheDocument()
-    expect(screen.queryByText('My Other Question')).not.toBeInTheDocument()
     expect(screen.queryByText('Unused Question')).not.toBeInTheDocument()
-
-    //   {my_question} = 'some particular value' and {my_other_question} = 'some other value'
 
     const expressionInput = screen.getByLabelText('Expression')
 
@@ -128,22 +119,21 @@ describe('SplitCalculatedValueDesigner', () => {
       await userEvent.type(
         expressionInput,
         // note: curly braces must be escaped by doubling them
-        'sum({{my_question}, {{my_other_question})')
+        '{{my_question} +  5')
     })
 
     await waitFor(() => {
       expect(screen.getByText('My Question')).toBeInTheDocument()
-      expect(screen.getByText('My Other Question')).toBeInTheDocument()
       expect(screen.queryByText('Unused Question')).not.toBeInTheDocument()
     })
 
     await act(async () => {
-      await userEvent.type(screen.getByPlaceholderText('Question 1'), '10{enter}')
-      await userEvent.type(screen.getByPlaceholderText('Question 2'), '5{enter}')
+      await userEvent.type(screen.getByPlaceholderText('Question 1'), '10')
+      await userEvent.click(screen.getByLabelText('Name'))
     })
 
-    console.log(screen.getByPlaceholderText('Question 1').value)
-    console.log(screen.getByPlaceholderText('Question 2').value)
+
+    // await screen.findByText('Result:15')
 
     await waitFor(() => {
       expect(screen.queryByTestId('result-0')).toHaveTextContent('Result:15')

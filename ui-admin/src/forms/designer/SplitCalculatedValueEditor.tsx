@@ -6,7 +6,6 @@ import {
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, {
-  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -149,15 +148,6 @@ export const SplitCalculatedValueEditor = ({
     surveyModel.showQuestionNumbers = false
     return surveyModel
   }, [editedContent, calculatedValue, setPreviewResult])
-
-  useEffect(() => {
-    console.log('expression')
-    console.log(calculatedValue.expression)
-    console.log('questionsUsedInCalculatedValue')
-    console.log(questionsUsedInCalculatedValue)
-    console.log('previewResult')
-    console.log(previewResult)
-  }, [calculatedValue.expression, questionsUsedInCalculatedValue])
 
   return <div key={calculatedValueIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
