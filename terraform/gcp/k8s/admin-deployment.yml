@@ -56,11 +56,17 @@ spec:
           image: us-central1-docker.pkg.dev/broad-ddp-dev/juniper/juniper-admin:1.3.56
           env:
             - name: DATABASE_NAME
-              value: "d2p"
+              value: d2p
             - name: DATABASE_USER
-              value: "d2p"
+              valueFrom:
+                secretKeyRef:
+                  name: juniper-dev-db-creds
+                  key: username
             - name: DATABASE_USER_PASSWORD
-              value: "d2p4eva!"
+              valueFrom:
+                secretKeyRef:
+                  name: juniper-dev-db-creds
+                  key: password
           resources:
             requests:
               # The proxy's memory use scales linearly with the number of active
