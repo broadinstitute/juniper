@@ -13,3 +13,9 @@ resource "google_sql_user" "users" {
   instance = google_sql_database_instance.d2p.name
   password = "d2p4eva!"
 }
+
+resource "google_sql_database" "database" {
+  name     = "d2p"
+  instance = google_sql_database_instance.d2p.name
+}
+
