@@ -12,8 +12,6 @@ import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
-import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
-import bio.terra.pearl.core.service.datarepo.DatasetService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
@@ -41,8 +39,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final EnrolleeService enrolleeService;
     private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final TriggerService triggerService;
-    private final DatasetService datasetService;
-    private final DataRepoJobService dataRepoJobService;
     private final WithdrawnEnrolleeDao withdrawnEnrolleeDao;
     private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     private final ImportService importService;
@@ -54,8 +50,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    EnrolleeService enrolleeService,
                                    PreEnrollmentResponseDao preEnrollmentResponseDao,
                                    TriggerService triggerService,
-                                   DatasetService datasetService,
-                                   DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
                                    ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService, DataChangeRecordService dataChangeRecordService) {
@@ -65,8 +59,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.enrolleeService = enrolleeService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.triggerService = triggerService;
-        this.datasetService = datasetService;
-        this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeDao = withdrawnEnrolleeDao;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.importService = importService;
@@ -127,8 +119,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
         preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
-        datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         importService.deleteByStudyEnvId(studyEnvironmentId);

@@ -283,31 +283,6 @@ export type BasicMetricDatum = {
   subcategory?: string
 }
 
-export type DatasetDetails = {
-  id: string,
-  createdAt: number,
-  createdBy: string,
-  lastUpdatedAt: number,
-  studyEnvironmentId: string,
-  tdrDatasetId: string,
-  datasetName: string,
-  description: string,
-  status: string,
-  lastExported: number
-}
-
-export type DatasetJobHistory = {
-  id: string,
-  createdAt: number,
-  lastUpdatedAt: number,
-  studyEnvironmentId: string,
-  tdrJobId: string,
-  datasetName: string,
-  datasetId: string,
-  status: string
-  jobType: string
-}
-
 export type KitRequestListResponse = {
   kitRequests: KitRequest[]
   exceptions: { message: string }[]
@@ -1111,43 +1086,6 @@ export default {
         enrolleeShortcodes,
         customMessages
       })
-    })
-  },
-
-  async listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string):
-    Promise<DatasetDetails[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
-    envName: string, datasetName: string):
-    Promise<DatasetJobHistory[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string, createDataset: { name: string, description: string }):
-    Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    return await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(createDataset)
-    })
-  },
-
-  async deleteDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string, datasetName: string):
-    Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}`
-    return await fetch(url, {
-      method: 'DELETE',
-      headers: this.getInitHeaders()
     })
   },
 

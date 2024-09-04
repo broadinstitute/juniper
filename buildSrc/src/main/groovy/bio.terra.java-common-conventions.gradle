@@ -55,7 +55,6 @@ dependencies {
     //This pulls in a patched version of google-oauth-client that supersedes the vulnerable version
     //This is a workaround until TCL adopts a patched version
     implementation 'com.google.oauth-client:google-oauth-client:1.33.3'
-    implementation 'bio.terra:datarepo-jakarta-client:1.565.0-SNAPSHOT'
 
     implementation 'io.opentelemetry:opentelemetry-api:1.31.0'
     implementation 'org.springframework:spring-aspects:6.0.11'

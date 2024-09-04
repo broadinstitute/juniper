@@ -1,7 +1,6 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, {
   Answer,
-  DatasetDetails,
   EnrolleeSearchExpressionResult,
   Notification,
   NotificationEventDetails,
@@ -216,21 +215,6 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     survey: mockSurvey()
   }
 }
-
-export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
-  /** returns mock dataset for use/extension in tests */
-  (datasetName: string, status: string) => ({
-    createdAt: 1685557140,
-    createdBy: '0b9ade05-f7e3-483e-b85a-43deac7505c0',
-    datasetName,
-    description: 'a successfully created dataset',
-    id: 'a-successful-id',
-    lastExported: 0,
-    lastUpdatedAt: 0,
-    status,
-    studyEnvironmentId: 'studyEnvId',
-    tdrDatasetId: 'a-fake-tdr-dataset-id'
-  })
 
 /** returns a mock kit request type */
 export const mockKitType: () => KitType = () => ({

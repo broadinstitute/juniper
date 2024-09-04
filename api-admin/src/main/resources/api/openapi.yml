@@ -1681,68 +1681,6 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets:
-    get:
-      summary: Gets the list of datasets for the study environment
-      tags: [ datarepo ]
-      operationId: listDatasetsForStudyEnvironment
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-      responses:
-        '200':
-          description: dataset
-          content: *jsonContent
-        '500':
-          $ref: '#/components/responses/ServerError'
-    post:
-      summary: Creates a new TDR dataset for the study environment
-      tags: [ datarepo ]
-      operationId: createDatasetForStudyEnvironment
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-      requestBody:
-        required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/CreateDataset' } } }
-      responses:
-        '202':
-          description: Accepted
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}:
-    delete:
-      summary: Deletes the specified TDR dataset
-      tags: [ datarepo ]
-      operationId: deleteDataset
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-        - { name: datasetName, in: path, required: true, schema: { type: string } }
-      responses:
-        '202':
-          description: Accepted
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}/jobs:
-    get:
-      summary: Gets the job history for a study environment TDR dataset
-      tags: [ datarepo ]
-      operationId: getJobHistoryForDataset
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-        - { name: datasetName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: dataset job history
-          content: *jsonContent
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteMedia:
     get:
       summary: Returns a list of the metadata for the images in the portal -- does not return the image files themselves
@@ -2022,12 +1960,6 @@ components:
           type: integer
     PortalDto:
       type: object
-    CreateDataset:
-      properties:
-        name:
-          type: string
-        description:
-          type: string
     SystemStatus:
       required: [ ok, systems ]
       type: object
