@@ -80,8 +80,9 @@ public class EnrolleeEmailService implements NotificationSender {
             // the notification might have been saved, but in a transaction not-yet completed (if, for example,
             // study enrollment transaction is taking a long time). So retry the update if it fails
             RetryTemplate retryTemplate = RetryTemplate.defaultInstance();
+            // exponential backoff with a max interval of 32 seconds, so we'll make retry attempts after 4, 8, 16, and 32 seconds
             ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-            backOffPolicy.setInitialInterval(2000);
+            backOffPolicy.setInitialInterval(4000);
             backOffPolicy.setMaxInterval(32000);
             retryTemplate.setBackOffPolicy(backOffPolicy);
             try {
