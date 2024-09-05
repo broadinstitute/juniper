@@ -194,8 +194,8 @@ public class AdminUserExtService {
   }
 
   /**
-   * removes the user from the specified portal, if the user is in no other portals, also deletes
-   * the user
+   * removes the user from the specified portal. This will never delete the adminUser, as that needs
+   * to be preserved for audit records
    */
   @EnforcePortalPermission(permission = "admin_user_edit")
   @Transactional
@@ -217,11 +217,5 @@ public class AdminUserExtService {
                             .formatted(
                                 adminUserId.toString(), authContext.getPortal().getShortcode())));
     portalAdminUserService.delete(paUser.getId(), auditInfo);
-
-    /** if there are no portal users left for the admin, delete the adminUser too */
-    List<PortalAdminUser> portalAdminUsers = portalAdminUserService.findByAdminUser(adminUserId);
-    if (portalAdminUsers.size() == 0) {
-      adminUserService.delete(adminUserId, auditInfo);
-    }
   }
 }

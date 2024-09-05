@@ -78,18 +78,6 @@ public class PortalAdminUserFactory {
         return new AdminUserBundle(adminUser, portalUsers);
     }
 
-//    public AdminUserBundle buildPersistedWithPermissions(String testName, Portal portal, List<String> permissionNames) {
-//        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
-//        List<PortalAdminUser> portalUsers = new ArrayList<>();
-//        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(testName).build();
-//        portalUsers.add(portalAdminUserService.create(PortalAdminUser.builder()
-//                .adminUserId(adminUser.getId())
-//                .portalId(portal.getId())
-//                .build(), auditInfo));
-//        portalAdminUserRoleService.setRoles(portalUsers.get(0).getId(), roleNames, auditInfo);
-//        return new AdminUserBundle(adminUser, portalUsers);
-//    }
-
     /** brute force role check done by reloading the whole user */
     public boolean userHasRole(UUID portalAdminUserId, String roleName) {
         PortalAdminUser portalAdminUser = portalAdminUserService.findWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
