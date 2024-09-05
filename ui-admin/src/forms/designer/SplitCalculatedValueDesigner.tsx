@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { CalculatedValue } from 'survey-core'
 import { SplitCalculatedValueEditor } from 'forms/designer/SplitCalculatedValueEditor'
-import { OnChangeFormContent } from 'forms/formEditorTypes'
 
 /**
  * A split-view designer for calculated values. On the left side, you can edit the calculated value expression,
@@ -13,7 +12,7 @@ import { OnChangeFormContent } from 'forms/formEditorTypes'
  * you can get a preview of how the value will be calculated.
  */
 export const SplitCalculatedValueDesigner = ({ content, onChange }: {
-  content: FormContent, onChange: OnChangeFormContent
+  content: FormContent, onChange: (newContent: FormContent) => void
 }) => {
   return <div className="mt-3 container w-100">
     <div className="d-flex">
@@ -35,7 +34,7 @@ export const SplitCalculatedValueDesigner = ({ content, onChange }: {
 
 const renderNewElementButton = (
   formContent: FormContent,
-  onChange: OnChangeFormContent,
+  onChange: (newContent: FormContent) => void,
   calculatedValueIdx: number) => {
   return <div className="my-2">
     <Button variant="secondary"
@@ -50,7 +49,7 @@ const renderNewElementButton = (
         }
 
         newContent.calculatedValues.splice(calculatedValueIdx + 1, 0, new CalculatedValue())
-        onChange([], newContent)
+        onChange(newContent)
       }}>
       <FontAwesomeIcon icon={faPlus}/> Insert calculated value
     </Button>

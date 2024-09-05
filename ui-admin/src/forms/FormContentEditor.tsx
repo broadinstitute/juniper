@@ -154,11 +154,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           eventKey={'calculatedvalues'}
           disabled={activeTab !== 'calculatedvalues' && !tabsEnabled}
         >
-          <SplitCalculatedValueDesigner content={editedContent} onChange={(errors, newForm) => {
-            if (newForm) {
-              setEditedContent(newForm)
-            }
-            onFormContentChange(errors, newForm)
+          <SplitCalculatedValueDesigner content={editedContent} onChange={newForm => {
+            setEditedContent(newForm)
+            onFormContentChange([], newForm)
           }}/>
         </Tab>
         <Tab

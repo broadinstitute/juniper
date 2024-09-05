@@ -6,6 +6,7 @@ import {
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, {
+  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -15,7 +16,6 @@ import { ListElementController } from 'portal/siteContent/designer/components/Li
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { Textarea } from 'components/forms/Textarea'
 import { toString } from 'lodash/fp'
-import { OnChangeFormContent } from 'forms/formEditorTypes'
 
 type CalculatedValue = {
   name: string,
@@ -28,7 +28,7 @@ export const SplitCalculatedValueEditor = ({
 }: {
   calculatedValueIndex: number,
   editedContent: FormContent,
-  onChange: OnChangeFormContent
+  onChange: (newContent: FormContent) => void
 }) => {
   const [showJsonEditor, setShowJsonEditor] = useState(false)
 
@@ -36,7 +36,7 @@ export const SplitCalculatedValueEditor = ({
     ? editedContent.calculatedValues[calculatedValueIndex]
     : createNewCalculatedValue()
 
-  const updateCalculatedValue = (errors: string[], newCalculatedValue: CalculatedValue) => {
+  const updateCalculatedValue = (newCalculatedValue: CalculatedValue) => {
     const newContent = { ...editedContent }
     if (!newContent.calculatedValues) {
       newContent.calculatedValues = []
@@ -50,7 +50,7 @@ export const SplitCalculatedValueEditor = ({
     }
 
     newContent.calculatedValues[calculatedValueIndex] = newCalculatedValue
-    onChange(errors, newContent)
+    onChange(newContent)
   }
 
 
@@ -67,18 +67,14 @@ export const SplitCalculatedValueEditor = ({
     const newCalculatedValue = copyCalculatedValue()
     newCalculatedValue.expression = expression
 
-    updateCalculatedValue(expression.length === 0
-      ? ['Calculated value expression cannot be empty']
-      : [], newCalculatedValue)
+    updateCalculatedValue(newCalculatedValue)
   }
 
   const updateName = (name: string) => {
     const newCalculatedValue = copyCalculatedValue()
     newCalculatedValue.name = name
 
-    updateCalculatedValue(name.length === 0
-      ? ['Calculated value name cannot be empty']
-      : [], newCalculatedValue)
+    updateCalculatedValue(newCalculatedValue)
   }
 
   const extractQuestionNames = (expression: string) => {
@@ -134,6 +130,10 @@ export const SplitCalculatedValueEditor = ({
 
   const [previewResult, setPreviewResult] = useState('')
 
+  useEffect(() => {
+    setPreviewResult('')
+  }, [calculatedValue.expression])
+
   const surveyModel = useMemo(() => {
     const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
     surveyModel.onVariableChanged.add((_, options) => {
@@ -164,33 +164,39 @@ export const SplitCalculatedValueEditor = ({
             updateItems={newItems => {
               const newContent = { ...editedContent }
               newContent.calculatedValues = newItems
-              onChange([], newContent)
+              onChange(newContent)
             }}
           />
         </div>
       </div>
-      <div className="mb-3">
-        <Textarea
-          label="Name"
-          rows={2}
-          required={true}
-          value={calculatedValue.name}
-          onChange={updateName}
-        />
-      </div>
+      {showJsonEditor && <CalculatedValueJsonEditor
+        calculatedValue={calculatedValue}
+        onChange={updateCalculatedValue}
+      />}
+      {!showJsonEditor && <>
+        <div className="mb-3">
+          <Textarea
+            label="Name"
+            rows={2}
+            value={calculatedValue.name}
+            onChange={updateName}
+          />
+        </div>
 
-      <div className="mb-3">
-        <Textarea
-          label="Expression"
-          required={true}
-          rows={2}
-          value={calculatedValue.expression}
-          onChange={updateExpression}
-        />
-      </div>
+        <div className="mb-3">
+          <Textarea
+            label="Expression"
+            rows={2}
+            value={calculatedValue.expression}
+            onChange={updateExpression}
+          />
+        </div>
+      </>}
     </div>
 
-    <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
+    <div
+      className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
+      key={calculatedValue.name}
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
       {questionsUsedInCalculatedValue.length > 0
         ? <SurveyComponent
@@ -200,11 +206,33 @@ export const SplitCalculatedValueEditor = ({
         : <p>Any questions used in the calculated value will appear here.
           If you provide answers, you will be able to preview the result
           below.</p>}
-      <span data-testid={`result-${calculatedValueIndex}`}>
+      <span data-testid={`result-${calculatedValueIndex}`} key={calculatedValue.name}>
         <span className="fw-bold">Result:</span> {previewResult}
       </span>
     </div>
   </div>
+}
+
+const CalculatedValueJsonEditor = ({ calculatedValue, onChange }: {
+  calculatedValue: CalculatedValue,
+  onChange: (newCalculatedValue: CalculatedValue) => void
+}) => {
+  const [editedContent, setEditedContent] = useState(() => JSON.stringify(calculatedValue, null, 2))
+
+  return <Textarea
+    className="form-control"
+    value={editedContent}
+    rows={15}
+    onChange={updatedContent => {
+      try {
+        onChange(JSON.parse(updatedContent))
+        setEditedContent(updatedContent)
+      } catch (e) {
+        setEditedContent(updatedContent)
+      }
+    }}
+    label={'Calculated value JSON'}
+  />
 }
 
 SplitCalculatedValueEditor.displayName = 'SplitCalculatedValueEditor'
