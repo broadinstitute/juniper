@@ -111,6 +111,7 @@ export const SplitCalculatedValueEditor = ({
     return []
   }
 
+
   const questionsUsedInCalculatedValue: FormElement[] = useMemo(() => {
     const questionNames = extractQuestionNames(calculatedValue.expression)
 
@@ -196,17 +197,16 @@ export const SplitCalculatedValueEditor = ({
 
     <div
       className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
-      key={calculatedValue.name}
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
       {questionsUsedInCalculatedValue.length > 0
-        ? <SurveyComponent
+        ? useMemo(() => <SurveyComponent
           model={surveyModel}
           readOnly={false}
-        />
+        />, [questionsUsedInCalculatedValue])
         : <p>Any questions used in the calculated value will appear here.
           If you provide answers, you will be able to preview the result
           below.</p>}
-      <span data-testid={`result-${calculatedValueIndex}`} key={calculatedValue.name}>
+      <span data-testid={`result-${calculatedValueIndex}`}>
         <span className="fw-bold">Result:</span> {previewResult}
       </span>
     </div>
