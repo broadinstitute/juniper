@@ -136,7 +136,7 @@ describe('SplitCalculatedValueDesigner', () => {
     // await screen.findByText('Result:15')
 
     await waitFor(() => {
-      expect(screen.queryByTestId('result-0')).toHaveTextContent('Result:15')
+      expect(screen.queryByTestId('result-0')).toHaveTextContent('Result: 15')
     })
   })
 })

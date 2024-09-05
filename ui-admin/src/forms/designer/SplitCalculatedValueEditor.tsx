@@ -15,13 +15,7 @@ import { ListElementController } from 'portal/siteContent/designer/components/Li
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { Textarea } from 'components/forms/Textarea'
 import { toString } from 'lodash/fp'
-/* Note that this component is memoized using React.memo
- * Since survey pages can contain many elements, we need to be mindful of
- * how many times we re-render these components. Since the parent component state
- * is updated with every keystroke, we memoize this to minimize the number
- * of re-renders that take place. The SurveyComponent from SurveyJS in particular
- * is sluggish when undergoing many simultaneous re-renders.
- */
+import { OnChangeFormContent } from 'forms/formEditorTypes'
 
 type CalculatedValue = {
   name: string,
@@ -34,7 +28,7 @@ export const SplitCalculatedValueEditor = ({
 }: {
   calculatedValueIndex: number,
   editedContent: FormContent,
-  onChange: (newContent: FormContent) => void
+  onChange: OnChangeFormContent
 }) => {
   const [showJsonEditor, setShowJsonEditor] = useState(false)
 
@@ -42,7 +36,7 @@ export const SplitCalculatedValueEditor = ({
     ? editedContent.calculatedValues[calculatedValueIndex]
     : createNewCalculatedValue()
 
-  const updateCalculatedValue = (newCalculatedValue: CalculatedValue) => {
+  const updateCalculatedValue = (errors: string[], newCalculatedValue: CalculatedValue) => {
     const newContent = { ...editedContent }
     if (!newContent.calculatedValues) {
       newContent.calculatedValues = []
@@ -56,7 +50,7 @@ export const SplitCalculatedValueEditor = ({
     }
 
     newContent.calculatedValues[calculatedValueIndex] = newCalculatedValue
-    onChange(newContent)
+    onChange(errors, newContent)
   }
 
 
@@ -73,14 +67,18 @@ export const SplitCalculatedValueEditor = ({
     const newCalculatedValue = copyCalculatedValue()
     newCalculatedValue.expression = expression
 
-    updateCalculatedValue(newCalculatedValue)
+    updateCalculatedValue(expression.length === 0
+      ? ['Calculated value expression cannot be empty']
+      : [], newCalculatedValue)
   }
 
   const updateName = (name: string) => {
     const newCalculatedValue = copyCalculatedValue()
     newCalculatedValue.name = name
 
-    updateCalculatedValue(newCalculatedValue)
+    updateCalculatedValue(name.length === 0
+      ? ['Calculated value name cannot be empty']
+      : [], newCalculatedValue)
   }
 
   const extractQuestionNames = (expression: string) => {
@@ -166,7 +164,7 @@ export const SplitCalculatedValueEditor = ({
             updateItems={newItems => {
               const newContent = { ...editedContent }
               newContent.calculatedValues = newItems
-              onChange(newContent)
+              onChange([], newContent)
             }}
           />
         </div>
@@ -175,6 +173,7 @@ export const SplitCalculatedValueEditor = ({
         <Textarea
           label="Name"
           rows={2}
+          required={true}
           value={calculatedValue.name}
           onChange={updateName}
         />
@@ -183,6 +182,7 @@ export const SplitCalculatedValueEditor = ({
       <div className="mb-3">
         <Textarea
           label="Expression"
+          required={true}
           rows={2}
           value={calculatedValue.expression}
           onChange={updateExpression}
@@ -201,7 +201,7 @@ export const SplitCalculatedValueEditor = ({
           If you provide answers, you will be able to preview the result
           below.</p>}
       <span data-testid={`result-${calculatedValueIndex}`}>
-        <span className="fw-bold">Result:</span><span>{previewResult}</span>
+        <span className="fw-bold">Result:</span> {previewResult}
       </span>
     </div>
   </div>
