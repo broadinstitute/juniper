@@ -78,7 +78,7 @@ spec:
               # application's requirements.
               cpu:    "1"
 
-#        - name: proxy
-#          image: us.gcr.io/broad-dsp-gcr-public/httpd-terra-proxy:v0.1.18
-#          ports:
-#              - containerPort: 80
+        - name: proxy
+          image: us.gcr.io/broad-dsp-gcr-public/httpd-terra-proxy:v0.1.18
+          ports:
+            - containerPort: 80

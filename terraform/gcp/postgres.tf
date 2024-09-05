@@ -49,6 +49,14 @@ resource "google_project_iam_binding" "access-postgres" {
   ]
 }
 
+resource "google_project_iam_binding" "access-secrets" {
+  project = "broad-ddp-dev"
+  role    = "roles/secretmanager.secretAccessor"
+  members = [
+    "serviceAccount:${google_service_account.d2p-db-gsa.email}"
+  ]
+}
+
 # resource "google_project_iam_member" "db_iam_user_cloudsql_instance_user" {
 #   project = "broad-ddp-dev"
 #   role    = "roles/cloudsql.instanceUser"
