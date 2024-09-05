@@ -184,6 +184,33 @@
             "text": "You must agree in order to take part in the study.",
             "expression": "{hd_hd_consent_agree} = 'agree'"
           }]
+        },{
+          "type": "matrixdropdown",
+          "name": "initials",
+          "title": "Confirm consent",
+          "columns": [
+            {
+              "name": "initials",
+              "width": "15%"
+            }
+          ],
+          "cellType": "text",
+          "rows": [
+            {
+              "value": "withdraw",
+              "text": "I understand that my participation is voluntary and I am free to withdraw at any time"
+            },
+            {
+              "value": "samples",
+              "text": "I give permission for my saliva samples to be used to obtain DNA for use in this study"
+            },
+            {
+              "value": "contact",
+              "text": "I agree to be contacted by the research team to be invited to participate in future medical and health-related studies"
+            }
+          ],
+          "isRequired": true,
+          "description": "Please read the statements and enter your initials in the box to agree. "
         }
       ]
     },

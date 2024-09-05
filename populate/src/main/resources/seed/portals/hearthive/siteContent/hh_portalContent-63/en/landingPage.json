@@ -1,0 +1,139 @@
+{
+  "title" : "The Heart Hive",
+  "sections" : [ ],
+  "sectionDtos" : [ {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "Turning **today's heart disease** into **tomorrow's heart health.**",
+      "blurb" : "Save lives by advancing research.",
+      "fullWidth" : true,
+      "image" : {
+        "cleanFileName" : "participant_smile.webp",
+        "version" : 1
+      },
+      "buttons" : [ {
+        "text" : "Join Heart Hive",
+        "type" : "join",
+        "studyShortcode" : "hh_registry"
+      } ],
+      "logos" : [ {
+        "cleanFileName" : "imperial_college.webp",
+        "version" : 1,
+        "alt" : "Imperial College London",
+        "style" : {
+          "height" : "40px"
+        }
+      }, {
+        "cleanFileName" : "cardiomyopathy-uk-logo.webp",
+        "version" : 1,
+        "alt" : "Cardiomyopathy UK",
+        "style" : {
+          "height" : "40px"
+        }
+      } ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "What is Heart Hive?",
+      "blurb" : "Heart Hive is a simple way for patients and researchers to partner together so that research happens faster and tomorrow's cures are discovered sooner.\n\nOn Video: Learn more about the Heart Hive and how you can join as a patient data donor.",
+      "fullWidth" : true,
+      "image" : {
+        "videoLink" : "https://player.vimeo.com/video/306028272?autoplay=true&muted=true&loop=false&byline=false&portrait=false&title=false",
+        "alt" : "Heart Hive overview presentation"
+      },
+      "imagePosition" : "left",
+      "background" : "linear-gradient(270deg, #C5248D 0%, #E35C76 50%, #FE7F4B 100%)"
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "Eligibility",
+      "blurb" : "You are eligible to join Heart Hive if you meet **any one of these criteria:**\n\n* People with a diagnosis of cardiomyopathy or myocarditis\n\n* People who have a family history of cardiomyopathy\n\n* People whose genetic testing reveals they have inherited risks for cardiomyopathy\n\n*If you've already registered on our old website, please wait for us to contact you about migrating your account*",
+      "fullWidth" : true,
+      "image" : {
+        "cleanFileName" : "hearthive_participant_1.webp",
+        "version" : 1
+      },
+      "buttons" : [ {
+        "text" : "Join Heart Hive",
+        "type" : "join",
+        "studyShortcode" : "hh_registry"
+      } ],
+      "logos" : [ ]
+    }
+  }, {
+    "sectionType" : "STEP_OVERVIEW",
+    "sectionConfigJson" : {
+      "background" : "linear-gradient(270deg, #C5248D 0%, #E35C76 50%, #FE7F4B 100%)",
+      "title" : "How to Participate",
+      "fullWidth" : true,
+      "steps" : [ {
+        "image" : {
+          "cleanFileName" : "step_1.png",
+          "version" : 2,
+          "alt" : ""
+        },
+        "duration" : "1 minute",
+        "blurb" : "People living with or at risk of myocarditis or cardiomyopathy sign up on the website. "
+      }, {
+        "image" : {
+          "cleanFileName" : "step_2.png",
+          "version" : 2,
+          "alt" : ""
+        },
+        "duration" : "20 minutes",
+        "blurb" : "Participants enter their own health data in a short questionnaire."
+      }, {
+        "image" : {
+          "cleanFileName" : "step_3.png",
+          "version" : 2,
+          "alt" : ""
+        },
+        "duration" : "",
+        "blurb" : "Participants gain access to research projects and self-enroll in studies that interest them. "
+      } ],
+      "buttons" : [ {
+        "text" : "Join Heart Hive",
+        "type" : "join",
+        "studyShortcode" : "hh_registry"
+      } ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "Data control and privacy",
+      "blurb" : "**You remain in control.** You always have a choice about how your data is used and which researchers will be given access.\n\n**You're protected.** Your data is safeguarded with the highest standards.\n\nClick [here](https://thehearthive.org/api/public/portals/v1/hearthive/env/live/siteImages/2/privacy_notice.pdf) to view the Heart Hive Privacy Policy.",
+      "blurbAlign" : "center",
+      "buttons" : [ ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "image" : {
+        "cleanFileName" : "hex_round.webp",
+        "version" : 1
+      },
+      "title" : "Together we're standing up to heart disease.",
+      "blurb" : "Joining is easy. We invite all qualified participants to be a part of this collaborative research.",
+      "blurbAlign" : "center",
+      "backgroundImage" : {
+        "cleanFileName" : "main_banner.webp",
+        "version" : 1
+      },
+      "buttons" : [ {
+        "text" : "Join Heart Hive",
+        "type" : "join",
+        "studyShortcode" : "hh_registry"
+      } ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "",
+      "blurb" : "The Heart Hive was developed by [Dr. James Ware](https://www.imperial.ac.uk/people/j.ware) and by [Dr. Angharad Roberts](https://www.imperial.ac.uk/people/angharad.roberts) and the [Cardiovascular Genetics & Genomics Group](https://cvgenetics.org/), [Imperial College London](https://www.imperial.ac.uk/nhli).\n\nSupported by [Cardiomyopathy UK](https://www.cardiomyopathy.org/).",
+      "fullWidth" : true,
+      "logos" : [ ]
+    }
+  } ]
+}

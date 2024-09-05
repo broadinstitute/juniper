@@ -1,0 +1,21 @@
+{
+  "stableId" : "FollowUpSurvey",
+  "version" : 1,
+  "name" : "FollowUp Survey",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}

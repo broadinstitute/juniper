@@ -11,45 +11,60 @@
       "passwordProtected" : false,
       "password" : "broad_institute",
       "acceptingEnrollment" : true,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ ],
-    "configuredConsentDtos" : [ ],
     "triggerDtos" : [ ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
-    "enrolleeFiles" : [ ]
+    "enrolleeFiles" : [ ],
+    "familyFiles" : [ ]
   }, {
     "environmentName" : "live",
     "studyEnvironmentConfig" : {
       "passwordProtected" : false,
       "password" : "broad_institute",
       "acceptingEnrollment" : false,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ ],
-    "configuredConsentDtos" : [ ],
     "triggerDtos" : [ ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
-    "enrolleeFiles" : [ ]
+    "enrolleeFiles" : [ ],
+    "familyFiles" : [ ]
   }, {
     "environmentName" : "sandbox",
     "studyEnvironmentConfig" : {
       "passwordProtected" : false,
       "password" : "broad_institute",
       "acceptingEnrollment" : false,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ ],
-    "configuredConsentDtos" : [ ],
     "triggerDtos" : [ ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
     "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
@@ -59,6 +74,9 @@
       "allowParticipantStart" : true,
       "allowParticipantReedit" : true,
       "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
       "populateFileName" : "../../surveys/pacingHocmEligibility-21.json"
     }
   } ]
