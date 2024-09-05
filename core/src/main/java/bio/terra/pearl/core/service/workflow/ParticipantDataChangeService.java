@@ -68,6 +68,11 @@ public class ParticipantDataChangeService extends ImmutableEntityService<Partici
     }
 
     @Transactional
+    public void deleteByResponsibleAdminUserId(UUID responsibleAdminUserId) {
+        dao.deleteByResponsibleAdminUserId(responsibleAdminUserId);
+    }
+
+    @Transactional
     public void deleteByPortalEnvironmentId(UUID portalEnvId) {
         dao.deleteByPortalEnvironmentId(portalEnvId);
     }

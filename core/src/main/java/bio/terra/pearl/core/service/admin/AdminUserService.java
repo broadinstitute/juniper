@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 
 import java.util.*;
 
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,17 +17,19 @@ public class AdminUserService extends AdminDataAuditedService<AdminUser, AdminUs
     private final PortalAdminUserService portalAdminUserService;
     private final PortalAdminUserRoleService portalAdminUserRoleService;
     private final AdminDataChangeService adminDataChangeService;
+    private final ParticipantDataChangeService participantDataChangeService;
     private final ObjectMapper objectMapper;
 
     public AdminUserService(AdminUserDao adminUserDao,
                             PortalAdminUserService portalAdminUserService,
                             PortalAdminUserRoleService portalAdminUserRoleService,
                             AdminDataChangeService adminDataChangeService,
-                            ObjectMapper objectMapper) {
+                            ParticipantDataChangeService participantDataChangeService, ObjectMapper objectMapper) {
         super(adminUserDao, adminDataChangeService, objectMapper);
         this.portalAdminUserService = portalAdminUserService;
         this.portalAdminUserRoleService = portalAdminUserRoleService;
         this.adminDataChangeService = adminDataChangeService;
+        this.participantDataChangeService = participantDataChangeService;
         this.objectMapper = objectMapper;
     }
 
@@ -59,6 +62,7 @@ public class AdminUserService extends AdminDataAuditedService<AdminUser, AdminUs
     public void delete(UUID adminUserId, DataAuditInfo auditInfo, Set<CascadeProperty> cascade) {
         portalAdminUserService.deleteByUserId(adminUserId, auditInfo);
         adminDataChangeService.deleteByResponsibleAdminUserId(adminUserId);
+        participantDataChangeService.deleteByResponsibleUserId(adminUserId);
         dao.delete(adminUserId);
     }
 

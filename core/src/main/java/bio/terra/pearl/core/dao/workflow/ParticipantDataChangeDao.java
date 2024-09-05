@@ -69,6 +69,10 @@ public class ParticipantDataChangeDao extends BaseJdbiDao<ParticipantDataChange>
         deleteByProperty("responsible_user_id", participantUserId);
     }
 
+    public void deleteByResponsibleAdminUserId(UUID adminUserId) {
+        deleteByProperty("responsible_admin_user_id", adminUserId);
+    }
+
     public void deleteByPortalEnvironmentId(UUID portalEnvId) {
         deleteByProperty("portal_environment_id", portalEnvId);
     }

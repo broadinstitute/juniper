@@ -18,6 +18,7 @@ import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalFactory portalFactory;
   @Autowired private PortalAdminUserRoleService portalAdminUserRoleService;
   @Autowired private RoleFactory roleFactory;
+  @Autowired private PortalAdminUserService portalAdminUserService;
 
   @Test
   public void testAllMethodsAnnotated() {
@@ -57,6 +59,54 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
             AuthAnnotationSpec.withPortalPerm("admin_user_edit"),
             "setPortalUserRoles",
             AuthAnnotationSpec.withPortalPerm("admin_user_edit")));
+  }
+
+  @Test
+  @Transactional
+  public void testCreateNewAdminAndPortalUser(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUser createdUser =
+        adminUserExtService.createAdminUser(
+            PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+            "newGuy@new.com",
+            List.of("study_admin"));
+
+    assertThat(
+        portalAdminUserService
+            .findByUserIdAndPortal(createdUser.getId(), portal.getId())
+            .isPresent(),
+        equalTo(true));
+  }
+
+  @Test
+  @Transactional
+  public void testCreateNewPortalUser(TestInfo info) {
+    /** add a user already in another portal to a new portal */
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Portal portal2 = portalFactory.buildPersisted(getTestName(info));
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal2, List.of("study_admin"));
+
+    AdminUser createdUser =
+        adminUserExtService.createAdminUser(
+            PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+            userBundle.user().getUsername(),
+            List.of("study_admin"));
+
+    assertThat(
+        portalAdminUserService
+            .findByUserIdAndPortal(createdUser.getId(), portal2.getId())
+            .isPresent(),
+        equalTo(true));
   }
 
   @Test
@@ -122,6 +172,33 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
         portalAdminUserFactory.userHasRole(
             userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
         is(false));
+
+    // it's ok to include roles the target user already has,
+  }
+
+  @Test
+  @Transactional
+  public void testSetRolesAllowsExistingOperator(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Role role1 = roleFactory.buildPersisted(getTestName(info));
+
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("publisher"));
+
+    adminUserExtService.setPortalUserRoles(
+        PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+        userBundle.user().getId(),
+        List.of("study_admin", "publisher"));
+
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), "study_admin"),
+        is(true));
   }
 
   /** Important enough that it's worth a separate test beyond the annotation check */

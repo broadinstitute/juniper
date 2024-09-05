@@ -107,15 +107,32 @@ public class AdminUserExtService {
   public AdminUser createAdminUser(
       PortalAuthContext authContext, String username, List<String> roleNames) {
     authorizeRoles(authContext, roleNames);
-    AdminUser newUser = AdminUser.builder().username(username).superuser(false).build();
-    newUser
-        .getPortalAdminUsers()
-        .add(PortalAdminUser.builder().portalId(authContext.getPortal().getId()).build());
     DataAuditInfo auditInfo =
         DataAuditInfo.builder().responsibleAdminUserId(authContext.getOperator().getId()).build();
-    AdminUser adminUser = adminUserService.create(newUser, auditInfo);
+
+    AdminUser adminUser =
+        adminUserService
+            .findByUsername(username)
+            .orElseGet(
+                () -> {
+                  AdminUser newUser =
+                      AdminUser.builder().username(username).superuser(false).build();
+                  return adminUserService.create(newUser, null);
+                });
+
+    if (portalAdminUserService
+        .findByUserIdAndPortal(adminUser.getId(), authContext.getPortal().getId())
+        .isPresent()) {
+      throw new IllegalArgumentException("User already exists in this portal");
+    }
+
+    PortalAdminUser paUser =
+        PortalAdminUser.builder()
+            .portalId(authContext.getPortal().getId())
+            .adminUserId(adminUser.getId())
+            .build();
+    paUser = portalAdminUserService.create(paUser, auditInfo);
     if (roleNames.size() > 0) {
-      PortalAdminUser paUser = adminUser.getPortalAdminUsers().stream().findFirst().orElseThrow();
       portalAdminUserRoleService.setRoles(paUser.getId(), roleNames, auditInfo);
     }
     adminEmailService.sendWelcomeEmail(authContext.getPortal(), adminUser);
@@ -147,14 +164,17 @@ public class AdminUserExtService {
   public List<String> setPortalUserRoles(
       PortalAuthContext authContext, UUID adminUserId, List<String> roleNames) {
 
-    authorizeRoles(authContext, roleNames);
     // looking up the portalAdminUser of the target by the portal from the authContext
     // confirms they are in a portal the operator has access and permission to edit users
     PortalAdminUser paUser =
         portalAdminUserService
             .findByUserIdAndPortal(adminUserId, authContext.getPortal().getId())
             .orElseThrow(() -> new NotFoundException("No matching user found"));
-
+    portalAdminUserService.attachRolesAndPermissions(paUser);
+    List<String> existingRoleNames = paUser.getRoles().stream().map(Role::getName).toList();
+    List<String> newRoles =
+        roleNames.stream().filter(roleName -> !existingRoleNames.contains(roleName)).toList();
+    authorizeRoles(authContext, newRoles);
     DataAuditInfo auditInfo =
         DataAuditInfo.builder()
             .responsibleAdminUserId(authContext.getOperator().getId())
