@@ -20,6 +20,7 @@ export type ParticipantNote = {
 export type ParticipantUser = {
     id: string,
     username: string,
+    shortcode: string,
     token: string,
     lastLogin: number
 }

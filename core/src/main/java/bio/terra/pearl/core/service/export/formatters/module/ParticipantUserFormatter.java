@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUser> {
     public static final String PARTICIPANT_USER_MODULE_NAME = "account";
-    public static final List<String> INCLUDED_PROPERTIES = List.of("username", "createdAt");
+    public static final List<String> INCLUDED_PROPERTIES = List.of("username", "createdAt", "shortcode");
 
     public ParticipantUserFormatter(ExportOptions exportOptions) {
         itemFormatters = INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<ParticipantUser>(propName, ParticipantUser.class))
