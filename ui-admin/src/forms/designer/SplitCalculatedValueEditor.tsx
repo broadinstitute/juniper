@@ -16,6 +16,7 @@ import { ListElementController } from 'portal/siteContent/designer/components/Li
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { Textarea } from 'components/forms/Textarea'
 import { toString } from 'lodash/fp'
+import { SurveyModel } from 'survey-core'
 
 type CalculatedValue = {
   name: string,
@@ -135,18 +136,23 @@ export const SplitCalculatedValueEditor = ({
     setPreviewResult('')
   }, [calculatedValue.expression])
 
-  const surveyModel = useMemo(() => {
+  const onVariableChanged = (_: SurveyModel, options: { name: string, value: string }) => {
+    if (options.name === calculatedValue.name) {
+      setPreviewResult(toString(options.value))
+    }
+  }
+
+  const surveyPreview = useMemo(() => {
     const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
-    surveyModel.onVariableChanged.add((_, options) => {
-      if (options.name === calculatedValue.name) {
-        setPreviewResult(toString(options.value))
-      }
-    })
+    surveyModel.onVariableChanged.add(onVariableChanged)
 
     surveyModel.showInvisibleElements = true
     surveyModel.showQuestionNumbers = false
-    return surveyModel
-  }, [editedContent, calculatedValue, setPreviewResult])
+    return <SurveyComponent
+      model={surveyModel}
+      readOnly={false}
+    />
+  }, [onVariableChanged, questionsUsedInCalculatedValue, setPreviewResult])
 
   return <div key={calculatedValueIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
@@ -199,10 +205,7 @@ export const SplitCalculatedValueEditor = ({
       className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
       {questionsUsedInCalculatedValue.length > 0
-        ? useMemo(() => <SurveyComponent
-          model={surveyModel}
-          readOnly={false}
-        />, [questionsUsedInCalculatedValue])
+        ? surveyPreview
         : <p>Any questions used in the calculated value will appear here.
           If you provide answers, you will be able to preview the result
           below.</p>}
