@@ -6,4 +6,4 @@ databaseChangeLog:
         - addColumn:
             tableName: participant_user
             columns:
-              - column: { name: shortcode, type: varchar(255) } #nullable for now to facilitate backfill migration
+              - column: { name: shortcode, type: text } #nullable for now to facilitate backfilling
