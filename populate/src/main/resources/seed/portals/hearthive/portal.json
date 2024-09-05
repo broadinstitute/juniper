@@ -23,7 +23,7 @@
       "languageCode" : "en",
       "languageName" : "English"
     } ],
-    "participantUserFiles" : [ ],
+    "participantUserFiles" : [ "participants/consentedEnrollee.json", "participants/gertrudeElion.json", "participants/newEnrollee.json" ],
     "siteContentPopDto" : {
       "populateFileName" : "siteContent/hh_portalContent-63/siteContent.json"
     },
