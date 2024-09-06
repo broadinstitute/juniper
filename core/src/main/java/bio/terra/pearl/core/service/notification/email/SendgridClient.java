@@ -84,7 +84,7 @@ public class SendgridClient {
 
     // SendGrid will occasionally return a 500 status code here. This isn't catastrophic, but we should retry
     // the request a few times before giving up and logging the exception. This uses an exponential backoff to
-    // avoid getting rate-limited by SendGrid. Backoff will retry attempts after 8, 16, and 32 seconds.
+    // avoid getting rate-limited by SendGrid. Retries will occur after 8, 16, and 32 seconds.
     RetryTemplate retryTemplate = RetryTemplate.defaultInstance();
     ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
     backOffPolicy.setInitialInterval(8000);
