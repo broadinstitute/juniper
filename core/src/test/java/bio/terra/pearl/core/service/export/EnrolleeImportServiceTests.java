@@ -14,8 +14,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -419,6 +418,14 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .stableId("importTest1")
                 .content(TWO_QUESTION_SURVEY_CONTENT)
                 .portalId(bundle.getPortal().getId())
+                        .answerMappings(List.of(
+                                AnswerMapping.builder()
+                                        .targetType(AnswerMappingTargetType.PROFILE)
+                                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                                        .targetField("givenName")
+                                        .questionStableId("importFirstName")
+                                        .build()
+                        ))
                 .version(1)
         );
         surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
@@ -447,6 +454,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Answer favColor = answers.stream().filter(answer -> answer.getQuestionStableId().equals("importFavColors"))
                 .findFirst().get();
         assertThat(favColor.getObjectValue(), equalTo("[\"red\", \"blue\"]"));
+
+        // confirm profile mapping got processed
+        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("Jeff"));
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
