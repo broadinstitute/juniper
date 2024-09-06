@@ -59,7 +59,7 @@ jobs:
           e2e-tests/test-results/**
     - name: Notify slack on failure
       uses: broadinstitute/action-slack@v3.8.0
-      if: failure() # && github.ref == 'refs/heads/development' #only notify on merges to development
+      if: failure() && github.ref == 'refs/heads/development'
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       with:
@@ -68,4 +68,4 @@ jobs:
         author_name: End-to-end failed on merge to development
         fields: job
         text: "End-to-end tests failed :sadpanda:"
-        username: 'Juniper Build Notifications'
+        username: 'Pearl Build Notifications'
