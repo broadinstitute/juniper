@@ -226,7 +226,8 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email */
+        /** restore email -- reload the profile since answermappings may have changed it */
+        profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
