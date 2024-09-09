@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -72,18 +73,18 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
-    public static void main(String[] args) { // todo arz run via main vs. run in cloud, use cloud env var
+    public static void main(String[] args) {
+        /*
         String cloudFunctionPort = System.getenv("PORT");
 
         if (StringUtils.isNotBlank(cloudFunctionPort)) {
             System.setProperty("server.port", cloudFunctionPort);
         }
+         */
 
-        // need two environment variables:
-        // GOOGLE_CLOUD_PROJECT (name of GCP project)
-        // VANTA_CONFIG_SECRET (name of the secret in the GCP project that contains json UserSyncConfig)
         new SpringApplicationBuilder(SyncVantaUsers.class)
-                .web(WebApplicationType.REACTIVE) // keep a port open so we can deploy to GCP function
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
                 .run(args);
         log.info("Synchronization complete");
     }
@@ -92,22 +93,14 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public void accept(CloudEvent event) throws Exception {
         try {
             new SpringApplicationBuilder(SyncVantaUsers.class)
-                    .web(WebApplicationType.NONE).run("");
+                    .web(WebApplicationType.NONE)
+                    .bannerMode(Banner.Mode.OFF).run("");
             log.info("Synchronization complete");
         } catch (Exception e) {
             log.error("Vanta sync failed", e);
         }
     }
 
-    @Bean
-    public Consumer<PubSubMessage> pubSubFunction() {
-        return message -> {
-            // The PubSubMessage data field arrives as a base-64 encoded string and must be decoded.
-            // See: https://cloud.google.com/functions/docs/calling/pubsub#event_structure
-            String decodedMessage = new String(Base64.getDecoder().decode(message.getData()), StandardCharsets.UTF_8);
-            System.out.println("Received Pub/Sub message with data: " + decodedMessage);
-        };
-    }
     @Override
     public void run(String... args) throws Exception {
         userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
