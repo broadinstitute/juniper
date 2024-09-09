@@ -68,6 +68,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       />
       <div className="btn-group border my-1">
         <Button id="grid" variant='light'
+          aria-label={'Switch to withdrawn view'}
           className={`btn btn-sm ${view === 'withdrawn' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to withdrawn view'}
           onClick={() => {
@@ -77,6 +78,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <FontAwesomeIcon icon={faUserLargeSlash}/>
         </Button>
         <Button id="grid" variant='light'
+          aria-label={'Switch to participant view'}
           className={`btn btn-sm ${view === 'participant' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to participant view'}
           onClick={() => {
@@ -86,6 +88,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <FontAwesomeIcon icon={faUserLarge}/>
         </Button>
         <Button id="list" variant='light'
+          aria-label={'Switch to family view'}
           className={`btn btn-sm ${view === 'family' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to family view'}
           onClick={() => {

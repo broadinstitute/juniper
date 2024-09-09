@@ -200,7 +200,7 @@ test('allows the user to group by family', async () => {
   //Wait for results to be rendered
   await screen.findAllByText('JOSALK')
 
-  await userEvent.click(screen.getByLabelText('Family view'))
+  await userEvent.click(screen.getByLabelText('Switch to family view'))
 
   //Wait for results to be rendered
   expect(screen.getAllByText('F_MOCK')[0]).toBeInTheDocument()
