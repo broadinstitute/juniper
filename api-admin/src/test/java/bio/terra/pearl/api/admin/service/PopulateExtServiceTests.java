@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class PopulateExtServiceTests extends BaseSpringBootTest {
   private PopulateExtService emptyService =
-      new PopulateExtService(null, null, null, null, null, null, null, null);
+      new PopulateExtService(null, null, null, null, null, null, null, null, null);
 
   @Autowired private PopulateExtService populateExtService;
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
