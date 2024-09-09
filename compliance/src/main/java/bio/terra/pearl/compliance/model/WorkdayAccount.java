@@ -1,4 +1,5 @@
-package bio.terra.pearl.compliance.compliance.model;
+package bio.terra.pearl.compliance.model;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,36 +8,30 @@ import lombok.experimental.SuperBuilder;
 import java.util.Collection;
 
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class GithubAccount extends VantaObject {
+public class WorkdayAccount extends VantaObject {
+
+    // this is full name (first + last)
+    private String displayName;
 
     @Override
     public String getIntegrationId() {
-        return "github";
+        return "workday";
     }
-
-    private String displayName, owner, description, accountName;
-
-    private boolean isDeactivated, inScope;
 
     @Override
     public boolean shouldBeInScope(Collection<PersonInScope> peopleInScope) {
-        return peopleInScope.stream().anyMatch(personInScope -> accountName.equalsIgnoreCase(personInScope.getGitUser()));
+        return peopleInScope.stream().anyMatch(personInScope -> displayName.equalsIgnoreCase(personInScope.getFullName()));
     }
 
     @Override
     public String getSimpleId() {
-        return getDisplayName();
+        return displayName;
     }
 
     @Override
     public String toString() {
-        return "GithubAccount{" +
+        return "WorkdayAccount{" +
                 "displayName='" + displayName + '\'' +
-                ", owner='" + owner + '\'' +
-                ", description='" + description + '\'' +
-                ", accountName='" + accountName + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
                 ", responseType='" + responseType + '\'' +
                 ", resourceKind='" + resourceKind + '\'' +
                 ", resourceId='" + resourceId + '\'' +

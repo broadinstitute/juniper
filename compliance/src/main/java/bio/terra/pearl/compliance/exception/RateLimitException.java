@@ -1,4 +1,4 @@
-package bio.terra.pearl.compliance.compliance.exception;
+package bio.terra.pearl.compliance.exception;
 
 import java.time.Duration;
 

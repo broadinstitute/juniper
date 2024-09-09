@@ -1,4 +1,4 @@
-package bio.terra.pearl.compliance.compliance.model;
+package bio.terra.pearl.compliance.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

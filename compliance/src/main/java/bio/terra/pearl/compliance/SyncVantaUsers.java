@@ -1,24 +1,26 @@
-package bio.terra.pearl.compliance.compliance;
+package bio.terra.pearl.compliance;
 
-import bio.terra.pearl.compliance.compliance.exception.RateLimitException;
-import bio.terra.pearl.compliance.compliance.exception.VantaUpdateException;
-import bio.terra.pearl.compliance.compliance.model.AccessToken;
-import bio.terra.pearl.compliance.compliance.model.GithubAccountResultsResponse;
-import bio.terra.pearl.compliance.compliance.model.JiraAccountResultsResponse;
-import bio.terra.pearl.compliance.compliance.model.PersonInScope;
-import bio.terra.pearl.compliance.compliance.model.SlackAccountResultsResponse;
-import bio.terra.pearl.compliance.compliance.model.UpdateVantaMetadata;
-import bio.terra.pearl.compliance.compliance.model.UserSyncConfig;
-import bio.terra.pearl.compliance.compliance.model.VantaCredentials;
-import bio.terra.pearl.compliance.compliance.model.VantaIntegration;
-import bio.terra.pearl.compliance.compliance.model.VantaObject;
-import bio.terra.pearl.compliance.compliance.model.VantaResults;
-import bio.terra.pearl.compliance.compliance.model.VantaResultsResponse;
-import bio.terra.pearl.compliance.compliance.model.WorkdayAccountResultsResponse;
+import bio.terra.pearl.compliance.exception.RateLimitException;
+import bio.terra.pearl.compliance.exception.VantaUpdateException;
+import bio.terra.pearl.compliance.model.AccessToken;
+import bio.terra.pearl.compliance.model.GithubAccountResultsResponse;
+import bio.terra.pearl.compliance.model.JiraAccountResultsResponse;
+import bio.terra.pearl.compliance.model.PersonInScope;
+import bio.terra.pearl.compliance.model.SlackAccountResultsResponse;
+import bio.terra.pearl.compliance.model.UpdateVantaMetadata;
+import bio.terra.pearl.compliance.model.UserSyncConfig;
+import bio.terra.pearl.compliance.model.VantaCredentials;
+import bio.terra.pearl.compliance.model.VantaIntegration;
+import bio.terra.pearl.compliance.model.VantaObject;
+import bio.terra.pearl.compliance.model.VantaResults;
+import bio.terra.pearl.compliance.model.VantaResultsResponse;
+import bio.terra.pearl.compliance.model.WorkdayAccountResultsResponse;
+import com.google.cloud.functions.CloudEventsFunction;
 import com.google.cloud.spring.secretmanager.SecretManagerTemplate;
 import com.google.gson.Gson;
 import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import io.cloudevents.CloudEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,29 +29,37 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 @Slf4j
 @SpringBootApplication
-public class SyncVantaUsers implements CommandLineRunner {
+public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
 
     private UserSyncConfig userSyncConfig;
+
+    @Value("#{environment.PORT}")
+    private Integer port;
 
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
@@ -62,17 +72,42 @@ public class SyncVantaUsers implements CommandLineRunner {
 
     Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // todo arz run via main vs. run in cloud, use cloud env var
+        String cloudFunctionPort = System.getenv("PORT");
+
+        if (StringUtils.isNotBlank(cloudFunctionPort)) {
+            System.setProperty("server.port", cloudFunctionPort);
+        }
 
         // need two environment variables:
         // GOOGLE_CLOUD_PROJECT (name of GCP project)
         // VANTA_CONFIG_SECRET (name of the secret in the GCP project that contains json UserSyncConfig)
         new SpringApplicationBuilder(SyncVantaUsers.class)
-                .web(WebApplicationType.NONE)
+                .web(WebApplicationType.REACTIVE) // keep a port open so we can deploy to GCP function
                 .run(args);
         log.info("Synchronization complete");
     }
 
+    @Override
+    public void accept(CloudEvent event) throws Exception {
+        try {
+            new SpringApplicationBuilder(SyncVantaUsers.class)
+                    .web(WebApplicationType.NONE).run("");
+            log.info("Synchronization complete");
+        } catch (Exception e) {
+            log.error("Vanta sync failed", e);
+        }
+    }
+
+    @Bean
+    public Consumer<PubSubMessage> pubSubFunction() {
+        return message -> {
+            // The PubSubMessage data field arrives as a base-64 encoded string and must be decoded.
+            // See: https://cloud.google.com/functions/docs/calling/pubsub#event_structure
+            String decodedMessage = new String(Base64.getDecoder().decode(message.getData()), StandardCharsets.UTF_8);
+            System.out.println("Received Pub/Sub message with data: " + decodedMessage);
+        };
+    }
     @Override
     public void run(String... args) throws Exception {
         userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
@@ -101,16 +136,19 @@ public class SyncVantaUsers implements CommandLineRunner {
      * to build a complete list
      */
     private <T extends VantaObject> Collection<T> collectAllData(WebClient wc, Class<? extends VantaResultsResponse<T>> clazz) {
-        final AtomicReference<VantaResults<T>> results = new AtomicReference<>(wc.get().retrieve().bodyToMono(clazz).block().getResults());
+        final AtomicReference<VantaResults<T>> results = new AtomicReference<>();
         Set<T> elements = new HashSet<>();
-        elements.addAll(results.get().getData());
+        AtomicInteger cursorCount = new AtomicInteger(0);
 
-        int cursorCount = 1;
-        while (results.get().getPageInfo().isHasNextPage()) {
-            log.debug("Getting cursor number {}", cursorCount++);
-            VantaResultsResponse<T> response = wc.get().uri(uriBuilder ->
-                            uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor())
-                                    .queryParam("pageSize", 100).build()).retrieve()
+        while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
+            log.debug("Getting cursor number {}", cursorCount);
+            VantaResultsResponse<T> response = wc.get().uri(uriBuilder -> {
+                if (cursorCount.get() > 0) {
+                    uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
+                }
+                uriBuilder.queryParam("pageSize", 100);
+                return uriBuilder.build();
+            }).retrieve()
                     .onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
                         List<String> header = res.headers().header("Retry-After");
                         Integer delayInSeconds;
@@ -135,6 +173,7 @@ public class SyncVantaUsers implements CommandLineRunner {
                         });
                     })).block();
 
+            cursorCount.incrementAndGet();
             if (response != null) {
                 elements.addAll(response.getResults().getData());
                 results.set(response.getResults());

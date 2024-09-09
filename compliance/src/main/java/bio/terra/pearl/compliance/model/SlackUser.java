@@ -1,4 +1,4 @@
-package bio.terra.pearl.compliance.compliance.model;
+package bio.terra.pearl.compliance.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,30 +8,29 @@ import lombok.experimental.SuperBuilder;
 import java.util.Collection;
 
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class WorkdayAccount extends VantaObject {
+public class SlackUser extends VantaObject {
 
-    // this is full name (first + last)
-    private String displayName;
+    private String accountName;
 
     @Override
     public String getIntegrationId() {
-        return "workday";
+        return "slack";
     }
 
     @Override
     public boolean shouldBeInScope(Collection<PersonInScope> peopleInScope) {
-        return peopleInScope.stream().anyMatch(personInScope -> displayName.equalsIgnoreCase(personInScope.getFullName()));
+        return peopleInScope.stream().anyMatch(personInScope -> accountName.equalsIgnoreCase(personInScope.getEmail()));
     }
 
     @Override
     public String getSimpleId() {
-        return displayName;
+        return accountName;
     }
 
     @Override
     public String toString() {
-        return "WorkdayAccount{" +
-                "displayName='" + displayName + '\'' +
+        return "SlackUser{" +
+                "accountName='" + accountName + '\'' +
                 ", responseType='" + responseType + '\'' +
                 ", resourceKind='" + resourceKind + '\'' +
                 ", resourceId='" + resourceId + '\'' +

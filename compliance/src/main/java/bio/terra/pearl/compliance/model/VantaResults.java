@@ -1,15 +1,16 @@
-package bio.terra.pearl.compliance.compliance.model;
-
+package bio.terra.pearl.compliance.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class AccessToken {
+public class VantaResults<T extends VantaObject> {
 
-    private String access_token, token_type;
+    VantaPageInfo pageInfo;
 
-    private int expires_in;
+    List<T> data;
 }
