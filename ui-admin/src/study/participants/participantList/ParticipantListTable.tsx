@@ -242,11 +242,14 @@ function ParticipantListTable({
         {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}
-        { showSyntheticModal &&
-          <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
-            onDismiss={() => setShowSyntheticModal(false)}
-            onSubmit={() => { setShowSyntheticModal(false); reload() }}
-          />}
+        {showSyntheticModal &&
+            <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
+              onDismiss={() => setShowSyntheticModal(false)}
+              onSubmit={() => {
+                setShowSyntheticModal(false)
+                reload()
+              }}
+            />}
       </div>
     </div>
     {basicTableLayout(table, { filterable: !disableColumnFiltering, tableClass })}

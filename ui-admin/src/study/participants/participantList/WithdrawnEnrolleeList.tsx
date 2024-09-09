@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { renderPageHeader } from '../../../util/pageUtils'
-import { useLoadingEffect } from '../../../api/api-utils'
-import Api, { WithdrawnEnrollee } from '../../../api/api'
-import { basicTableLayout, ColumnVisibilityControl } from '../../../util/tableUtils'
-import LoadingSpinner from '../../../util/LoadingSpinner'
+import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { useLoadingEffect } from 'api/api-utils'
+import Api, { WithdrawnEnrollee } from 'api/api'
+import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -14,8 +13,8 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { instantToDefaultString } from '@juniper/ui-core'
-import { NavBreadcrumb } from '../../../navbar/AdminNavbar'
-import { DocsKey, ZendeskLink } from '../../../util/zendeskUtils'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
@@ -78,7 +77,6 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
     getSortedRowModel: getSortedRowModel()
   })
   return <div className="container-fluid px-4 py-2">
-    { renderPageHeader('Withdrawn enrollees') }
     <NavBreadcrumb value={'withdrawnList'}>Withdrawn</NavBreadcrumb>
     <FontAwesomeIcon icon={faInfoCircle}/> More information about the
     <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.
