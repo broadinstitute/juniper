@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import {
-  Study,
-  StudyEnvironment,
-  StudyEnvironmentConfig
+  StudyEnvironmentConfig,
+  StudyEnvParams
 } from '@juniper/ui-core'
 import InfoPopup from 'components/forms/InfoPopup'
 import { useUser } from 'user/UserProvider'
@@ -13,30 +15,61 @@ import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
-import { PortalContextT } from 'portal/PortalProvider'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { LoadedPortalContextT } from 'portal/PortalProvider'
+import {
+  InfoCard,
+  InfoCardHeader,
+  InfoCardTitle
+} from 'components/InfoCard'
 
-export const StudyEnrollmentSettings = (
+export const KitSettings = (
   {
+    studyEnvContext,
     portalContext,
-    studyEnv,
-    study,
     config,
     updateConfig,
+    canSave,
     saveConfig
   }: {
-    portalContext: PortalContextT,
-    studyEnv: StudyEnvironment,
-    study: Study,
+    studyEnvContext: StudyEnvContextT,
+    portalContext: LoadedPortalContextT,
     config: StudyEnvironmentConfig,
     updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void,
+    canSave: boolean,
     saveConfig: () => void
   }) => {
   const { user } = useUser()
+
+  const studyEnvParams: StudyEnvParams = {
+    portalShortcode: studyEnvContext.portal.shortcode,
+    studyShortcode: studyEnvContext.study.shortcode,
+    envName: studyEnvContext.currentEnv.environmentName
+  }
+
+  const loadAllowedKitTypes = async () => {
+    const allowedKitTypes = await Api.fetchAllowedKitTypes(studyEnvParams)
+    const allowedKitTypeOptions = allowedKitTypes.map(kt => ({ value: kt.name, label: kt.displayName }))
+    setKitTypeOptions(allowedKitTypeOptions)
+  }
+
+  const loadConfiguredKitTypes = async () => {
+    const selectedKitTypes = await Api.fetchKitTypes(studyEnvParams)
+    setSelectedKitTypes(selectedKitTypes.map(kt => ({ value: kt.name, label: kt.displayName })))
+  }
+
+  useEffect(() => {
+    loadAllowedKitTypes()
+    loadConfiguredKitTypes()
+  }, [studyEnvContext.currentEnvPath])
+
 
   const [isLoadingKitTypes, setIsLoadingKitTypes] = useState(false)
   const [kitTypeOptions, setKitTypeOptions] = useState<{ value: string, label: string }[]>([])
   const [selectedKitTypes, setSelectedKitTypes] = useState<{ value: string, label: string }[]>([])
 
+  const study = studyEnvContext.study
+  const studyEnv = studyEnvContext.currentEnv
 
   const saveKitTypes = async () => {
     doApiLoad(async () => {
@@ -53,11 +86,38 @@ export const StudyEnrollmentSettings = (
   return <div>
     {user?.superuser &&
         <>
+          <InfoCard>
+            <InfoCardHeader>
+              <InfoCardTitle title={`Kit types`}/>
+            </InfoCardHeader>
+            <div className="p-2">
+              <div style={{ width: 300 }} className="mb-2">
+                <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
+                  isClearable={false}
+                  isDisabled={studyEnv.environmentName !== 'sandbox'}
+                  onChange={selected => setSelectedKitTypes(selected as {
+                                  value: string,
+                                  label: string
+                                }[])}
+                />
+              </div>
+              <Button onClick={saveKitTypes}
+                variant="primary"
+                disabled={isLoadingKitTypes || studyEnv.environmentName !== 'sandbox'}
+                className={'mb-2'}
+                tooltip={'Only possible in the sandbox environment'}>
+                {isLoadingKitTypes && <LoadingSpinner/>}
+                {!isLoadingKitTypes && 'Save kit types'}
+              </Button>
+            </div>
+
+          </InfoCard>
+
           <div>
             <label className="form-label">
                     use mock kit requests <InfoPopup content={
-                      `If checked, kit requests will be mocked for this environment, `
-                      + `and not sent to any external services.`
+              `If checked, kit requests will be mocked for this environment, `
+              + `and not sent to any external services.`
               }/>
               <input type="checkbox" checked={config.useStubDsm}
                 onChange={e => updateConfig('useStubDsm', e.target.checked)}/>
@@ -74,26 +134,8 @@ export const StudyEnrollmentSettings = (
             </label>
           </div>
 
-          <div>
-            <h4 className="h5 mt-4">{study.name} kit type configuration</h4>
-            <label className="form-label mb-0">
-                    kit types
-            </label>
-            <div style={{ width: 300 }}>
-              <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
-                isClearable={false}
-                isDisabled={studyEnv.environmentName !== 'sandbox'}
-                onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
-              />
-            </div>
-            {studyEnv.environmentName === 'sandbox' &&
-                  <Button onClick={saveKitTypes}
-                    variant="primary" disabled={isLoadingKitTypes}
-                    tooltip={'Save'}>
-                    {isLoadingKitTypes && <LoadingSpinner/>}
-                    {!isLoadingKitTypes && 'Save kit types'}
-                  </Button>}
-          </div>
+          <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save study settings</Button>
+
         </>
     }
   </div>

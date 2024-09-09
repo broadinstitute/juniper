@@ -1,14 +1,17 @@
 import React from 'react'
 import { PortalEnvironmentConfig } from '@juniper/ui-core'
+import { Button } from 'components/forms/Button'
 
 export const WebsiteSettings = (
   {
     config,
     updateConfig,
+    canSave,
     saveConfig
   } : {
     config: PortalEnvironmentConfig,
     updateConfig: (key: keyof PortalEnvironmentConfig, value: unknown) => void,
+    canSave: boolean,
     saveConfig: () => void
   }
 ) => {
@@ -41,6 +44,6 @@ export const WebsiteSettings = (
       </label>
     </div>
 
-    <button className="btn btn-primary" onClick={saveConfig}>Save</button>
+    <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save portal settings</Button>
   </div>
 }

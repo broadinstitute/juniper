@@ -1,28 +1,35 @@
 import React from 'react'
-import {
-  Study,
-  StudyEnvironmentConfig
-} from '@juniper/ui-core'
+import { StudyEnvironmentConfig } from '@juniper/ui-core'
 import InfoPopup from 'components/forms/InfoPopup'
 import {
   DocsKey,
   ZendeskLink
 } from 'util/zendeskUtils'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
+import { Button } from 'components/forms/Button'
 
 export const StudyEnrollmentSettings = (
   {
-    study,
+    studyEnvContext,
     config,
     updateConfig,
+    canSave,
     saveConfig
   } : {
-    study: Study,
+    studyEnvContext: StudyEnvContextT,
     config: StudyEnvironmentConfig,
     updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void,
+    canSave: boolean,
     saveConfig:  () => void
   }) => {
+  const { user } = useUser()
+
   return <div>
-    <h2 className="h4">{study.name} study configuration</h2>
+    <h2 className="h4">{studyEnvContext.study.name} study configuration</h2>
     <p>Configure whether participants can access study content, such as surveys and consents.</p>
     <div>
       <label className="form-label">
@@ -59,6 +66,18 @@ export const StudyEnrollmentSettings = (
       </label>
     </div>
 
-    <button className="btn btn-primary" onClick={saveConfig}>Save</button>
+    {
+      userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
+        <div>
+          <label className="form-label">
+            enable family linkage <InfoPopup content={'If checked, allows participants to be grouped by families.'}/>
+            <input type="checkbox" checked={config.enableFamilyLinkage} className="ms-2"
+              onChange={e => updateConfig('enableFamilyLinkage', e.target.checked)}/>
+          </label>
+        </div>
+      )
+    }
+
+    <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save study settings</Button>
   </div>
 }

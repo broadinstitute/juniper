@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState
-} from 'react'
+import React, { useState } from 'react'
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import PortalEnvConfigView from 'portal/PortalEnvConfigView'
@@ -18,12 +15,8 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
-import InfoPopup from 'components/forms/InfoPopup'
 import useUpdateEffect from 'util/useUpdateEffect'
-import {
-  userHasPermission,
-  useUser
-} from 'user/UserProvider'
+import { useUser } from 'user/UserProvider'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -55,21 +48,6 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
     envName: studyEnvContext.currentEnv.environmentName as EnvironmentName
   }
 
-  const loadAllowedKitTypes = async () => {
-    const allowedKitTypes = await Api.fetchAllowedKitTypes(studyEnvParams)
-    const allowedKitTypeOptions = allowedKitTypes.map(kt => ({ value: kt.name, label: kt.displayName }))
-    setKitTypeOptions(allowedKitTypeOptions)
-  }
-
-  const loadConfiguredKitTypes = async () => {
-    const selectedKitTypes = await Api.fetchKitTypes(studyEnvParams)
-    setSelectedKitTypes(selectedKitTypes.map(kt => ({ value: kt.name, label: kt.displayName })))
-  }
-
-  useEffect(() => {
-    loadAllowedKitTypes()
-    loadConfiguredKitTypes()
-  }, [studyEnvContext.currentEnvPath])
 
   /** update a given field in the config */
   const updateConfig = (propName: keyof StudyEnvironmentConfig, value: string | boolean) => {
@@ -91,18 +69,6 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   }
 
   return <form className="bg-white mb-5" onSubmit={e => e.preventDefault()}>
-
-    {
-      userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
-        <div>
-          <label className="form-label">
-            enable family linkage <InfoPopup content={'If checked, allows participants to be grouped by families.'}/>
-            <input type="checkbox" checked={config.enableFamilyLinkage} className="ms-2"
-              onChange={e => updateConfig('enableFamilyLinkage', e.target.checked)}/>
-          </label>
-        </div>
-      )
-    }
 
 
     <Button onClick={save}

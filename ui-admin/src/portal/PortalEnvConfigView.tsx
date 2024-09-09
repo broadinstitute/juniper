@@ -75,35 +75,12 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
         setSelectedLanguage,
         selectedLanguage
       )
-
-  const {
-    onChange: primaryStudyOnChange, options: primaryStudyOptions,
-    selectedOption: selectedPrimaryStudyOption, selectInputId: selectPrimaryStudyInputId
-  } =
-    useReactSingleSelect(
-      portal.portalStudies,
-      (portalStudy: PortalStudy) =>
-        ({ label: portalStudy.study.name, value: portalStudy }),
-      (opt: PortalStudy | undefined) => setConfig({
-        ...config,
-        primaryStudy: opt?.study.shortcode
-      }),
-      portal.portalStudies.find(ps => ps.study.shortcode === config.primaryStudy)
-    )
-
   const editableLanguages = portalEnv.environmentName === 'sandbox'
 
   return <div>
     <form className="bg-white">
       <h4>Website configuration ({portalContext.portal.name})</h4>
 
-      <div>
-        <label className="form-label">
-          Email source address
-          <input type="text" className="form-control" value={config.emailSourceAddress ?? ''}
-            onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
-        </label>
-      </div>
       <div>
         <label className="form-label">
           Default portal language
@@ -115,15 +92,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
             }}/>
         </label>
       </div>
-      { portal.portalStudies.length > 1 && <div className="mb-3">
 
-        <label className="form-label" htmlFor={selectPrimaryStudyInputId}>
-          Primary study</label> <InfoPopup content={'The study that portal registrants will be taken to by default'}/>
-        <Select options={primaryStudyOptions} className="col-md-3"
-          value={selectedPrimaryStudyOption} inputId={selectPrimaryStudyInputId}
-          isDisabled={portalEnv.environmentName !== 'sandbox'} aria-label={'Select a study'}
-          onChange={primaryStudyOnChange}/>
-      </div> }
       <Button onClick={save}
         variant="primary" disabled={!user?.superuser || isLoading}
         tooltip={user?.superuser ? 'Save' : 'You do not have permission to edit these settings'}>

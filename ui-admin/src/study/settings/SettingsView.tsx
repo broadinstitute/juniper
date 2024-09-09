@@ -11,7 +11,6 @@ import {
 } from 'react-router-dom'
 import ErrorBoundary from 'util/ErrorBoundary'
 import CollapsableMenu from 'navbar/CollapsableMenu'
-import { EnvironmentName } from '@juniper/ui-core'
 import {
   navDivStyle,
   navListItemStyle
@@ -19,44 +18,42 @@ import {
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import { WebsiteSettings } from 'study/settings/portal/WebsiteSettings'
 import { StudyEnrollmentSettings } from 'study/settings/study/StudyEnrollmentSettings'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { KitSettings } from 'study/settings/study/KitSettings'
+import useUpdateEffect from 'util/useUpdateEffect'
+import { GeneralPortalSettings } from 'study/settings/portal/GeneralPortalSettings'
+import { LanguageSettings } from 'study/settings/portal/LanguageSettings'
 
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export function LoadedSettingsView(
   {
-    currentEnv,
+    studyEnvContext,
     portalContext
   }:
     {
-      currentEnv: EnvironmentName,
+      studyEnvContext: StudyEnvContextT,
       portalContext: LoadedPortalContextT
     }) {
   const portalEnv = portalContext.portal.portalEnvironments
     .find(env =>
-      env.environmentName === currentEnv) as PortalEnvironment
-
-  const studies = portalContext.portal.portalStudies.map(ps => ps.study)
+      env.environmentName === studyEnvContext.currentEnv.environmentName) as PortalEnvironment
 
   const [portalConfig, setPortalConfig] = useState(portalEnv.portalEnvironmentConfig)
+  const [hasPortalConfigChanged, setHasPortalConfigChanged] = useState(false)
+  const [studyConfig, setStudyConfig] = useState(studyEnvContext.currentEnv.studyEnvironmentConfig)
+  const [hasStudyConfigChanged, setHasStudyConfigChanged] = useState(false)
 
-  const getStudyEnvsByShortcode = () => {
-    const studyConfigsByShortcode: Record<string, StudyEnvironmentConfig> = {}
-    portalContext.portal.portalStudies.forEach(ps => {
-      ps.study.studyEnvironments.forEach(se => {
-        if (se.environmentName === currentEnv) {
-          studyConfigsByShortcode[ps.study.shortcode] = se.studyEnvironmentConfig
-        }
-      })
-    })
-    return studyConfigsByShortcode
-  }
+  useUpdateEffect(() => {
+    setStudyConfig(studyEnvContext.currentEnv.studyEnvironmentConfig)
+  }, [studyEnvContext.currentEnv.environmentName, studyEnvContext.study.shortcode])
 
-  const [studyConfigsByShortcode, setStudyConfigsByShortcode] = useState(getStudyEnvsByShortcode())
 
   const updatePortalConfig = (field: keyof PortalEnvironmentConfig, val: unknown) => {
     setPortalConfig(old => {
       return { ...old, [field]: val }
     })
+    setHasPortalConfigChanged(true)
   }
 
   const savePortalConfig = async () => {
@@ -64,20 +61,15 @@ export function LoadedSettingsView(
   }
 
 
-  const updateStudyConfig = (shortcode: string, field: keyof StudyEnvironmentConfig, val: unknown) => {
-    setStudyConfigsByShortcode(old => {
-      return {
-        ...old,
-        [shortcode]: {
-          ...old[shortcode],
-          [field]: val
-        }
-      }
+  const updateStudyConfig = (field: keyof StudyEnvironmentConfig, val: unknown) => {
+    setStudyConfig(old => {
+      return { ...old, [field]: val }
     })
+    setHasStudyConfigChanged(true)
   }
 
-  const saveStudyConfig = async (shortcode: string) => {
-    console.log('saving study config', shortcode)
+  const saveStudyConfig = async () => {
+    console.log('saving study config')
     // todo: call api
   }
 
@@ -97,50 +89,80 @@ export function LoadedSettingsView(
             <ul className="list-unstyled">
               <li style={navListItemStyle}>
                 <CollapsableMenu header={`Portal Settings`} headerClass="text-black" content={
-                  <NavLink to="website" className={getLinkCssClasses}>Website</NavLink>
+                  <ul className="list-unstyled">
+                    <li>
+                      <NavLink to="general" className={getLinkCssClasses}>General</NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="website" className={getLinkCssClasses}>Website</NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="languages" className={getLinkCssClasses}>Languages</NavLink>
+                    </li>
+                  </ul>
                 }/>
               </li>
-
-              {studies.map(study => {
-                // const studyEnv = getStudyEnv(study)
-                const shortcode = study.shortcode
-                const name = study.name
-
-                return <li style={navListItemStyle}>
-                  <CollapsableMenu header={`${name} Study Settings`} headerClass="text-black" content={
+              <li style={navListItemStyle}>
+                <CollapsableMenu header={`${studyEnvContext.study.name} Study Settings`} headerClass="text-black"
+                  content={
                     <ul className="list-unstyled">
                       <li>
-                        <NavLink to={`${shortcode}/enrollment`} className={getLinkCssClasses}>Study Enrollment</NavLink>
+                        <NavLink to={`enrollment`} className={getLinkCssClasses}>Study
+                          Enrollment</NavLink>
+                      </li>
+                      <li>
+                        <NavLink to={`kits`} className={getLinkCssClasses}>Kits</NavLink>
                       </li>
                     </ul>}
-                  />
-                </li>
-              })}
+                />
+              </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
+                <Route path="general" element={<GeneralPortalSettings
+                  config={portalConfig}
+                  updateConfig={updatePortalConfig}
+                  canSave={hasPortalConfigChanged}
+                  saveConfig={savePortalConfig}
+                  portalContext={portalContext}
+                  portalEnv={portalEnv}
+                />}/>
+                <Route path="languages" element={<LanguageSettings
+                  portalContext={portalContext}
+                  portalEnv={portalEnv}
+                  config={portalConfig}
+                  updateConfig={updatePortalConfig}
+                  canSave={hasPortalConfigChanged}
+                  saveConfig={savePortalConfig}/>}/>
+
                 <Route path="website" element={
                   <WebsiteSettings
                     config={portalConfig}
+                    canSave={hasPortalConfigChanged}
                     updateConfig={updatePortalConfig}
                     saveConfig={savePortalConfig}
                   />}
                 />
-                {studies.map(study => {
-                  const shortcode = study.shortcode
-                  return <Route path={shortcode}>
-                    <Route path="enrollment" element={
-                      <StudyEnrollmentSettings
-                        study={study}
-                        config={studyConfigsByShortcode[shortcode]}
-                        updateConfig={(field, val) => updateStudyConfig(shortcode, field, val)}
-                        saveConfig={() => saveStudyConfig(shortcode)}
-                      />}
-                    />
-                  </Route>
-                })}
+                <Route path="enrollment" element={
+                  <StudyEnrollmentSettings
+                    studyEnvContext={studyEnvContext}
+                    config={studyConfig}
+                    canSave={hasStudyConfigChanged}
+                    updateConfig={(field, val) => updateStudyConfig(field, val)}
+                    saveConfig={() => saveStudyConfig()}
+                  />}
+                />
+
+                <Route path="kits" element={<KitSettings
+                  studyEnvContext={studyEnvContext}
+                  portalContext={portalContext}
+                  config={studyConfig}
+                  canSave={hasStudyConfigChanged}
+                  updateConfig={updateStudyConfig}
+                  saveConfig={saveStudyConfig}/>}
+                />
 
                 {/*<Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}*/}
                 {/*  onUpdate={onUpdate}/>}/>*/}

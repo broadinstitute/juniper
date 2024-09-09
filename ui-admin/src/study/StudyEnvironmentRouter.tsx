@@ -124,7 +124,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
           <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
           <Route path="settings/*" element={<LoadedSettingsView
-            currentEnv={studyEnvContext.currentEnv.environmentName}
+            studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}
           />
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
