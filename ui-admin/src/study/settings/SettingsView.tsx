@@ -114,7 +114,7 @@ export function LoadedSettingsView(
                 <CollapsableMenu header={`Portal Settings`} headerClass="text-black" content={
                   <ul className="list-unstyled">
                     <li>
-                      <NavLink to="general" className={getLinkCssClasses}>General</NavLink>
+                      <NavLink end to="." className={getLinkCssClasses}>General</NavLink>
                     </li>
                     <li>
                       <NavLink to="website" className={getLinkCssClasses}>Website</NavLink>
@@ -144,7 +144,7 @@ export function LoadedSettingsView(
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
-                <Route path="general" element={<SettingsPage
+                <Route index element={<SettingsPage
                   title="General Portal Settings"
                   savePortalConfig={savePortalConfig}
                   canSavePortalConfig={hasPortalConfigChanged}
@@ -210,8 +210,6 @@ export function LoadedSettingsView(
                   </SettingsPage>}
                 />}
 
-                {/*<Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}*/}
-                {/*  onUpdate={onUpdate}/>}/>*/}
                 <Route index element={<div>unknown settings route</div>}/>
               </Routes>
             </ErrorBoundary>

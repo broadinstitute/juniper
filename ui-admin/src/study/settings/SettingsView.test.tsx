@@ -33,7 +33,7 @@ describe('Portal Settings', () => {
     const { RoutedComponent } = setupRouterTest(<LoadedSettingsView
       studyEnvContext={mockStudyEnvContext()}
       portalContext={mockPortalContext()}
-    />, ['/general'])
+    />)
 
     render(RoutedComponent)
 
@@ -75,7 +75,7 @@ describe('Portal Settings', () => {
         studyEnvContext={studyEnvContext}
         portalContext={portalContext}
       />
-    </>, ['/general'])
+    </>)
 
     render(RoutedComponent)
 

@@ -253,7 +253,7 @@ export const studyEnvSiteMediaPath = (portalShortcode: string, studyShortcode: s
 
 /** helper path for study settings */
 export const studyEnvSiteSettingsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
-  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/settings/website`
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/settings`
 }
 
 /** helper for dataset list path */
