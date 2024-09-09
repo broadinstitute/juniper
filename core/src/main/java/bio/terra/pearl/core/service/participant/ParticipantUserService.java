@@ -67,7 +67,7 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
     // we expect to delete this after the backfill-migration has been run on existing participants
     // see JN-1318: https://broadworkbench.atlassian.net/browse/JN-1318
     public List<UUID> createMissingShortcodes() {
-        List<ParticipantUser> users = dao.findAllWithMissingShortcode();
+        List<ParticipantUser> users = dao.findAllByProperty("shortcode", null);
 
         users.forEach(participantUser -> {
             String shortcode = shortcodeService.generateShortcode("ACC", dao::findOneByShortcode);

@@ -26,12 +26,6 @@ public class ParticipantUserDao extends BaseMutableJdbiDao<ParticipantUser> {
       return findByProperty("shortcode", shortcode);
    }
 
-   public List<ParticipantUser> findAllWithMissingShortcode() {
-      return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM participant_user WHERE shortcode IS NULL")
-            .mapTo(ParticipantUser.class)
-            .list());
-   }
-
    public Optional<ParticipantUser> findByToken(String token) {
       return findByProperty("token", token);
    }
