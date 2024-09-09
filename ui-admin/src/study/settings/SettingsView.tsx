@@ -28,6 +28,7 @@ import { doApiLoad } from 'api/api-utils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { useUser } from 'user/UserProvider'
 
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
@@ -40,6 +41,8 @@ export function LoadedSettingsView(
       studyEnvContext: StudyEnvContextT,
       portalContext: LoadedPortalContextT
     }) {
+  const { user } = useUser()
+
   const portal = portalContext.portal
   const portalEnv = portalContext.portal.portalEnvironments
     .find(env =>
@@ -130,9 +133,9 @@ export function LoadedSettingsView(
                         <NavLink to={`enrollment`} className={getLinkCssClasses}>Study
                           Enrollment</NavLink>
                       </li>
-                      <li>
+                      {user?.superuser && <li>
                         <NavLink to={`kits`} className={getLinkCssClasses}>Kits</NavLink>
-                      </li>
+                      </li>}
                     </ul>}
                 />
               </li>
@@ -155,7 +158,7 @@ export function LoadedSettingsView(
                 </SettingsPage>}/>
                 <Route path="languages" element={
                   <SettingsPage
-                    title='Languages'
+                    title='Language Settings'
                     savePortalConfig={savePortalConfig}
                     canSavePortalConfig={hasPortalConfigChanged}
                   >
@@ -192,9 +195,9 @@ export function LoadedSettingsView(
                     />
                   </SettingsPage>}
                 />
-                <Route path="kits" element={
+                {user?.superuser && <Route path="kits" element={
                   <SettingsPage
-                    title='Kits'
+                    title='Kit Settings'
                     saveStudyConfig={saveStudyConfig}
                     canSaveStudyConfig={hasStudyConfigChanged}
                   >
@@ -205,7 +208,7 @@ export function LoadedSettingsView(
                       updateConfig={updateStudyConfig}
                     />
                   </SettingsPage>}
-                />
+                />}
 
                 {/*<Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}*/}
                 {/*  onUpdate={onUpdate}/>}/>*/}

@@ -121,7 +121,7 @@ export const KitSettings = (
           </div>
           <div>
             <label className="form-label">
-                    use kit request development realm
+                use kit request development realm
               <InfoPopup content={
                 `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
                will not be shipped. To actually mail kits, this and the above field should be unchecked.`}/>
