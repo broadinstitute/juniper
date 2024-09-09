@@ -27,9 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,9 +61,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private UserSyncConfig userSyncConfig;
 
-    @Value("#{environment.PORT}")
-    private Integer port;
-
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
 
@@ -71,33 +70,24 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private String vantaSecret;
 
-    Collection<PersonInScope> peopleInScope = new ArrayList<>();
+    private final Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
-    public static void main(String[] args) {
-        /*
-        String cloudFunctionPort = System.getenv("PORT");
-
-        if (StringUtils.isNotBlank(cloudFunctionPort)) {
-            System.setProperty("server.port", cloudFunctionPort);
-        }
-         */
-
-        new SpringApplicationBuilder(SyncVantaUsers.class)
-                .web(WebApplicationType.NONE)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-        log.info("Synchronization complete");
-    }
+    private final SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
 
     @Override
     public void accept(CloudEvent event) throws Exception {
         try {
-            new SpringApplicationBuilder(SyncVantaUsers.class)
-                    .web(WebApplicationType.NONE)
-                    .bannerMode(Banner.Mode.OFF).run("");
-            log.info("Synchronization complete");
+            app.run("");
         } catch (Exception e) {
             log.error("Vanta sync failed", e);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            new SyncVantaUsers().accept(null);
+        } catch (Exception e) {
+            log.error("Could not run sync", e);
         }
     }
 
@@ -107,18 +97,21 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         vantaBasePath = userSyncConfig.getVantaBaseUrl();
         vantaClientId = userSyncConfig.getVantaClientId();
         vantaSecret = userSyncConfig.getVantaClientSecret();
-        peopleInScope = userSyncConfig.getPeopleInScope();
+        peopleInScope.addAll(userSyncConfig.getPeopleInScope());
         Instant start = Instant.now();
         String summaryMessage = syncVantaAccounts();
         Duration duration = Duration.between(start, Instant.now());
 
-        Slack slack = Slack.getInstance(); Slack.getInstance();
-        ChatPostMessageResponse response = slack.methods(userSyncConfig.getSlackToken()).chatPostMessage(req -> req
-                .channel(userSyncConfig.getSlackChannel())
-                .text("Vanta sync complete after " + duration.toMinutes() + "m.\n" + summaryMessage));
+        log.info("Vanta sync completed after {}m.  Posting update to slack.", duration.toMinutes());
 
-        if (!response.isOk()) {
-            log.info("Slack message returned {} {}", response.getMessage(), response.getError());
+        try (Slack slack = Slack.getInstance()) {
+            ChatPostMessageResponse response = slack.methods(userSyncConfig.getSlackToken()).chatPostMessage(req -> req
+                    .channel(userSyncConfig.getSlackChannel())
+                    .text("Vanta sync complete after " + duration.toMinutes() + "m.\n" + summaryMessage));
+
+            if (!response.isOk()) {
+                log.info("Slack message returned {} {}", response.getMessage(), response.getError());
+            }
         }
     }
 
@@ -191,7 +184,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         WebClient wc = WebClient.builder().baseUrl(vantaBasePath + "oauth/token").build();
         AccessToken vantaToken= wc.post().bodyValue(new VantaCredentials("client_credentials", "vanta-api.all:read vanta-api.all:write", vantaClientId, vantaSecret))
                 .header("Content-Type", "application/json").retrieve().bodyToMono(AccessToken.class).block();
-
         WebClient.builder().defaultHeaders(h -> {
             h.setBearerAuth(vantaToken.getAccess_token());
             h.setContentType(MediaType.APPLICATION_JSON);
