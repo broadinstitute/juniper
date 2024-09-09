@@ -28,16 +28,12 @@ export const LanguageSettings = (
   {
     portalEnv,
     portalContext,
-    updateConfig,
-    canSave,
-    saveConfig
+    updateConfig
   } : {
     portalContext: LoadedPortalContextT,
     portalEnv: PortalEnvironment,
     config: PortalEnvironmentConfig,
-    updateConfig: (key: keyof PortalEnvironmentConfig, value: unknown) => void,
-    canSave: boolean,
-    saveConfig: () => void
+    updateConfig: (key: keyof PortalEnvironmentConfig, value: unknown) => void
   }
 ) => {
   const { portal, reloadPortal } = portalContext
@@ -104,7 +100,5 @@ export const LanguageSettings = (
           }}/>
       </label>
     </div>
-    <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save portal settings</Button>
-
   </>
 }

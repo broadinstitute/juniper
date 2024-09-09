@@ -4,7 +4,6 @@ import {
   PortalEnvironmentConfig,
   PortalStudy
 } from '@juniper/ui-core'
-import { Button } from 'components/forms/Button'
 import InfoPopup from 'components/forms/InfoPopup'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
@@ -15,16 +14,12 @@ export const GeneralPortalSettings = (
     portalContext,
     portalEnv,
     config,
-    updateConfig,
-    canSave,
-    saveConfig
+    updateConfig
   } : {
     portalContext: LoadedPortalContextT,
     portalEnv: PortalEnvironment,
     config: PortalEnvironmentConfig,
-    canSave: boolean,
     updateConfig: (key: keyof PortalEnvironmentConfig, value: unknown) => void,
-    saveConfig: () => void
   }
 ) => {
   const portal = portalContext.portal
@@ -60,7 +55,5 @@ export const GeneralPortalSettings = (
         isDisabled={portalEnv.environmentName !== 'sandbox'} aria-label={'Select a study'}
         onChange={primaryStudyOnChange}/>
     </div>}
-
-    <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save portal settings</Button>
   </div>
 }

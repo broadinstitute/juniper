@@ -28,16 +28,12 @@ export const KitSettings = (
     studyEnvContext,
     portalContext,
     config,
-    updateConfig,
-    canSave,
-    saveConfig
+    updateConfig
   }: {
     studyEnvContext: StudyEnvContextT,
     portalContext: LoadedPortalContextT,
     config: StudyEnvironmentConfig,
-    updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void,
-    canSave: boolean,
-    saveConfig: () => void
+    updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void
   }) => {
   const { user } = useUser()
 
@@ -133,9 +129,6 @@ export const KitSettings = (
                 onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
             </label>
           </div>
-
-          <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save study settings</Button>
-
         </>
     }
   </div>

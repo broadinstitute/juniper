@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {
+import Api, {
   PortalEnvironment,
   PortalEnvironmentConfig,
   StudyEnvironmentConfig
@@ -23,6 +23,11 @@ import { KitSettings } from 'study/settings/study/KitSettings'
 import useUpdateEffect from 'util/useUpdateEffect'
 import { GeneralPortalSettings } from 'study/settings/portal/GeneralPortalSettings'
 import { LanguageSettings } from 'study/settings/portal/LanguageSettings'
+import { Button } from 'components/forms/Button'
+import { doApiLoad } from 'api/api-utils'
+import { Store } from 'react-notifications-component'
+import { successNotification } from 'util/notifications'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
@@ -35,6 +40,7 @@ export function LoadedSettingsView(
       studyEnvContext: StudyEnvContextT,
       portalContext: LoadedPortalContextT
     }) {
+  const portal = portalContext.portal
   const portalEnv = portalContext.portal.portalEnvironments
     .find(env =>
       env.environmentName === studyEnvContext.currentEnv.environmentName) as PortalEnvironment
@@ -56,8 +62,13 @@ export function LoadedSettingsView(
     setHasPortalConfigChanged(true)
   }
 
+  const [isLoadingPortalConfig, setIsLoadingPortalConfig] = useState(false)
   const savePortalConfig = async () => {
-    // todo: call api
+    doApiLoad(async () => {
+      await Api.updatePortalEnvConfig(portal.shortcode, portalEnv.environmentName, portalConfig)
+      Store.addNotification(successNotification('Portal config saved'))
+      portalContext.reloadPortal(portalContext.portal.shortcode)
+    }, { setIsLoading: setIsLoadingPortalConfig })
   }
 
 
@@ -68,11 +79,20 @@ export function LoadedSettingsView(
     setHasStudyConfigChanged(true)
   }
 
+  const [isLoadingStudyConfig, setIsLoadingStudyConfig] = useState(false)
   const saveStudyConfig = async () => {
-    console.log('saving study config')
-    // todo: call api
+    doApiLoad(async () => {
+      await Api.updateStudyEnvironmentConfig(portalContext.portal.shortcode,
+        studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, studyConfig)
+      Store.addNotification(successNotification('Config saved'))
+      portalContext.reloadPortal(portalContext.portal.shortcode)
+    }, { setIsLoading: setIsLoadingStudyConfig })
   }
 
+
+  if (isLoadingStudyConfig || isLoadingPortalConfig) {
+    return <LoadingSpinner/>
+  }
 
   return <div className="ParticipantView mt-3 ps-4">
     <div className="row">
@@ -121,47 +141,70 @@ export function LoadedSettingsView(
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
-                <Route path="general" element={<GeneralPortalSettings
-                  config={portalConfig}
-                  updateConfig={updatePortalConfig}
-                  canSave={hasPortalConfigChanged}
-                  saveConfig={savePortalConfig}
-                  portalContext={portalContext}
-                  portalEnv={portalEnv}
-                />}/>
-                <Route path="languages" element={<LanguageSettings
-                  portalContext={portalContext}
-                  portalEnv={portalEnv}
-                  config={portalConfig}
-                  updateConfig={updatePortalConfig}
-                  canSave={hasPortalConfigChanged}
-                  saveConfig={savePortalConfig}/>}/>
+                <Route path="general" element={<SettingsPage
+                  title="General Portal Settings"
+                  savePortalConfig={savePortalConfig}
+                  canSavePortalConfig={hasPortalConfigChanged}
+                >
+                  <GeneralPortalSettings
+                    config={portalConfig}
+                    updateConfig={updatePortalConfig}
+                    portalContext={portalContext}
+                    portalEnv={portalEnv}
+                  />
+                </SettingsPage>}/>
+                <Route path="languages" element={
+                  <SettingsPage
+                    title='Languages'
+                    savePortalConfig={savePortalConfig}
+                    canSavePortalConfig={hasPortalConfigChanged}
+                  >
+                    <LanguageSettings
+                      portalContext={portalContext}
+                      portalEnv={portalEnv}
+                      config={portalConfig}
+                      updateConfig={updatePortalConfig}
+                    />
+                  </SettingsPage>}/>
 
                 <Route path="website" element={
-                  <WebsiteSettings
-                    config={portalConfig}
-                    canSave={hasPortalConfigChanged}
-                    updateConfig={updatePortalConfig}
-                    saveConfig={savePortalConfig}
-                  />}
+                  <SettingsPage
+                    title='Website Settings'
+                    savePortalConfig={savePortalConfig}
+                    canSavePortalConfig={hasPortalConfigChanged}
+                  >
+                    <WebsiteSettings
+                      config={portalConfig}
+                      updateConfig={updatePortalConfig}
+                    />
+                  </SettingsPage>}
                 />
                 <Route path="enrollment" element={
-                  <StudyEnrollmentSettings
-                    studyEnvContext={studyEnvContext}
-                    config={studyConfig}
-                    canSave={hasStudyConfigChanged}
-                    updateConfig={(field, val) => updateStudyConfig(field, val)}
-                    saveConfig={() => saveStudyConfig()}
-                  />}
+                  <SettingsPage
+                    title='Study Enrollment Settings'
+                    saveStudyConfig={saveStudyConfig}
+                    canSaveStudyConfig={hasStudyConfigChanged}
+                  >
+                    <StudyEnrollmentSettings
+                      studyEnvContext={studyEnvContext}
+                      config={studyConfig}
+                      updateConfig={(field, val) => updateStudyConfig(field, val)}
+                    />
+                  </SettingsPage>}
                 />
-
-                <Route path="kits" element={<KitSettings
-                  studyEnvContext={studyEnvContext}
-                  portalContext={portalContext}
-                  config={studyConfig}
-                  canSave={hasStudyConfigChanged}
-                  updateConfig={updateStudyConfig}
-                  saveConfig={saveStudyConfig}/>}
+                <Route path="kits" element={
+                  <SettingsPage
+                    title='Kits'
+                    saveStudyConfig={saveStudyConfig}
+                    canSaveStudyConfig={hasStudyConfigChanged}
+                  >
+                    <KitSettings
+                      studyEnvContext={studyEnvContext}
+                      portalContext={portalContext}
+                      config={studyConfig}
+                      updateConfig={updateStudyConfig}
+                    />
+                  </SettingsPage>}
                 />
 
                 {/*<Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}*/}
@@ -181,3 +224,39 @@ function getLinkCssClasses({ isActive }: { isActive: boolean }) {
   return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
 }
 
+const SettingsPage = ({
+  savePortalConfig,
+  saveStudyConfig,
+  canSavePortalConfig,
+  canSaveStudyConfig,
+  title,
+  children
+}: {
+  savePortalConfig?: () => void,
+  saveStudyConfig?: () => void,
+  canSavePortalConfig?: boolean,
+  canSaveStudyConfig?: boolean,
+  title: string,
+  children: React.ReactNode
+}) => {
+  return <div>
+    <h2 className="h4">{title}</h2>
+    {children}
+    <div>
+      {savePortalConfig && <Button
+        variant="primary"
+        onClick={savePortalConfig}
+        disabled={!canSavePortalConfig}
+      >
+          Save portal settings
+      </Button>}
+      {saveStudyConfig && <Button
+        variant="primary"
+        onClick={saveStudyConfig}
+        disabled={!canSaveStudyConfig}
+      >
+          Save study settings
+      </Button>}
+    </div>
+  </div>
+}

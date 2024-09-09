@@ -10,26 +10,20 @@ import {
   userHasPermission,
   useUser
 } from 'user/UserProvider'
-import { Button } from 'components/forms/Button'
 
 export const StudyEnrollmentSettings = (
   {
     studyEnvContext,
     config,
-    updateConfig,
-    canSave,
-    saveConfig
+    updateConfig
   } : {
     studyEnvContext: StudyEnvContextT,
     config: StudyEnvironmentConfig,
-    updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void,
-    canSave: boolean,
-    saveConfig:  () => void
+    updateConfig: (key: keyof StudyEnvironmentConfig, value: unknown) => void
   }) => {
   const { user } = useUser()
 
   return <div>
-    <h2 className="h4">{studyEnvContext.study.name} study configuration</h2>
     <p>Configure whether participants can access study content, such as surveys and consents.</p>
     <div>
       <label className="form-label">
@@ -77,7 +71,5 @@ export const StudyEnrollmentSettings = (
         </div>
       )
     }
-
-    <Button variant="primary" onClick={saveConfig} disabled={!canSave}>Save study settings</Button>
   </div>
 }
