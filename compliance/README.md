@@ -25,7 +25,7 @@ gcloud --project=[GCP project] functions deploy --gen2 sync-vanta-scope \
    --entry-point bio.terra.pearl.compliance.SyncVantaUsers \
    --set-env-vars 'GOOGLE_CLOUD_PROJECT=[GCP project],VANTA_CONFIG_SECRET=[name of secret in secret manager]' \ 
    --runtime java21 --trigger-topic [pubsub topic] --source build/uber-jar --memory 512MB \ 
-   --region [GCP region] --ingress-settings internal-only 
+   --region [GCP region] --ingress-settings internal-only --timeout=60m
    
    ```
 

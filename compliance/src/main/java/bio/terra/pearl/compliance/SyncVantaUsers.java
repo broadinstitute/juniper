@@ -141,9 +141,9 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                         if (!header.isEmpty()) {
                             delayInSeconds = Integer.valueOf(header.get(0));
                         } else {
-                            delayInSeconds = 60;
+                            delayInSeconds = 70;
                         }
-                        log.debug("Vanta rate limit exceeded; waiting for {}s with {} objects", delayInSeconds, elements.size());
+                        log.info("Vanta rate limit exceeded; waiting for {}s with {} {} objects", delayInSeconds, elements.size(), clazz.getSimpleName());
                         try {
                             Thread.sleep(Duration.ofSeconds(delayInSeconds));
                         } catch (InterruptedException e) {
@@ -155,7 +155,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                     .retryWhen(Retry.withThrowable(throwableFlux -> {
                         return throwableFlux.filter(t -> t instanceof RateLimitException).map(t -> {
                             RateLimitException re = (RateLimitException) t;
-                            return Retry.fixedDelay(1, re.getRetryAfterDelayDuration());
+                            return Retry.fixedDelay(5, re.getRetryAfterDelayDuration());
                         });
                     })).block();
 
