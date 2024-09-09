@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 
 import { useLoadingEffect } from 'api/api-utils'
@@ -12,7 +12,7 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { Button } from '../../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
@@ -24,8 +24,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 
-
-  //gets the 'view' query param from the url
   const [searchParams, setSearchParams] = useSearchParams()
   const [view, setView] = useState<'participant' | 'family' | 'withdrawn'>(
       searchParams.get('view') as never || 'participant')
