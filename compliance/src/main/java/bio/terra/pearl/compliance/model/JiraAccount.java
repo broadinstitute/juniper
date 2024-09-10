@@ -3,11 +3,12 @@ package bio.terra.pearl.compliance.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collection;
 
-@Getter @Setter @SuperBuilder @NoArgsConstructor
+@Getter @Setter @SuperBuilder @NoArgsConstructor @ToString
 public class JiraAccount extends VantaObject {
 
     // this is full name (first + last)
@@ -26,18 +27,5 @@ public class JiraAccount extends VantaObject {
     @Override
     public String getSimpleId() {
         return accountName;
-    }
-
-    @Override
-    public String toString() {
-        return "JiraAccount{" +
-                "accountName ='" + accountName + '\'' +
-                ", responseType='" + responseType + '\'' +
-                ", resourceKind='" + resourceKind + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", connectionId='" + connectionId + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
-                '}';
     }
 }

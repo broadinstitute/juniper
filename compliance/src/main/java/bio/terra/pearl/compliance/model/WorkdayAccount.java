@@ -3,11 +3,12 @@ package bio.terra.pearl.compliance.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collection;
 
-@Getter @Setter @SuperBuilder @NoArgsConstructor
+@Getter @Setter @SuperBuilder @NoArgsConstructor @ToString
 public class WorkdayAccount extends VantaObject {
 
     // this is full name (first + last)
@@ -28,16 +29,4 @@ public class WorkdayAccount extends VantaObject {
         return displayName;
     }
 
-    @Override
-    public String toString() {
-        return "WorkdayAccount{" +
-                "displayName='" + displayName + '\'' +
-                ", responseType='" + responseType + '\'' +
-                ", resourceKind='" + resourceKind + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", connectionId='" + connectionId + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
-                '}';
-    }
 }

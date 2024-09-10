@@ -3,11 +3,12 @@ package bio.terra.pearl.compliance.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collection;
 
-@Getter @Setter @SuperBuilder @NoArgsConstructor
+@Getter @Setter @SuperBuilder @NoArgsConstructor @ToString
 public class SlackUser extends VantaObject {
 
     private String accountName;
@@ -27,16 +28,4 @@ public class SlackUser extends VantaObject {
         return accountName;
     }
 
-    @Override
-    public String toString() {
-        return "SlackUser{" +
-                "accountName='" + accountName + '\'' +
-                ", responseType='" + responseType + '\'' +
-                ", resourceKind='" + resourceKind + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", connectionId='" + connectionId + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
-                '}';
-    }
 }

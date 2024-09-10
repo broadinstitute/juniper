@@ -2,11 +2,12 @@ package bio.terra.pearl.compliance.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collection;
 
-@Getter @Setter @SuperBuilder @NoArgsConstructor
+@Getter @Setter @SuperBuilder @NoArgsConstructor @ToString
 public class GithubAccount extends VantaObject {
 
     @Override
@@ -30,23 +31,5 @@ public class GithubAccount extends VantaObject {
     @Override
     public String getSimpleId() {
         return getDisplayName();
-    }
-
-    @Override
-    public String toString() {
-        return "GithubAccount{" +
-                "displayName='" + displayName + '\'' +
-                ", owner='" + owner + '\'' +
-                ", description='" + description + '\'' +
-                ", accountName='" + accountName + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
-                ", responseType='" + responseType + '\'' +
-                ", resourceKind='" + resourceKind + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", connectionId='" + connectionId + '\'' +
-                ", isDeactivated=" + isDeactivated +
-                ", inScope=" + inScope +
-                '}';
     }
 }

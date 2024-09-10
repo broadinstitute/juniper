@@ -23,6 +23,7 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import io.cloudevents.CloudEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
@@ -58,17 +59,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @SpringBootApplication
 public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
+    public static final String JIRA_INTEGRATION_ID = "jira";
+    public static final String SLACK_INTEGRATION_ID = "slack";
+    public static final String GITHUB_INTEGRATION_ID = "github";
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
 
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
 
-    private String vantaBasePath;
-
-    private String vantaClientId;
-
-    private String vantaSecret;
+    private UserSyncConfig userSyncConfig;
 
     private final Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
@@ -91,15 +91,18 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         }
     }
 
+    private UserSyncConfig loadConfig() {
+        userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
+        peopleInScope.clear();
+        peopleInScope.addAll(userSyncConfig.getPeopleInScope());
+        return userSyncConfig;
+    }
+
     @Override
     public void run(String... args) throws Exception {
-        UserSyncConfig userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
-        vantaBasePath = userSyncConfig.getVantaBaseUrl();
-        vantaClientId = userSyncConfig.getVantaClientId();
-        vantaSecret = userSyncConfig.getVantaClientSecret();
-        peopleInScope.addAll(userSyncConfig.getPeopleInScope());
-       
-       // now that we've loaded the config, perform the sync 
+        log.info("Starting vanta sync app");
+        UserSyncConfig userSyncConfig = loadConfig();
+        // now that we've loaded the config, perform the sync
         Instant start = Instant.now();
         String summaryMessage = syncVantaAccounts();
         Duration duration = Duration.between(start, Instant.now());
@@ -175,13 +178,26 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             h.setContentType(MediaType.APPLICATION_JSON);
         });
 
-        return webClientBuilder.baseUrl(vantaBasePath + "v1/integrations/" + integrationId + "/resource-kinds/" + resourceKind + "/resources").build();
+        return webClientBuilder.baseUrl(userSyncConfig.getVantaBaseUrl() + "v1/integrations/" + integrationId + "/resource-kinds/" + resourceKind + "/resources").build();
+    }
+
+    private List<VantaIntegration> getIntegrations() {
+        List<VantaIntegration> integrationsToSync = new ArrayList<>();
+        integrationsToSync.add(new VantaIntegration(JIRA_INTEGRATION_ID, "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {},
+                userSyncConfig.getResourceIdsToIgnore(JIRA_INTEGRATION_ID)));
+        integrationsToSync.add(new VantaIntegration(SLACK_INTEGRATION_ID, "SlackAccount", new ParameterizedTypeReference<VantaResultsResponse<SlackUser>>() {},
+                userSyncConfig.getResourceIdsToIgnore(SLACK_INTEGRATION_ID)));
+        integrationsToSync.add(new VantaIntegration(GITHUB_INTEGRATION_ID, "GithubAccount", new ParameterizedTypeReference<VantaResultsResponse<GithubAccount>>() {},
+                userSyncConfig.getResourceIdsToIgnore(GITHUB_INTEGRATION_ID)));
+        integrationsToSync.add(new VantaIntegration("workday", "WorkdayHrUser", new ParameterizedTypeReference<VantaResultsResponse<WorkdayAccount>>() {},
+                userSyncConfig.getResourceIdsToIgnore("workday")));
+        return integrationsToSync;
     }
 
     public String syncVantaAccounts() {
         StringBuilder summary = new StringBuilder();
-        WebClient wc = WebClient.builder().baseUrl(vantaBasePath + "oauth/token").build();
-        AccessToken vantaToken= wc.post().bodyValue(new VantaCredentials("client_credentials", "vanta-api.all:read vanta-api.all:write", vantaClientId, vantaSecret))
+        WebClient wc = WebClient.builder().baseUrl(userSyncConfig.getVantaBaseUrl() + "oauth/token").build();
+        AccessToken vantaToken= wc.post().bodyValue(new VantaCredentials("client_credentials", "vanta-api.all:read vanta-api.all:write", userSyncConfig.getVantaClientId(), userSyncConfig.getVantaClientSecret()))
                 .header("Content-Type", "application/json").retrieve().bodyToMono(AccessToken.class).block();
         WebClient.builder().defaultHeaders(h -> {
             h.setBearerAuth(vantaToken.getAccess_token());
@@ -190,14 +206,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
         // go through each integration and find scope changes that need to be made.
         int resourceBatchSize = 50;
-        List<VantaIntegration> integrationsToSync = new ArrayList<>();
-        integrationsToSync.add(new VantaIntegration("jira", "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {}, Set.of("669a8422865ac5731466a323", "66c629d278231843aec354ff", "669a8431865ac5731469ed44",
-                "669a842e865ac5731469663b", "669a8427865ac5731467c5d0", "669a8431865ac5731469e994")));
-        integrationsToSync.add(new VantaIntegration("slack", "SlackAccount", new ParameterizedTypeReference<VantaResultsResponse<SlackUser>>() {}, Set.of("66a14ed517f6ad4ce8ea8e7f","66a14ee917f6ad4ce8ef12ff","66c74e0878231843aea7b330")));
-        integrationsToSync.add(new VantaIntegration("github", "GithubAccount", new ParameterizedTypeReference<VantaResultsResponse<GithubAccount>>() {},
-                Set.of("66831806bb4f7b57d3b1b260", "66831804bb4f7b57d3b15f0c", "66831809bb4f7b57d3b24ecf", "66831803bb4f7b57d3b122b7", "66831802bb4f7b57d3b0c4d3",
-                        "6683180abb4f7b57d3b2ac3c", "66831809bb4f7b57d3b23dc1", "668de80159091c1ee96b8e4a", "66831808bb4f7b57d3b2144b")));
-        integrationsToSync.add(new VantaIntegration("workday", "WorkdayHrUser", new ParameterizedTypeReference<VantaResultsResponse<WorkdayAccount>>() {}, Collections.emptySet()));
+        List<VantaIntegration> integrationsToSync = getIntegrations();
 
         for (VantaIntegration vantaIntegration : integrationsToSync) {
             String integrationId = vantaIntegration.getIntegrationId();
