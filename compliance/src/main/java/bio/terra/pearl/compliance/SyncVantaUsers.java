@@ -50,6 +50,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Run this as a main() or as a cloud function to set
+ * various vanta integrations to use only the team members
+ * needed for our audit.  When running locally, set the
+ * GOOGLE_CLOUD_PROJECT and VANTA_CONFIG_SECRET environment vars.
+ */
 @Slf4j
 @SpringBootApplication
 public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
@@ -115,9 +121,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     /**
      * Given a ready-to-retrieve rest client, fetches
-     * all data in the results.data[] array, converting
-     * it to dataClass, iterating through all pages
-     * to build a complete list
+     * all data in the results.data[] array and converts
+     * it to the appropriate types
      */
     private <T extends VantaObject> Collection<T> collectAllData(WebClient wc, ParameterizedTypeReference<VantaResultsResponse<T>> type) {
         final AtomicReference<VantaResults<T>> results = new AtomicReference<>();

@@ -2,19 +2,14 @@ package bio.terra.pearl.compliance.exception;
 
 import java.time.Duration;
 
+/**
+ * Exception thrown when we hit vanta rate limits
+ */
 public class RateLimitException extends Throwable {
-    private int retryAfterDelay = 60;
-
-    public RateLimitException(String message) {
-        super(message);
-    }
+    private final int retryAfterDelay;
 
     public RateLimitException(String message, int retryAfterDelay) {
         super(message); this.retryAfterDelay = retryAfterDelay;
-    }
-
-    public int getRetryAfterDelay() {
-        return retryAfterDelay;
     }
 
     public Duration getRetryAfterDelayDuration() {
