@@ -271,7 +271,7 @@ public class EnrolleeImportService {
                         participantUserService.findOne(participantUserInfo.getUsername(),
                                 studyEnv.getEnvironmentName()).orElseThrow(() -> new IllegalStateException("Participant User could not be found or for PPUser")),
                         ppUser,
-                        profileService.find(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
+                        profileService.loadWithMailingAddress(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
                 )).orElseGet(() ->
                         registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
                 );
