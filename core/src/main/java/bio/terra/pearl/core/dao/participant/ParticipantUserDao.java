@@ -3,6 +3,8 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+
+import java.util.List;
 import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,10 @@ public class ParticipantUserDao extends BaseMutableJdbiDao<ParticipantUser> {
 
    public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
       return findByTwoProperties("username", username, "environment_name", environmentName);
+   }
+
+   public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
+      return findByProperty("shortcode", shortcode);
    }
 
    public Optional<ParticipantUser> findByToken(String token) {
