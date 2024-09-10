@@ -36,4 +36,4 @@ jobs:
           author_name: UI CI build failed on merge to development
           fields: job
           text: "UI CI build failed :sadpanda:"
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'

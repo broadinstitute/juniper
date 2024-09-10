@@ -36,14 +36,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.FeatureDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -226,7 +231,8 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email */
+        /** restore email -- reload the profile since answermappings may have changed it */
+        profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
@@ -265,7 +271,7 @@ public class EnrolleeImportService {
                         participantUserService.findOne(participantUserInfo.getUsername(),
                                 studyEnv.getEnvironmentName()).orElseThrow(() -> new IllegalStateException("Participant User could not be found or for PPUser")),
                         ppUser,
-                        profileService.find(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
+                        profileService.loadWithMailingAddress(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
                 )).orElseGet(() ->
                         registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
                 );
@@ -298,17 +304,15 @@ public class EnrolleeImportService {
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
                                     ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
         ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
-        Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        // we still don't want to send emails during the import process
-        profile.setDoNotEmail(true);
-        profile.setId(registrationProfile.getId());
-        profile.setMailingAddressId(registrationProfile.getMailingAddressId());
-        profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
-        // if there's no explicit contact email, default to the username
-        if (profile.getContactEmail() == null) {
-            profile.setContactEmail(registrationProfile.getContactEmail());
+        Profile importProfile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        // only copy non-null properties -- this avoids overwriting already set values (especially in the case of multi-study imports)
+        copyNonNullProperties(importProfile, registrationProfile, List.of("mailingAddress"));
+        if (importProfile.getMailingAddress() != null) {
+            copyNonNullProperties(importProfile.getMailingAddress(), registrationProfile.getMailingAddress(), List.of());
         }
-        return profileService.updateWithMailingAddress(profile, auditInfo);
+        // we still don't want to send emails during the import process
+        registrationProfile.setDoNotEmail(true);
+        return profileService.updateWithMailingAddress(registrationProfile, auditInfo);
     }
 
     protected List<SurveyResponse> importSurveyResponses(String portalShortcode,
@@ -354,5 +358,19 @@ public class EnrolleeImportService {
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
                 "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+    }
+
+    public static void copyNonNullProperties(Object source, Object target, List<String> ignoreProperties) {
+        String[] ignorePropertiesArray = Stream.of(ignoreProperties, getNullPropertyNames(source)).flatMap(Collection::stream).toArray(String[]::new);
+        BeanUtils.copyProperties(source, target, ignorePropertiesArray);
+    }
+
+
+    public static List<String> getNullPropertyNames(Object source) {
+        final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
+        return Stream.of(wrappedSource.getPropertyDescriptors())
+                .map(java.beans.FeatureDescriptor::getName)
+                .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+                .toList();
     }
 }

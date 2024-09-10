@@ -45,7 +45,7 @@ jobs:
           author_name: SonarCloud Java scan failed on merge to development
           fields: job
           text: "SonarCloud Java scan failed :sadpanda:"
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'
 
 
   sonar-typescript:
@@ -87,4 +87,4 @@ jobs:
           author_name: SonarCloud TypeScript scan failed on merge to development
           fields: job
           text: "SonarCloud TypeScript scan failed :sadpanda:"
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'
