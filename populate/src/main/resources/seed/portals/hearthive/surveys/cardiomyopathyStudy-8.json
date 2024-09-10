@@ -1,0 +1,29 @@
+{
+  "stableId" : "cardiomyopathyStudy",
+  "version" : 8,
+  "name" : "Cardiomyopathy study",
+  "surveyType" : "OUTREACH",
+  "blurb" : "research opportunity for people with certain forms of cardiomyopathy",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "eligibilityRule" : "{age} >= 18 and {profile.mailingAddress.country} = 'gb' and ({answer.baseline.DIAGNOSIS} = 'hcm' or {answer.baseline.DIAGNOSIS} = 'dcm')",
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : true,
+  "autoUpdateTaskAssignments" : true,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "outreach_content_wf0ypjw0wrl",
+        "html" : "<p><b>Can you help us to work towards better heart health?</p> </b>\n<br>\nIf you’re interested in signing up please log in to the Heart Hive and take a look – full details of the study can be found in participant information sheet.  \n<br><br>\n<b>The Heart Hive Cardiomyopathy Study</b> is being run by researchers at Imperial College London and is investigating the role of genetic and environmental factors in hypertrophic and dilated cardiomyopathy.\nJoining the study involves completing an eConsent form and filling out a health survey (which you may have already completed). \n<br><br>At the Heart Hive we prioritise participant’s control over their own data and enrolment in any of our studies is entirely optional.  You are also able to withdraw from any study you opt-in to at any time.\nPlease get in touch if you have any queries, \nThe Heart Hive Team\n<br><br>\n\n<b><p>Click below to learn more and think about signing up</p>\n\n<a className=\"btn btn-primary\" href=\"/studies/cmyop/join\">Join</a></b>"
+      } ]
+    } ]
+  }
+}

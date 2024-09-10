@@ -17,6 +17,8 @@ import java.util.Set;
 public class ParticipantUser extends BaseEntity {
     private String username;
 
+    private String shortcode;
+
     private String token;
 
     private Instant lastLogin;

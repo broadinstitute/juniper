@@ -100,7 +100,8 @@ public class SurveyTaskDispatcher {
 
     protected List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
                                                    UUID studyEnvironmentId) {
-        if (assignDto.assignAllUnassigned()) {
+        if (assignDto.assignAllUnassigned()
+                && (Objects.isNull(assignDto.enrolleeIds()) || assignDto.enrolleeIds().isEmpty())) {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
                     assignDto.targetStableId(), null);
         } else {

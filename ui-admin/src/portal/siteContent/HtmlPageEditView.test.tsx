@@ -16,6 +16,11 @@ import { Store } from 'react-notifications-component'
 
 jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  getPortalMedia: jest.fn().mockResolvedValue([])
+}))
+
 test('readOnly disables insert new section button', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(

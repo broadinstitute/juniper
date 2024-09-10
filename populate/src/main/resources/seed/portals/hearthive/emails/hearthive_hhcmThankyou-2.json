@@ -1,0 +1,15 @@
+{
+  "createdAt" : 1721749442.510314000,
+  "lastUpdatedAt" : 1721749442.510313000,
+  "stableId" : "hearthive_hhcmThankyou",
+  "name" : "hhcm_thankyou",
+  "version" : 2,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1721749442.504001000,
+    "lastUpdatedAt" : 1721749442.504002000,
+    "language" : "en",
+    "subject" : "Insert subject",
+    "bodyPopulateFile" : "en/hearthive_hhcmThankyou-2.html"
+  } ]
+}

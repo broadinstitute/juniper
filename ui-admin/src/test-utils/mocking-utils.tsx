@@ -51,6 +51,7 @@ import { mockAdminUser } from './user-mocking-utils'
 import { UserContext } from '../user/UserProvider'
 import { PortalEnvContextT } from '@juniper/ui-participant/src/providers/PortalProvider'
 import { mockLocalSiteContent } from 'test-utils/mock-site-content'
+import { ReactNotifications } from 'react-notifications-component'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -398,6 +399,7 @@ export const mockParticipantNote = (): ParticipantNote => {
 /** mock NotificationConfig */
 export const mockTrigger = (): Trigger => {
   return {
+    actionScope: 'STUDY',
     id: 'noteId1',
     triggerType: 'EVENT',
     eventType: 'CONSENT',
@@ -630,6 +632,7 @@ export const renderInPortalRouter = (portal: Portal,
         <PortalContext.Provider value={portalContext}>
           { children }
         </PortalContext.Provider>
+        <ReactNotifications/>
       </UserContext.Provider>
     </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv')

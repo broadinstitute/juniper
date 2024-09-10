@@ -14,6 +14,9 @@
   },
  "Consent": {
    "FullName": "Full legal name",
-   "Signature": "Signature of Subject"
+   "Signature": "Signature of Subject",
+   "VoluntaryParticipation": "I understand that my participation is voluntary and I am free to withdraw at any time",
+   "PermissionToUseDNA": "I give permission for my saliva samples to be used to obtain DNA for use in this study",
+   "AgreeToContact": "I agree to be contacted by the research team to be invited to participate in future medical and health-related studies"
  }
 }

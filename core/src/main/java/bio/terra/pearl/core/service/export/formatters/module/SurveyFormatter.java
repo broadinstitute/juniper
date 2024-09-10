@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -208,16 +209,21 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return ExportFormatUtils.camelToWordCase(stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId()));
     }
 
+
+    private static final Pattern OLD_STABLE_ID_PATTERN = Pattern.compile("^[a-z]{2}_[a-z]{2}_[a-zA-Z]+_");
     /**
      * strip out study and survey prefixes.  so e.g. "oh_oh_famHx_question1" becomes "question1"
      */
     public static String stripStudyAndSurveyPrefixes(String stableId) {
-        // if there are >= 3 underscores, filter out everything before the third underscore
-        int thirdUnderscoreIndex = StringUtils.ordinalIndexOf(stableId, "_", 3);
-        if (thirdUnderscoreIndex < 0) {
-            return stableId;
+
+        // warning: hacky!
+        // if the stable id has the old format (e.g. oh_oh_basicInfo_question)
+        // then we need to strip out the first three parts
+        if (OLD_STABLE_ID_PATTERN.matcher(stableId).find()) {
+            return OLD_STABLE_ID_PATTERN.matcher(stableId).replaceFirst("");
         }
-        return stableId.substring(thirdUnderscoreIndex + 1);
+
+        return stableId;
     }
 
     /**
