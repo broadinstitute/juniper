@@ -14,7 +14,7 @@
     "@babel/preset-typescript": "^7.24.7",
     "@prosopo/vite-plugin-watch-workspace": "^1.0.2",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/jest": "^29.5.12",
@@ -58,6 +58,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@yudiel/react-qr-scanner": "^2.0.8",
     "mixpanel-browser": "^2.54.0",
     "react-qr-code": "^2.0.15"
   },

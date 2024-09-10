@@ -1,0 +1,88 @@
+{
+  "stableId" : "hh_cmyop_preEnroll",
+  "version" : 6,
+  "name" : "Pre-registration",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "title" : "cardiomyopathy study pre-registration",
+    "logoPosition" : "right",
+    "pages" : [ {
+      "name" : "page1",
+      "elements" : [ {
+        "type" : "html",
+        "name" : "descriptionText",
+        "html" : "<h3 class=\"text-center fw-bold\">We would like to invite you to take part in the HeartHive Cardiomyopathy study, set up by Imperial College London</h3>\n\n"
+      }, {
+        "type" : "radiogroup",
+        "name" : "hh_cmyop_prereg_dx",
+        "title" : "Have you been diagnosed with cardiomyopathy",
+        "isRequired" : true,
+        "choices" : [ {
+          "value" : "0",
+          "text" : "No"
+        }, {
+          "value" : "1",
+          "text" : "Yes"
+        } ]
+      }, {
+        "type" : "dropdown",
+        "name" : "hh_cmyop_prereg_type",
+        "title" : "Have you been diagnosed with one of the following types of cardiomyopathy",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "HCM (Hypertrophic Cardiomyopathy)",
+          "value" : "hcm"
+        }, {
+          "text" : "DCM (Dilated Cardiomyopathy",
+          "value" : "dcm"
+        }, {
+          "text" : "Other",
+          "value" : "other"
+        } ]
+      }, {
+        "type" : "dropdown",
+        "name" : "hh_cmyop_prereg_age",
+        "title" : "Are you 18+ years old?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "No",
+          "value" : "0"
+        } ]
+      }, {
+        "type" : "dropdown",
+        "name" : "hh_cmyop_prereg_country",
+        "title" : "Do you live in the UK?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "No",
+          "value" : "0"
+        } ]
+      } ]
+    } ],
+    "calculatedValues" : [ {
+      "name" : "qualified",
+      "expression" : "{hh_cmyop_prereg_dx} = '1' and {hh_cmyop_prereg_country}= '1' and  {hh_cmyop_prereg_age} = '1' and ({hh_cmyop_prereg_type} = 'dcm' or {hh_cmyop_prereg_type} = 'hcm')",
+      "includeIntoResult" : true
+    } ]
+  }
+}

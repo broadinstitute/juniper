@@ -162,6 +162,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("oh_oh_famHx_someQuestion_suffix"), equalTo("someQuestion_suffix"));
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("nonStandardPrefix_someQuestion"), equalTo("nonStandardPrefix_someQuestion"));
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("someQuestion"), equalTo("someQuestion"));
+        assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("some_question_that_just_has_underscores"), equalTo("some_question_that_just_has_underscores"));
     }
 
     @Test

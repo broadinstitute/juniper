@@ -2,6 +2,18 @@
   "stableId" : "consentFormTheHeartHiveCardiomyopathyStudy",
   "version" : 5,
   "name" : "Consent Form - The Heart Hive Cardiomyopathy Study",
+  "surveyType" : "CONSENT",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : true,
+  "allowAdminEdit" : false,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : false,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
   "jsonContent" : {
     "pages" : [ {
       "elements" : [ {

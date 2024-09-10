@@ -1,6 +1,6 @@
 import React from 'react'
 import { act, render, screen } from '@testing-library/react'
-import { KitInstructions } from './KitInstructions'
+import KitInstructions from './KitInstructions'
 import { asMockedFn, setupRouterTest } from '@juniper/ui-core'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'

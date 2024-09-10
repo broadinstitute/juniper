@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "participant_shortcode"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: participant_user
+            columns:
+              - column: { name: shortcode, type: text } #nullable for now to facilitate backfilling

@@ -17,9 +17,8 @@ export default function TriggerNotifications({ studyEnvContext }:
   const [tableData, setTableData] = useState<Notification[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
 
-  const configId = useParams().configId as string
+  const triggerId = useParams().triggerId as string
 
-  const config = currentEnv.triggers.find(config => config.id === configId)
 
   const columns: ColumnDef<Notification>[] = [
     {
@@ -70,15 +69,14 @@ export default function TriggerNotifications({ studyEnvContext }:
     }
   ]
 
-
   const { isLoading } = useLoadingEffect(async () => {
     const notifications = await Api.fetchTriggerNotifications(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      configId)
+      triggerId)
     setTableData(notifications)
-  }, [configId])
+  }, [triggerId])
 
 
   const table = useReactTable({
@@ -92,14 +90,7 @@ export default function TriggerNotifications({ studyEnvContext }:
     getSortedRowModel: getSortedRowModel()
   })
 
-  if (!config) {
-    return <div>Trigger config not found</div>
-  }
-
   return <div className={'w-100'}>
-    <div className='float-end'>
-      <NavLink to={`../configs/${configId}`}>Go Back</NavLink>
-    </div>
     <h5>Notifications</h5>
     {/* eslint-disable-next-line react/jsx-no-undef */}
     <LoadingSpinner isLoading={isLoading}>

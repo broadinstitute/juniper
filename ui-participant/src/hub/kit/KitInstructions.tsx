@@ -1,13 +1,13 @@
-import React, { lazy, useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
-import { KitCollectionStep, KitReturnType } from '@juniper/ui-core'
+import { KitCollectionStepWrapper, KitReturnType } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-const QRCode = lazy(() => import('react-qr-code'))
+import QRCode from 'react-qr-code'
 
 //TODO: JN-1294, implement i18n for this entire component
 
-export function KitInstructions() {
+export default function KitInstructions() {
   const { ppUser, enrollees } = useActiveUser()
   const { portalEnv } = usePortalEnv()
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
@@ -42,7 +42,7 @@ export function KitInstructions() {
 
             {isConsented &&
             <>
-              <KitCollectionStep title={'Step 1: Confirm eligibility'} status={'COMPLETE'}>
+              <KitCollectionStepWrapper title={'Step 1: Confirm eligibility'} status={'COMPLETE'}>
                 {activeEnrollee ? <>
                   <div className={'pb-3'}>
                     A member of the study team will scan the code below to confirm your eligibility
@@ -56,9 +56,9 @@ export function KitInstructions() {
                     No enrollee found. Please contact a member of the study team.
                   </span>
                 }
-              </KitCollectionStep>
+              </KitCollectionStepWrapper>
 
-              <KitCollectionStep title={'Step 2: Complete kit'}
+              <KitCollectionStepWrapper title={'Step 2: Complete kit'}
                 status={kitId ? 'COMPLETE' : 'INCOMPLETE'}>
                 <div className="mb-3">
                   A member of the study team will now provide you with a sample collection kit.
@@ -71,9 +71,9 @@ export function KitInstructions() {
                   placeholder={'No kit provided'}
                   value={kitId}>
                 </input>
-              </KitCollectionStep>
+              </KitCollectionStepWrapper>
 
-              <KitCollectionStep title={'Step 3: Select return option'}
+              <KitCollectionStepWrapper title={'Step 3: Select return option'}
                 status={selectedReturnType ? 'COMPLETE' : 'INCOMPLETE'}>
                 <div className='mb-3'>
                   Once you have completed the kit, you may return it to the study
@@ -96,10 +96,10 @@ export function KitInstructions() {
                     Return via mail using provided return label
                   </label>
                 </div>
-              </KitCollectionStep>
+              </KitCollectionStepWrapper>
 
               {selectedReturnType === 'IN_PERSON' &&
-                <KitCollectionStep title={'Step 4: Return sample'}
+                <KitCollectionStepWrapper title={'Step 4: Return sample'}
                   disabled={!selectedReturnType}
                   status={activeKit ? 'COMPLETE' : 'INCOMPLETE'}>
                   <div className='mb-3'>
@@ -119,11 +119,11 @@ export function KitInstructions() {
                       Return to Dashboard
                     </Link>
                   </div>
-                </KitCollectionStep>
+                </KitCollectionStepWrapper>
               }
 
               {selectedReturnType === 'RETURN_LABEL' &&
-                <KitCollectionStep title={'Step 4: Return sample'}
+                <KitCollectionStepWrapper title={'Step 4: Return sample'}
                   disabled={!selectedReturnType}
                   status={activeKit ? 'COMPLETE' : 'INCOMPLETE'}>
                   <div className='mb-3'>
@@ -138,13 +138,13 @@ export function KitInstructions() {
                       Return to Dashboard
                     </Link>
                   </div>
-                </KitCollectionStep>
+                </KitCollectionStepWrapper>
               }
             </> }
           </div>
 
           {!isConsented &&
-            <KitCollectionStep title={'Consent Required'} status={'ERROR'}>
+            <KitCollectionStepWrapper title={'Consent Required'} status={'ERROR'}>
               <div className="mb-3">
                 Before completing a sample collection kit, you must first read and sign the study consent form.
               </div>
@@ -153,7 +153,7 @@ export function KitInstructions() {
                   Start Consent
                 </Link>
               </div>
-            </KitCollectionStep>
+            </KitCollectionStepWrapper>
           }
         </div>
       </div>

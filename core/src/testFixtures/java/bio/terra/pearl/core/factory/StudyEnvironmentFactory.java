@@ -70,6 +70,17 @@ public class StudyEnvironmentFactory {
         return studyEnvironmentService.create(studyEnv);
     }
 
+    public StudyEnvironmentBundle buildBundle(String testName, EnvironmentName envName, Portal portal, PortalEnvironment portalEnv) {
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
+        StudyEnvironment studyEnvironment = buildPersisted(envName, study.getId(), testName);
+        return StudyEnvironmentBundle.builder()
+                .study(study)
+                .studyEnv(studyEnvironment)
+                .portal(portal)
+                .portalEnv(portalEnv)
+                .build();
+    }
+
     public StudyEnvironmentBundle buildBundle(String testName, EnvironmentName envName) {
         Portal portal = portalFactory.buildPersisted(testName);
         Study study = studyFactory.buildPersisted(portal.getId(), testName);

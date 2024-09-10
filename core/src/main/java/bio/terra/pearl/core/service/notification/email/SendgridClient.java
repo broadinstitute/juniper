@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.core.env.Environment;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -79,7 +81,17 @@ public class SendgridClient {
     request.setEndpoint("messages");
     request.addQueryParam("limit", Integer.toString(queryLimit));
     request.addQueryParam("query", query);
-    Response response = sg.api(request);
+
+    // SendGrid will occasionally return a 500 status code here. This isn't catastrophic, but we should retry
+    // the request a few times before giving up and logging the exception. This uses an exponential backoff to
+    // avoid getting rate-limited by SendGrid. Retries will occur after 8, 16, and 32 seconds.
+    RetryTemplate retryTemplate = RetryTemplate.defaultInstance();
+    ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+    backOffPolicy.setInitialInterval(8000);
+    backOffPolicy.setMaxInterval(32000);
+    retryTemplate.setBackOffPolicy(backOffPolicy);
+
+    Response response = retryTemplate.execute(arg -> sg.api(request));
 
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());

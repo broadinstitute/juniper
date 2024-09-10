@@ -1,0 +1,23 @@
+{
+  "stableId" : "hh_portalContent",
+  "version" : 63,
+  "publishedVersion" : 9,
+  "localizedSiteContents" : [ ],
+  "localizedSiteContentDtos" : [ {
+    "language" : "en",
+    "navbarItems" : [ ],
+    "navLogoCleanFileName" : "hex_round.webp",
+    "navLogoVersion" : 1,
+    "primaryBrandColor" : "#AF2175",
+    "dashboardBackgroundColor" : "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+    "landingPageFileName" : "en/landingPage.json",
+    "navbarItemDtos" : [ {
+      "populateFileName" : "en/page-faq.json"
+    }, {
+      "populateFileName" : "en/page-researchers.json"
+    }, {
+      "populateFileName" : "en/page-supporters.json"
+    } ],
+    "footerSectionFile" : "en/footer.json"
+  } ]
+}

@@ -1,10 +1,10 @@
 {
   "name" : "HeartHive",
   "shortcode" : "hearthive",
-  "surveyFiles" : [ "surveys/baseline-64.json", "surveys/pacingHocmEligibility-5.json", "surveys/baseline-76.json", "surveys/baseline-65.json", "surveys/pacingHocmEligibility-6.json", "surveys/baseline-77.json", "surveys/baseline-66.json", "surveys/baseline-78.json", "surveys/baseline-79.json", "surveys/hh_preregistation-1.json", "surveys/hh_cmyop_preEnroll-1.json", "surveys/hh_cmyop_preEnroll-2.json", "surveys/registrationForm-1.json", "surveys/registrationForm-2.json", "surveys/registrationForm-3.json", "surveys/registrationForm-4.json", "surveys/registrationForm-5.json", "surveys/registrationForm-6.json", "surveys/registrationForm-7.json", "surveys/registrationForm-24.json", "surveys/pacingHocmEligibility-7.json", "surveys/pacingHocmEligibility-13.json", "surveys/basics-1.json", "surveys/basics-6.json", "surveys/registrationForm-25.json", "surveys/pacingHocmEligibility-8.json", "surveys/pacingHocmEligibility-10.json", "surveys/baseline-80.json", "surveys/basics-7.json", "surveys/basics-10.json", "surveys/registrationForm-26.json", "surveys/pacingHocmEligibility-9.json", "surveys/pacingHocmEligibility-11.json", "surveys/cureHeart-1.json", "surveys/baseline-81.json", "surveys/baseline-82.json", "surveys/cureHeart-4.json", "surveys/registrationForm-27.json", "surveys/pacingHocmEligibility-12.json", "surveys/pacingHocmEligibility-14.json", "surveys/cureHeart-2.json", "surveys/baseline-83.json", "surveys/baseline-67.json", "surveys/basics-25.json", "surveys/basic-1.json", "surveys/basics-27.json", "surveys/registrationForm-28.json", "surveys/pacingHocmEligibility-15.json", "surveys/pacingHocmEligibility-18.json", "surveys/cureHeart-3.json", "surveys/baseline-84.json", "surveys/pacingHocmEligibility-16.json", "surveys/registrationForm-8.json", "surveys/registrationForm-9.json", "surveys/registrationForm-10.json", "surveys/registrationForm-11.json", "surveys/basics-11.json", "surveys/registrationForm-12.json", "surveys/registrationForm-29.json", "surveys/pacingHocmEligibility-17.json", "surveys/pacingHocmEligibility-20.json", "surveys/baseline-85.json", "surveys/registrationForm-13.json", "surveys/registrationForm-14.json", "surveys/registrationForm-15.json", "surveys/registrationForm-16.json", "surveys/baseline-1.json", "surveys/baseline-2.json", "surveys/basics-26.json", "surveys/baseline-68.json", "surveys/baseline-3.json", "surveys/baseline-4.json", "surveys/baseline-5.json", "surveys/baseline-6.json", "surveys/baseline-7.json", "surveys/basics-12.json", "surveys/registrationForm-17.json", "surveys/registrationForm-18.json", "surveys/baseline-8.json", "surveys/baseline-9.json", "surveys/baseline-10.json", "surveys/baseline-11.json", "surveys/baseline-12.json", "surveys/baseline-13.json", "surveys/baseline-14.json", "surveys/baseline-15.json", "surveys/basics-13.json", "surveys/baseline-69.json", "surveys/baseline-16.json", "surveys/baseline-17.json", "surveys/baseline-18.json", "surveys/baseline-19.json", "surveys/baseline-20.json", "surveys/baseline-21.json", "surveys/baseline-22.json", "surveys/baseline-23.json", "surveys/baseline-24.json", "surveys/baseline-25.json", "surveys/baseline-26.json", "surveys/baseline-27.json", "surveys/baseline-28.json", "surveys/baseline-29.json", "surveys/baseline-30.json", "surveys/registrationForm-19.json", "surveys/registrationForm-20.json", "surveys/baseline-70.json", "surveys/registrationForm-21.json", "surveys/registrationForm-22.json", "surveys/baseline-31.json", "surveys/baseline-32.json", "surveys/baseline-33.json", "surveys/baseline-34.json", "surveys/baseline-35.json", "surveys/baseline-36.json", "surveys/baseline-37.json", "surveys/baseline-38.json", "surveys/baseline-39.json", "surveys/baseline-40.json", "surveys/basics-22.json", "surveys/pacingHocmEligibility-19.json", "surveys/baseline-71.json", "surveys/pacingHocmEligibility-1.json", "surveys/baseline-41.json", "surveys/baseline-42.json", "surveys/baseline-43.json", "surveys/baseline-44.json", "surveys/baseline-45.json", "surveys/baseline-46.json", "surveys/baseline-47.json", "surveys/baseline-48.json", "surveys/baseline-49.json", "surveys/baseline-50.json", "surveys/baseline-51.json", "surveys/pacingHocmEligibility-21.json", "surveys/registrationForm-23.json", "surveys/baseline-72.json", "surveys/baseline-52.json", "surveys/baseline-53.json", "surveys/baseline-54.json", "surveys/baseline-55.json", "surveys/baseline-56.json", "surveys/baseline-57.json", "surveys/baseline-58.json", "surveys/baseline-59.json", "surveys/baseline-60.json", "surveys/baseline-61.json", "surveys/baseline-62.json", "surveys/baseline-63.json", "surveys/pacingHocmEligibility-2.json", "surveys/basics-2.json", "surveys/basics-3.json", "surveys/basics-4.json", "surveys/basics-5.json", "surveys/basics-8.json", "surveys/basics-9.json", "surveys/baseline-73.json", "surveys/baseline-74.json", "surveys/basics-14.json", "surveys/basics-15.json", "surveys/basics-16.json", "surveys/basics-17.json", "surveys/basics-18.json", "surveys/pacingHocmEligibility-3.json", "surveys/baseline-75.json", "surveys/basics-19.json", "surveys/basics-20.json", "surveys/basics-21.json", "surveys/basics-23.json", "surveys/basics-24.json", "surveys/pacingHocmEligibility-4.json" ],
-  "consentFormFiles" : [ "surveys/hh_cmyop_consent-1.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-1.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-2.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-3.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-4.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-5.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-6.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-7.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-8.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-9.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-10.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-11.json", "surveys/marketingConsent-1.json", "surveys/marketingConsent-3.json", "surveys/marketingConsent-2.json", "surveys/marketingConsent-4.json", "surveys/marketingConsent-5.json", "surveys/cardiomyopathyStudyPis-1.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-12.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-13.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-14.json" ],
+  "surveyFiles" : [ "surveys/baseline-64.json", "surveys/pacingHocmEligibility-5.json", "surveys/baseline-76.json", "surveys/baseline-65.json", "surveys/pacingHocmEligibility-6.json", "surveys/baseline-77.json", "surveys/baseline-94.json", "surveys/baseline-108.json", "surveys/baseline-115.json", "surveys/baseline-125.json", "surveys/baseline-126.json", "surveys/baseline-134.json", "surveys/baseline-66.json", "surveys/baseline-78.json", "surveys/baseline-95.json", "surveys/baseline-109.json", "surveys/baseline-118.json", "surveys/baseline-127.json", "surveys/baseline-135.json", "surveys/baseline-137.json", "surveys/baseline-145.json", "surveys/baseline-146.json", "surveys/baseline-147.json", "surveys/baseline-153.json", "surveys/baseline-158.json", "surveys/baseline-79.json", "surveys/hh_preregistation-1.json", "surveys/hh_cmyop_preEnroll-1.json", "surveys/hh_cmyop_preEnroll-2.json", "surveys/registrationForm-1.json", "surveys/registrationForm-2.json", "surveys/registrationForm-3.json", "surveys/baseline-96.json", "surveys/baseline-110.json", "surveys/baseline-119.json", "surveys/baseline-128.json", "surveys/baseline-136.json", "surveys/baseline-138.json", "surveys/baseline-148.json", "surveys/baseline-154.json", "surveys/baseline-159.json", "surveys/baseline-162.json", "surveys/baseline-163.json", "surveys/registrationForm-4.json", "surveys/registrationForm-5.json", "surveys/registrationForm-6.json", "surveys/registrationForm-7.json", "surveys/registrationForm-24.json", "surveys/pacingHocmEligibility-7.json", "surveys/pacingHocmEligibility-13.json", "surveys/basics-1.json", "surveys/basics-6.json", "surveys/registrationForm-25.json", "surveys/pacingHocmEligibility-8.json", "surveys/pacingHocmEligibility-10.json", "surveys/baseline-80.json", "surveys/baseline-97.json", "surveys/baseline-98.json", "surveys/baseline-100.json", "surveys/baseline-111.json", "surveys/baseline-120.json", "surveys/baseline-129.json", "surveys/baseline-130.json", "surveys/FollowUpSurvey-1.json", "surveys/baseline-139.json", "surveys/baseline-149.json", "surveys/baseline-155.json", "surveys/baseline-160.json", "surveys/baseline-164.json", "surveys/baseline-165.json", "surveys/basics-7.json", "surveys/basics-10.json", "surveys/registrationForm-26.json", "surveys/pacingHocmEligibility-9.json", "surveys/pacingHocmEligibility-11.json", "surveys/baseline-81.json", "surveys/baseline-82.json", "surveys/registrationForm-27.json", "surveys/pacingHocmEligibility-12.json", "surveys/pacingHocmEligibility-14.json", "surveys/baseline-83.json", "surveys/baseline-67.json", "surveys/basics-25.json", "surveys/basics-27.json", "surveys/registrationForm-28.json", "surveys/pacingHocmEligibility-15.json", "surveys/pacingHocmEligibility-18.json", "surveys/baseline-84.json", "surveys/baseline-86.json", "surveys/baseline-99.json", "surveys/baseline-112.json", "surveys/baseline-121.json", "surveys/baseline-122.json", "surveys/baseline-131.json", "surveys/FollowUpSurvey-2.json", "surveys/baseline-140.json", "surveys/baseline-150.json", "surveys/baseline-156.json", "surveys/baseline-161.json", "surveys/baseline-166.json", "surveys/baseline-167.json", "surveys/baseline-168.json", "surveys/baseline-169.json", "surveys/baseline-170.json", "surveys/baseline-171.json", "surveys/baseline-172.json", "surveys/baseline-173.json", "surveys/baseline-174.json", "surveys/pacingHocmEligibility-16.json", "surveys/registrationForm-8.json", "surveys/registrationForm-9.json", "surveys/registrationForm-10.json", "surveys/registrationForm-11.json", "surveys/basics-11.json", "surveys/registrationForm-12.json", "surveys/registrationForm-29.json", "surveys/pacingHocmEligibility-17.json", "surveys/pacingHocmEligibility-20.json", "surveys/baseline-85.json", "surveys/baseline-87.json", "surveys/baseline-101.json", "surveys/baseline-103.json", "surveys/baseline-113.json", "surveys/baseline-123.json", "surveys/baseline-132.json", "surveys/FollowUpSurvey-3.json", "surveys/baseline-141.json", "surveys/baseline-142.json", "surveys/baseline-151.json", "surveys/baseline-157.json", "surveys/registrationForm-13.json", "surveys/registrationForm-14.json", "surveys/registrationForm-15.json", "surveys/registrationForm-16.json", "surveys/baseline-1.json", "surveys/baseline-2.json", "surveys/basics-26.json", "surveys/baseline-68.json", "surveys/baseline-88.json", "surveys/baseline-102.json", "surveys/baseline-104.json", "surveys/baseline-3.json", "surveys/baseline-4.json", "surveys/baseline-5.json", "surveys/baseline-6.json", "surveys/baseline-7.json", "surveys/basics-12.json", "surveys/registrationForm-17.json", "surveys/registrationForm-18.json", "surveys/baseline-8.json", "surveys/baseline-9.json", "surveys/baseline-10.json", "surveys/baseline-11.json", "surveys/baseline-12.json", "surveys/baseline-13.json", "surveys/baseline-14.json", "surveys/baseline-15.json", "surveys/basics-13.json", "surveys/baseline-69.json", "surveys/baseline-16.json", "surveys/baseline-17.json", "surveys/baseline-18.json", "surveys/baseline-19.json", "surveys/baseline-20.json", "surveys/baseline-21.json", "surveys/baseline-22.json", "surveys/baseline-23.json", "surveys/baseline-24.json", "surveys/baseline-25.json", "surveys/baseline-26.json", "surveys/baseline-27.json", "surveys/baseline-28.json", "surveys/baseline-29.json", "surveys/baseline-30.json", "surveys/registrationForm-19.json", "surveys/registrationForm-20.json", "surveys/baseline-70.json", "surveys/baseline-89.json", "surveys/baseline-90.json", "surveys/baseline-91.json", "surveys/registrationForm-21.json", "surveys/registrationForm-22.json", "surveys/baseline-31.json", "surveys/baseline-32.json", "surveys/baseline-33.json", "surveys/baseline-34.json", "surveys/baseline-35.json", "surveys/baseline-36.json", "surveys/baseline-37.json", "surveys/baseline-38.json", "surveys/baseline-39.json", "surveys/baseline-40.json", "surveys/basics-22.json", "surveys/pacingHocmEligibility-19.json", "surveys/baseline-71.json", "surveys/pacingHocmEligibility-1.json", "surveys/baseline-41.json", "surveys/baseline-42.json", "surveys/baseline-43.json", "surveys/baseline-44.json", "surveys/baseline-45.json", "surveys/baseline-46.json", "surveys/baseline-47.json", "surveys/baseline-48.json", "surveys/baseline-49.json", "surveys/baseline-50.json", "surveys/baseline-51.json", "surveys/pacingHocmEligibility-21.json", "surveys/registrationForm-23.json", "surveys/baseline-72.json", "surveys/baseline-52.json", "surveys/baseline-53.json", "surveys/baseline-54.json", "surveys/baseline-55.json", "surveys/baseline-56.json", "surveys/baseline-57.json", "surveys/baseline-58.json", "surveys/baseline-59.json", "surveys/baseline-60.json", "surveys/baseline-61.json", "surveys/baseline-62.json", "surveys/baseline-63.json", "surveys/baseline-92.json", "surveys/baseline-105.json", "surveys/baseline-114.json", "surveys/baseline-116.json", "surveys/baseline-117.json", "surveys/baseline-124.json", "surveys/baseline-133.json", "surveys/FollowUpSurvey-4.json", "surveys/baseline-143.json", "surveys/baseline-144.json", "surveys/baseline-152.json", "surveys/pacingHocmEligibility-2.json", "surveys/basics-2.json", "surveys/basics-3.json", "surveys/basics-4.json", "surveys/basics-5.json", "surveys/basics-8.json", "surveys/basics-9.json", "surveys/baseline-73.json", "surveys/baseline-74.json", "surveys/baseline-93.json", "surveys/baseline-106.json", "surveys/baseline-107.json", "surveys/basics-14.json", "surveys/basics-15.json", "surveys/basics-16.json", "surveys/basics-17.json", "surveys/basics-18.json", "surveys/pacingHocmEligibility-3.json", "surveys/baseline-75.json", "surveys/basics-19.json", "surveys/basics-20.json", "surveys/basics-21.json", "surveys/basics-23.json", "surveys/basics-24.json", "surveys/pacingHocmEligibility-4.json", "surveys/cureHeartAd-1.json", "surveys/cureHeartAd-2.json", "surveys/cureHeartAd-3.json", "surveys/cureHeartAd-4.json", "surveys/baseline-175.json", "surveys/baseline-176.json", "surveys/baseline-177.json", "surveys/baseline-178.json", "surveys/baseline-179.json", "surveys/baseline-180.json", "surveys/baseline-181.json", "surveys/baseline-182.json", "surveys/baseline-183.json", "surveys/baseline-184.json", "surveys/baseline-185.json", "surveys/baseline-186.json", "surveys/baseline-187.json", "surveys/baseline-188.json", "surveys/baseline-189.json", "surveys/baseline-190.json", "surveys/baseline-191.json", "surveys/baseline-192.json", "surveys/baseline-193.json", "surveys/baseline-194.json", "surveys/baseline-195.json", "surveys/baseline-196.json", "surveys/baseline-197.json", "surveys/baseline-198.json", "surveys/baseline-199.json", "surveys/baseline-200.json", "surveys/baseline-201.json", "surveys/baseline-202.json", "surveys/baseline-203.json", "surveys/baseline-204.json", "surveys/baseline-205.json", "surveys/baseline-206.json", "surveys/baseline-207.json", "surveys/baseline-208.json", "surveys/baseline-209.json", "surveys/baseline-210.json", "surveys/baseline-211.json", "surveys/baseline-212.json", "surveys/baseline-213.json", "surveys/baseline-214.json", "surveys/baseline-215.json", "surveys/FollowUpSurvey-5.json", "surveys/FollowUpSurvey-6.json", "surveys/FollowUpSurvey-7.json", "surveys/FollowUpSurvey-8.json", "surveys/FollowUpSurvey-9.json", "surveys/FollowUpSurvey-10.json", "surveys/FollowUpSurvey-11.json", "surveys/FollowUpSurvey-12.json", "surveys/FollowUpSurvey-13.json", "surveys/FollowUpSurvey-14.json", "surveys/FollowUpSurvey-15.json", "surveys/FollowUpSurvey-20.json", "surveys/baseline-216.json", "surveys/FollowUpSurvey-17.json", "surveys/FollowUpSurvey-18.json", "surveys/FollowUpSurvey-19.json", "surveys/FollowUpSurvey-16.json", "surveys/FollowUpSurvey-21.json", "surveys/FollowUpSurvey-22.json", "surveys/FollowUpSurvey-23.json", "surveys/baseline-217.json", "surveys/FollowUpSurvey-24.json", "surveys/FollowUpSurvey-25.json", "surveys/FollowUpSurvey-26.json", "surveys/FollowUpSurvey-27.json", "surveys/FollowUpSurvey-28.json", "surveys/baseline-218.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-1.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-2.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-3.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-4.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-5.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-6.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-7.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-8.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-9.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-10.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-11.json", "surveys/marketingConsent-1.json", "surveys/marketingConsent-3.json", "surveys/marketingConsent-2.json", "surveys/marketingConsent-4.json", "surveys/marketingConsent-5.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-12.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-13.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-14.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-15.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-16.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-17.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-18.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-19.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-20.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-21.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-22.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-23.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-24.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-25.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-26.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-27.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-28.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-29.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-30.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-31.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-32.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-33.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-34.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-35.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-36.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-37.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-38.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-39.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-40.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-41.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-42.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-43.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-44.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-45.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-46.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-47.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-48.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-49.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-50.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-51.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-52.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-53.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-54.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-55.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-56.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-57.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-58.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-59.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-60.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-61.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-62.json", "surveys/hh_cmyop_preEnroll-3.json", "surveys/baseline-219.json", "surveys/cardiomyopathyStudy-1.json", "surveys/cardiomyopathyStudy-2.json", "surveys/cardiomyopathyStudy-3.json", "surveys/cardiomyopathyStudy-4.json", "surveys/baseline-220.json", "surveys/cardiomyopathyStudy-5.json", "surveys/hh_cmyop_preEnroll-4.json", "surveys/admin-1.json", "surveys/admin-2.json", "surveys/cardiomyopathyStudy-6.json", "surveys/hh_cmyop_preEnroll-5.json", "surveys/cardiomyopathyStudy-7.json", "surveys/cardiomyopathyStudy-8.json", "surveys/basics-30.json", "surveys/cardiomyopathyStudy-9.json", "surveys/hh_cmyop_preEnroll-6.json", "surveys/basics-28.json", "surveys/admin-3.json", "surveys/basics-29.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-63.json", "surveys/admin-4.json", "surveys/baseline-221.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-64.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-65.json", "surveys/hh_cmyop_preEnroll-7.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-66.json", "surveys/admin-5.json", "surveys/cardiomyopathyStudy-10.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-67.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-68.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-69.json", "surveys/consentFormTheHeartHiveCardiomyopathyStudy-70.json" ],
+  "consentFormFiles" : [ ],
   "populateStudyFiles" : [ "studies/pacing/study.json", "studies/cmyop/study.json", "studies/hh_registry/study.json" ],
-  "siteContentFiles" : [ "siteContent/hh_portalContent-1/siteContent.json", "siteContent/hh_portalContent-2/siteContent.json", "siteContent/hh_portalContent-3/siteContent.json", "siteContent/hh_portalContent-4/siteContent.json", "siteContent/hh_portalContent-5/siteContent.json", "siteContent/hh_portalContent-6/siteContent.json", "siteContent/hh_portalContent-7/siteContent.json", "siteContent/hh_portalContent-8/siteContent.json", "siteContent/hh_portalContent-9/siteContent.json", "siteContent/hh_portalContent-10/siteContent.json", "siteContent/hh_portalContent-11/siteContent.json", "siteContent/hh_portalContent-12/siteContent.json", "siteContent/hh_portalContent-13/siteContent.json", "siteContent/hh_portalContent-14/siteContent.json", "siteContent/hh_portalContent-15/siteContent.json", "siteContent/hh_portalContent-16/siteContent.json", "siteContent/hh_portalContent-17/siteContent.json", "siteContent/hh_portalContent-18/siteContent.json", "siteContent/hh_portalContent-19/siteContent.json", "siteContent/hh_portalContent-20/siteContent.json", "siteContent/hh_portalContent-21/siteContent.json", "siteContent/hh_portalContent-22/siteContent.json", "siteContent/hh_portalContent-23/siteContent.json", "siteContent/hh_portalContent-24/siteContent.json", "siteContent/hh_portalContent-25/siteContent.json", "siteContent/hh_portalContent-26/siteContent.json", "siteContent/hh_portalContent-27/siteContent.json", "siteContent/hh_portalContent-28/siteContent.json", "siteContent/hh_portalContent-29/siteContent.json", "siteContent/hh_portalContent-30/siteContent.json", "siteContent/hh_portalContent-31/siteContent.json", "siteContent/hh_portalContent-32/siteContent.json", "siteContent/hh_portalContent-33/siteContent.json", "siteContent/hh_portalContent-34/siteContent.json", "siteContent/hh_portalContent-35/siteContent.json", "siteContent/hh_portalContent-36/siteContent.json", "siteContent/hh_portalContent-37/siteContent.json", "siteContent/hh_portalContent-38/siteContent.json", "siteContent/hh_portalContent-39/siteContent.json", "siteContent/hh_portalContent-40/siteContent.json", "siteContent/hh_portalContent-41/siteContent.json", "siteContent/hh_portalContent-42/siteContent.json", "siteContent/hh_portalContent-43/siteContent.json", "siteContent/hh_portalContent-44/siteContent.json", "siteContent/hh_portalContent-45/siteContent.json", "siteContent/hh_portalContent-46/siteContent.json", "siteContent/hh_portalContent-47/siteContent.json", "siteContent/hh_portalContent-48/siteContent.json", "siteContent/hh_portalContent-49/siteContent.json", "siteContent/hh_portalContent-50/siteContent.json", "siteContent/hh_portalContent-51/siteContent.json", "siteContent/hh_portalContent-52/siteContent.json", "siteContent/hh_portalContent-53/siteContent.json", "siteContent/hh_portalContent-54/siteContent.json", "siteContent/hh_portalContent-55/siteContent.json", "siteContent/hh_portalContent-56/siteContent.json", "siteContent/hh_portalContent-57/siteContent.json", "siteContent/hh_portalContent-58/siteContent.json", "siteContent/hh_portalContent-59/siteContent.json", "siteContent/hh_portalContent-60/siteContent.json", "siteContent/hh_portalContent-61/siteContent.json", "siteContent/hh_portalContent-62/siteContent.json" ],
+  "siteContentFiles" : [ "siteContent/hh_portalContent-1/siteContent.json", "siteContent/hh_portalContent-2/siteContent.json", "siteContent/hh_portalContent-3/siteContent.json", "siteContent/hh_portalContent-4/siteContent.json", "siteContent/hh_portalContent-5/siteContent.json", "siteContent/hh_portalContent-6/siteContent.json", "siteContent/hh_portalContent-7/siteContent.json", "siteContent/hh_portalContent-8/siteContent.json", "siteContent/hh_portalContent-9/siteContent.json", "siteContent/hh_portalContent-10/siteContent.json", "siteContent/hh_portalContent-11/siteContent.json", "siteContent/hh_portalContent-12/siteContent.json", "siteContent/hh_portalContent-13/siteContent.json", "siteContent/hh_portalContent-14/siteContent.json", "siteContent/hh_portalContent-15/siteContent.json", "siteContent/hh_portalContent-16/siteContent.json", "siteContent/hh_portalContent-17/siteContent.json", "siteContent/hh_portalContent-18/siteContent.json", "siteContent/hh_portalContent-19/siteContent.json", "siteContent/hh_portalContent-20/siteContent.json", "siteContent/hh_portalContent-21/siteContent.json", "siteContent/hh_portalContent-22/siteContent.json", "siteContent/hh_portalContent-23/siteContent.json", "siteContent/hh_portalContent-24/siteContent.json", "siteContent/hh_portalContent-25/siteContent.json", "siteContent/hh_portalContent-26/siteContent.json", "siteContent/hh_portalContent-27/siteContent.json", "siteContent/hh_portalContent-28/siteContent.json", "siteContent/hh_portalContent-29/siteContent.json", "siteContent/hh_portalContent-30/siteContent.json", "siteContent/hh_portalContent-31/siteContent.json", "siteContent/hh_portalContent-32/siteContent.json", "siteContent/hh_portalContent-33/siteContent.json", "siteContent/hh_portalContent-34/siteContent.json", "siteContent/hh_portalContent-35/siteContent.json", "siteContent/hh_portalContent-36/siteContent.json", "siteContent/hh_portalContent-37/siteContent.json", "siteContent/hh_portalContent-38/siteContent.json", "siteContent/hh_portalContent-39/siteContent.json", "siteContent/hh_portalContent-40/siteContent.json", "siteContent/hh_portalContent-41/siteContent.json", "siteContent/hh_portalContent-42/siteContent.json", "siteContent/hh_portalContent-43/siteContent.json", "siteContent/hh_portalContent-44/siteContent.json", "siteContent/hh_portalContent-45/siteContent.json", "siteContent/hh_portalContent-46/siteContent.json", "siteContent/hh_portalContent-47/siteContent.json", "siteContent/hh_portalContent-48/siteContent.json", "siteContent/hh_portalContent-49/siteContent.json", "siteContent/hh_portalContent-50/siteContent.json", "siteContent/hh_portalContent-51/siteContent.json", "siteContent/hh_portalContent-52/siteContent.json", "siteContent/hh_portalContent-53/siteContent.json", "siteContent/hh_portalContent-54/siteContent.json", "siteContent/hh_portalContent-55/siteContent.json", "siteContent/hh_portalContent-56/siteContent.json", "siteContent/hh_portalContent-57/siteContent.json", "siteContent/hh_portalContent-58/siteContent.json", "siteContent/hh_portalContent-59/siteContent.json", "siteContent/hh_portalContent-60/siteContent.json", "siteContent/hh_portalContent-61/siteContent.json", "siteContent/hh_portalContent-62/siteContent.json", "siteContent/hh_portalContent-63/siteContent.json" ],
   "portalEnvironmentDtos" : [ {
     "environmentName" : "sandbox",
     "portalEnvironmentConfig" : {
@@ -12,21 +12,20 @@
       "password" : "broad_institute",
       "acceptingRegistration" : true,
       "initialized" : true,
-      "emailSourceAddress" : "info@thehearthive.org"
+      "emailSourceAddress" : "info@thehearthive.org",
+      "defaultLanguage" : "en",
+      "primaryStudy" : "hh_registry"
     },
-    "supportedLanguages": [{
-      "languageName": "English",
-      "languageCode": "en"
-    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
-    "participantUserFiles" : [
-      "participants/consentedEnrollee.json",
-      "participants/gertrudeElion.json",
-      "participants/newEnrollee.json"
-    ],
+    "supportedLanguages" : [ {
+      "portalEnvironmentId" : "b565518c-aecd-4d02-a023-2833b0666f40",
+      "languageCode" : "en",
+      "languageName" : "English"
+    } ],
+    "participantUserFiles" : [ "participants/consentedEnrollee.json", "participants/gertrudeElion.json", "participants/newEnrollee.json" ],
     "siteContentPopDto" : {
-      "populateFileName" : "siteContent/hh_portalContent-62/siteContent.json"
+      "populateFileName" : "siteContent/hh_portalContent-63/siteContent.json"
     },
     "mailingListContacts" : [ ]
   }, {
@@ -36,17 +35,19 @@
       "password" : "broad_institute",
       "acceptingRegistration" : true,
       "initialized" : true,
-      "emailSourceAddress" : "info@thehearthive.org"
+      "emailSourceAddress" : "info@thehearthive.org",
+      "defaultLanguage" : "en"
     },
-    "supportedLanguages": [{
-      "languageName": "English",
-      "languageCode": "en"
-    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
+    "supportedLanguages" : [ {
+      "portalEnvironmentId" : "d341e767-e06f-494c-8288-8bb1b15b7c95",
+      "languageCode" : "en",
+      "languageName" : "English"
+    } ],
     "participantUserFiles" : [ ],
     "siteContentPopDto" : {
-      "populateFileName" : "siteContent/hh_portalContent-62/siteContent.json"
+      "populateFileName" : "siteContent/hh_portalContent-63/siteContent.json"
     },
     "mailingListContacts" : [ ]
   }, {
@@ -56,99 +57,117 @@
       "password" : "broad_institute",
       "acceptingRegistration" : true,
       "initialized" : true,
-      "emailSourceAddress" : "info@thehearthive.org"
+      "participantHostname" : "thehearthive.org",
+      "emailSourceAddress" : "info@thehearthive.org",
+      "defaultLanguage" : "en"
     },
-    "supportedLanguages": [{
-      "languageName": "English",
-      "languageCode": "en"
-    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
+    "supportedLanguages" : [ {
+      "portalEnvironmentId" : "ea4fbe86-d8d7-4de1-a1a9-d7b41e14e5a0",
+      "languageCode" : "en",
+      "languageName" : "English"
+    } ],
     "participantUserFiles" : [ ],
     "siteContentPopDto" : {
-      "populateFileName" : "siteContent/hh_portalContent-62/siteContent.json"
+      "populateFileName" : "siteContent/hh_portalContent-63/siteContent.json"
     },
     "mailingListContacts" : [ ]
   } ],
-  "siteMediaDtos": [
-    {
+  "siteMediaDtos" : [ {
     "version" : 1,
-      "populateFileName": "media/select_imperial_-_final_selects_page_1_c.png"
+    "populateFileName" : "media/select_imperial_-_final_selects_page_1_c.png"
   }, {
     "version" : 1,
-      "populateFileName": "media/imperial_college.webp"
+    "populateFileName" : "media/imperial_college.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/wellcome-logo-black.webp"
+    "populateFileName" : "media/wellcome-logo-black.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/sams_rainbow.webp"
+    "populateFileName" : "media/sams_rainbow.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/alexander_jansons_fund.webp"
+    "populateFileName" : "media/alexander_jansons_fund.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/logo_of_department_of_health_and_social_.webp"
+    "populateFileName" : "media/logo_of_department_of_health_and_social_.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/step_1.png"
+    "populateFileName" : "media/step_1.png"
   }, {
     "cleanFileName" : "step_1.png",
     "version" : 2,
-      "populateFileName": "media/2-step_1.png"
+    "populateFileName" : "media/2-step_1.png"
   }, {
     "version" : 1,
-      "populateFileName": "media/email_logo.webp"
+    "populateFileName" : "media/email_logo.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/privacy_notice.pdf"
+    "populateFileName" : "media/privacy_notice.pdf"
   }, {
     "version" : 1,
-      "populateFileName": "media/cureheart_singleline_logo_rgb.png"
+    "populateFileName" : "media/cureheart_singleline_logo_rgb.png"
   }, {
     "version" : 1,
-      "populateFileName": "media/main_banner.webp"
+    "populateFileName" : "media/darkblueimperial_logo.png"
   }, {
     "version" : 1,
-      "populateFileName": "media/participant_smile.webp"
+    "populateFileName" : "media/mri.jpg"
   }, {
     "version" : 1,
-      "populateFileName": "media/hex_round.webp"
+    "populateFileName" : "media/ecg.jpg"
   }, {
     "version" : 1,
-      "populateFileName": "media/favicon.ico"
+    "populateFileName" : "media/main_banner.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/hearthive_participant_1.webp"
+    "populateFileName" : "media/participant_smile.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/cardiomyopathy-uk-logo.webp"
+    "populateFileName" : "media/hex_round.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/broad_logo.svg"
+    "populateFileName" : "media/favicon.ico"
   }, {
     "version" : 1,
-      "populateFileName": "media/step_2.png"
+    "populateFileName" : "media/hearthive_participant_1.webp"
   }, {
     "version" : 1,
-      "populateFileName": "media/step_3.png"
+    "populateFileName" : "media/cardiomyopathy-uk-logo.webp"
+  }, {
+    "version" : 1,
+    "populateFileName" : "media/broad_logo.svg"
+  }, {
+    "version" : 1,
+    "populateFileName" : "media/step_2.png"
+  }, {
+    "version" : 1,
+    "populateFileName" : "media/step_3.png"
   }, {
     "cleanFileName" : "step_2.png",
     "version" : 2,
-      "populateFileName": "media/2-step_2.png"
+    "populateFileName" : "media/2-step_2.png"
   }, {
     "cleanFileName" : "step_3.png",
     "version" : 2,
-      "populateFileName": "media/2-step_3.png"
+    "populateFileName" : "media/2-step_3.png"
   }, {
     "cleanFileName" : "email_logo.webp",
     "version" : 2,
-      "populateFileName": "media/2-email_logo.webp"
+    "populateFileName" : "media/2-email_logo.webp"
   }, {
     "cleanFileName" : "privacy_notice.pdf",
     "version" : 2,
-      "populateFileName": "media/2-privacy_notice.pdf"
+    "populateFileName" : "media/2-privacy_notice.pdf"
+  }, {
+    "version" : 1,
+    "populateFileName" : "media/hearthive_cardiomyopathy_study_hcm_pis_v4.1.pdf"
+  }, {
+    "version" : 1,
+    "populateFileName" : "media/hearthive_cardiomyopathy_study_dcm_pis_v4.1.pdf"
   } ],
-  "emailTemplateFiles" : [ "emails/hearthive_heartHiveEnrollment-2.json", "emails/hearthive_heartHiveEnrollment-3.json", "emails/hearthive_consentReminder-1.json", "emails/hearthive_heartHiveEnrollment-1.json", "emails/hearthive_consentReminder-2.json", "emails/hearthive_consentReminder-3.json", "emails/hearthive_heartHiveEnrollment-4.json", "emails/hearthive_consentReminder-4.json", "emails/hh_cymop_studyEnroll-1.json" ],
+  "emailTemplateFiles" : [ "emails/hearthive_heartHiveEnrollment-2.json", "emails/hearthive_heartHiveEnrollment-2.json", "emails/hearthive_heartHiveEnrollment-3.json", "emails/hearthive_heartHiveEnrollment-3.json", "emails/hearthive_consentReminder-1.json", "emails/hearthive_consentReminder-1.json", "emails/hearthive_heartHiveEnrollment-1.json", "emails/hearthive_heartHiveEnrollment-1.json", "emails/hearthive_consentReminder-2.json", "emails/hearthive_consentReminder-2.json", "emails/hearthive_consentReminder-3.json", "emails/hearthive_consentReminder-3.json", "emails/hearthive_heartHiveEnrollment-4.json", "emails/hearthive_heartHiveEnrollment-4.json", "emails/hearthive_consentReminder-4.json", "emails/hearthive_consentReminder-4.json", "emails/hh_cymop_studyEnroll-1.json", "emails/hh_cymop_studyEnroll-1.json", "emails/hearthive_outreachReminder-1.json", "emails/hearthive_outreachReminder-1.json", "emails/hearthive_outreachReminder-2.json", "emails/hearthive_outreachReminder-2.json", "emails/hearthive_outreachReminder-3.json", "emails/hearthive_outreachReminder-3.json", "emails/hearthive_invitationFromDatstat-1.json", "emails/hearthive_invitationFromDatstat-1.json", "emails/hearthive_invitationFromDatstat-2.json", "emails/hearthive_invitationFromDatstat-2.json", "emails/hh_cymop_studyEnroll-2.json", "emails/hh_cymop_studyEnroll-2.json", "emails/hearthive_invitationFromDatstat-3.json", "emails/hearthive_invitationFromDatstat-3.json", "emails/hearthive_outreachReminder-4.json", "emails/hearthive_outreachReminder-4.json", "emails/hearthive_outreachReminder-5.json", "emails/hearthive_outreachReminder-5.json", "emails/hh_cymop_studyEnroll-3.json", "emails/hh_cymop_studyEnroll-3.json", "emails/hh_cymop_studyEnroll-4.json", "emails/hh_cymop_studyEnroll-4.json", "emails/hh_cymop_studyEnroll-5.json", "emails/hh_cymop_studyEnroll-5.json", "emails/hh_cymop_studyEnroll-6.json", "emails/hh_cymop_studyEnroll-6.json", "emails/hearthive_hhcmConsentReminder-1.json", "emails/hearthive_hhcmConsentReminder-1.json", "emails/hearthive_hhcmConsentReminder-2.json", "emails/hearthive_hhcmConsentReminder-2.json", "emails/hearthive_hhcmConsentReminder-3.json", "emails/hearthive_hhcmConsentReminder-3.json", "emails/hearthive_hhcmThankyou-1.json", "emails/hearthive_hhcmThankyou-1.json", "emails/hearthive_hhcmThankyou-2.json", "emails/hearthive_hhcmThankyou-2.json", "emails/hearthive_hhcmConsentReminder-4.json", "emails/hearthive_hhcmConsentReminder-4.json", "emails/hearthive_cmyopOutreachComplete-1.json", "emails/hearthive_cmyopOutreachComplete-1.json", "emails/hearthive_invitationFromDatstat-4.json", "emails/hearthive_invitationFromDatstat-4.json", "emails/hearthive_outreachReminder-6.json", "emails/hearthive_outreachReminder-6.json", "emails/hearthive_hhcmThankyou-3.json", "emails/hearthive_hhcmThankyou-3.json", "emails/hearthive_hhcmThankyou-4.json", "emails/hearthive_hhcmThankyou-4.json", "emails/hearthive_hhcmThankyou-5.json", "emails/hearthive_hhcmThankyou-5.json" ],
+  "portalEnvironmentChangeRecordPopDtos" : [ ],
   "adminUsers" : [ ]
 }

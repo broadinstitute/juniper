@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1717183540.221774000,
+  "lastUpdatedAt" : 1725379091.612262000,
+  "stableId" : "hearthive_outreachReminder",
+  "name" : "OutreachReminder",
+  "version" : 6,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1717183540.207094000,
+    "lastUpdatedAt" : 1717183540.207094000,
+    "language" : "en",
+    "subject" : "The Heart Hive - New activity!",
+    "bodyPopulateFile" : "en/hearthive_outreachReminder-6.html"
+  } ]
+}

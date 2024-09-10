@@ -11,6 +11,9 @@
   "allowParticipantStart" : true,
   "allowParticipantReedit" : true,
   "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
   "jsonContent" : {
     "pages" : [ {
       "elements" : [ {

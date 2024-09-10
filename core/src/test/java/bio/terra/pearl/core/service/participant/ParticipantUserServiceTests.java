@@ -1,9 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.participant.MailingAddressFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
-import bio.terra.pearl.core.factory.participant.ProfileFactory;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,11 +13,7 @@ public class ParticipantUserServiceTests extends BaseSpringBootTest {
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
-    private ProfileFactory profileFactory;
-    @Autowired
     private ParticipantUserFactory participantUserFactory;
-    @Autowired
-    private MailingAddressFactory mailingAddressFactory;
 
 
     @Test
@@ -28,6 +22,7 @@ public class ParticipantUserServiceTests extends BaseSpringBootTest {
         ParticipantUser user = participantUserFactory.builderWithDependencies(getTestName(info))
                 .build();
         ParticipantUser savedUser = participantUserService.create(user);
+        Assertions.assertNotNull(savedUser.getShortcode());
         Assertions.assertNotNull(savedUser.getId());
     }
 }
