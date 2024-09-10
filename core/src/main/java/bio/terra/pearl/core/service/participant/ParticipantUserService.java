@@ -39,6 +39,10 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
         return savedParticipantUser;
     }
 
+    public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
+        return dao.findByProperty("shortcode", shortcode);
+    }
+
     @Transactional @Override
     public void delete(UUID userId, Set<CascadeProperty> cascades) {
         portalParticipantUserService.deleteByParticipantUserId(userId);
