@@ -3,8 +3,10 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
@@ -76,6 +78,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private ImportService importService;
     @Autowired
     private ImportItemService importItemService;
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
     @Autowired
     KitRequestService kitRequestService;
 
@@ -379,6 +383,45 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.isDoNotEmailSolicit(), equalTo(true));
         assertThat(profile.getMailingAddress().getStreet1(), equalTo("105 Broadway"));
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
+    }
+
+
+    /** check that imports won't overwrite previously entered profiles in a multi-study setting */
+    @Test
+    @Transactional
+    public void testEnrolleeProfileImportDoesntOverwrite(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle study1Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentFactory.StudyEnvironmentBundle study2Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb,
+                study1Bundle.getPortal(), study1Bundle.getPortalEnv());
+        Profile existingProfile = Profile.builder()
+                .givenName("John")
+                .birthDate(LocalDate.of(1989, 1, 1))
+                .mailingAddress(MailingAddress.builder()
+                        .street1("123 Main St")
+                        .postalCode("12345")
+                        .build())
+                .build();
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), study1Bundle.getPortalEnv(), study1Bundle.getStudyEnv(), existingProfile);
+        String username = enrolleeBundle.participantUser().getUsername();
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "profile.familyName", "Smith");
+
+        Enrollee importedEnrolle = enrolleeImportService.importEnrollee(
+                study2Bundle.getPortal().getShortcode(),
+                study2Bundle.getStudy().getShortcode(),
+                study2Bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        Profile profile = profileService.loadWithMailingAddress(importedEnrolle.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("John"));
+        assertThat(profile.getFamilyName(), equalTo("Smith"));
+        assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1989, 1, 1)));
+        assertThat(profile.getMailingAddress().getStreet1(), equalTo("123 Main St"));
+        assertThat(profile.getMailingAddress().getPostalCode(), equalTo("12345"));
+
+        Enrollee priorEnrollee = enrolleeService.find(enrolleeBundle.enrollee().getId()).orElseThrow();
+        assertThat(priorEnrollee.getProfileId(), equalTo(importedEnrolle.getProfileId()));
     }
 
     String TWO_QUESTION_SURVEY_CONTENT = """
