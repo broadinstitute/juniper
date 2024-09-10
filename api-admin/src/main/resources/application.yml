@@ -48,7 +48,7 @@ env:
 # contains the configuration of the BPM test application. We can use that application in our
 # integration testing to make sure the application code paths are working. However, we do not
 # want it to appear in production environments.
-spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties
+spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties,sm://
 
 logging.pattern.level: '%X{requestId} %5p'
 
@@ -72,6 +72,8 @@ spring:
   cloud:
     gcp:
       secretmanager:
+        enabled: ${ENABLE_GCP_SECRET_MANAGER:false}
+      core:
         enabled: ${ENABLE_GCP_SECRET_MANAGER:false}
 
   # application name and version are used to populate the logging serviceContext
