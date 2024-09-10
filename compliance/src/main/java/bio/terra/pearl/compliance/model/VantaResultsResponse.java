@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public abstract class VantaResultsResponse<T extends VantaObject> {
+public class VantaResultsResponse<T extends VantaObject> {
 
     VantaResults<T> results;
 }

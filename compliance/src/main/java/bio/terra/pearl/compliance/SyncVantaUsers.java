@@ -3,10 +3,10 @@ package bio.terra.pearl.compliance;
 import bio.terra.pearl.compliance.exception.RateLimitException;
 import bio.terra.pearl.compliance.exception.VantaUpdateException;
 import bio.terra.pearl.compliance.model.AccessToken;
-import bio.terra.pearl.compliance.model.GithubAccountResultsResponse;
-import bio.terra.pearl.compliance.model.JiraAccountResultsResponse;
+import bio.terra.pearl.compliance.model.GithubAccount;
+import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
-import bio.terra.pearl.compliance.model.SlackAccountResultsResponse;
+import bio.terra.pearl.compliance.model.SlackUser;
 import bio.terra.pearl.compliance.model.UpdateVantaMetadata;
 import bio.terra.pearl.compliance.model.UserSyncConfig;
 import bio.terra.pearl.compliance.model.VantaCredentials;
@@ -14,7 +14,7 @@ import bio.terra.pearl.compliance.model.VantaIntegration;
 import bio.terra.pearl.compliance.model.VantaObject;
 import bio.terra.pearl.compliance.model.VantaResults;
 import bio.terra.pearl.compliance.model.VantaResultsResponse;
-import bio.terra.pearl.compliance.model.WorkdayAccountResultsResponse;
+import bio.terra.pearl.compliance.model.WorkdayAccount;
 import com.google.cloud.functions.CloudEventsFunction;
 import com.google.cloud.spring.secretmanager.SecretManagerTemplate;
 import com.google.gson.Gson;
@@ -31,18 +31,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,7 +49,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 @Slf4j
 @SpringBootApplication
@@ -121,20 +119,20 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
      * it to dataClass, iterating through all pages
      * to build a complete list
      */
-    private <T extends VantaObject> Collection<T> collectAllData(WebClient wc, Class<? extends VantaResultsResponse<T>> clazz) {
+    private <T extends VantaObject> Collection<T> collectAllData(WebClient wc, ParameterizedTypeReference<VantaResultsResponse<T>> type) {
         final AtomicReference<VantaResults<T>> results = new AtomicReference<>();
-        Set<T> elements = new HashSet<>();
+        AtomicReference<List<T>> elements = new AtomicReference<>(new ArrayList());
         AtomicInteger cursorCount = new AtomicInteger(0);
 
         while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
             log.debug("Getting cursor number {}", cursorCount);
             VantaResultsResponse<T> response = wc.get().uri(uriBuilder -> {
-                if (cursorCount.get() > 0) {
-                    uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
-                }
-                uriBuilder.queryParam("pageSize", 100);
-                return uriBuilder.build();
-            }).retrieve()
+                        if (cursorCount.get() > 0) {
+                            uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
+                        }
+                        uriBuilder.queryParam("pageSize", 100);
+                        return uriBuilder.build();
+                    }).retrieve()
                     .onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
                         List<String> header = res.headers().header("Retry-After");
                         Integer delayInSeconds;
@@ -143,7 +141,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                         } else {
                             delayInSeconds = 70;
                         }
-                        log.info("Vanta rate limit exceeded; waiting for {}s with {} {} objects", delayInSeconds, elements.size(), clazz.getSimpleName());
+                        log.info("Vanta rate limit exceeded; waiting for {}s with {} {} objects", delayInSeconds, elements.get().size(), type.getType().getTypeName());
                         try {
                             Thread.sleep(Duration.ofSeconds(delayInSeconds));
                         } catch (InterruptedException e) {
@@ -151,23 +149,25 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                         }
                         return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
                     })
-                    .bodyToMono(clazz)
+                    .bodyToMono(type)
                     .retryWhen(Retry.withThrowable(throwableFlux -> {
                         return throwableFlux.filter(t -> t instanceof RateLimitException).map(t -> {
                             RateLimitException re = (RateLimitException) t;
                             return Retry.fixedDelay(5, re.getRetryAfterDelayDuration());
                         });
                     })).block();
-
             cursorCount.incrementAndGet();
+            results.set(response.getResults());
+
             if (response != null) {
-                elements.addAll(response.getResults().getData());
-                results.set(response.getResults());
+                if (response.getResults() != null) {
+                    elements.get().addAll(response.getResults().getData());
+                }
             } else {
                 break;
             }
         }
-        return elements;
+        return elements.get();
     }
 
     private WebClient getWebClientForIntegration(String accessToken, String integrationId, String resourceKind) {
@@ -191,23 +191,23 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
         // go through each integration and find scope changes that need to be made.
         int resourceBatchSize = 50;
-        Collection<? extends VantaObject> vantaObjects = new HashSet<>();
+        Collection<VantaObject> vantaObjects = new HashSet<>();
         List<VantaIntegration> integrationsToSync = new ArrayList<>();
-        integrationsToSync.add(new VantaIntegration("jira", "JiraAccount", JiraAccountResultsResponse.class, Set.of("669a8422865ac5731466a323", "66c629d278231843aec354ff", "669a8431865ac5731469ed44",
+        integrationsToSync.add(new VantaIntegration("jira", "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {}, Set.of("669a8422865ac5731466a323", "66c629d278231843aec354ff", "669a8431865ac5731469ed44",
                 "669a842e865ac5731469663b", "669a8427865ac5731467c5d0", "669a8431865ac5731469e994")));
-        integrationsToSync.add(new VantaIntegration("slack", "SlackAccount", SlackAccountResultsResponse.class, Set.of("66a14ed517f6ad4ce8ea8e7f","66a14ee917f6ad4ce8ef12ff","66c74e0878231843aea7b330")));
-        integrationsToSync.add(new VantaIntegration("github", "GithubAccount", GithubAccountResultsResponse.class,
+        integrationsToSync.add(new VantaIntegration("slack", "SlackAccount", new ParameterizedTypeReference<VantaResultsResponse<SlackUser>>() {}, Set.of("66a14ed517f6ad4ce8ea8e7f","66a14ee917f6ad4ce8ef12ff","66c74e0878231843aea7b330")));
+        integrationsToSync.add(new VantaIntegration("github", "GithubAccount", new ParameterizedTypeReference<VantaResultsResponse<GithubAccount>>() {},
                 Set.of("66831806bb4f7b57d3b1b260", "66831804bb4f7b57d3b15f0c", "66831809bb4f7b57d3b24ecf", "66831803bb4f7b57d3b122b7", "66831802bb4f7b57d3b0c4d3",
                         "6683180abb4f7b57d3b2ac3c", "66831809bb4f7b57d3b23dc1", "668de80159091c1ee96b8e4a", "66831808bb4f7b57d3b2144b")));
-        integrationsToSync.add(new VantaIntegration("workday", "WorkdayHrUser", WorkdayAccountResultsResponse.class, Collections.emptySet()));
+        integrationsToSync.add(new VantaIntegration("workday", "WorkdayHrUser", new ParameterizedTypeReference<VantaResultsResponse<WorkdayAccount>>() {}, Collections.emptySet()));
 
         for (VantaIntegration vantaIntegration : integrationsToSync) {
             String integrationId = vantaIntegration.getIntegrationId();
             log.debug("Synchronizing {}", integrationId);
             String resourceKind = vantaIntegration.getResourceKind();
-            Class resultsResponseClass = vantaIntegration.getResultsResponseClass();
+            ParameterizedTypeReference resultsResponseType = vantaIntegration.getResultsResponseType();
 
-            vantaObjects = collectAllData(vantaToken.getAccess_token(), integrationId, resourceKind, resultsResponseClass);
+            vantaObjects = collectAllData(vantaToken.getAccess_token(), integrationId, resourceKind, resultsResponseType);
             log.debug("Found {} {} objects.", vantaObjects.size(), integrationId);
 
             Collection<VantaObject> objectsToUpdate = new HashSet<>();
@@ -270,7 +270,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         return summary.toString();
     }
 
-    private <T extends VantaObject> Collection<T> collectAllData(String accessToken, String integrationId, String resourceKind, Class<? extends VantaResultsResponse<T>> resultsResponseClass) {
+    private <T extends VantaObject> Collection<T> collectAllData(String accessToken, String integrationId, String resourceKind, ParameterizedTypeReference<VantaResultsResponse<T>> resultsResponseClass) {
         WebClient wc = getWebClientForIntegration(accessToken, integrationId, resourceKind);
         return collectAllData(wc, resultsResponseClass);
     }

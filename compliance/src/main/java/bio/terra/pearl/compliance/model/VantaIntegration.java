@@ -1,20 +1,22 @@
 package bio.terra.pearl.compliance.model;
 
+import org.springframework.core.ParameterizedTypeReference;
+
 import java.util.Set;
 
 public class VantaIntegration<T extends VantaObject> {
     private final String integrationId;
     private final String resourceKind;
-    private Class<? extends VantaResultsResponse<? extends VantaObject>> resultsResponseClass;
+    private ParameterizedTypeReference<? extends VantaResultsResponse<? extends VantaObject>> resultsResponseType;
     private Set<String> resourceIdsToIgnore;
 
 
     public <T extends VantaObject> VantaIntegration(String integrationId, String resourceKind,
-                                                    Class<? extends VantaResultsResponse<T>> resultsResponseClass,
+                                                    ParameterizedTypeReference<? extends VantaResultsResponse<T>> resultsResponseType,
                                                     Set<String> resourceIdsToIgnore) {
         this.integrationId = integrationId;
         this.resourceKind = resourceKind;
-        this.resultsResponseClass = resultsResponseClass;
+        this.resultsResponseType = resultsResponseType;
         this.resourceIdsToIgnore = resourceIdsToIgnore;
     }
 
@@ -26,8 +28,8 @@ public class VantaIntegration<T extends VantaObject> {
         return resourceKind;
     }
 
-    public Class<? extends VantaResultsResponse<? extends VantaObject>> getResultsResponseClass() {
-        return resultsResponseClass;
+    public ParameterizedTypeReference<? extends VantaResultsResponse<? extends VantaObject>> getResultsResponseType() {
+        return resultsResponseType;
     }
 
     public boolean shouldIgnoreResource(String resourceId) {
