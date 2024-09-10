@@ -15,11 +15,6 @@ public class JiraAccount extends VantaObject {
     private String accountName;
 
     @Override
-    public String getIntegrationId() {
-        return "jira";
-    }
-
-    @Override
     public boolean shouldBeInScope(Collection<PersonInScope> peopleInScope) {
         return peopleInScope.stream().anyMatch(personInScope -> accountName.equalsIgnoreCase(personInScope.getFullName()));
     }

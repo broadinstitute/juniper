@@ -1,6 +1,7 @@
 package bio.terra.pearl.compliance.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +10,12 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class AccessToken {
 
-    private String access_token;
+    @JsonProperty("access_token")
+    private String accessToken;
 
-    private String token_type;
+    @JsonProperty("token_type")
+    private String tokenType;
 
-    private int expires_in;
+    @JsonProperty("expires_in")
+    private int expiresIn;
 }

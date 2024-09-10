@@ -15,11 +15,6 @@ public class WorkdayAccount extends VantaObject {
     private String displayName;
 
     @Override
-    public String getIntegrationId() {
-        return "workday";
-    }
-
-    @Override
     public boolean shouldBeInScope(Collection<PersonInScope> peopleInScope) {
         return peopleInScope.stream().anyMatch(personInScope -> displayName.equalsIgnoreCase(personInScope.getFullName()));
     }

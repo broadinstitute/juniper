@@ -1,5 +1,6 @@
 package bio.terra.pearl.compliance.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -7,19 +8,22 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder
 public class VantaCredentials {
 
-    private String grant_type;
+    @JsonProperty("grant_type")
+    private String grantType;
 
     private String scope;
 
-    private String client_id;
+    @JsonProperty("client_id")
+    private String clientId;
 
-    private String client_secret;
+    @JsonProperty("client_secret")
+    private String clientSecret;
 
-    public VantaCredentials(String grant_type, String scope, String client_id, String secret) {
-        this.grant_type = grant_type;
+    public VantaCredentials(String grantType, String scope, String clientId, String secret) {
+        this.grantType = grantType;
         this.scope = scope;
-        this.client_id = client_id;
-        this.client_secret = secret;
+        this.clientId = clientId;
+        this.clientSecret = secret;
     }
 
 

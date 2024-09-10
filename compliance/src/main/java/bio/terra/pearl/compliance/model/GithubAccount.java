@@ -10,11 +10,6 @@ import java.util.Collection;
 @Getter @Setter @SuperBuilder @NoArgsConstructor @ToString
 public class GithubAccount extends VantaObject {
 
-    @Override
-    public String getIntegrationId() {
-        return "github";
-    }
-
     private String displayName;
 
     private String owner;

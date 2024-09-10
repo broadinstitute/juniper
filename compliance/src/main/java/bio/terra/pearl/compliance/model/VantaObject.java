@@ -10,8 +10,6 @@ import java.util.Collection;
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public abstract class VantaObject {
 
-    public abstract String getIntegrationId();
-
     String responseType;
 
     String resourceKind;

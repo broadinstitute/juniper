@@ -23,7 +23,6 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import io.cloudevents.CloudEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
@@ -42,10 +41,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -200,7 +197,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         AccessToken vantaToken= wc.post().bodyValue(new VantaCredentials("client_credentials", "vanta-api.all:read vanta-api.all:write", userSyncConfig.getVantaClientId(), userSyncConfig.getVantaClientSecret()))
                 .header("Content-Type", "application/json").retrieve().bodyToMono(AccessToken.class).block();
         WebClient.builder().defaultHeaders(h -> {
-            h.setBearerAuth(vantaToken.getAccess_token());
+            h.setBearerAuth(vantaToken.getAccessToken());
             h.setContentType(MediaType.APPLICATION_JSON);
         });
 
@@ -214,7 +211,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             String resourceKind = vantaIntegration.getResourceKind();
             ParameterizedTypeReference resultsResponseType = vantaIntegration.getResultsResponseType();
 
-            Collection<VantaObject> vantaObjects = collectAllData(vantaToken.getAccess_token(), integrationId, resourceKind, resultsResponseType);
+            Collection<VantaObject> vantaObjects = collectAllData(vantaToken.getAccessToken(), integrationId, resourceKind, resultsResponseType);
             log.debug("Found {} {} objects.", vantaObjects.size(), integrationId);
 
             Collection<VantaObject> objectsToUpdate = new HashSet<>();
@@ -226,12 +223,12 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                 objectsToUpdate.add(objectToMarkInScope);
                 idsAddedToScope.add(objectToMarkInScope.getSimpleId());
                 if (objectsToUpdate.size() == resourceBatchSize) {
-                    setInScope(vantaToken.getAccess_token(), objectsToUpdate, true, integrationId, resourceKind);
+                    setInScope(vantaToken.getAccessToken(), objectsToUpdate, true, integrationId, resourceKind);
                     objectsToUpdate.clear();
                 }
             });
             if (!objectsToUpdate.isEmpty()) {
-                setInScope(vantaToken.getAccess_token(), objectsToUpdate, true, integrationId, resourceKind);
+                setInScope(vantaToken.getAccessToken(), objectsToUpdate, true, integrationId, resourceKind);
                 objectsToUpdate.clear();
             }
 
@@ -240,12 +237,12 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                 objectsToUpdate.add(objectToMarkOutOfScope);
                 idsRemovedFromScope.add(objectToMarkOutOfScope.getSimpleId());
                 if (objectsToUpdate.size() == resourceBatchSize) {
-                    setInScope(vantaToken.getAccess_token(), objectsToUpdate, false, integrationId, resourceKind);
+                    setInScope(vantaToken.getAccessToken(), objectsToUpdate, false, integrationId, resourceKind);
                     objectsToUpdate.clear();
                 }
             });
             if (!objectsToUpdate.isEmpty()) {
-                setInScope(vantaToken.getAccess_token(), objectsToUpdate, false, integrationId, resourceKind);
+                setInScope(vantaToken.getAccessToken(), objectsToUpdate, false, integrationId, resourceKind);
                 objectsToUpdate.clear();
             }
 
