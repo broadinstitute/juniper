@@ -98,6 +98,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         vantaClientId = userSyncConfig.getVantaClientId();
         vantaSecret = userSyncConfig.getVantaClientSecret();
         peopleInScope.addAll(userSyncConfig.getPeopleInScope());
+       
+       // now that we've loaded the config, perform the sync 
         Instant start = Instant.now();
         String summaryMessage = syncVantaAccounts();
         Duration duration = Duration.between(start, Instant.now());
