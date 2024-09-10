@@ -28,18 +28,15 @@ public class ImportServiceTest extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
     @Autowired
-    private AdminUserService adminUserService;
-    @Autowired
     private AdminUserFactory adminUserFactory;
 
     @Test
     @Transactional
     public void testCrud(TestInfo info) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-        AdminUser user = adminUserFactory.builder(getTestName(info)).build();
-        AdminUser savedAdmin = adminUserService.create(user);
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
         Import dataImport = Import.builder()
-                .responsibleUserId(savedAdmin.getId())
+                .responsibleUserId(user.getId())
                 .studyEnvironmentId(bundle.getStudyEnv().getId())
                 .importType(ImportType.PARTICIPANT)
                 .status(ImportStatus.PROCESSING)

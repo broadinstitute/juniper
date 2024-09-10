@@ -15,8 +15,8 @@ public class RolePermissionDao extends BaseJdbiDao<RolePermission> {
         super(jdbi);
     }
 
-    public List<RolePermission> findByRole(UUID roleId) {
-        return findAllByProperty("role_id", roleId);
+    public List<RolePermission> findAllByRoleIds(List<UUID> roleIds) {
+        return findAllByPropertyCollection("role_id", roleIds);
     }
 
     public void deleteByRoleId(UUID roleId) {

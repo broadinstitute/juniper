@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
-import bio.terra.pearl.core.model.admin.PortalAdminUser;
-import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import bio.terra.pearl.core.model.admin.*;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
@@ -12,18 +12,34 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUser, PortalAdminUserDao> {
+public class PortalAdminUserService extends AdminDataAuditedService<PortalAdminUser, PortalAdminUserDao> {
 
     private PortalAdminUserRoleService portalAdminUserRoleService;
 
     public PortalAdminUserService(PortalAdminUserDao portalAdminUserDao,
-                                  PortalAdminUserRoleService portalAdminUserRoleService) {
-        super(portalAdminUserDao);
+                                  PortalAdminUserRoleService portalAdminUserRoleService,
+                                  AdminDataChangeService adminDataChangeService,
+                                  ObjectMapper objectMapper) {
+        super(portalAdminUserDao, adminDataChangeService, objectMapper);
         this.portalAdminUserRoleService = portalAdminUserRoleService;
+    }
+
+    public PortalAdminUser create(PortalAdminUser portalAdminUser, DataAuditInfo auditInfo) {
+        PortalAdminUser paUser = super.create(portalAdminUser, auditInfo);
+        if (portalAdminUser.getPortalAdminUserRoles() != null) {
+            for (PortalAdminUserRole pauRole : portalAdminUser.getPortalAdminUserRoles()) {
+                pauRole.setPortalAdminUserId(paUser.getId());
+                portalAdminUserRoleService.create(pauRole, auditInfo);
+                paUser.getPortalAdminUserRoles().add(pauRole);
+            }
+        }
+        return paUser;
     }
 
     public List<PortalAdminUser> findByPortal(UUID portalId) {
@@ -34,16 +50,18 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
         return dao.findByUserId(adminUserId);
     }
 
-    public Optional<PortalAdminUser> findOneWithRolesAndPermissions(UUID portalAdminUserId) {
+    public Optional<PortalAdminUser> findByUserIdAndPortal(UUID adminUserId, UUID portalId) {
+        return dao.findByUserIdAndPortal(adminUserId, portalId);
+    }
+
+    public Optional<PortalAdminUser> findWithRolesAndPermissions(UUID portalAdminUserId) {
         Optional<PortalAdminUser> portalAdminUserOpt = dao.find(portalAdminUserId);
         return portalAdminUserOpt.map(portalAdminUser -> attachRolesAndPermissions(portalAdminUser));
     }
 
     public PortalAdminUser attachRolesAndPermissions(PortalAdminUser portalAdminUser) {
-        List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
-        portalAdminUserRoles.forEach((PortalAdminUserRole portalAdminUserRole) -> {
-            portalAdminUser.getRoles().add(portalAdminUserRole.getRole());
-        });
+        List<Role> roles = portalAdminUserRoleService.findRolesWithPermissionsByPortalAdminUserId(portalAdminUser.getId());
+        portalAdminUser.setRoles(roles);
         return portalAdminUser;
     }
 
@@ -51,54 +69,31 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
         return dao.isUserInPortal(userId, portalId);
     }
 
-    public boolean userHasRole(UUID portalAdminUserId, String roleName) {
-        PortalAdminUser portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
-        return portalAdminUser.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
-    }
-
-    public boolean userHasPermission(UUID portalAdminUserId, String permissionName) {
-        PortalAdminUser portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
-        return portalAdminUser.getRoles().stream().anyMatch(role -> {
-            return role.getPermissions().stream().anyMatch(permission -> {
-                return permission.getName().equals(permissionName);
-            });
-        });
-    }
-
-    public Optional<PortalAdminUser> findByUserIdAndPortal(UUID userId, UUID portalId) {
-        return dao.findByUserIdAndPortal(userId, portalId);
-    }
-
     @Transactional
-    public void deleteByUserId(UUID adminUserId) {
+    public void deleteByUserId(UUID adminUserId, DataAuditInfo auditInfo) {
         List<PortalAdminUser> portalAdminUsers = dao.findByUserId(adminUserId);
         // for now this will probably be a small list, so it's fine to just delete them one by one
         for (PortalAdminUser portalAdminUser : portalAdminUsers) {
-            delete(portalAdminUser.getId(), CascadeProperty.EMPTY_SET);
+            delete(portalAdminUser.getId(), auditInfo, CascadeProperty.EMPTY_SET);
         }
     }
 
+    /** this operation is not audited, as it is only done when nuking an entire portal */
     @Transactional
-    public void deleteByPortalId(UUID portalId) {
+    public void deleteByPortalId(UUID portalId, DataAuditInfo auditInfo) {
         List<PortalAdminUser> portalAdminUsers = dao.findByPortal(portalId);
         for (PortalAdminUser portalAdminUser : portalAdminUsers) {
-            delete(portalAdminUser.getId(), CascadeProperty.EMPTY_SET);
+            delete(portalAdminUser.getId(), auditInfo, CascadeProperty.EMPTY_SET);
         }
     }
 
     @Transactional
     @Override
-    public void delete(UUID id, Set<CascadeProperty> cascades) {
+    public void delete(UUID id, DataAuditInfo auditInfo, Set<CascadeProperty> cascades) {
+        PortalAdminUser existing = dao.find(id)
+                .orElseThrow(() -> new NotFoundException("PortalAdminUser not found: " + id));
+        auditInfo.setAdminUserId(existing.getAdminUserId());
         portalAdminUserRoleService.deleteByPortalAdminUserId(id);
-        dao.delete(id);
-    }
-
-    @Transactional
-    public void removeUserFromPortal(UUID adminUserId, Portal portal) {
-        PortalAdminUser portalAdminUser = findByUserIdAndPortal(adminUserId, portal.getId()).orElseThrow(() ->
-                new NotFoundException(
-                        String.format("Portal user not found for user ID %s and portal %s", adminUserId, portal.getShortcode())));
-        portalAdminUserRoleService.deleteByPortalAdminUserId(portalAdminUser.getId());
-        dao.delete(portalAdminUser.getId());
+        super.delete(id, auditInfo, cascades);
     }
 }

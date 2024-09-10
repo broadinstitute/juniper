@@ -2,12 +2,12 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
-import bio.terra.pearl.core.service.admin.RoleService;
 import bio.terra.pearl.populate.dto.AdminUserPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
@@ -30,11 +30,12 @@ public class AdminUserPopulator extends BasePopulator<AdminUser, AdminUserPopDto
     public AdminUser populateForPortal(AdminUserPopDto popDto, PortalPopulateContext context,
                                        boolean overwrite, Portal portal) throws IOException {
         AdminUser user = populateFromDto(popDto, context, overwrite);
+        DataAuditInfo auditInfo = getAuditInfo("populateForPortal");
         PortalAdminUser portalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
                 .adminUserId(user.getId())
                 .portalId(portal.getId())
-                .build());
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), popDto.getRoleNames());
+                .build(), auditInfo);
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), popDto.getRoleNames(), auditInfo);
         return user;
     }
 
@@ -45,23 +46,29 @@ public class AdminUserPopulator extends BasePopulator<AdminUser, AdminUserPopDto
 
     @Override
     public AdminUser createNew(AdminUserPopDto popDto, FilePopulateContext context, boolean overwrite) {
-        return adminUserService.create(popDto);
+        return adminUserService.create(popDto, getAuditInfo("createNew"));
     }
 
     @Override
     public AdminUser createPreserveExisting(AdminUser existingObj, AdminUserPopDto popDto, FilePopulateContext context) {
         popDto.setId(existingObj.getId());
-        return adminUserService.update(popDto);
+        return adminUserService.update(popDto, getAuditInfo("createPreserveExisting"));
     }
 
     @Override
     public AdminUser overwriteExisting(AdminUser existingObj, AdminUserPopDto popDto, FilePopulateContext context) {
-        adminUserService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
+        adminUserService.delete(existingObj.getId(), getAuditInfo("overwriteExisting"), CascadeProperty.EMPTY_SET);
         return createNew(popDto, context, true);
     }
 
     @Override
     public Optional<AdminUser> findFromDto(AdminUserPopDto popDto, FilePopulateContext context ) {
         return adminUserService.findByUsername(popDto.getUsername());
+    }
+
+    private DataAuditInfo getAuditInfo(String methodName) {
+        return DataAuditInfo.builder()
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), methodName))
+                .build();
     }
 }

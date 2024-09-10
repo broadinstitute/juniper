@@ -20,9 +20,9 @@
     "description": "View, edit and configure the portal website"
   },
   {
-    "name": "team_roles_edit",
-    "displayName": "Team role management",
-    "description": "View and edit roles assigned to team members"
+    "name": "admin_user_edit",
+    "displayName": "Admin user management",
+    "description": "Create and edit admin users (study staff)"
   },
   {
     "name": "tdr_export",

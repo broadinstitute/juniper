@@ -1,22 +1,22 @@
 package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserRoleDao;
-import bio.terra.pearl.core.model.admin.PortalAdminUser;
-import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
-import bio.terra.pearl.core.model.admin.Role;
-import bio.terra.pearl.core.model.admin.RolePermission;
+import bio.terra.pearl.core.model.admin.*;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import bio.terra.pearl.core.service.exception.ValidationException;
 import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdminUserRole, PortalAdminUserRoleDao> {
+public class PortalAdminUserRoleService extends AdminDataAuditedService<PortalAdminUserRole, PortalAdminUserRoleDao> {
 
     private PermissionService permissionService;
 
@@ -30,8 +30,10 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
                                       PortalAdminUserRoleDao portalAdminUserRoleDao,
                                       @Lazy PortalAdminUserService portalAdminUserService,
                                       RolePermissionService rolePermissionService,
-                                      RoleService roleService) {
-        super(portalAdminUserRoleDao);
+                                      RoleService roleService,
+                                      AdminDataChangeService adminDataChangeService,
+                                      ObjectMapper objectMapper) {
+        super(portalAdminUserRoleDao, adminDataChangeService, objectMapper);
         this.permissionService = permissionService;
         this.portalAdminUserService = portalAdminUserService;
         this.rolePermissionService = rolePermissionService;
@@ -56,37 +58,31 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
      * @throws ValidationException when the portal admin user or any of the roles are not found
      */
     @Transactional
-    public List<String> setRoles(UUID portalAdminUserId, List<String> roleNames) throws ValidationException {
-        PortalAdminUser portalAdminUser = portalAdminUserService.find(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+    public List<String> setRoles(UUID portalAdminUserId, List<String> roleNames, DataAuditInfo auditInfo) throws ValidationException {
         List<Role> roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
 
-        dao.deleteByPortalAdminUserId(portalAdminUser.getId());
-        roles.forEach(role -> {
-            PortalAdminUserRole portalAdminUserRole = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUserId).roleId(role.getId()).build();
-            dao.create(portalAdminUserRole);
+        List<PortalAdminUserRole> existing = dao.findByPortalAdminUserId(portalAdminUserId);
+        List<PortalAdminUserRole> removed = existing.stream().filter(portalAdminUserRole -> roles.stream().noneMatch(role -> role.getId().equals(portalAdminUserRole.getRoleId()))).toList();
+        removed.forEach(portalAdminUserRole -> {
+            delete(portalAdminUserRole.getId(), auditInfo);
         });
-
+        List<Role> addedRoles = roles.stream().filter(role -> existing.stream().noneMatch(portalAdminUserRole -> portalAdminUserRole.getRoleId().equals(role.getId()))).toList();
+        List<PortalAdminUserRole> added = addedRoles.stream().map(role -> {
+            PortalAdminUserRole portalAdminUserRole = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUserId).roleId(role.getId()).build();
+            return create(portalAdminUserRole, auditInfo);
+        }).toList();
         return roles.stream().map(Role::getName).toList();
     }
 
-    public List<PortalAdminUserRole> findByPortalAdminUserIdWithRolesAndPermissions(UUID portalAdminUserId) {
+    public List<Role> findRolesWithPermissionsByPortalAdminUserId(UUID portalAdminUserId) {
         List<PortalAdminUserRole> portalAdminUserRoles = dao.findByPortalAdminUserId(portalAdminUserId);
-        portalAdminUserRoles.forEach(portalAdminUserRole -> {
-            roleService.findOne(portalAdminUserRole.getRoleId())
-                    .ifPresent(role -> {
-                        List<RolePermission> rolePermissions = rolePermissionService.findByRole(role.getId());
-                        rolePermissions.forEach(rolePermission -> {
-                            permissionService.find(rolePermission.getPermissionId()).ifPresent(permission -> {
-                                role.getPermissions().add(permission);
-                            });
-                        });
-                        portalAdminUserRole.setRole(role);
-                    });
-        });
-        return portalAdminUserRoles;
+        List<Role> roles = roleService.findAll(portalAdminUserRoles.stream().map(PortalAdminUserRole::getRoleId).toList());
+        roleService.attachPermissions(roles);
+        return roles;
     }
 
-    public void deleteByPortalAdminUserId(UUID portalAdminUserId) {
+    /** this operation is not audited as it is assumed this is in the context of portal admin user deletion, which is */
+    protected void deleteByPortalAdminUserId(UUID portalAdminUserId) {
         dao.deleteByPortalAdminUserId(portalAdminUserId);
     }
 }

@@ -7,7 +7,7 @@ import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -18,7 +18,7 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
     private PortalParticipantUserFactory portalParticipantUserFactory;
     @Autowired
-    private DataChangeRecordService dataChangeRecordService;
+    private ParticipantDataChangeService participantDataChangeService;
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
@@ -136,9 +136,9 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         }
         assertThat(answerService.findByResponseAndQuestions(savedResponse.getId(), List.of("foo", "q3", "test1")), hasSize(3));
 
-        List<DataChangeRecord> changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
+        List<ParticipantDataChange> changeRecords = participantDataChangeService.findByEnrollee(savedResponse.getEnrolleeId());
         assertThat(changeRecords.size(), equalTo(1));
-        assertThat(changeRecords.get(0), samePropertyValuesAs(DataChangeRecord.builder()
+        assertThat(changeRecords.get(0), samePropertyValuesAs(ParticipantDataChange.builder()
                         .enrolleeId(savedResponse.getEnrolleeId())
                         .surveyId(survey.getId())
                         .responsibleUserId(ppUser.getParticipantUserId())
@@ -154,7 +154,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), savedResponse, null, survey, ppUser, new ResponsibleEntity(pUser));
         Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), "q3").get();
         assertThat(savedAnswer.getStringValue(), nullValue());
-        changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
+        changeRecords = participantDataChangeService.findByEnrollee(savedResponse.getEnrolleeId());
         assertThat(changeRecords.size(), equalTo(2));
     }
 
