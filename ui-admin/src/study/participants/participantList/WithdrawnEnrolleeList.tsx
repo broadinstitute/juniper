@@ -76,7 +76,7 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
-  return <div className="container-fluid px-4 py-2">
+  return <div className="container-fluid px-4 pt-4">
     <NavBreadcrumb value={'withdrawnList'}>Withdrawn</NavBreadcrumb>
     <FontAwesomeIcon icon={faInfoCircle}/> More information about the
     <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.
