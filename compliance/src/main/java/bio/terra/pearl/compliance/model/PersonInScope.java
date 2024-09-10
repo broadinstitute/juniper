@@ -8,20 +8,13 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class PersonInScope {
 
-    public PersonInScope(String email, String gitUser, String firstName, String lastName) {
-        this.email = email;
-        this.gitUser = gitUser;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+    private String email;
 
-    public boolean matches(GithubAccount githubAccount) {
-        return gitUser.equalsIgnoreCase(githubAccount.getAccountName());
-    }
+    private String gitUser;
 
-    private String email,
-            gitUser, firstName, lastName;
+    private String firstName;
 
+    private String lastName;
 
     public String getFullName() {
         return firstName + " " + lastName;

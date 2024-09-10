@@ -9,7 +9,9 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class AccessToken {
 
-    private String access_token, token_type;
+    private String access_token;
+
+    private String token_type;
 
     private int expires_in;
 }
