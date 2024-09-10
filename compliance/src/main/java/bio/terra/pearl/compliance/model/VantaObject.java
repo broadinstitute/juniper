@@ -12,9 +12,17 @@ public abstract class VantaObject {
 
     public abstract String getIntegrationId();
 
-    String responseType, resourceKind, resourceId, connectionId;
+    String responseType;
 
-    boolean isDeactivated, inScope;
+    String resourceKind;
+
+    String resourceId;
+
+    String connectionId;
+
+    boolean isDeactivated;
+
+    boolean inScope;
 
     public abstract boolean shouldBeInScope(Collection<PersonInScope> peopleInScope);
 

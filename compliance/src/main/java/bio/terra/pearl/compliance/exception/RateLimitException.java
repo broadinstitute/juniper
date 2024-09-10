@@ -5,7 +5,8 @@ import java.time.Duration;
 /**
  * Exception thrown when we hit vanta rate limits
  */
-public class RateLimitException extends Throwable {
+public class RateLimitException extends RuntimeException {
+
     private final int retryAfterDelay;
 
     public RateLimitException(String message, int retryAfterDelay) {

@@ -5,15 +5,16 @@ import org.springframework.core.ParameterizedTypeReference;
 import java.util.Set;
 
 public class VantaIntegration<T extends VantaObject> {
+
     private final String integrationId;
     private final String resourceKind;
-    private ParameterizedTypeReference<? extends VantaResultsResponse<? extends VantaObject>> resultsResponseType;
+    private ParameterizedTypeReference<VantaResultsResponse<T>> resultsResponseType;
     private Set<String> resourceIdsToIgnore;
 
 
-    public <T extends VantaObject> VantaIntegration(String integrationId, String resourceKind,
-                                                    ParameterizedTypeReference<? extends VantaResultsResponse<T>> resultsResponseType,
-                                                    Set<String> resourceIdsToIgnore) {
+    public VantaIntegration(String integrationId, String resourceKind,
+                            ParameterizedTypeReference<VantaResultsResponse<T>> resultsResponseType,
+                            Set<String> resourceIdsToIgnore) {
         this.integrationId = integrationId;
         this.resourceKind = resourceKind;
         this.resultsResponseType = resultsResponseType;
@@ -28,7 +29,7 @@ public class VantaIntegration<T extends VantaObject> {
         return resourceKind;
     }
 
-    public ParameterizedTypeReference<? extends VantaResultsResponse<? extends VantaObject>> getResultsResponseType() {
+    public ParameterizedTypeReference<VantaResultsResponse<T>> getResultsResponseType() {
         return resultsResponseType;
     }
 

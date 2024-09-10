@@ -61,8 +61,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
 
-    private UserSyncConfig userSyncConfig;
-
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
 
@@ -95,7 +93,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     @Override
     public void run(String... args) throws Exception {
-        userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
+        UserSyncConfig userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
         vantaBasePath = userSyncConfig.getVantaBaseUrl();
         vantaClientId = userSyncConfig.getVantaClientId();
         vantaSecret = userSyncConfig.getVantaClientSecret();
@@ -124,7 +122,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
      */
     private <T extends VantaObject> Collection<T> collectAllData(WebClient wc, ParameterizedTypeReference<VantaResultsResponse<T>> type) {
         final AtomicReference<VantaResults<T>> results = new AtomicReference<>();
-        AtomicReference<List<T>> elements = new AtomicReference<>(new ArrayList());
+        AtomicReference<List<T>> elements = new AtomicReference<>(new ArrayList<>());
         AtomicInteger cursorCount = new AtomicInteger(0);
 
         while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
@@ -138,9 +136,9 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                     }).retrieve()
                     .onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
                         List<String> header = res.headers().header("Retry-After");
-                        Integer delayInSeconds;
+                        int delayInSeconds;
                         if (!header.isEmpty()) {
-                            delayInSeconds = Integer.valueOf(header.get(0));
+                            delayInSeconds = Integer.parseInt(header.get(0));
                         } else {
                             delayInSeconds = 70;
                         }
@@ -148,17 +146,13 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                         try {
                             Thread.sleep(Duration.ofSeconds(delayInSeconds));
                         } catch (InterruptedException e) {
-                            log.error("Interrupted while sleeping in response to rate limit ");
+                            log.error("Interrupted while sleeping in response to rate limit", e);
                         }
                         return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
                     })
                     .bodyToMono(type)
-                    .retryWhen(Retry.withThrowable(throwableFlux -> {
-                        return throwableFlux.filter(t -> t instanceof RateLimitException).map(t -> {
-                            RateLimitException re = (RateLimitException) t;
-                            return Retry.fixedDelay(5, re.getRetryAfterDelayDuration());
-                        });
-                    })).block();
+                    .retryWhen(Retry.withThrowable(throwableFlux -> throwableFlux.filter(RateLimitException.class::isInstance).map(t ->
+                            Retry.fixedDelay(5, ((RateLimitException)t).getRetryAfterDelayDuration())))).block();
             cursorCount.incrementAndGet();
             results.set(response.getResults());
 
@@ -194,7 +188,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
         // go through each integration and find scope changes that need to be made.
         int resourceBatchSize = 50;
-        Collection<VantaObject> vantaObjects = new HashSet<>();
         List<VantaIntegration> integrationsToSync = new ArrayList<>();
         integrationsToSync.add(new VantaIntegration("jira", "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {}, Set.of("669a8422865ac5731466a323", "66c629d278231843aec354ff", "669a8431865ac5731469ed44",
                 "669a842e865ac5731469663b", "669a8427865ac5731467c5d0", "669a8431865ac5731469e994")));
@@ -210,7 +203,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             String resourceKind = vantaIntegration.getResourceKind();
             ParameterizedTypeReference resultsResponseType = vantaIntegration.getResultsResponseType();
 
-            vantaObjects = collectAllData(vantaToken.getAccess_token(), integrationId, resourceKind, resultsResponseType);
+            Collection<VantaObject> vantaObjects = collectAllData(vantaToken.getAccess_token(), integrationId, resourceKind, resultsResponseType);
             log.debug("Found {} {} objects.", vantaObjects.size(), integrationId);
 
             Collection<VantaObject> objectsToUpdate = new HashSet<>();
@@ -286,7 +279,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         try {
             String updateResult = getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
                     .patch().bodyValue(updateMetadata).retrieve().onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res ->
-                            res.bodyToMono(String.class).map(msg -> new VantaUpdateException(msg))
+                            res.bodyToMono(String.class).map(VantaUpdateException::new)
                     ).bodyToMono(String.class).block();
             log.debug("Updated {} {} objects to {} with response {}", updateMetadata.getResourceIds().size(), integrationId, isInScope, updateResult);
         } catch (VantaUpdateException e) {
