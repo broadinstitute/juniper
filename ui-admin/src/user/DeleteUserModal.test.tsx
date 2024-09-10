@@ -22,7 +22,7 @@ describe('DeleteUserModal', () => {
 
     // verify page content and
     const confirmRemoveUserInput = screen.getByText('Confirm by typing "remove user@email" below')
-    const removeButton = screen.getByText('Remove user')
+    const removeButton = screen.getByText('Remove')
     expect(removeButton).toBeDisabled()
 
     // verify button is enabled when user types matching string

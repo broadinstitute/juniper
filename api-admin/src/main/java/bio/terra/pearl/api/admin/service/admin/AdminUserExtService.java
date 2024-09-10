@@ -1,37 +1,47 @@
 package bio.terra.pearl.api.admin.service.admin;
 
-import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
+import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminUserExtService {
-  private AdminUserService adminUserService;
-  private AuthUtilService authUtilService;
-  private AdminEmailService adminEmailService;
-  private PortalAdminUserService portalAdminUserService;
+  private final AdminUserService adminUserService;
+  private final AdminEmailService adminEmailService;
+  private final PortalAdminUserService portalAdminUserService;
+  private final PortalAdminUserRoleService portalAdminUserRoleService;
 
   public AdminUserExtService(
       AdminUserService adminUserService,
-      AuthUtilService authUtilService,
       AdminEmailService adminEmailService,
-      EmailTemplateService emailTemplateService,
-      PortalAdminUserService portalAdminUserService) {
+      PortalAdminUserService portalAdminUserService,
+      PortalAdminUserRoleService portalAdminUserRoleService) {
     this.adminUserService = adminUserService;
-    this.authUtilService = authUtilService;
     this.adminEmailService = adminEmailService;
     this.portalAdminUserService = portalAdminUserService;
+    this.portalAdminUserRoleService = portalAdminUserRoleService;
+  }
+
+  @SuperuserOnly
+  public AdminUser get(OperatorAuthContext authContext, UUID id) {
+    return get(id, null, authContext.getOperator());
   }
 
   /**
@@ -39,16 +49,17 @@ public class AdminUserExtService {
    * null, returns all portalAdminUsers, otherwise, just returns the portalAdminUser corresponding
    * to the portalId if one exists
    */
-  public AdminUser get(UUID id, String portalShortcode, AdminUser operator) {
-    if (portalShortcode == null && !operator.isSuperuser()) {
-      // only superusers can see all PortalAdminUsers for an AdminUser
-      throw new PermissionDeniedException("You do not have permission for this operation");
-    }
-    Portal portal = null;
-    if (portalShortcode != null) {
-      portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    }
+  @EnforcePortalPermission(permission = "BASE")
+  public AdminUser getInPortal(PortalAuthContext authContext, UUID id) {
+    return get(id, authContext.getPortal(), authContext.getOperator());
+  }
 
+  /**
+   * if portal is specified, will only return the user if they are in the portal, and will only
+   * return PortalAdminUser info related to that portal. if portal is null, will return all
+   * information about the user
+   */
+  private AdminUser get(UUID id, Portal portal, AdminUser operator) {
     Optional<AdminUser> adminUserOpt = adminUserService.find(id);
     if (adminUserOpt.isEmpty()) {
       throw new NotFoundException("No admin user with id %s".formatted(id.toString()));
@@ -71,39 +82,140 @@ public class AdminUserExtService {
     return adminUser;
   }
 
-  public List<AdminUser> getAll(AdminUser operator) {
-    if (operator.isSuperuser()) {
-      return adminUserService.findAllWithRoles();
-    }
-    throw new PermissionDeniedException(
-        "User %s does not have permissions to list all users".formatted(operator.getUsername()));
+  @SuperuserOnly
+  public List<AdminUser> getAll(OperatorAuthContext authContext) {
+    return adminUserService.findAllWithRoles();
   }
 
-  public List<AdminUser> findByPortal(String portalShortcode, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    return adminUserService.findAllWithRolesByPortal(portal.getId());
+  @EnforcePortalPermission(permission = "BASE")
+  public List<AdminUser> findByPortal(PortalAuthContext authContext) {
+    return adminUserService.findAllWithRolesByPortal(authContext.getPortal().getId());
   }
 
-  public AdminUser create(NewAdminUser newUserParams, AdminUser operator) {
-    if (newUserParams.superuser && !operator.isSuperuser()) {
-      throw new PermissionDeniedException(
-          "User %s does not have permissions to create superusers"
-              .formatted(operator.getUsername()));
+  @SuperuserOnly
+  public AdminUser createSuperuser(OperatorAuthContext authContext, String username) {
+    AdminUser newUser = AdminUser.builder().username(username).superuser(true).build();
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder().responsibleAdminUserId(authContext.getOperator().getId()).build();
+    AdminUser adminUser = adminUserService.create(newUser, auditInfo);
+    adminEmailService.sendWelcomeEmail(null, adminUser);
+    return adminUser;
+  }
+
+  @EnforcePortalPermission(permission = "admin_user_edit")
+  @Transactional
+  public AdminUser createAdminUser(
+      PortalAuthContext authContext, String username, List<String> roleNames) {
+    authorizeRoles(authContext, roleNames);
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder().responsibleAdminUserId(authContext.getOperator().getId()).build();
+
+    AdminUser adminUser =
+        adminUserService
+            .findByUsername(username)
+            .orElseGet(
+                () -> {
+                  AdminUser newUser =
+                      AdminUser.builder().username(username).superuser(false).build();
+                  return adminUserService.create(newUser, null);
+                });
+
+    if (portalAdminUserService
+        .findByUserIdAndPortal(adminUser.getId(), authContext.getPortal().getId())
+        .isPresent()) {
+      throw new IllegalArgumentException("User already exists in this portal");
     }
-    AdminUser newUser =
-        AdminUser.builder()
-            .username(newUserParams.username)
-            .superuser(newUserParams.superuser)
+
+    PortalAdminUser paUser =
+        PortalAdminUser.builder()
+            .portalId(authContext.getPortal().getId())
+            .adminUserId(adminUser.getId())
             .build();
-    if (newUserParams.portalShortcode != null) {
-      Portal portal = authUtilService.authUserToPortal(operator, newUserParams.portalShortcode);
-      PortalAdminUser paUser = PortalAdminUser.builder().portalId(portal.getId()).build();
-      newUser.getPortalAdminUsers().add(paUser);
+    paUser = portalAdminUserService.create(paUser, auditInfo);
+    if (roleNames.size() > 0) {
+      portalAdminUserRoleService.setRoles(paUser.getId(), roleNames, auditInfo);
     }
-    AdminUser newAdminUser = adminUserService.create(newUser);
-    adminEmailService.sendWelcomeEmail(null, newAdminUser);
-    return newAdminUser;
+    adminEmailService.sendWelcomeEmail(authContext.getPortal(), adminUser);
+    return adminUser;
   }
 
-  public record NewAdminUser(String username, boolean superuser, String portalShortcode) {}
+  protected void authorizeRoles(PortalAuthContext authContext, List<String> roleNames) {
+    if (!authContext.getOperator().isSuperuser()) {
+      // regular users can only assign roles they have themselves
+      PortalAdminUser operatorPaUser =
+          portalAdminUserService
+              .findByUserIdAndPortal(
+                  authContext.getOperator().getId(), authContext.getPortal().getId())
+              .orElseThrow();
+      portalAdminUserService.attachRolesAndPermissions(operatorPaUser);
+      List<String> operatorRoleNames =
+          operatorPaUser.getRoles().stream().map(Role::getName).toList();
+      roleNames.forEach(
+          roleName -> {
+            if (!operatorRoleNames.contains(roleName)) {
+              throw new PermissionDeniedException(
+                  "You do not have permission to assign role %s".formatted(roleName));
+            }
+          });
+    }
+  }
+
+  @EnforcePortalPermission(permission = "admin_user_edit")
+  public List<String> setPortalUserRoles(
+      PortalAuthContext authContext, UUID adminUserId, List<String> roleNames) {
+
+    // looking up the portalAdminUser of the target by the portal from the authContext
+    // confirms they are in a portal the operator has access and permission to edit users
+    PortalAdminUser paUser =
+        portalAdminUserService
+            .findByUserIdAndPortal(adminUserId, authContext.getPortal().getId())
+            .orElseThrow(() -> new NotFoundException("No matching user found"));
+    portalAdminUserService.attachRolesAndPermissions(paUser);
+    List<String> existingRoleNames = paUser.getRoles().stream().map(Role::getName).toList();
+    List<String> newRoles =
+        roleNames.stream().filter(roleName -> !existingRoleNames.contains(roleName)).toList();
+    authorizeRoles(authContext, newRoles);
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(authContext.getOperator().getId())
+            .adminUserId(adminUserId)
+            .build();
+    return portalAdminUserRoleService.setRoles(paUser.getId(), roleNames, auditInfo);
+  }
+
+  @SuperuserOnly
+  public void delete(OperatorAuthContext authContext, UUID adminUserId) {
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(authContext.getOperator().getId())
+            .adminUserId(adminUserId)
+            .build();
+    adminUserService.delete(adminUserId, auditInfo);
+  }
+
+  /**
+   * removes the user from the specified portal. This will never delete the adminUser, as that needs
+   * to be preserved for audit records
+   */
+  @EnforcePortalPermission(permission = "admin_user_edit")
+  @Transactional
+  public void deleteInPortal(PortalAuthContext authContext, UUID adminUserId) {
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(authContext.getOperator().getId())
+            .adminUserId(adminUserId)
+            .build();
+    // looking up the portalAdminUser of the target by the portal from the authContext
+    // confirms they are in a portal the operator has access and permission to edit users
+    PortalAdminUser paUser =
+        portalAdminUserService
+            .findByUserIdAndPortal(adminUserId, authContext.getPortal().getId())
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "No admin user with id %s in portal %s"
+                            .formatted(
+                                adminUserId.toString(), authContext.getPortal().getShortcode())));
+    portalAdminUserService.delete(paUser.getId(), auditInfo);
+  }
 }

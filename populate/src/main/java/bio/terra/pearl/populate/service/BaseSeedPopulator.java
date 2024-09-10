@@ -28,9 +28,9 @@ public class BaseSeedPopulator {
     public static final List<String> ADMIN_USERS_TO_POPULATE =
             Arrays.asList("adminUsers/dbush.json", "adminUsers/myanaman.json",
                     "adminUsers/connor.json", "adminUsers/egwozdz.json",
-                    "adminUsers/mflinn.json", "adminUsers/nwatts.json",
-                    "adminUsers/mbemis.json", "adminUsers/cunningh.json",
-                    "adminUsers/andrew.json", "adminUsers/pegah.json", "adminUsers/sampath.json");
+                    "adminUsers/mflinn.json", "adminUsers/mbemis.json",
+                    "adminUsers/cunningh.json", "adminUsers/andrew.json",
+                    "adminUsers/sampath.json");
     public static final List<String> LANGUAGE_TEXTS_TO_POPULATE =
             Arrays.asList("i18n/en/languageTexts.json", "i18n/es/languageTexts.json", "i18n/dev/languageTexts.json");
 

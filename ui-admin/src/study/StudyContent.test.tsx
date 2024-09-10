@@ -46,6 +46,7 @@ test('renders a Create Survey modal', async () => {
 test('renders a Create Outreach Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
   jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue([])
+
   renderInPortalRouter(studyEnvContext.portal, <StudyContent studyEnvContext={studyEnvContext}/>)
   await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const addSurveyButton = screen.getByTestId('addOutreachSurvey')

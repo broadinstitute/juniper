@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter @Setter @SuperBuilder
@@ -17,5 +19,9 @@ public class Role extends BaseEntity {
     private String displayName;
     private String description;
     @Builder.Default
-    private Set<Permission> permissions = new HashSet<>();
+    private List<RolePermission> rolePermissions = new ArrayList<>();
+
+    // convenience DTO method
+    @Builder.Default
+    private List<Permission> permissions = new ArrayList<>();
 }
