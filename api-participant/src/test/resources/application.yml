@@ -24,7 +24,7 @@ env:
 # contains the configuration of the BPM test application. We can use that application in our
 # integration testing to make sure the application code paths are working. However, we do not
 # want it to appear in production environments.
-spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties,sm://
+spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties
 
 logging.pattern.level: '%X{requestId} %5p'
 
@@ -38,9 +38,9 @@ spring:
   cloud:
     gcp:
       secretmanager:
-        enabled: ${ENABLE_GCP_SECRET_MANAGER:false}
+        enabled: false
       core:
-        enabled: ${ENABLE_GCP_SECRET_MANAGER:false}
+        enabled: false
 
   # application name and version are used to populate the logging serviceContext
   # https://github.com/DataBiosphere/terra-common-lib/blob/480ab3daae282ddff0fef8dc329494a4422e32f1/src/main/java/bio/terra/common/logging/GoogleJsonLayout.java#L118
