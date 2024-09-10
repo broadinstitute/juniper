@@ -1,0 +1,15 @@
+{
+  "itemType": "GROUP",
+  "text": "Learn More",
+  "itemDtos": [
+    {
+      "populateFileName": "en/scientificBackground.json"
+    },
+    {
+      "populateFileName": "en/faq.json"
+    },
+    {
+      "populateFileName": "en/aboutUs.json"
+    }
+  ]
+}

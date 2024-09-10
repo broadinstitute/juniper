@@ -1,0 +1,28 @@
+{
+  "stableId" : "cardiomyopathyStudy",
+  "version" : 1,
+  "name" : "Cardiomyopathy study",
+  "surveyType" : "OUTREACH",
+  "blurb" : "research opportunity for people with certain forms of cardiomyopathy",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "eligibilityRule" : "{age} >= 18 and {profile.mailingAddress.country} = 'gb' and ({answer.baseline.DIAGNOSIS} = 'hcm' or {answer.baseline.DIAGNOSIS} = 'dcm')",
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : true,
+  "autoUpdateTaskAssignments" : true,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "outreach_content_wf0ypjw0wrl"
+      } ]
+    } ]
+  }
+}

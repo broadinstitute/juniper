@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.factory.admin;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ public class AdminUserFactory {
     }
 
     public AdminUser buildPersisted(String testName, boolean superuser) {
-        return adminUserService.create(builder(testName).superuser(superuser).build());
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("AdminUserFactory.buildPersisted").build();
+        return adminUserService.create(builder(testName).superuser(superuser).build(), auditInfo);
     }
 
     public AdminUser buildPersisted(AdminUser.AdminUserBuilder builder) {
-        return adminUserService.create(builder.build());
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("AdminUserFactory.buildPersisted").build();
+        return adminUserService.create(builder.build(), auditInfo);
     }
 
 }

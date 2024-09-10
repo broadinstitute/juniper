@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1721748596.533046000,
+  "lastUpdatedAt" : 1725379087.316500000,
+  "stableId" : "hearthive_hhcmConsentReminder",
+  "name" : "hhcm_consent_reminder",
+  "version" : 4,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1721748596.523953000,
+    "lastUpdatedAt" : 1721748596.523953000,
+    "language" : "en",
+    "subject" : "The Heart Hive Cardiomyopathy study",
+    "bodyPopulateFile" : "en/hearthive_hhcmConsentReminder-4.html"
+  } ]
+}

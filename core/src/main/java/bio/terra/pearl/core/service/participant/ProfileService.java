@@ -7,7 +7,8 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.DataAuditedService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +19,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
+public class ProfileService extends ParticipantDataAuditedService<Profile, ProfileDao> {
     private MailingAddressDao mailingAddressDao;
 
-    public ProfileService(ProfileDao profileDao, MailingAddressDao mailingAddressDao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
-        super(profileDao, dataChangeRecordService, objectMapper);
+    public ProfileService(ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantDataChangeService participantDataChangeService, ObjectMapper objectMapper) {
+        super(profileDao, participantDataChangeService, objectMapper);
         this.mailingAddressDao = mailingAddressDao;
     }
 

@@ -76,7 +76,9 @@ public class SiteContentExtService {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     siteContent.setPortalId(portal.getId());
     siteContent.setStableId(stableId);
-    return siteContentService.createNewVersion(siteContent);
+    SiteContent newSiteContent = siteContentService.createNewVersion(siteContent);
+
+    return newSiteContent;
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {

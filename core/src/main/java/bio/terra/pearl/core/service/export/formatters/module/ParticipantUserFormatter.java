@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
@@ -11,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUser> {
     public static final String PARTICIPANT_USER_MODULE_NAME = "account";
-    public static final List<String> INCLUDED_PROPERTIES = List.of("username", "createdAt");
+    public static final List<String> INCLUDED_PROPERTIES = List.of("shortcode", "username", "createdAt");
 
     public ParticipantUserFormatter(ExportOptions exportOptions) {
         itemFormatters = INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<ParticipantUser>(propName, ParticipantUser.class))

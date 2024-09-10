@@ -57,7 +57,7 @@ jobs:
           author_name: Publish docker Image
           fields: job
           text: "Publish failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'
     
   publish-participant-image:
     needs: get-version-tag
@@ -92,7 +92,7 @@ jobs:
           author_name: Publish docker Image
           fields: job
           text: "Publish failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'
   
   report-to-sherlock:
     # Report new version of application to DSP DevOps Tooling
@@ -133,6 +133,6 @@ jobs:
           author_name: Auto Deploy to Dev
           fields: job
           text: Deploy to dev of ${{ needs.get-version-tag.outputs.tag }} resulted in ${{ needs.set-version-in-dev.result }}
-          username: 'Pearl Build Notifications'
+          username: 'Juniper Build Notifications'
 
 

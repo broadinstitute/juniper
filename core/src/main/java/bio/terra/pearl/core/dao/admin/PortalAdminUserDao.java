@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.admin;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalAdminUserDao extends BaseJdbiDao<PortalAdminUser> {
+public class PortalAdminUserDao extends BaseMutableJdbiDao<PortalAdminUser> {
 
     public PortalAdminUserDao(Jdbi jdbi) {
         super(jdbi);

@@ -1,13 +1,16 @@
 {
   "createdAt" : 1700067540.414227000,
   "lastUpdatedAt" : 1700078709.326467000,
-  "name" : "Consent Reminder",
   "stableId" : "hearthive_consentReminder",
+  "name" : "Consent Reminder",
   "version" : 4,
   "publishedVersion" : 1,
-  "localizedEmailTemplateDtos": [{
-    "language": "en",
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1700067540.414227000,
+    "lastUpdatedAt" : 1700078709.326467000,
+    "language" : "en",
     "subject" : "Please Complete Your Enrollment in Heart Hive",
     "bodyPopulateFile" : "en/hearthive_consentReminder-4.html"
-  }]
+  } ]
 }

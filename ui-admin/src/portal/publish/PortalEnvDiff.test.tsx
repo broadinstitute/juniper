@@ -25,9 +25,15 @@ describe('PortalEnvDiff', () => {
     const { portal } = mockPortalContext()
     const changeSet: PortalEnvironmentChange = {
       ...emptyChangeSet,
-      configChanges: [
-        { propertyName: 'password', oldValue: 'secret', newValue: 'moreSecret' }
-      ]
+      languageChanges: {
+        addedItems: [{
+          languageCode: 'es',
+          languageName: 'Spanish',
+          id: 'es'
+        }],
+        removedItems: [],
+        changedItems: []
+      }
     }
     const spyApplyChanges = jest.fn(() => 1)
     renderInPortalRouter(portal, <PortalEnvDiffView
@@ -44,10 +50,44 @@ describe('PortalEnvDiff', () => {
     expect(spyApplyChanges).toHaveBeenCalledTimes(1)
     expect(spyApplyChanges).toHaveBeenCalledWith(emptyChangeSet)
 
-    // if we save after clicking the password field, we should save with a config change
+    // if we save after clicking on a language field, we should save with a language change
+    await userEvent.click(screen.getByText('Spanish (es)'))
+    await userEvent.click(screen.getByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
+
+    expect(spyApplyChanges).toHaveBeenCalledTimes(2)
+    expect(spyApplyChanges).toHaveBeenCalledWith(changeSet)
+  })
+
+  it('prompts for confirmation when publishing sensitive config changes', async () => {
+    const { portal } = mockPortalContext()
+    const changeSet: PortalEnvironmentChange = {
+      ...emptyChangeSet,
+      configChanges: [
+        { propertyName: 'password', oldValue: 'secret', newValue: 'moreSecret' }
+      ]
+    }
+    const spyApplyChanges = jest.fn(() => 1)
+    renderInPortalRouter(portal, <PortalEnvDiffView
+      portal={portal}
+      destEnvName={portal.portalEnvironments[0].environmentName}
+      applyChanges={spyApplyChanges}
+      sourceEnvName="sourceEnv"
+      changeSet={changeSet}/>, { ...defaultRenderOpts, permissions: ['publish'] })
+    expect(screen.queryAllByText('no changes')).toHaveLength(5)
+    expect(screen.queryAllByRole('checkbox')).toHaveLength(1)
+
+    // if we save after clicking the password field, we should be prompted for confirmation
     await userEvent.click(screen.getByText('password:'))
     await userEvent.click(screen.getByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
-    expect(spyApplyChanges).toHaveBeenCalledTimes(2)
+
+    await screen.getByText('Confirm Publish')
+
+    // at this time, changes should not have been published
+    expect(spyApplyChanges).toHaveBeenCalledTimes(0)
+
+    await userEvent.click(screen.getByText('Publish'))
+
+    expect(spyApplyChanges).toHaveBeenCalledTimes(1)
     expect(spyApplyChanges).toHaveBeenCalledWith(changeSet)
   })
 

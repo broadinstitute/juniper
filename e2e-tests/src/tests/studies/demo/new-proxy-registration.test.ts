@@ -91,6 +91,9 @@ test.describe('Proxy', () => {
       progress = await consent.progress()
       expect(progress).toStrictEqual('Page 2 of 3')
       await consent.agree()
+      await consent.getQuestion(data.Consent.VoluntaryParticipation).fillIn('JS')
+      await consent.getQuestion(data.Consent.PermissionToUseDNA).fillIn('JS')
+      await consent.getQuestion(data.Consent.AgreeToContact).fillIn('JS')
       await consent.clickByRole('button', 'Next')
 
 

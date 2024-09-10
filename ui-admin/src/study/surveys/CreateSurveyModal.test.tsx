@@ -144,7 +144,7 @@ describe('CreateSurveyModal', () => {
         autoUpdateTaskAssignments: true,
         blurb: 'Testing out the screener blurb...',
         assignToExistingEnrollees: true,
-        content: '{"pages":[]}',
+        content: '{"pages":[{"elements":[]}]}',
         createdAt: expect.anything(),
         lastUpdatedAt: expect.anything(),
         id: '',

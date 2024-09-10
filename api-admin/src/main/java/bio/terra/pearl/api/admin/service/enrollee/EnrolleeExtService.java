@@ -4,13 +4,13 @@ import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.UUID;
@@ -21,17 +21,17 @@ public class EnrolleeExtService {
   private AuthUtilService authUtilService;
   private EnrolleeService enrolleeService;
   private WithdrawnEnrolleeService withdrawnEnrolleeService;
-  private DataChangeRecordService dataChangeRecordService;
+  private ParticipantDataChangeService participantDataChangeService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
-      DataChangeRecordService dataChangeRecordService) {
+      ParticipantDataChangeService participantDataChangeService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
-    this.dataChangeRecordService = dataChangeRecordService;
+    this.participantDataChangeService = participantDataChangeService;
   }
 
   public List<Enrollee> findForKitManagement(
@@ -61,13 +61,14 @@ public class EnrolleeExtService {
     return enrolleeService.loadForAdminView(enrollee);
   }
 
-  public List<DataChangeRecord> findDataChangeRecords(
+  public List<ParticipantDataChange> findDataChangeRecords(
       AdminUser operator, String enrolleeShortcode, String modelName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     if (modelName != null) {
-      return dataChangeRecordService.findAllRecordsForEnrolleeAndModelName(enrollee, modelName);
+      return participantDataChangeService.findAllRecordsForEnrolleeAndModelName(
+          enrollee, modelName);
     }
-    return dataChangeRecordService.findAllRecordsForEnrollee(enrollee);
+    return participantDataChangeService.findAllRecordsForEnrollee(enrollee);
   }
 
   public WithdrawnEnrollee withdrawEnrollee(AdminUser operator, String enrolleeShortcode)

@@ -1,0 +1,15 @@
+{
+  "itemType": "GROUP",
+  "text": "DEV_Learn More",
+  "itemDtos": [
+    {
+      "populateFileName": "dev/scientificBackground.json"
+    },
+    {
+      "populateFileName": "dev/faq.json"
+    },
+    {
+      "populateFileName": "dev/aboutUs.json"
+    }
+  ]
+}

@@ -23,7 +23,6 @@ public class AdminUserDaoTest extends BaseSpringBootTest {
     public void testCreateAdminUser() {
         AdminUser adminUser = AdminUser.builder()
                 .username("test")
-                .token("secret")
                 .lastLogin(Instant.now())
                 .superuser(true)
                 .build();

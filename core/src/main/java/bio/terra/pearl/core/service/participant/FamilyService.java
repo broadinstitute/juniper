@@ -2,13 +2,14 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -21,19 +22,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class FamilyService extends DataAuditedService<Family, FamilyDao> {
+public class FamilyService extends ParticipantDataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
     private final EnrolleeService enrolleeService;
     private final FamilyEnrolleeService familyEnrolleeService;
     private final EnrolleeRelationService enrolleeRelationService;
 
     public FamilyService(FamilyDao familyDao,
-                         DataChangeRecordService dataChangeRecordService,
+                         ParticipantDataChangeService participantDataChangeService,
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
                          @Lazy EnrolleeService enrolleeService,
                          FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService) {
-        super(familyDao, dataChangeRecordService, objectMapper);
+        super(familyDao, participantDataChangeService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.enrolleeService = enrolleeService;
         this.familyEnrolleeService = familyEnrolleeService;
@@ -184,17 +185,17 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return update(family, auditInfo);
     }
 
-    public List<DataChangeRecord> findDataChangeRecordsByFamilyId(UUID familyId) {
-        return dataChangeRecordService.findByFamilyId(familyId);
+    public List<ParticipantDataChange> findDataChangeRecordsByFamilyId(UUID familyId) {
+        return dataChangeService.findByFamilyId(familyId);
     }
 
-    public List<DataChangeRecord> findDataChangeRecordsByFamilyIdAndModelName(UUID familyId, String model) {
-        return dataChangeRecordService.findByFamilyIdAndModelName(familyId, model);
+    public List<ParticipantDataChange> findDataChangeRecordsByFamilyIdAndModelName(UUID familyId, String model) {
+        return dataChangeService.findByFamilyIdAndModelName(familyId, model);
     }
 
     @Override
-    protected DataChangeRecord makeCreationChangeRecord(Family model, DataAuditInfo auditInfo) {
-        DataChangeRecord changeRecord = super.makeCreationChangeRecord(model, auditInfo);
+    protected ParticipantDataChange makeCreationChangeRecord(Family model, DataAuditInfo auditInfo) {
+        ParticipantDataChange changeRecord = super.makeCreationChangeRecord(model, auditInfo);
         changeRecord.setFamilyId(model.getId());
         return changeRecord;
     }

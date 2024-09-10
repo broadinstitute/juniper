@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1725371921.829644000,
+  "lastUpdatedAt" : 1725379087.329018000,
+  "stableId" : "hearthive_cmyopOutreachComplete",
+  "name" : "Cmyop Outreach Complete",
+  "version" : 1,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1725371921.822909000,
+    "lastUpdatedAt" : 1725371921.822909000,
+    "language" : "en",
+    "subject" : "Insert subject",
+    "bodyPopulateFile" : "en/hearthive_cmyopOutreachComplete-1.html"
+  } ]
+}

@@ -18,7 +18,6 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
-import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -33,21 +32,23 @@ import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.FeatureDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -171,30 +172,37 @@ public class EnrolleeImportService {
      */
     public List<Map<String, String>> generateImportMaps(InputStream in, ImportFileFormat fileFormat) {
         List<Map<String, String>> importMaps = new ArrayList<>();
-        char separator = TSV_DELIMITER;
-        if (fileFormat == ImportFileFormat.CSV) {
-            separator = CSV_DELIMITER;
+        Iterable<CSVRecord> parser;
+
+        try {
+            CSVFormat format = fileFormat == ImportFileFormat.TSV ? CSVFormat.TDF : CSVFormat.DEFAULT;
+
+            parser = format.builder().setRecordSeparator('\n').build().parse(new InputStreamReader(in));
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing input stream", e);
         }
-        CSVParser parser = new CSVParserBuilder()
-                .withSeparator(separator).build();
-        try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(in)).withCSVParser(parser).build()) {
-            String[] headers = csvReader.readNext();
-            String[] line;
-            while ((line = csvReader.readNext()) != null) {
-                if (line[0].equalsIgnoreCase("shortcode")) {
-                    //skip this sub header line
-                    continue;
-                }
-                Map<String, String> enrolleeMap = new HashMap<>();
-                for (int i = 0; i < line.length; i++) {
-                    enrolleeMap.put(headers[i], line[i]);
-                }
-                importMaps.add(enrolleeMap);
+
+        List<String> header = new ArrayList<>();
+        for (CSVRecord record : parser) {
+            if (record.getRecordNumber() == 1) {
+                header = record.toList();
+                // skip the header row
+                continue;
             }
-            return importMaps;
-        } catch (IOException | CsvValidationException e) {
-            throw new InternalServerException("error reading input stream", e);
+
+            if (record.size() != 0 && record.get(0).equalsIgnoreCase("shortcode")) {
+                // skip subheader row
+                continue;
+            }
+
+            Map<String, String> enrolleeMap = new HashMap<>();
+            for (int i = 0; i < record.size(); i++) {
+                enrolleeMap.put(header.get(i), record.get(i));
+            }
+            importMaps.add(enrolleeMap);
         }
+
+        return importMaps;
     }
 
     public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, UUID adminId) {
@@ -223,7 +231,8 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email */
+        /** restore email -- reload the profile since answermappings may have changed it */
+        profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
@@ -262,7 +271,7 @@ public class EnrolleeImportService {
                         participantUserService.findOne(participantUserInfo.getUsername(),
                                 studyEnv.getEnvironmentName()).orElseThrow(() -> new IllegalStateException("Participant User could not be found or for PPUser")),
                         ppUser,
-                        profileService.find(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
+                        profileService.loadWithMailingAddress(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
                 )).orElseGet(() ->
                         registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
                 );
@@ -295,17 +304,15 @@ public class EnrolleeImportService {
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
                                     ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
         ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
-        Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        // we still don't want to send emails during the import process
-        profile.setDoNotEmail(true);
-        profile.setId(registrationProfile.getId());
-        profile.setMailingAddressId(registrationProfile.getMailingAddressId());
-        profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
-        // if there's no explicit contact email, default to the username
-        if (profile.getContactEmail() == null) {
-            profile.setContactEmail(registrationProfile.getContactEmail());
+        Profile importProfile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        // only copy non-null properties -- this avoids overwriting already set values (especially in the case of multi-study imports)
+        copyNonNullProperties(importProfile, registrationProfile, List.of("mailingAddress"));
+        if (importProfile.getMailingAddress() != null) {
+            copyNonNullProperties(importProfile.getMailingAddress(), registrationProfile.getMailingAddress(), List.of());
         }
-        return profileService.updateWithMailingAddress(profile, auditInfo);
+        // we still don't want to send emails during the import process
+        registrationProfile.setDoNotEmail(true);
+        return profileService.updateWithMailingAddress(registrationProfile, auditInfo);
     }
 
     protected List<SurveyResponse> importSurveyResponses(String portalShortcode,
@@ -340,16 +347,30 @@ public class EnrolleeImportService {
                     TaskType.SURVEY,
                     formatter.getModuleName(),
                     1,
-                    null,
-                    true,
+                    List.of(enrollee.getId()),
+                    false,
                     true);
 
             List<ParticipantTask> tasks = surveyTaskDispatcher.assign(assignDto, studyEnv.getId(),
                     new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.assignToExistingEnrollees")));
-            relatedTask = tasks.get(0);
+            relatedTask = tasks.getFirst();
         }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
                 "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+    }
+
+    public static void copyNonNullProperties(Object source, Object target, List<String> ignoreProperties) {
+        String[] ignorePropertiesArray = Stream.of(ignoreProperties, getNullPropertyNames(source)).flatMap(Collection::stream).toArray(String[]::new);
+        BeanUtils.copyProperties(source, target, ignorePropertiesArray);
+    }
+
+
+    public static List<String> getNullPropertyNames(Object source) {
+        final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
+        return Stream.of(wrappedSource.getPropertyDescriptors())
+                .map(java.beans.FeatureDescriptor::getName)
+                .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+                .toList();
     }
 }

@@ -38,19 +38,11 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesThrowsWhenUserNotFound() {
-        assertThrows(UserNotFoundException.class, () -> {
-            portalAdminUserRoleService.setRoles(UUID.randomUUID(), List.of());
-        });
-    }
-
-    @Transactional
-    @Test
     public void testSetRolesThrowsWhenRoleNotFound(TestInfo info) {
         PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
 
         assertThrows(RoleNotFoundException.class, () -> {
-            portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("unknown"));
+            portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("unknown"), getAuditInfo(info));
         });
     }
 
@@ -61,7 +53,7 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
         Role role1 = roleService.create(Role.builder().name("one").build());
         Role role2 = roleService.create(Role.builder().name("two").build());
 
-        List<String> savedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"));
+        List<String> savedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"), getAuditInfo(info));
 
         PortalAdminUserRole portalAdminUserRole1 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role1.getId()).build();
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role2.getId()).build();
@@ -75,7 +67,7 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
         Role role1 = roleService.create(Role.builder().name("one").build());
         Role role2 = roleService.create(Role.builder().name("two").build());
 
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"), getAuditInfo(info));
 
         List<PortalAdminUserRole> rolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
         PortalAdminUserRole portalAdminUserRole1 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role1.getId()).build();
@@ -91,10 +83,10 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
     public void testSetRolesReplacesExistingRoles(TestInfo info) {
         PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         roleService.create(Role.builder().name("old").build());
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("old"));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("old"), getAuditInfo(info));
         Role newRole = roleService.create(Role.builder().name("new").build());
 
-        List<String> updatedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("new"));
+        List<String> updatedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("new"), getAuditInfo(info));
 
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(newRole.getId()).build();
         assertThat(updatedAdminUserRoles, containsInAnyOrder("new"));

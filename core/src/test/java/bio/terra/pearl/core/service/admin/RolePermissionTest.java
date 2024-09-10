@@ -45,9 +45,9 @@ public class RolePermissionTest extends BaseSpringBootTest {
         String roleName = "testAddRole.role";
         Role role = roleFactory.buildPersisted(roleName);
 
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName), getAuditInfo(info));
 
-        assertThat(portalAdminUserService.userHasRole(portalAdminUser.getId(), roleName), equalTo(true));
+        assertThat(portalAdminUserFactory.userHasRole(portalAdminUser.getId(), roleName), equalTo(true));
     }
 
     @Transactional
@@ -59,10 +59,10 @@ public class RolePermissionTest extends BaseSpringBootTest {
         Role role1 = roleFactory.buildPersisted(roleName1);
         Role role2 = roleFactory.buildPersisted(roleName2);
 
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName1, roleName2));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName1, roleName2), getAuditInfo(info));
 
-        assertThat(portalAdminUserService.userHasRole(portalAdminUser.getId(), roleName1), equalTo(true));
-        assertThat(portalAdminUserService.userHasRole(portalAdminUser.getId(), roleName2), equalTo(true));
+        assertThat(portalAdminUserFactory.userHasRole(portalAdminUser.getId(), roleName1), equalTo(true));
+        assertThat(portalAdminUserFactory.userHasRole(portalAdminUser.getId(), roleName2), equalTo(true));
     }
 
     @Transactional
@@ -71,11 +71,11 @@ public class RolePermissionTest extends BaseSpringBootTest {
         PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         String roleName = getTestName(info) + ".role";
         Role role = roleFactory.buildPersisted(roleName);
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName), getAuditInfo(info));
 
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of());
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(), getAuditInfo(info));
 
-        assertThat(portalAdminUserService.userHasRole(portalAdminUser.getId(), roleName), equalTo(false));
+        assertThat(portalAdminUserFactory.userHasRole(portalAdminUser.getId(), roleName), equalTo(false));
     }
 
     @Transactional
@@ -86,17 +86,15 @@ public class RolePermissionTest extends BaseSpringBootTest {
         Role role = roleFactory.buildPersisted(roleName);
         String permissionName = getTestName(info) + "permission";
         Permission permission = permissionFactory.buildPersisted(permissionName);
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName), getAuditInfo(info));
 
-        assertThat(portalAdminUserService.userHasPermission(portalAdminUser.getId(), permissionName), equalTo(false));
+        assertThat(portalAdminUserFactory.userHasPermission(portalAdminUser.getId(), permissionName), equalTo(false));
 
         RolePermission rolePermission = new RolePermission();
         rolePermission.setRoleId(role.getId());
         rolePermission.setPermissionId(permission.getId());
         rolePermissionService.create(rolePermission);
 
-        assertThat(portalAdminUserService.userHasPermission(portalAdminUser.getId(), permissionName), equalTo(true));
-
-        // TODO: remove permission
+        assertThat(portalAdminUserFactory.userHasPermission(portalAdminUser.getId(), permissionName), equalTo(true));
     }
 }

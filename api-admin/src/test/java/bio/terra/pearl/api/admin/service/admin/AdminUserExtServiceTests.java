@@ -3,19 +3,25 @@ package bio.terra.pearl.api.admin.service.admin;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
+import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.factory.admin.AdminUserBundle;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
-import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -27,82 +33,96 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalAdminUserFactory portalAdminUserFactory;
   @Autowired private PortalFactory portalFactory;
   @Autowired private PortalAdminUserRoleService portalAdminUserRoleService;
+  @Autowired private RoleFactory roleFactory;
+  @Autowired private PortalAdminUserService portalAdminUserService;
 
   @Test
-  @Transactional
-  public void testGetAllRequiresSuperuser() {
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> adminUserExtService.getAll(AdminUser.builder().superuser(false).build()));
+  public void testAllMethodsAnnotated() {
+    AuthTestUtils.assertAllMethodsAnnotated(
+        adminUserExtService,
+        Map.of(
+            "get",
+            AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "getInPortal",
+            AuthAnnotationSpec.withPortalPerm("BASE"),
+            "getAll",
+            AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "findByPortal",
+            AuthAnnotationSpec.withPortalPerm("BASE"),
+            "createSuperuser",
+            AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "createAdminUser",
+            AuthAnnotationSpec.withPortalPerm("admin_user_edit"),
+            "delete",
+            AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "deleteInPortal",
+            AuthAnnotationSpec.withPortalPerm("admin_user_edit"),
+            "setPortalUserRoles",
+            AuthAnnotationSpec.withPortalPerm("admin_user_edit")));
   }
 
   @Test
   @Transactional
-  public void testGetAllSucceedsWithSuperuser() {
-    List<AdminUser> result =
-        adminUserExtService.getAll(AdminUser.builder().superuser(true).build());
-    Assertions.assertNotNull(result);
-  }
+  public void testCreateNewAdminAndPortalUser(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
 
-  @Test
-  @Transactional
-  public void testGetWithNoPortalFailsForNonSuperuser() {
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            adminUserExtService.get(
-                UUID.randomUUID(), null, AdminUser.builder().superuser(false).build()));
-  }
+    AdminUser createdUser =
+        adminUserExtService.createAdminUser(
+            PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+            "newGuy@new.com",
+            List.of("study_admin"));
 
-  @Test
-  @Transactional
-  public void testGetWithPortalAuthsPortal(TestInfo testInfo) {
-    Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
-    Portal otherPortal = portalFactory.buildPersisted(getTestName(testInfo));
-    AdminUserBundle adminUserBundle =
-        portalAdminUserFactory.buildPersistedWithPortals(getTestName(testInfo), List.of(portal));
-    AdminUserBundle otherAdminUserBundle =
-        portalAdminUserFactory.buildPersistedWithPortals(
-            getTestName(testInfo), List.of(otherPortal));
-
-    // a portal user can access their own record
     assertThat(
-        adminUserExtService
-            .get(adminUserBundle.user().getId(), portal.getShortcode(), adminUserBundle.user())
-            .getId(),
-        equalTo(adminUserBundle.user().getId()));
-
-    // one portal user can't access a user from another portal
-    Assertions.assertThrows(
-        NotFoundException.class,
-        () ->
-            adminUserExtService.get(
-                otherAdminUserBundle.user().getId(),
-                otherPortal.getShortcode(),
-                adminUserBundle.user()));
-
-    // one portal user can't access a user from another portal if they specify their own portal
-    Assertions.assertThrows(
-        NotFoundException.class,
-        () ->
-            adminUserExtService.get(
-                otherAdminUserBundle.user().getId(),
-                portal.getShortcode(),
-                adminUserBundle.user()));
+        portalAdminUserService
+            .findByUserIdAndPortal(createdUser.getId(), portal.getId())
+            .isPresent(),
+        equalTo(true));
   }
 
   @Test
   @Transactional
-  public void testGetAttachesRolesAndPermissions(TestInfo testInfo) {
-    Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
+  public void testCreateNewPortalUser(TestInfo info) {
+    /** add a user already in another portal to a new portal */
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Portal portal2 = portalFactory.buildPersisted(getTestName(info));
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal2, List.of("study_admin"));
+
+    AdminUser createdUser =
+        adminUserExtService.createAdminUser(
+            PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+            userBundle.user().getUsername(),
+            List.of("study_admin"));
+
+    assertThat(
+        portalAdminUserService
+            .findByUserIdAndPortal(createdUser.getId(), portal2.getId())
+            .isPresent(),
+        equalTo(true));
+  }
+
+  @Test
+  @Transactional
+  public void testGetAttachesRolesAndPermissions(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     AdminUserBundle adminUserBundle =
-        portalAdminUserFactory.buildPersistedWithPortals(getTestName(testInfo), List.of(portal));
+        portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal));
     portalAdminUserRoleService.setRoles(
         adminUserBundle.portalAdminUsers().get(0).getId(),
-        List.of("study_admin", "prototype_tester"));
+        List.of("study_admin", "prototype_tester"),
+        getAuditInfo(info));
     AdminUser fetchedUser =
-        adminUserExtService.get(
-            adminUserBundle.user().getId(), portal.getShortcode(), adminUserBundle.user());
+        adminUserExtService.getInPortal(
+            PortalAuthContext.of(adminUserBundle.user(), portal.getShortcode()),
+            adminUserBundle.user().getId());
     assertThat(fetchedUser.getPortalAdminUsers().size(), equalTo(1));
     PortalAdminUser paUser = fetchedUser.getPortalAdminUsers().get(0);
     assertThat(paUser.getRoles(), hasSize(2));
@@ -116,12 +136,80 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testCreateSuperuserFailsForRegularUser() {
-    AdminUserExtService.NewAdminUser userToCreate =
-        new AdminUserExtService.NewAdminUser("foo", true, null);
+  public void testSetRolesLimitedByOperator(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Role role1 = roleFactory.buildPersisted(getTestName(info));
+
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(getTestName(info), portal, List.of());
+
+    adminUserExtService.setPortalUserRoles(
+        PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+        userBundle.user().getId(),
+        List.of("study_admin"));
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
+        is(false));
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), "study_admin"),
+        is(true));
+
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->
-            adminUserExtService.create(userToCreate, AdminUser.builder().superuser(false).build()));
+            adminUserExtService.setPortalUserRoles(
+                PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+                userBundle.user().getId(),
+                List.of(role1.getName())));
+
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), role1.getName()),
+        is(false));
+
+    // it's ok to include roles the target user already has,
+  }
+
+  @Test
+  @Transactional
+  public void testSetRolesAllowsExistingOperator(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Role role1 = roleFactory.buildPersisted(getTestName(info));
+
+    AdminUserBundle operatorBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("study_admin"));
+
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithRoles(
+            getTestName(info), portal, List.of("publisher"));
+
+    adminUserExtService.setPortalUserRoles(
+        PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
+        userBundle.user().getId(),
+        List.of("study_admin", "publisher"));
+
+    assertThat(
+        portalAdminUserFactory.userHasRole(
+            userBundle.portalAdminUsers().get(0).getId(), "study_admin"),
+        is(true));
+  }
+
+  /** Important enough that it's worth a separate test beyond the annotation check */
+  @Test
+  @Transactional
+  public void testCreateSuperuserFailsForRegularUser() {
+    AdminUser operator = AdminUser.builder().superuser(false).build();
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            adminUserExtService.createSuperuser(
+                OperatorAuthContext.of(operator), "someone@scam.crime"));
   }
 }

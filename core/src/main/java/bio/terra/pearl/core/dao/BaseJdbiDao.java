@@ -284,7 +284,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
 
-    protected List<T> findAllByProperty(String columnName, Object columnValue) {
+    public List<T> findAllByProperty(String columnName, Object columnValue) {
+        if(columnValue == null) {
+            return jdbi.withHandle(handle ->
+                    handle.createQuery("select * from " + tableName + " where " + columnName + " is null;")
+                            .mapTo(clazz)
+                            .list()
+            );
+        }
+
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
                         .bind("columnValue", columnValue)

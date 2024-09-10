@@ -1,9 +1,15 @@
 import { PortalEnvContext } from '../PortalRouter'
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { SiteContent } from '@juniper/ui-core'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from 'util/notifications'
+import {
+  failureNotification,
+  successNotification
+} from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import SiteContentEditor from './SiteContentEditor'
 import { previewApi } from 'util/apiContextUtils'
@@ -85,15 +91,16 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
 
   return <>
     { !isLoading &&
-      <SiteContentEditor siteContent={siteContent}
-        key={`${siteContent.stableId}-${siteContent.version}`}
-        createNewVersion={createNewVersion}
-        loadSiteContent={loadSiteContent}
-        switchToVersion={switchToVersion}
-        previewApi={previewApi(portalShortcode, portalEnv.environmentName)}
-        portalEnvContext={portalEnvContext}
-        readOnly={readOnly}
-      /> }
+        <SiteContentEditor siteContent={siteContent}
+          key={`${siteContent.stableId}-${siteContent.version}`}
+          createNewVersion={createNewVersion}
+          loadSiteContent={loadSiteContent}
+          switchToVersion={switchToVersion}
+          previewApi={previewApi(portalShortcode, portalEnv.environmentName)}
+          portalEnvContext={portalEnvContext}
+          readOnly={readOnly}
+        />
+    }
     { isLoading && <LoadingSpinner/> }
   </>
 }

@@ -1,0 +1,31 @@
+{
+  "stableId" : "admin",
+  "version" : 2,
+  "name" : "admin",
+  "surveyType" : "ADMIN",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "eligibilityRule" : "",
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : false,
+  "allowParticipantReedit" : false,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : false,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "text",
+        "name" : "StudyID_old",
+        "title" : "StudyID_old",
+        "description" : "Old study ID from DatStat portal",
+        "isRequired" : false,
+        "inputType" : "text"
+      } ]
+    } ]
+  }
+}

@@ -269,6 +269,7 @@ const BasicQueryBuilder = ({
           valueEditor: CustomValueEditor,
           operatorSelector: OperatorSelector
         }}
+        getDefaultOperator={'='}
         operators={operators}
         query={query || { combinator: 'and', rules: [] }}
         onQueryChange={q => updateQuery(q)}/>
@@ -371,17 +372,17 @@ const CustomValueEditor = (props: ValueEditorProps) => {
 }
 
 const OperatorSelector = (props: OperatorSelectorProps) => {
-  const options = props.options.map(op => {
-    return { label: op.label, value: op.label }
-  })
+  const options = props.options as { name: string, label: string }[]
+
+  const selectedOptions = options.find(o => o.name === props.value)
 
   return <div className="w-50">
     <Select
       options={options}
-      value={{ label: props.value || '', value: props.value || '' }}
+      value={selectedOptions ? { value: selectedOptions.name, label: selectedOptions.label } : undefined}
       onChange={newVal => {
-        if (newVal?.label != props.value) {
-          props.handleOnChange(newVal?.label || '')
+        if (newVal?.name != props.value) {
+          props.handleOnChange(newVal?.name || '')
         }
       }}
     />

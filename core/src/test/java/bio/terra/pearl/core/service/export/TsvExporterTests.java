@@ -48,7 +48,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
         Map<String, String> valueMap = Map.of("enrollee.shortcode", "ABCD\"EF",
                 "enrollee.consented", "fa\tlse");
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
-        assertThat(outString, equalTo("enrollee.shortcode\tenrollee.consented\nShortcode\tConsented\nABCD'EF\t\"fa\tlse\"\n"));
+        assertThat(outString, equalTo("enrollee.shortcode\tenrollee.consented\nShortcode\tConsented\n\"ABCD\"\"EF\"\t\"fa\tlse\"\n"));
     }
 
     @Test
@@ -63,7 +63,22 @@ public class TsvExporterTests extends BaseSpringBootTest {
         Map<String, String> valueMap = Map.of("survey1.tabTrailing\t", "blah");
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
         // header and subheader should be quoted
-        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.complete\t\"survey1.tabTrailing\t\"\nLast Updated At\tComplete\t\"Tab Trailing \t\"\n\t\tblah\n"));
+        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.complete\t\"survey1.tabTrailing\t\"\nLast Updated At\tComplete\t\"Tab Trailing \t\"\n\"\"\t\tblah\n"));
+    }
+
+    @Test
+    public void testExportJson() throws Exception {
+        Survey survey = Survey.builder().stableId("survey1").build();
+        SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
+                .questionStableId("q1")
+                .questionText("Question 1")
+                .questionType("text")
+                .build();
+        SurveyFormatter sampleFormatter = new SurveyFormatter(new ExportOptions(), "survey1", List.of(survey), List.of(questionDef), List.of(), objectMapper);
+        Map<String, String> valueMap = Map.of("survey1.q1", "{\"key\": \"value\"}");
+        String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
+        // the extra quotes here are expected; it conforms to RFC 4180
+        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.complete\tsurvey1.q1\nLast Updated At\tComplete\tQ 1\n\"\"\t\t\"{\"\"key\"\": \"\"value\"\"}\"\n"));
     }
 
     @Test

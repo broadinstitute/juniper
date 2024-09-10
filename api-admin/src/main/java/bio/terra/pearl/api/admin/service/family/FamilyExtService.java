@@ -4,7 +4,7 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -118,7 +118,7 @@ public class FamilyExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public List<DataChangeRecord> listChangeRecords(
+  public List<ParticipantDataChange> listChangeRecords(
       PortalStudyEnvAuthContext authContext, String familyShortcode, String modelName) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
