@@ -8,9 +8,13 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class VantaPageInfo {
 
-    private String startCursor, endCursor;
+    private String startCursor;
 
-    private boolean hasNextPage, hasPreviousPage;
+    private String endCursor;
+
+    private boolean hasNextPage;
+
+    private boolean hasPreviousPage;
 
     @Override
     public String toString() {

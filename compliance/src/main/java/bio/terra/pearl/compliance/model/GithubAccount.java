@@ -14,9 +14,13 @@ public class GithubAccount extends VantaObject {
         return "github";
     }
 
-    private String displayName, owner, description, accountName;
+    private String displayName;
 
-    private boolean isDeactivated, inScope;
+    private String owner;
+
+    private String description;
+
+    private String accountName;
 
     @Override
     public boolean shouldBeInScope(Collection<PersonInScope> peopleInScope) {
