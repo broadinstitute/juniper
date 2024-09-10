@@ -87,7 +87,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           }}>
           <FontAwesomeIcon icon={faUserLarge}/>
         </Button>
-        <Button id="list" variant='light'
+        { familyLinkageEnabled && <Button id="list" variant='light'
           aria-label={'Switch to family view'}
           className={`btn btn-sm ${view === 'family' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to family view'}
@@ -96,7 +96,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             setView('family')
           }}>
           <FontAwesomeIcon icon={faUsers}/>
-        </Button>
+        </Button> }
       </div>
     </div>
 
