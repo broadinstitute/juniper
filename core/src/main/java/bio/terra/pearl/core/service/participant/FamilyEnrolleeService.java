@@ -2,10 +2,11 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.FamilyEnrolleeDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, FamilyEnrolleeDao> {
+public class FamilyEnrolleeService extends ParticipantDataAuditedService<FamilyEnrollee, FamilyEnrolleeDao> {
 
     private final EnrolleeRelationService enrolleeRelationService;
 
     public FamilyEnrolleeService(FamilyEnrolleeDao familyEnrolleeDao,
-                                 DataChangeRecordService dataChangeRecordService,
+                                 ParticipantDataChangeService participantDataChangeService,
                                  ObjectMapper objectMapper,
                                  @Lazy EnrolleeRelationService enrolleeRelationService) {
-        super(familyEnrolleeDao, dataChangeRecordService, objectMapper);
+        super(familyEnrolleeDao, participantDataChangeService, objectMapper);
         this.enrolleeRelationService = enrolleeRelationService;
     }
 
@@ -90,22 +91,22 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
     }
 
     @Override
-    protected DataChangeRecord makeCreationChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
-        DataChangeRecord dataChangeRecord = super.makeCreationChangeRecord(obj, auditInfo);
+    protected ParticipantDataChange makeCreationChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
+        ParticipantDataChange participantDataChange = super.makeCreationChangeRecord(obj, auditInfo);
 
-        dataChangeRecord.setFamilyId(obj.getFamilyId());
-        dataChangeRecord.setEnrolleeId(obj.getEnrolleeId());
+        participantDataChange.setFamilyId(obj.getFamilyId());
+        participantDataChange.setEnrolleeId(obj.getEnrolleeId());
 
-        return dataChangeRecord;
+        return participantDataChange;
     }
 
     @Override
-    protected DataChangeRecord makeDeletionChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
-        DataChangeRecord dataChangeRecord = super.makeDeletionChangeRecord(obj, auditInfo);
+    protected ParticipantDataChange makeDeletionChangeRecord(FamilyEnrollee obj, DataAuditInfo auditInfo) {
+        ParticipantDataChange participantDataChange = super.makeDeletionChangeRecord(obj, auditInfo);
 
-        dataChangeRecord.setFamilyId(obj.getFamilyId());
-        dataChangeRecord.setEnrolleeId(obj.getEnrolleeId());
+        participantDataChange.setFamilyId(obj.getFamilyId());
+        participantDataChange.setEnrolleeId(obj.getEnrolleeId());
 
-        return dataChangeRecord;
+        return participantDataChange;
     }
 }

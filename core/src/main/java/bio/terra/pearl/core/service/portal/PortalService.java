@@ -3,12 +3,14 @@ package bio.terra.pearl.core.service.portal;
 import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.admin.AdminDataChangeService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
@@ -39,6 +41,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private final SiteMediaService siteMediaService;
     private final LanguageTextService languageTextService;
     private final PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService;
+    private final AdminDataChangeService adminDataChangeService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          PortalAdminUserService portalAdminUserService, StudyService studyService,
@@ -46,7 +49,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          SurveyService surveyService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
                          SiteMediaService siteMediaService, LanguageTextService languageTextService,
-                         PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService) {
+                         PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService, AdminDataChangeService adminDataChangeService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalAdminUserService = portalAdminUserService;
@@ -58,6 +61,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.siteMediaService = siteMediaService;
         this.languageTextService = languageTextService;
         this.portalEnvironmentChangeRecordService = portalEnvironmentChangeRecordService;
+        this.adminDataChangeService = adminDataChangeService;
     }
 
     @Transactional
@@ -95,7 +99,9 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         emailTemplateService.deleteByPortalId(portalId);
         languageTextService.deleteByPortalId(portalId);
         siteMediaService.deleteByPortalShortcode(portal.getShortcode());
-        portalAdminUserService.deleteByPortalId(portalId);
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("PortalService.delete").build();
+        portalAdminUserService.deleteByPortalId(portalId, auditInfo);
+        adminDataChangeService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 

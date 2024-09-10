@@ -16,12 +16,18 @@ const errorSuffix = 'If this error persists, please contact support@juniper.terr
  */
 export const defaultApiErrorHandle = (error: ApiErrorResponse,
   errorHeader = 'An unexpected error occurred. ') => {
-  if (error.statusCode === 401 || error.statusCode === 403) {
+  if (error.statusCode === 401) {
     Store.addNotification(failureNotification(<div>
       <div>{errorHeader}</div>
-      <div>Request could not be authorized
+      <div>Request could not be authenticated
                 -- you may need to log in again </div>
       <div>{errorSuffix}</div>
+    </div>
+    ))
+  } else if (error.statusCode === 403) {
+    Store.addNotification(failureNotification(<div>
+      <div>Permission denied: {error.message}</div>
+      <div>If this is unexpected, you may need to log out and log in again to refresh your credentials.</div>
     </div>
     ))
   } else {

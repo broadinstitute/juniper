@@ -12,7 +12,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
@@ -24,19 +24,19 @@ public class MailingListExtService {
   private AuthUtilService authUtilService;
   private MailingListContactService mailingListContactService;
   private PortalEnvironmentService portalEnvironmentService;
-  private DataChangeRecordService dataChangeRecordService;
+  private ParticipantDataChangeService participantDataChangeService;
   private ObjectMapper objectMapper;
 
   public MailingListExtService(
       AuthUtilService requestUtilService,
       MailingListContactService mailingListContactService,
       PortalEnvironmentService portalEnvironmentService,
-      DataChangeRecordService dataChangeRecordService,
+      ParticipantDataChangeService participantDataChangeService,
       ObjectMapper objectMapper) {
     this.authUtilService = requestUtilService;
     this.mailingListContactService = mailingListContactService;
     this.portalEnvironmentService = portalEnvironmentService;
-    this.dataChangeRecordService = dataChangeRecordService;
+    this.participantDataChangeService = participantDataChangeService;
     this.objectMapper = objectMapper;
   }
 

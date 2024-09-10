@@ -24,4 +24,9 @@ public class PortalEnvironmentChangeRecordService extends ImmutableEntityService
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
     }
+
+    @Transactional
+    public void deleteByResponsibleAdminUserId(UUID adminUserId) {
+        dao.deleteByResponsibleAdminUserId(adminUserId);
+    }
 }

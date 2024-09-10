@@ -13,9 +13,14 @@ import {
 } from 'browserPersistentState'
 import { enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { filterUnjoinableStudies } from 'Navbar'
-import { log, logError } from 'util/loggingUtils'
-import { useI18n } from '@juniper/ui-core'
+import {
+  filterUnjoinableStudies,
+  useI18n
+} from '@juniper/ui-core'
+import {
+  log,
+  logError
+} from 'util/loggingUtils'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()

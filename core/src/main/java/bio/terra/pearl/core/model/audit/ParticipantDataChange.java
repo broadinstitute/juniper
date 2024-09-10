@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class DataChangeRecord extends BaseEntity {
+public class ParticipantDataChange extends BaseEntity implements DataChange {
     private UUID portalEnvironmentId; // id of the associated portal, for operations not tied to an enrollee
     private UUID responsibleUserId; // id of the user making the change, if it was a participant
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
@@ -35,10 +35,12 @@ public class DataChangeRecord extends BaseEntity {
     private String justification; // if an admin changes a participant's responses, a justification is needed
     private String oldValue;
     private String newValue;
-    public static DataChangeRecord.DataChangeRecordBuilder fromAuditInfo(DataAuditInfo auditInfo) {
-        return DataChangeRecord.builder()
+
+    public static ParticipantDataChange.ParticipantDataChangeBuilder fromAuditInfo(DataAuditInfo auditInfo) {
+        return ParticipantDataChange.builder()
                 .responsibleAdminUserId(auditInfo.getResponsibleAdminUserId())
                 .responsibleUserId(auditInfo.getResponsibleUserId())
+                .systemProcess(auditInfo.getSystemProcess())
                 .anonymousUser(auditInfo.getAnonymousUser())
                 .operationId(auditInfo.getOperationId())
                 .enrolleeId(auditInfo.getEnrolleeId())

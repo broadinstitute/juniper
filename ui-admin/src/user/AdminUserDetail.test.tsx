@@ -34,6 +34,7 @@ const mockRoleManager = {
 describe('AdminUserDetail', () => {
   test('shows a user with roles and permissions', async () => {
     jest.spyOn(Api, 'fetchAdminUser').mockResolvedValue(mockRoleManager)
+    jest.spyOn(Api, 'fetchRoles').mockResolvedValue([])
     renderWithRouter(
       <MockUserProvider user={mockRoleManager}>
         <AdminUserDetailRaw portalShortcode='portal2' adminUserId="id1" />
@@ -53,6 +54,7 @@ describe('AdminUserDetail', () => {
 
   test('roles and permissions not shown for user', async () => {
     jest.spyOn(Api, 'fetchAdminUser').mockResolvedValue(mockRoleManager)
+    jest.spyOn(Api, 'fetchRoles').mockResolvedValue([])
     renderWithRouter(
       <MockUserProvider user={mockAdminUser(false)}>
         <AdminUserDetailRaw portalShortcode='portal2' adminUserId="id1" />

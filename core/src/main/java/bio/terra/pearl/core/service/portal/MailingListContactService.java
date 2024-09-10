@@ -4,20 +4,21 @@ import bio.terra.pearl.core.dao.portal.MailingListContactDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.service.DataAuditedService;
-import bio.terra.pearl.core.service.ImmutableEntityService;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MailingListContactService extends DataAuditedService<MailingListContact, MailingListContactDao> {
-    public MailingListContactService(MailingListContactDao dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
-        super(dao, dataChangeRecordService, objectMapper);
+public class MailingListContactService extends ParticipantDataAuditedService<MailingListContact, MailingListContactDao> {
+    public MailingListContactService(MailingListContactDao dao, ParticipantDataChangeService participantDataChangeService, ObjectMapper objectMapper) {
+        super(dao, participantDataChangeService, objectMapper);
     }
 
     public List<MailingListContact> findByPortalEnv(UUID portalEnvId) {

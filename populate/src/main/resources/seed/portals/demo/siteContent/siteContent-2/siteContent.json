@@ -10,13 +10,9 @@
     "footerSectionFile": "en/footerSection.json",
     "landingPageFileName": "en/landingPage.json",
     "navbarItemDtos": [{
-      "populateFileName": "en/aboutUs.json"
-    },{
       "populateFileName": "en/participation.json"
-    },{
-      "populateFileName": "en/scientificBackground.json"
-    },{
-      "populateFileName": "en/faq.json"
+    }, {
+      "populateFileName": "en/learnMore.json"
     }]
   },{
     "language": "es",
@@ -27,13 +23,9 @@
     "footerSectionFile": "es/footerSection.json",
     "landingPageFileName": "es/landingPage.json",
     "navbarItemDtos": [{
-      "populateFileName": "es/aboutUs.json"
-    },{
       "populateFileName": "es/participation.json"
-    },{
-      "populateFileName": "es/scientificBackground.json"
-    },{
-      "populateFileName": "es/faq.json"
+    }, {
+      "populateFileName": "es/learnMore.json"
     }]
   },{
     "language": "dev",
@@ -44,13 +36,9 @@
     "footerSectionFile": "dev/footerSection.json",
     "landingPageFileName": "dev/landingPage.json",
     "navbarItemDtos": [{
-      "populateFileName": "dev/aboutUs.json"
-    },{
       "populateFileName": "dev/participation.json"
-    },{
-      "populateFileName": "dev/scientificBackground.json"
-    },{
-      "populateFileName": "dev/faq.json"
+    }, {
+      "populateFileName": "dev/learnMore.json"
     }]
   }]
 }
