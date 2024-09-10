@@ -1,10 +1,10 @@
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { NavbarItem } from '@juniper/ui-core'
+import { HtmlPage } from '@juniper/ui-core'
 
 /** renders a modal for deleting pages from the portal website */
-const DeleteNavItemModal = ({ navItem, deleteNavItem, onDismiss }: {
-  navItem: NavbarItem, deleteNavItem: (navItemText: string) => void, onDismiss: () => void
+const DeleteNavItemModal = ({ page, deletePage, onDismiss }: {
+  page: HtmlPage, deletePage: () => void, onDismiss: () => void
 }) => {
   return <Modal show={true}
     onHide={() => {
@@ -15,17 +15,14 @@ const DeleteNavItemModal = ({ navItem, deleteNavItem, onDismiss }: {
     </Modal.Header>
     <Modal.Body>
       <div className="mb-3">
-        Are you sure you want to delete <strong>{navItem.text}</strong> from the navigation bar?
-        {(navItem.itemType === 'INTERNAL') && <div className="mt-2">
-          This will also delete the page <strong>{navItem.htmlPage.title}</strong>
-        </div>}
+        Are you sure you want to delete <strong>{page.title}</strong> from your website?
       </div>
     </Modal.Body>
     <Modal.Footer>
       <button
         className="btn btn-primary"
         onClick={() => {
-          deleteNavItem(navItem.text)
+          deletePage()
           onDismiss()
         }}
       >Delete</button>
