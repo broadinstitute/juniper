@@ -43,6 +43,7 @@ dependencies {
 }
 
 jar {
+    dependsOn(":core:jar")
     zip64 = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
