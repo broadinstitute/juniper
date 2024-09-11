@@ -4,9 +4,11 @@ import { faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 import React from 'react'
 
+type ParticipantView = 'participant' | 'family' | 'withdrawn'
+
 type ParticipantListViewSwitcherProps = {
-    view: 'participant' | 'family' | 'withdrawn'
-    setView: (view: 'participant' | 'family' | 'withdrawn') => void
+    view: ParticipantView
+    setView: (view: ParticipantView) => void
     setSearchParams: (params: { view: string }) => void
     familyLinkageEnabled: boolean
 }
