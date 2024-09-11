@@ -1,4 +1,4 @@
-import { Button } from '../../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
