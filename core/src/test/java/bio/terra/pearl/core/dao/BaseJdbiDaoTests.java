@@ -25,10 +25,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class BaseJdbiDaoTests extends BaseSpringBootTest {
     /** we use the portalDao to test base capability since it doesn't have any required foreign keys */
@@ -161,5 +158,32 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         shortcodeList = List.of("B_Portal", "A_Portal");
         portals = portalDao.findAllByPropertyCollectionPreserveOrder("shortcode", shortcodeList);
         assertThat(portals.stream().map(Portal::getShortcode).toList(), equalTo(shortcodeList));
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllByProperty(TestInfo testInfo) {
+        Portal portal1 = portalDao.create(portalFactory.builder(getTestName(testInfo)).name("FOO").build());
+        Portal portal2 = portalDao.create(portalFactory.builder(getTestName(testInfo)).name("FOO").build());
+        Portal portal3 = portalDao.create(portalFactory.builder(getTestName(testInfo)).name("BAR").build());
+
+        List<Portal> portals = portalDao.findAllByProperty("name", "FOO");
+        assertThat(portals, contains(portal1, portal2));
+        assertThat(portals, not(contains(portal3)));
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllByPropertyNullSafe(TestInfo testInfo) {
+        Portal portal = portalDao.create(portalFactory.builder(getTestName(testInfo)).name("FOO").build());
+        Survey survey1 = surveyDao.create(surveyFactory.builder(getTestName(testInfo)).name("Survey 1").blurb("outreach1").portalId(portal.getId()).build());
+        Survey survey2 = surveyDao.create(surveyFactory.builder(getTestName(testInfo)).name("Survey 2").blurb("outreach2").portalId(portal.getId()).build());
+        Survey survey3 = surveyDao.create(surveyFactory.builder(getTestName(testInfo)).name("Survey 3").blurb(null).portalId(portal.getId()).build());
+        Survey survey4 = surveyDao.create(surveyFactory.builder(getTestName(testInfo)).name("Survey 4").blurb(null).portalId(portal.getId()).build());
+
+        List<Survey> surveys = surveyDao.findAllByProperty("blurb", null);
+
+        assertThat(surveys, contains(survey3, survey4));
+        assertThat(surveys, not(contains(survey1, survey2)));
     }
 }

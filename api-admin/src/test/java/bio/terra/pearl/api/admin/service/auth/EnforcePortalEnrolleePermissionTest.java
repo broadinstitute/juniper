@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
@@ -210,12 +211,13 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
     UUID portalAdminUserId = operatorBundle.portalAdminUsers().get(0).getId();
 
     Role role = roleFactory.buildPersisted(getTestName(info), List.of("participant_data_view"));
-
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     portalAdminUserRoleService.create(
         PortalAdminUserRole.builder()
             .portalAdminUserId(portalAdminUserId)
             .roleId(role.getId())
-            .build());
+            .build(),
+        auditInfo);
 
     testBean.requiresParticipantDataView(
         PortalEnrolleeAuthContext.of(

@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.controller.export;
 import bio.terra.pearl.api.admin.api.ExportApi;
 import bio.terra.pearl.api.admin.service.EnrolleeExportExtService;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
@@ -58,6 +59,61 @@ public class ExportController implements ExportApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
+    ExportOptions exportOptions =
+        optionsFromParams(
+            searchExpression,
+            fileFormat,
+            limit,
+            splitOptionsIntoColumns,
+            stableIdsForOptions,
+            includeOnlyMostRecent);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    enrolleeExportExtService.export(
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName),
+        exportOptions,
+        baos);
+    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+  }
+
+  /** gets a data dictionary for the environment */
+  @Override
+  public ResponseEntity<Resource> exportDictionary(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      Boolean splitOptionsIntoColumns,
+      Boolean stableIdsForOptions,
+      Boolean includeOnlyMostRecent,
+      String searchExpression,
+      String fileFormat) {
+
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser user = authUtilService.requireAdminUser(request);
+    ExportOptions exportOptions =
+        optionsFromParams(
+            searchExpression,
+            fileFormat,
+            null,
+            splitOptionsIntoColumns,
+            stableIdsForOptions,
+            includeOnlyMostRecent);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    enrolleeExportExtService.exportDictionary(
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName),
+        exportOptions,
+        baos);
+    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+  }
+
+  private ExportOptions optionsFromParams(
+      String searchExpression,
+      String fileFormat,
+      Integer limit,
+      Boolean splitOptionsIntoColumns,
+      Boolean stableIdsForOptions,
+      Boolean includeOnlyMostRecent) {
     EnrolleeSearchExpression filter =
         Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
             ? enrolleeSearchExpressionParser.parseRule(searchExpression)
@@ -74,47 +130,6 @@ public class ExportController implements ExportApi {
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)
             .build();
-
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    enrolleeExportExtService.export(
-        exportOptions, portalShortcode, studyShortcode, environmentName, baos, user);
-    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
-  }
-
-  /** gets a data dictionary for the environment */
-  @Override
-  public ResponseEntity<Resource> exportDictionary(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      Boolean splitOptionsIntoColumns,
-      Boolean stableIdsForOptions,
-      Boolean includeOnlyMostRecent,
-      String searchExpression,
-      String fileFormat) {
-
-    EnrolleeSearchExpression filter =
-        Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
-            ? enrolleeSearchExpressionParser.parseRule(searchExpression)
-            : null;
-
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    AdminUser user = authUtilService.requireAdminUser(request);
-    ExportOptions exportOptions =
-        ExportOptions.builder()
-            .splitOptionsIntoColumns(
-                splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
-            .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
-            .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
-            .filter(filter)
-            .fileFormat(
-                fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
-            .limit(null)
-            .build();
-
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    enrolleeExportExtService.exportDictionary(
-        exportOptions, portalShortcode, studyShortcode, environmentName, baos, user);
-    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+    return exportOptions;
   }
 }

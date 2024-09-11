@@ -7,8 +7,9 @@ import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,20 +20,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
+public class EnrolleeRelationService extends ParticipantDataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
     private final EnrolleeService enrolleeService;
     private final ProfileService profileService;
     private final FamilyService familyService;
     private final FamilyEnrolleeService familyEnrolleeService;
 
     public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
-                                   DataChangeRecordService dataChangeRecordService,
+                                   ParticipantDataChangeService participantDataChangeService,
                                    @Lazy EnrolleeService enrolleeService,
                                    ObjectMapper objectMapper,
                                    ProfileService profileService,
                                    @Lazy FamilyService familyService,
                                    FamilyEnrolleeService familyEnrolleeService) {
-        super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
+        super(enrolleeRelationDao, participantDataChangeService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.profileService = profileService;
         this.familyService = familyService;
@@ -81,7 +82,7 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
 
         return relations;
     }
-    
+
     public List<EnrolleeRelation> findAllByEnrolleeOrTargetId(UUID enrolleeId) {
         return filterValid(dao.findAllByEnrolleeOrTargetId(enrolleeId));
     }

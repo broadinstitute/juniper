@@ -1,0 +1,58 @@
+{
+  "stableId" : "admin",
+  "version" : 5,
+  "publishedVersion" : 1,
+  "name" : "admin",
+  "surveyType" : "ADMIN",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "eligibilityRule" : "",
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : false,
+  "allowParticipantReedit" : false,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : true,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "text",
+        "name" : "StudyID_old",
+        "title" : "StudyID_old",
+        "description" : "Old study ID from DatStat portal",
+        "isRequired" : false,
+        "inputType" : "text"
+      }, {
+        "type" : "checkbox",
+        "name" : "spitkit_sent",
+        "title" : "Spit kit sent?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "yes",
+          "value" : "1"
+        }, {
+          "text" : "no",
+          "value" : "0"
+        } ]
+      }, {
+        "type" : "checkbox",
+        "name" : "spitkit_returned",
+        "title" : "Spit Kit returned",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "yes",
+          "value" : "1"
+        }, {
+          "text" : "no",
+          "value" : "0"
+        } ]
+      } ]
+    } ]
+  }
+}

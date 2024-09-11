@@ -52,13 +52,13 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testCrud(TestInfo info) {
         AdminUser user = adminUserFactory.builder(getTestName(info)).build();
-        AdminUser savedUser = adminUserService.create(user);
+        AdminUser savedUser = adminUserService.create(user, getAuditInfo(info));
         DaoTestUtils.assertGeneratedProperties(savedUser);
 
         Optional<AdminUser> foundUser = adminUserService.findByUsername(user.getUsername());
         assertThat(foundUser.get().getId(), equalTo(savedUser.getId()));
 
-        adminUserService.delete(savedUser.getId(), CascadeProperty.EMPTY_SET);
+        adminUserService.delete(savedUser.getId(), getAuditInfo(info), CascadeProperty.EMPTY_SET);
         assertThat(adminUserService.findByUsername(user.getUsername()).isEmpty(), equalTo(true));
     }
 
@@ -68,7 +68,7 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         AdminUser user = adminUserFactory.builder(getTestName(info))
                 .username("MixedCaseName@test.co" + RandomStringUtils.randomNumeric(3))
                 .build();
-        adminUserService.create(user);
+        adminUserService.create(user, getAuditInfo(info));
 
         assertThat(adminUserService.findByUsername(user.getUsername()).isPresent(), is(true));
         assertThat(adminUserService.findByUsername(user.getUsername().toUpperCase()).isPresent(), is(true));
@@ -83,7 +83,7 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         Permission permission2 = permissionFactory.buildPersisted(getTestName(info) + "2");
         Role role1 = roleFactory.buildPersisted(getTestName(info), List.of(permission1.getName(), permission2.getName()));
         PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName()));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName()), getAuditInfo(info));
 
         AdminUser adminUser = adminUserService.find(portalAdminUser.getAdminUserId()).get();
         AdminUserWithPermissions loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
@@ -103,7 +103,7 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(2));
 
         // includes across multiple roles, and doesn't duplicate permissions
-        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName(), role2.getName()));
+        portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName(), role2.getName()), getAuditInfo(info));
         loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(3));
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasItems(
@@ -114,9 +114,9 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGetByPortal(TestInfo info) {
-        AdminUser savedPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
-        AdminUser savedNonPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
-        AdminUser savedOtherPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
+        AdminUser savedPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build(), getAuditInfo(info));
+        AdminUser savedNonPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build(), getAuditInfo(info));
+        AdminUser savedOtherPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build(), getAuditInfo(info));
         Portal portal = portalFactory.buildPersisted(getTestName(info));
         Portal otherPortal = portalFactory.buildPersisted(getTestName(info));
         Portal emptyPortal = portalFactory.buildPersisted(getTestName(info));
@@ -124,13 +124,13 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
         PortalAdminUser savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
             .adminUserId(savedPortalUser.getId())
-            .portalId(portal.getId()).build());
+            .portalId(portal.getId()).build(), getAuditInfo(info));
         portalAdminUserService.create(PortalAdminUser.builder()
             .adminUserId(savedOtherPortalUser.getId())
-            .portalId(otherPortal.getId()).build());
+            .portalId(otherPortal.getId()).build(), getAuditInfo(info));
         portalAdminUserRoleService.create(PortalAdminUserRole.builder()
             .portalAdminUserId(savedPortalAdminUser.getId())
-            .roleId(role.getId()).build());
+            .roleId(role.getId()).build(), getAuditInfo(info));
 
         List<AdminUser> users = adminUserService.findAllWithRolesByPortal(portal.getId());
         assertThat(users, hasSize(1));
@@ -151,11 +151,11 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
         //Add the admin user to the first portal
         adminUser.setPortalAdminUsers(List.of(PortalAdminUser.builder().portalId(portal1.getId()).build()));
-        adminUserService.create(adminUser);
+        adminUserService.create(adminUser, getAuditInfo(info));
 
         //Add the admin user to the second portal
         adminUser.setPortalAdminUsers(List.of(PortalAdminUser.builder().portalId(portal2.getId()).build()));
-        adminUserService.create(adminUser);
+        adminUserService.create(adminUser, getAuditInfo(info));
 
         List<AdminUser> adminUsersList = adminUserService.findAllWithRoles();
         List<UUID> portalIds = adminUsersList.stream()

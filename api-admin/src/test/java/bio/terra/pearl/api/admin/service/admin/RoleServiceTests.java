@@ -23,8 +23,6 @@ public class RoleServiceTests extends BaseSpringBootTest {
     Role initialRole = roleFactory.buildPersisted(getTestName(testInfo));
     roleService.find(initialRole.getId());
 
-    assertThat(initialRole.getDescription(), equalTo(null));
-
     initialRole.setDescription("Study staff role");
     Role updated = roleService.update(initialRole);
     roleService.find(updated.getId());

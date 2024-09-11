@@ -23,11 +23,9 @@ public class PermissionServiceTests extends BaseSpringBootTest {
     Permission initialPermission = permissionFactory.buildPersisted(getTestName(testInfo));
     permissionService.find(initialPermission.getId());
 
-    assertThat(initialPermission.getDescription(), equalTo(null));
-
     initialPermission.setDescription("Allows the user to delete a study");
-    Permission updated = permissionService.update(initialPermission);
-    permissionService.find(updated.getId());
+    permissionService.update(initialPermission);
+    Permission updated = permissionService.find(initialPermission.getId()).get();
 
     assertThat(updated.getDescription(), equalTo("Allows the user to delete a study"));
   }

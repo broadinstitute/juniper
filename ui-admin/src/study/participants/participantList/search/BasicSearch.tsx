@@ -8,13 +8,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { debounce } from 'lodash'
+import classNames from 'classnames'
 
 /**
  * renders and manages updates to a string search facet
  * */
-const BasicSearch = ({ searchState, setSearchState }: {
+const BasicSearch = ({ searchState, setSearchState, disabled = false }: {
   searchState: ParticipantSearchState,
-  setSearchState: (searchState: ParticipantSearchState) => void
+  setSearchState: (searchState: ParticipantSearchState) => void,
+  disabled?: boolean
 }) => {
   const [searchText, setSearchText] = useState(searchState.keywordSearch)
 
@@ -35,14 +37,17 @@ const BasicSearch = ({ searchState, setSearchState }: {
     e.preventDefault()
     setSearchState({ ...searchState, keywordSearch: searchText })
   }}
-  style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
-    <button type="submit" title="submit search" className="btn btn-secondary">
+  style={{ border: '1px solid #bbb', backgroundColor: disabled ? '#f7f7f7' : '#fff', padding: '0.25em 0.75em 0em' }}>
+    <button type="submit" title="submit search" className={classNames('btn', 'border-0',
+      disabled ? 'btn-light' : 'btn-secondary'
+    )} disabled={disabled}>
       <FontAwesomeIcon icon={faSearch}/>
     </button>
     <input
       type="text"
       value={searchText}
       size={40}
+      disabled={disabled}
       style={{ border: 'none', outline: 'none' }}
       placeholder={'Search by name, email, or shortcode'}
       onChange={e => {

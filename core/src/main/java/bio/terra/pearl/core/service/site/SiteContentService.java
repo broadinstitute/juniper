@@ -1,11 +1,7 @@
 package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteContentDao;
-import bio.terra.pearl.core.model.site.HtmlPage;
-import bio.terra.pearl.core.model.site.HtmlSection;
-import bio.terra.pearl.core.model.site.LocalizedSiteContent;
-import bio.terra.pearl.core.model.site.NavbarItem;
-import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import org.springframework.stereotype.Service;
@@ -86,6 +82,7 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
     protected void cleanForCopying(LocalizedSiteContent lsc) {
         lsc.cleanForCopying();
         lsc.getNavbarItems().stream().forEach(navbarItem -> cleanForCopying(navbarItem));
+        lsc.getPages().stream().forEach(page -> cleanForCopying(page));
         cleanForCopying(lsc.getFooterSection());
         lsc.setFooterSectionId(null);
         cleanForCopying(lsc.getLandingPage());
@@ -95,14 +92,16 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
 
     protected void cleanForCopying(NavbarItem navbarItem) {
         navbarItem.cleanForCopying();
-        navbarItem.setHtmlPageId(null);
-        cleanForCopying(navbarItem.getHtmlPage());
+        if (navbarItem.getItems() != null) {
+            navbarItem.getItems().stream().forEach(item -> cleanForCopying(item));
+        }
     }
 
     protected  void cleanForCopying(HtmlPage htmlPage) {
         if (htmlPage != null) {
             htmlPage.cleanForCopying();
             htmlPage.setLocalizedSiteContentId(null);
+            htmlPage.setId(null);
             htmlPage.getSections().stream().forEach(section -> cleanForCopying(section));
         }
     }

@@ -11,14 +11,724 @@
       "passwordProtected" : false,
       "password" : "broad_institute",
       "acceptingEnrollment" : true,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ {
+      "active" : false,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-4.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-1.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-3.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-2.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-5.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-126.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-134.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-95.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-109.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-118.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-127.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-135.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-137.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-145.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-146.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-147.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-153.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-158.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-96.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-110.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-119.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-128.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-136.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-138.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-148.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-154.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-159.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-162.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-163.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-97.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-98.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-100.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-111.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-120.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-129.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-130.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-139.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-149.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-155.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-160.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-164.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-165.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-86.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-99.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-121.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-122.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-131.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-112.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-94.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-108.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-115.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-125.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-117.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-124.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-133.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-143.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-144.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-152.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-93.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-106.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-107.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-175.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-176.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-177.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-178.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-179.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-180.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-181.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-182.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-183.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-184.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-185.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-186.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-187.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-188.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-189.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-190.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-191.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-192.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-193.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-194.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-195.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-196.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-197.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-198.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-199.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-200.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-201.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-202.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-203.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-204.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-205.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-206.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-207.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-208.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-209.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-210.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-211.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-212.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-213.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-214.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-215.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-216.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-217.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-218.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-219.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-220.json"
+    }, {
       "active" : true,
       "surveyOrder" : 1,
       "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-221.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-140.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-150.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-156.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-161.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-166.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-167.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-168.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-169.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-170.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-171.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-172.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-173.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-174.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
       "populateFileName" : "../../surveys/baseline-85.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-87.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-101.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-103.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-113.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-123.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-132.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-141.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-142.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-151.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-157.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-88.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-102.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-104.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-89.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-90.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-91.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-92.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-105.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-114.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-116.json"
     }, {
       "active" : false,
       "surveyOrder" : 99,
@@ -38,27 +748,42 @@
       "active" : false,
       "surveyOrder" : 99,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/baseline-63.json"
+      "populateFileName" : "../../surveys/baseline-64.json"
     }, {
       "active" : false,
       "surveyOrder" : 99,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/baseline-64.json"
+      "populateFileName" : "../../surveys/baseline-63.json"
     }, {
       "active" : false,
       "surveyOrder" : 99,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/baseline-67.json"
     }, {
-      "active" : true,
+      "active" : false,
       "surveyOrder" : 0,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/basics-27.json"
     }, {
       "active" : false,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-28.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-29.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-30.json"
+    }, {
+      "active" : false,
       "surveyOrder" : 99,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/basics-23.json"
+      "populateFileName" : "../../surveys/basics-25.json"
     }, {
       "active" : false,
       "surveyOrder" : 99,
@@ -68,27 +793,293 @@
       "active" : false,
       "surveyOrder" : 99,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/basics-25.json"
+      "populateFileName" : "../../surveys/basics-23.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-4.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-5.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-6.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-7.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-8.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-3.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-9.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-2.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-1.json"
     }, {
       "active" : true,
-      "surveyOrder" : 2,
+      "surveyOrder" : 5,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/cureHeart-4.json"
-    } ],
-    "configuredConsentDtos" : [ {
-      "consentOrder" : 0,
-      "studyRequired" : true,
-      "allowAdminEdit" : true,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : true,
-      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-10.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-4.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-1.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-2.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-3.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-26.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-25.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-3.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-24.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-23.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-22.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-21.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-16.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-19.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-18.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-1.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-17.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-20.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-15.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-14.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-13.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-4.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-12.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-11.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-10.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-9.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-5.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-6.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-8.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-7.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-2.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-27.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 3,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/FollowUpSurvey-28.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
       "populateFileName" : "../../surveys/marketingConsent-5.json"
     } ],
     "triggerDtos" : [ {
       "active" : false,
-      "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
+      "triggerType" : "TASK_REMINDER",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-5.json"
+    }, {
+      "active" : true,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
@@ -97,8 +1088,10 @@
     }, {
       "active" : false,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
@@ -107,8 +1100,10 @@
     }, {
       "active" : false,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
@@ -118,8 +1113,10 @@
     }, {
       "active" : false,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
@@ -129,8 +1126,10 @@
     }, {
       "active" : false,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
@@ -140,8 +1139,10 @@
     }, {
       "active" : true,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
@@ -151,8 +1152,10 @@
     }, {
       "active" : false,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
@@ -162,8 +1165,10 @@
     }, {
       "active" : true,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
@@ -172,21 +1177,83 @@
     }, {
       "active" : false,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-3.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-3.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
+    }, {
+      "active" : false,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-3.json"
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
-    "enrolleeFiles" : [
-      "enrollees/consentedEnrollee.json",
-      "enrollees/gertrudeElion.json",
-      "enrollees/newEnrollee.json"
-    ],
+    "enrolleeFiles" : [ "enrollees/consentedEnrollee.json", "enrollees/gertrudeElion.json", "enrollees/newEnrollee.json" ],
+    "familyFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
@@ -196,6 +1263,9 @@
       "allowParticipantStart" : true,
       "allowParticipantReedit" : true,
       "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
       "populateFileName" : "../../surveys/registrationForm-29.json"
     }
   }, {
@@ -204,34 +1274,57 @@
       "passwordProtected" : true,
       "password" : "broad_institute",
       "acceptingEnrollment" : true,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ {
       "active" : true,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-5.json"
+    }, {
+      "active" : false,
       "surveyOrder" : 1,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/baseline-67.json"
     }, {
       "active" : true,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-221.json"
+    }, {
+      "active" : true,
       "surveyOrder" : 0,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/basics-25.json"
-    } ],
-    "configuredConsentDtos" : [ {
-      "consentOrder" : 0,
-      "studyRequired" : true,
-      "allowAdminEdit" : true,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : true,
-      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/basics-30.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-10.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-4.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
       "populateFileName" : "../../surveys/marketingConsent-5.json"
     } ],
     "triggerDtos" : [ {
       "active" : true,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
@@ -240,18 +1333,46 @@
     }, {
       "active" : true,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
     "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
@@ -261,6 +1382,9 @@
       "allowParticipantStart" : true,
       "allowParticipantReedit" : true,
       "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
       "populateFileName" : "../../surveys/registrationForm-29.json"
     }
   }, {
@@ -269,29 +1393,52 @@
       "passwordProtected" : false,
       "password" : "broad_institute",
       "acceptingEnrollment" : true,
-      "initialized" : true
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ {
+      "active" : true,
+      "surveyOrder" : 6,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/admin-5.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-221.json"
+    }, {
       "active" : true,
       "surveyOrder" : 0,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/basics-25.json"
-    } ],
-    "configuredConsentDtos" : [ {
-      "consentOrder" : 0,
-      "studyRequired" : true,
-      "allowAdminEdit" : true,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : true,
-      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/basics-30.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 5,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cardiomyopathyStudy-10.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 4,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeartAd-4.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 0,
+      "surveyVersion" : 0,
       "populateFileName" : "../../surveys/marketingConsent-5.json"
     } ],
     "triggerDtos" : [ {
       "active" : true,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
@@ -300,18 +1447,46 @@
     }, {
       "active" : true,
       "triggerType" : "TASK_REMINDER",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "AD_HOC",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "OUTREACH",
+      "afterMinutesIncomplete" : 0,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
     "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
@@ -321,6 +1496,9 @@
       "allowParticipantStart" : true,
       "allowParticipantReedit" : true,
       "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
       "populateFileName" : "../../surveys/registrationForm-29.json"
     }
   } ]

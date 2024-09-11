@@ -6,89 +6,304 @@
   "consentFormFiles" : [ ],
   "emailTemplateFiles" : [ ],
   "studyEnvironmentDtos" : [ {
-    "environmentName" : "live",
-    "studyEnvironmentConfig" : {
-      "passwordProtected" : true,
-      "password" : "broad_institute",
-      "acceptingEnrollment" : false,
-      "initialized" : true
-    },
-    "triggers" : [ ],
-    "configuredSurveyDtos" : [ ],
-    "configuredConsentDtos" : [ ],
-    "triggerDtos" : [ ],
-    "preEnrollmentResponseDtos" : [ ],
-    "kitTypeNames" : [ ],
-    "enrolleeFiles" : [ ]
-  }, {
-    "environmentName" : "irb",
-    "studyEnvironmentConfig" : {
-      "passwordProtected" : false,
-      "password" : "broad_institute",
-      "acceptingEnrollment" : true,
-      "initialized" : true
-    },
-    "triggers" : [ ],
-    "configuredSurveyDtos" : [ ],
-    "configuredConsentDtos" : [ ],
-    "triggerDtos" : [ ],
-    "preEnrollmentResponseDtos" : [ ],
-    "kitTypeNames" : [ ],
-    "enrolleeFiles" : [ ]
-  }, {
     "environmentName" : "sandbox",
     "studyEnvironmentConfig" : {
       "passwordProtected" : false,
       "password" : "broad_institute",
-      "acceptingEnrollment" : false,
-      "initialized" : true
+      "acceptingEnrollment" : true,
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "kitTypes" : [ ],
     "configuredSurveyDtos" : [ {
-      "active" : true,
-      "surveyOrder" : 0,
+      "active" : false,
+      "surveyOrder" : 1,
       "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/basic-1.json"
-    } ],
-    "configuredConsentDtos" : [ {
-      "consentOrder" : 0,
-      "studyRequired" : true,
-      "allowAdminEdit" : false,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : false,
-      "consentVersion" : 0,
-      "populateFileName" : "../../surveys/hh_cmyop_consent-1.json"
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-62.json"
     }, {
-      "consentOrder" : 2,
-      "studyRequired" : true,
-      "allowAdminEdit" : true,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : true,
-      "consentVersion" : 0,
-      "populateFileName" : "../../surveys/cardiomyopathyStudyPis-1.json"
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-63.json"
     }, {
-      "consentOrder" : 1,
-      "studyRequired" : true,
-      "allowAdminEdit" : true,
-      "allowParticipantStart" : true,
-      "allowParticipantReedit" : true,
-      "consentVersion" : 0,
-      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-14.json"
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-64.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-65.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-66.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-67.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-68.json"
+    }, {
+      "active" : false,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-69.json"
+    }, {
+      "active" : true,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-70.json"
     } ],
     "triggerDtos" : [ {
-      "active" : true,
+      "active" : false,
       "triggerType" : "EVENT",
-      "deliveryType" : "EMAIL",
       "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-3.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-5.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-3.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-6.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-2.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-3.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 5,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hh_cymop_studyEnroll-6.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
       "maxNumReminders" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-1.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "TASK_STATUS_CHANGE",
+      "actionScope" : "PORTAL",
+      "statusToUpdateTo" : "COMPLETE",
+      "updateTaskTargetStableId" : "cardiomyopathyStudy",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "TASK_STATUS_CHANGE",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-3.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-4.json"
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
     "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
@@ -98,7 +313,166 @@
       "allowParticipantStart" : true,
       "allowParticipantReedit" : true,
       "prepopulate" : false,
-      "populateFileName" : "../../surveys/hh_cmyop_preEnroll-2.json"
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
+      "populateFileName" : "../../surveys/hh_cmyop_preEnroll-7.json"
+    }
+  }, {
+    "environmentName" : "irb",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
+    },
+    "triggers" : [ ],
+    "kitTypes" : [ ],
+    "configuredSurveyDtos" : [ {
+      "active" : true,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-66.json"
+    } ],
+    "triggerDtos" : [ {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "TASK_STATUS_CHANGE",
+      "actionScope" : "PORTAL",
+      "statusToUpdateTo" : "COMPLETE",
+      "updateTaskTargetStableId" : "cardiomyopathyStudy",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
+    } ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "triggers" : [ ],
+      "recur" : false,
+      "required" : false,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
+      "populateFileName" : "../../surveys/hh_cmyop_preEnroll-7.json"
+    }
+  }, {
+    "environmentName" : "live",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "acceptingProxyEnrollment" : false,
+      "enableFamilyLinkage" : false,
+      "initialized" : true,
+      "useStubDsm" : true,
+      "useDevDsmRealm" : true
+    },
+    "triggers" : [ ],
+    "kitTypes" : [ ],
+    "configuredSurveyDtos" : [ {
+      "active" : true,
+      "surveyOrder" : 1,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/consentFormTheHeartHiveCardiomyopathyStudy-66.json"
+    } ],
+    "triggerDtos" : [ {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_ENROLLMENT",
+      "actionType" : "TASK_STATUS_CHANGE",
+      "actionScope" : "PORTAL",
+      "statusToUpdateTo" : "COMPLETE",
+      "updateTaskTargetStableId" : "cardiomyopathyStudy",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "eventType" : "STUDY_CONSENT",
+      "actionType" : "NOTIFICATION",
+      "actionScope" : "STUDY",
+      "deliveryType" : "EMAIL",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
+    } ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "familyFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "triggers" : [ ],
+      "recur" : false,
+      "required" : false,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "assignToAllNewEnrollees" : true,
+      "assignToExistingEnrollees" : false,
+      "autoUpdateTaskAssignments" : false,
+      "populateFileName" : "../../surveys/hh_cmyop_preEnroll-7.json"
     }
   } ]
 }

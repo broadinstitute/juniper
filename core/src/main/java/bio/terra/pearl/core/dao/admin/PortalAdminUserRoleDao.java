@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.admin;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 // TODO: add tests???
 @Component
-public class PortalAdminUserRoleDao extends BaseJdbiDao<PortalAdminUserRole> {
+public class PortalAdminUserRoleDao extends BaseMutableJdbiDao<PortalAdminUserRole> {
 
     public PortalAdminUserRoleDao(Jdbi jdbi) {
         super(jdbi);

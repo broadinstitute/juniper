@@ -15,7 +15,9 @@ public class PortalAdminUser extends BaseEntity {
     private UUID adminUserId;
     private UUID portalId;
     @Builder.Default
-    private List<Role> roles = new ArrayList<>();
+    private List<PortalAdminUserRole> portalAdminUserRoles = new ArrayList<>();
+
+    // convenience DTO holder for all roles of the PortalAdminUser
     @Builder.Default
-    private List<UUID> roleIds = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 }

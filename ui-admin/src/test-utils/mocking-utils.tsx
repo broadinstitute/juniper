@@ -6,7 +6,8 @@ import Api, {
   Notification,
   NotificationEventDetails,
   PepperKit,
-  Portal, PortalEnvironmentConfig,
+  Portal,
+  PortalEnvironmentConfig,
   PortalStudy,
   SiteMediaMetadata,
   StudyEnvironment,
@@ -16,6 +17,7 @@ import Api, {
 import {
   AlertTrigger,
   defaultSurvey,
+  EmailTemplate,
   Enrollee,
   Family,
   KitRequest,
@@ -25,24 +27,31 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, renderWithRouter,
+  ParticipantTaskType,
+  PortalEnvironment,
+  renderWithRouter,
+  StudyEnvironmentSurvey,
   StudyEnvParams,
   Survey,
-  SurveyType,
-  EmailTemplate,
-  StudyEnvironmentSurvey,
-  PortalEnvironment
+  SurveyType
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
+import {
+  LoadedPortalContextT,
+  PortalContext,
+  PortalContextT
+} from '../portal/PortalProvider'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import React from 'react'
 import { AdminUserContext } from '../providers/AdminUserProvider'
 import { AdminUser } from '../api/adminUser'
 import { mockAdminUser } from './user-mocking-utils'
 import { UserContext } from '../user/UserProvider'
+import { PortalEnvContextT } from '@juniper/ui-participant/src/providers/PortalProvider'
+import { mockLocalSiteContent } from 'test-utils/mock-site-content'
+import { ReactNotifications } from 'react-notifications-component'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -85,6 +94,13 @@ export const mockPortalEnvContext = (envName: string): PortalEnvContext => ({
   reloadPortal: () => Promise.resolve(mockPortal()),
   updatePortalEnv: jest.fn(),
   portalEnv: mockPortalEnvironment(envName)
+})
+
+export const mockPortalEnvContextT = (): PortalEnvContextT => ({
+  portal: mockPortal(),
+  portalEnv: mockPortalEnvironment('sandbox'),
+  reloadPortal: jest.fn(),
+  localContent: mockLocalSiteContent()
 })
 
 /** returns simple mock portal environment */
@@ -383,6 +399,7 @@ export const mockParticipantNote = (): ParticipantNote => {
 /** mock NotificationConfig */
 export const mockTrigger = (): Trigger => {
   return {
+    actionScope: 'STUDY',
     id: 'noteId1',
     triggerType: 'EVENT',
     eventType: 'CONSENT',
@@ -615,6 +632,7 @@ export const renderInPortalRouter = (portal: Portal,
         <PortalContext.Provider value={portalContext}>
           { children }
         </PortalContext.Provider>
+        <ReactNotifications/>
       </UserContext.Provider>
     </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv')

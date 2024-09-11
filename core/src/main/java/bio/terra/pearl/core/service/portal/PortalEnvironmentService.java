@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +32,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PreregistrationResponseDao preregistrationResponseDao;
     private TriggerService triggerService;
     private MailingListContactService mailingListContactService;
-    private DataChangeRecordService dataChangeRecordService;
+    private ParticipantDataChangeService participantDataChangeService;
     private SiteContentService siteContentService;
     private SurveyService surveyService;
     private PortalDashboardConfigService portalDashboardConfigService;
@@ -46,7 +46,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     TriggerService triggerService,
                                     MailingListContactService mailingListContactService,
                                     SiteContentService siteContentService,
-                                    DataChangeRecordService dataChangeRecordService,
+                                    ParticipantDataChangeService participantDataChangeService,
                                     PortalDashboardConfigService portalDashboardConfigService,
                                     SurveyService surveyService,
                                     PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
@@ -57,7 +57,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.preregistrationResponseDao = preregistrationResponseDao;
         this.triggerService = triggerService;
         this.mailingListContactService = mailingListContactService;
-        this.dataChangeRecordService = dataChangeRecordService;
+        this.participantDataChangeService = participantDataChangeService;
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
         this.portalDashboardConfigService = portalDashboardConfigService;
@@ -142,7 +142,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
         triggerService.deleteByPortalEnvironmentId(id);
-        dataChangeRecordService.deleteByPortalEnvironmentId(id);
+        participantDataChangeService.deleteByPortalEnvironmentId(id);
         portalDashboardConfigService.deleteAlertsByPortalEnvId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);

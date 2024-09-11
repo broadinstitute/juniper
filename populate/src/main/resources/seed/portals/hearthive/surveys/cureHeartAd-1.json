@@ -1,0 +1,26 @@
+{
+  "stableId" : "cureHeartAd",
+  "version" : 1,
+  "name" : "CureHeart_Ad",
+  "surveyType" : "OUTREACH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "recurrenceIntervalDays" : 0,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : true,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "outreach_content_5e5bfuubnc"
+      } ]
+    } ]
+  }
+}

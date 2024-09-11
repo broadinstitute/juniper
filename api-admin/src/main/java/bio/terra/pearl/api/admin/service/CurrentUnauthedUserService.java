@@ -2,11 +2,14 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -19,17 +22,19 @@ public class CurrentUnauthedUserService {
     this.adminUserService = adminUserService;
   }
 
-  public Optional<AdminUserWithPermissions> unauthedLogin(String username) {
+  public Optional<AdminUserWithPermissionsAndToken> unauthedLogin(String username) {
     Optional<AdminUserWithPermissions> userOpt =
         adminUserService.findByUsernameWithPermissions(username);
-    userOpt.ifPresent(
-        userWithPermissions -> {
-          AdminUser user = userWithPermissions.user();
-          user.setToken(generateFakeJwtToken(username));
-          user.setLastLogin(Instant.now());
-          adminUserService.update(user);
-        });
-    return userOpt;
+    if (userOpt.isPresent()) {
+      AdminUser user = userOpt.get().user();
+      user.setLastLogin(Instant.now());
+      adminUserService.update(
+          user, DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build());
+      return Optional.of(
+          new AdminUserWithPermissionsAndToken(
+              user, userOpt.get().portalPermissions(), generateFakeJwtToken(username)));
+    }
+    return Optional.empty();
   }
 
   protected String generateFakeJwtToken(String username) {
@@ -40,23 +45,32 @@ public class CurrentUnauthedUserService {
         .sign(Algorithm.none());
   }
 
-  public Optional<AdminUserWithPermissions> tokenLogin(String token) {
+  public Optional<AdminUserWithPermissionsAndToken> tokenLogin(String token) {
     String email = getEmailFromToken(token);
-    return adminUserService.findByUsernameWithPermissions(email);
+
+    Optional<AdminUserWithPermissions> userOpt =
+        adminUserService.findByUsernameWithPermissions(email);
+    if (userOpt.isPresent()) {
+      return Optional.of(
+          new AdminUserWithPermissionsAndToken(
+              userOpt.get().user(),
+              userOpt.get().portalPermissions(),
+              generateFakeJwtToken(email)));
+    }
+    return Optional.empty();
   }
 
   public void logout(String token) {
     String email = getEmailFromToken(token);
     Optional<AdminUser> userOpt = adminUserService.findByUsername(email);
-    userOpt.ifPresent(
-        user -> {
-          user.setToken(null);
-          adminUserService.update(user);
-        });
+    // no-op
   }
 
   protected String getEmailFromToken(String token) {
     DecodedJWT decodedJWT = JWT.decode(token);
     return decodedJWT.getClaim("email").asString();
   }
+
+  public record AdminUserWithPermissionsAndToken(
+      AdminUser user, Map<UUID, HashSet<String>> portalPermissions, String token) {}
 }

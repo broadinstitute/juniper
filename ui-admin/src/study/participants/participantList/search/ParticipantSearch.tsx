@@ -5,14 +5,17 @@ import BasicSearch from './BasicSearch'
 import SearchCriteriaView from './SearchCriteriaView'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFilter } from '@fortawesome/free-solid-svg-icons'
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, setSearchState }: {
+function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, setSearchState, disabled = false }: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
-  setSearchState: (searchState: ParticipantSearchState) => void
+  setSearchState: (searchState: ParticipantSearchState) => void,
+  disabled?: boolean
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
@@ -25,13 +28,14 @@ function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, se
         setSearchState={setSearchState}/>}
       <div className="align-items-center">
         <BasicSearch
+          disabled={disabled}
           searchState={searchState}
           setSearchState={setSearchState}/>
       </div>
       <div className="ms-2">
-        <Button variant="light" className="border btn-sm"
+        <Button variant="light" className="border btn-sm" disabled={disabled}
           onClick={() => setAdvancedSearch(true)}>
-        Advanced Search
+          <FontAwesomeIcon icon={faFilter}/> Search Filters
         </Button>
       </div>
     </div>

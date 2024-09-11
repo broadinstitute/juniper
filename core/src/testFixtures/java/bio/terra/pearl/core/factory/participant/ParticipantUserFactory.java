@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.ShortcodeService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,13 +17,17 @@ public class ParticipantUserFactory {
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
+    private ShortcodeService shortcodeService;
+    @Autowired
     private PortalParticipantUserService portalParticipantUserService;
     @Autowired
     private ProfileFactory profileFactory;
 
 
     public ParticipantUser.ParticipantUserBuilder builder(String testName) {
+        String shortcode = shortcodeService.generateShortcode("ACC", participantUserService::findOneByShortcode);
         return ParticipantUser.builder()
+                .shortcode(shortcode)
                 .username(RandomStringUtils.randomAlphabetic(10) + "@test.com");
     }
 

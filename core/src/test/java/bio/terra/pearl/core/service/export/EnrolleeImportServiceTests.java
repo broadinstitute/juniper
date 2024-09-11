@@ -3,8 +3,10 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
@@ -14,8 +16,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -49,10 +50,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -81,12 +79,13 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private ImportItemService importItemService;
     @Autowired
+    private EnrolleeFactory enrolleeFactory;
+    @Autowired
     KitRequestService kitRequestService;
 
     public DataImportSetUp setup(TestInfo info, String csvString) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
-        AdminUser savedAdmin = adminUserService.create(adminUser);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
 
         //create survey
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(info))
@@ -96,10 +95,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ;
         surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
 
-        return new DataImportSetUp().builder()
+        return DataImportSetUp.builder()
                 .bundle(bundle)
                 .adminUser(adminUser)
-                .savedAdmin(savedAdmin)
                 .csvString(csvString)
                 .build();
     }
@@ -114,7 +112,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
-        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.adminUser, ImportFileFormat.CSV);
         UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
         List<ImportItem> imports = dataImport.getImportItems();
         verifyImport(dataImport, 2);
@@ -147,11 +145,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleeUpdateCSV(TestInfo info) {
         String csvString = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:10PM","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA","sick"
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:10PM","{""firstName"":""SS"",""lastName"":""LN1"",""street1"":""320 Charles Street"",""city"":""Cambridge"",""state"":""MA"",""postalCode"":""02141"",""country"":""US""}","SALIVA","sick"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
-        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.adminUser, ImportFileFormat.CSV);
         UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
         List<ImportItem> imports = dataImport.getImportItems();
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
@@ -166,7 +164,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10","healthy"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10","not healthy"
                 """;
-        Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.adminUser, ImportFileFormat.CSV);
         verifyImport(dataImportUpdate, 2);
         /*create participantUser, enrollee, profile with expected data to assert*/
         ParticipantUser userExpected = new ParticipantUser();
@@ -200,12 +198,12 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleeSingleKitRequest(TestInfo info) {
         String csvStringSingleKit = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA"
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{""firstName"":""SS"",""lastName"":""LN1"",""street1"":""320 Charles Street"",""city"":""Cambridge"",""state"":""MA"",""postalCode"":""02141"",""country"":""US""}","SALIVA"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
         DataImportSetUp setupData = setup(info, csvStringSingleKit);
-        Import dataImport = doImport(setupData.bundle, csvStringSingleKit, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImport = doImport(setupData.bundle, csvStringSingleKit, setupData.adminUser, ImportFileFormat.CSV);
         verifyImport(dataImport, 2);
 
         List<KitRequestDto> kitRequestDtoList = new ArrayList<>();
@@ -225,7 +223,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleeMultipleKitRequests(TestInfo info) {
         String csvStringMultipleKits = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.createdAt,sample_kit.2.sentAt,sample_kit.2.receivedAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-21 11:10AM","2024-05-22 01:38PM","2024-05-25 01:10AM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{""firstName"":""SS"",""lastName"":""LN1"",""street1"":""320 Charles Street"",""city"":""Cambridge"",""state"":""MA"",""postalCode"":""02141"",""country"":""US""}","SALIVA", "sick","RECEIVED","2024-05-21 11:10AM","2024-05-22 01:38PM","2024-05-25 01:10AM","KITTRACKNUMBER_2","{""firstName"":""SS2"",""street1"":""320 Charles Street"",""city"":""Cambridge""}","SALIVA"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
@@ -247,7 +245,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         kitRequestDtoList.add(kitRequestDto);
         kitRequestDtoList.add(kitRequestDto2);
 
-        Import dataImport = doImport(setupData.bundle, csvStringMultipleKits, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImport = doImport(setupData.bundle, csvStringMultipleKits, setupData.adminUser, ImportFileFormat.CSV);
         verifyImport(dataImport, 2);
         verifyKitRequests(dataImport.getImportItems().get(0), kitRequestDtoList);
     }
@@ -261,7 +259,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
-        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.adminUser, ImportFileFormat.CSV);
         UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
         List<ImportItem> imports = dataImport.getImportItems();
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
@@ -274,7 +272,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData2 = setup(info, csvStringPortal2);
-        Import dataImportUpdate = doImport(setupData2.bundle, csvStringPortal2, setupData2.savedAdmin, ImportFileFormat.CSV);
+        Import dataImportUpdate = doImport(setupData2.bundle, csvStringPortal2, setupData2.adminUser, ImportFileFormat.CSV);
         verifyImport(dataImportUpdate, 2);
         ImportItem importItem = dataImportUpdate.getImportItems().get(0);
         ParticipantUser userUpd = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
@@ -296,8 +294,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrollees(TestInfo info) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
-        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
-        AdminUser savedAdmin = adminUserService.create(adminUser);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
 
         String tsvString = """
                 column1\tcolumn2\tcolumn3\taccount.username
@@ -305,7 +302,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 x\t\tz\tuserName2             
                 """;
 
-        Import dataImport = doImport(bundle, tsvString, savedAdmin, ImportFileFormat.TSV);
+        Import dataImport = doImport(bundle, tsvString, adminUser, ImportFileFormat.TSV);
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
@@ -385,6 +382,45 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
     }
 
+
+    /** check that imports won't overwrite previously entered profiles in a multi-study setting */
+    @Test
+    @Transactional
+    public void testEnrolleeProfileImportDoesntOverwrite(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle study1Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentFactory.StudyEnvironmentBundle study2Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb,
+                study1Bundle.getPortal(), study1Bundle.getPortalEnv());
+        Profile existingProfile = Profile.builder()
+                .givenName("John")
+                .birthDate(LocalDate.of(1989, 1, 1))
+                .mailingAddress(MailingAddress.builder()
+                        .street1("123 Main St")
+                        .postalCode("12345")
+                        .build())
+                .build();
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), study1Bundle.getPortalEnv(), study1Bundle.getStudyEnv(), existingProfile);
+        String username = enrolleeBundle.participantUser().getUsername();
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "profile.familyName", "Smith");
+
+        Enrollee importedEnrolle = enrolleeImportService.importEnrollee(
+                study2Bundle.getPortal().getShortcode(),
+                study2Bundle.getStudy().getShortcode(),
+                study2Bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        Profile profile = profileService.loadWithMailingAddress(importedEnrolle.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("John"));
+        assertThat(profile.getFamilyName(), equalTo("Smith"));
+        assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1989, 1, 1)));
+        assertThat(profile.getMailingAddress().getStreet1(), equalTo("123 Main St"));
+        assertThat(profile.getMailingAddress().getPostalCode(), equalTo("12345"));
+
+        Enrollee priorEnrollee = enrolleeService.find(enrolleeBundle.enrollee().getId()).orElseThrow();
+        assertThat(priorEnrollee.getProfileId(), equalTo(importedEnrolle.getProfileId()));
+    }
+
     String TWO_QUESTION_SURVEY_CONTENT = """
             {
             	"title": "The Basics",
@@ -422,6 +458,14 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .stableId("importTest1")
                 .content(TWO_QUESTION_SURVEY_CONTENT)
                 .portalId(bundle.getPortal().getId())
+                        .answerMappings(List.of(
+                                AnswerMapping.builder()
+                                        .targetType(AnswerMappingTargetType.PROFILE)
+                                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                                        .targetField("givenName")
+                                        .questionStableId("importFirstName")
+                                        .build()
+                        ))
                 .version(1)
         );
         surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
@@ -450,6 +494,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Answer favColor = answers.stream().filter(answer -> answer.getQuestionStableId().equals("importFavColors"))
                 .findFirst().get();
         assertThat(favColor.getObjectValue(), equalTo("[\"red\", \"blue\"]"));
+
+        // confirm profile mapping got processed
+        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("Jeff"));
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
@@ -522,7 +570,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public static class DataImportSetUp {
         private StudyEnvironmentFactory.StudyEnvironmentBundle bundle;
         private AdminUser adminUser;
-        private AdminUser savedAdmin;
         private String csvString;
     }
 }

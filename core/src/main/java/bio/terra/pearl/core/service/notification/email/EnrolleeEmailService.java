@@ -18,7 +18,7 @@ import com.sendgrid.Mail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -80,8 +80,10 @@ public class EnrolleeEmailService implements NotificationSender {
             // the notification might have been saved, but in a transaction not-yet completed (if, for example,
             // study enrollment transaction is taking a long time). So retry the update if it fails
             RetryTemplate retryTemplate = RetryTemplate.defaultInstance();
-            FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-            backOffPolicy.setBackOffPeriod(2000);  // this will retry once every two seconds for 3 tries
+            // exponential backoff with a max interval of 32 seconds, so we'll make retry attempts after 4, 8, 16, and 32 seconds
+            ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+            backOffPolicy.setInitialInterval(4000);
+            backOffPolicy.setMaxInterval(32000);
             retryTemplate.setBackOffPolicy(backOffPolicy);
             try {
                 retryTemplate.execute(arg -> notificationService.update(notification));

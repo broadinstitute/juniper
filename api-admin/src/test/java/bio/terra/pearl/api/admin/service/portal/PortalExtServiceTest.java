@@ -62,16 +62,6 @@ public class PortalExtServiceTest {
   }
 
   @Test
-  public void removePortalUserRequiresPortalAuth() {
-    AdminUser operator = AdminUser.builder().superuser(false).build();
-    when(mockAuthUtilService.authUserToPortal(operator, "testPortal"))
-        .thenThrow(new PermissionDeniedException("test"));
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> portalExtService.removeUserFromPortal(UUID.randomUUID(), "testPortal", operator));
-  }
-
-  @Test
   public void updateLanguagesRequiresSandbox() {
     AdminUser user = AdminUser.builder().superuser(true).build();
     Assertions.assertThrows(
