@@ -10,7 +10,7 @@ import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import {
   mockEnrolleeSearchExpressionResult,
   mockFamily,
-  mockStudyEnvContext
+  mockStudyEnvContext, renderInPortalRouter
 } from 'test-utils/mocking-utils'
 import { userEvent } from '@testing-library/user-event'
 import {
@@ -41,6 +41,15 @@ const mockSearchApiWithFamilies = (numSearchResults: number, numFamilies: number
     .mockImplementation(() => Promise.resolve(families))
 
   return { searchSpy, familySpy }
+}
+
+const mockWithrawnEnrolleeApi = () => {
+  return jest.spyOn(Api, 'fetchWithdrawnEnrollees')
+    .mockResolvedValue([{
+      shortcode: 'HDGONE',
+      userData: '{}',
+      createdAt: 123
+    }])
 }
 
 
@@ -218,5 +227,21 @@ test('ensure cannot group by family if family linkage not enabled', async () => 
   //Wait for results to be rendered
   await screen.findAllByText('JOSALK')
 
-  expect(screen.queryByLabelText('Family view')).not.toBeInTheDocument()
+  expect(screen.queryByLabelText('Switch to family view')).not.toBeInTheDocument()
+})
+
+test('allows the user to switch to withdrawn view', async () => {
+  mockSearchApi(100)
+  mockWithrawnEnrolleeApi()
+  const studyEnvContext = mockStudyEnvContext()
+
+  renderInPortalRouter(studyEnvContext.portal, <ParticipantList studyEnvContext={studyEnvContext}/>)
+
+  //Wait for results to be rendered
+  await screen.findAllByText('JOSALK')
+  await userEvent.click(screen.getByLabelText('Switch to withdrawn view'))
+
+  //Confirm the withdrawal info header is shown
+  expect(screen.getByText('More information about the', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('HDGONE')).toBeInTheDocument()
 })
