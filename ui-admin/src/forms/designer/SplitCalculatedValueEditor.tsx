@@ -152,7 +152,7 @@ export const SplitCalculatedValueEditor = ({
       model={surveyModel}
       readOnly={false}
     />
-  }, [onVariableChanged, questionsUsedInCalculatedValue, setPreviewResult])
+  }, [questionsUsedInCalculatedValue])
 
   return <div key={calculatedValueIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
