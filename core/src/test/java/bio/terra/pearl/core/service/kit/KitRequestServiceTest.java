@@ -191,7 +191,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testCantCollectShippedKit(TestInfo testInfo) throws JsonProcessingException {
+    public void testCantCollectMailedKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
@@ -230,7 +230,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testCollectAssignedKit(TestInfo testInfo) throws JsonProcessingException {
+    public void testCollectInPersonKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));

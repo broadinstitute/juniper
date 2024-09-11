@@ -92,12 +92,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
 
         return switch (kitRequestCreationDto.distributionMethod) {
-            case IN_PERSON -> createNewAssignedKitRequest(operator, enrollee, kitRequestCreationDto);
+            case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
             case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
-    private KitRequestDto createNewAssignedKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
+    private KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
         KitRequest inPersonKitRequest = KitRequest.builder().kitType(kitTypeDao.findByName(kitRequestCreationDto.kitType).get())
                 .id(daoUtils.generateUUID())
                 .kitTypeId(kitTypeDao.findByName(kitRequestCreationDto.kitType).get().getId())

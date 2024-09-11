@@ -92,7 +92,7 @@
     {
       "creatingAdminUsername": "heartdemostaff@gmail.com",
       "kitTypeName": "SALIVA",
-      "distributionMethod": "SHIPPED",
+      "distributionMethod": "MAILED",
       "status": "CREATED",
       "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
