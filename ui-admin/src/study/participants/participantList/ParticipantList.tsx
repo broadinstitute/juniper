@@ -2,12 +2,9 @@ import React, { useState } from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-
-
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-
 import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
