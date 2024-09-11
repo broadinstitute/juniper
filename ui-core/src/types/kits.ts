@@ -9,7 +9,7 @@ export type KitRequest = {
     id: string,
     createdAt: number,
     kitType: KitType,
-    kitOriginType: string,
+    distributionMethod: string,
     status: string,
     sentToAddress: string,
     labeledAt?: number,

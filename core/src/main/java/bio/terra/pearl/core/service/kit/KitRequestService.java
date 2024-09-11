@@ -91,7 +91,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             throw new IllegalArgumentException("No profile for enrollee: " + enrollee.getShortcode());
         }
 
-        return switch (kitRequestCreationDto.kitOriginType) {
+        return switch (kitRequestCreationDto.distributionMethod) {
             case ASSIGNED -> createNewAssignedKitRequest(operator, enrollee, kitRequestCreationDto);
             case SHIPPED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
@@ -104,7 +104,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .status(KitRequestStatus.CREATED)
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
-                .kitOriginType(KitOriginType.ASSIGNED)
+                .distributionMethod(DistributionMethod.ASSIGNED)
                 .kitBarcode(kitRequestCreationDto.kitBarcode)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .build();
@@ -137,7 +137,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    public record KitRequestCreationDto(String kitType, KitOriginType kitOriginType, String kitBarcode, boolean skipAddressValidation) { }
+    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitBarcode, boolean skipAddressValidation) { }
 
     public record KitCollectionDto(String kitBarcode) {}
 
@@ -380,7 +380,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     public KitRequest collectKit(AdminUser operator, KitRequest kitRequest, KitRequestStatus status) {
-        if(kitRequest.getKitOriginType() != KitOriginType.ASSIGNED) {
+        if(kitRequest.getDistributionMethod() != DistributionMethod.ASSIGNED) {
             throw new IllegalArgumentException("You cannot collect a kit that has not been assigned.");
         }
 

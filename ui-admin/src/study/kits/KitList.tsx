@@ -52,7 +52,7 @@ const defaultColumns: VisibilityState = {
   'collectingAdminUserId': false,
   'receivedAt': false,
   'status': false,
-  'kitOriginType': false
+  'distributionMethod': false
 }
 
 /**
@@ -62,7 +62,7 @@ const statusTabs: KitStatusTabConfig[] = [
   {
     statuses: ['CREATED'],
     key: 'created',
-    additionalColumns: ['kitOriginType']
+    additionalColumns: ['distributionMethod']
   },
   {
     statuses: ['QUEUED'],
@@ -93,7 +93,7 @@ const statusTabs: KitStatusTabConfig[] = [
     additionalColumns: [
       'labeledAt', 'trackingNumber',
       'sentAt', 'returnTrackingNumber',
-      'receivedAt', 'kitOriginType'
+      'receivedAt', 'distributionMethod'
     ]
   },
   {
@@ -243,7 +243,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     enableColumnFilter: false
   }, {
     header: 'Kit Origin',
-    accessorKey: 'kitOriginType',
+    accessorKey: 'distributionMethod',
     enableColumnFilter: false
   }, {
     header: 'Requested By',

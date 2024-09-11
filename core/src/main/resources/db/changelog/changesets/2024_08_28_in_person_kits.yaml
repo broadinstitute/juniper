@@ -6,7 +6,7 @@ databaseChangeLog:
         - addColumn:
             tableName: kit_request
             columns:
-              - column: { name: kit_origin_type, type: text, defaultValue: 'SHIPPED', constraints: { nullable: false } }
+              - column: { name: distribution_method, type: text, defaultValue: 'SHIPPED', constraints: { nullable: false } }
         - addColumn:
             tableName: kit_request
             columns:

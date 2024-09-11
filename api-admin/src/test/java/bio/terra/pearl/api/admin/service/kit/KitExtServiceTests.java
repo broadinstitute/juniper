@@ -11,7 +11,7 @@ import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.kit.KitOriginType;
+import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
                     adminUser, "someportal", "somestudy", EnvironmentName.sandbox),
                 Arrays.asList("enrollee1", "enrollee2"),
                 new KitRequestService.KitRequestCreationDto(
-                    "SALIVA", KitOriginType.SHIPPED, null, false)));
+                    "SALIVA", DistributionMethod.SHIPPED, null, false)));
   }
 
   @Test

@@ -72,7 +72,7 @@
     {
       "creatingAdminUsername": "staff@ourhealth.org",
       "kitTypeName": "SALIVA",
-      "kitOriginType": "SHIPPED",
+      "distributionMethod": "SHIPPED",
       "status": "CREATED",
       "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
@@ -96,7 +96,7 @@
     {
       "creatingAdminUsername": "staff2@ourhealth.org",
       "kitTypeName": "SALIVA",
-      "kitOriginType": "SHIPPED",
+      "distributionMethod": "SHIPPED",
       "status": "DEACTIVATED",
       "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555556",

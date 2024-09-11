@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.service.kit;
 
-import bio.terra.pearl.core.model.kit.KitOriginType;
+import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -31,7 +31,7 @@ public class KitRequestDto {
   private UUID collectingAdminUserId;
   private Instant createdAt;
   private KitType kitType;
-  private KitOriginType kitOriginType;
+  private DistributionMethod distributionMethod;
   private KitRequestStatus status;
   private String sentToAddress;
   private Instant labeledAt;
@@ -55,7 +55,7 @@ public class KitRequestDto {
     this.collectingAdminUserId = kitRequest.getCollectingAdminUserId();
     this.createdAt = kitRequest.getCreatedAt();
     this.kitType = kitType;
-    this.kitOriginType = kitRequest.getKitOriginType();
+    this.distributionMethod = kitRequest.getDistributionMethod();
     this.sentToAddress = kitRequest.getSentToAddress();
     this.status = kitRequest.getStatus();
     this.labeledAt = kitRequest.getLabeledAt();
@@ -71,7 +71,7 @@ public class KitRequestDto {
   }
 
   protected static String createRequestDetails(KitRequest kitRequest, ObjectMapper objectMapper) {
-    if(kitRequest.getKitOriginType() != KitOriginType.SHIPPED) {
+    if(kitRequest.getDistributionMethod() != DistributionMethod.SHIPPED) {
       return null;
     }
 

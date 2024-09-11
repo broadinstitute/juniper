@@ -52,7 +52,7 @@ const BaseKitInstructions = ({ portalEnv }: { portalEnv: PortalEnvironment }) =>
 }
 
 const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
-  const activeKit = enrollee.kitRequests.filter(kit => kit.kitOriginType === 'ASSIGNED')[0]
+  const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'ASSIGNED')[0]
 
   if (!enrollee.consented) {
     return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">

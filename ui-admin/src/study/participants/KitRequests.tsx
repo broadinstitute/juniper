@@ -59,8 +59,8 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   header: 'Address',
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
 }, {
-  header: 'Kit Origin',
-  accessorKey: 'kitOriginType'
+  header: 'Distribution Method',
+  accessorKey: 'distributionMethod'
 }, {
   header: 'Details',
   accessorKey: 'details',
