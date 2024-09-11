@@ -32,7 +32,6 @@ import DatasetDashboard from './participants/datarepo/DatasetDashboard'
 import DatasetList from './participants/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
-import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/PortalPublishingView'
 import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
@@ -50,6 +49,7 @@ import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 import FamilyRouter from './families/FamilyRouter'
 import { KitScanner } from './kits/kitcollection/KitScanner'
+import { LoadedSettingsView } from 'study/settings/SettingsView'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -123,8 +123,10 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalEnv={portalEnv}/>}/>
           <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
           <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="settings" element={<StudySettings studyEnvContext={studyEnvContext}
-            portalContext={portalContext}/>}/>
+          <Route path="settings/*" element={<LoadedSettingsView
+            studyEnvContext={studyEnvContext}
+            portalContext={portalContext}/>}
+          />
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets/:datasetName"

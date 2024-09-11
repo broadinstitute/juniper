@@ -29,6 +29,13 @@ spring.config.import: optional:file:../config/local-properties.yml;classpath:git
 logging.pattern.level: '%X{requestId} %5p'
 
 spring:
+  cloud:
+    gcp:
+      secretmanager:
+        enabled: false
+      core:
+        enabled: false
+
   # application name and version are used to populate the logging serviceContext
   # https://github.com/DataBiosphere/terra-common-lib/blob/480ab3daae282ddff0fef8dc329494a4422e32f1/src/main/java/bio/terra/common/logging/GoogleJsonLayout.java#L118
   application.name: pearlcore

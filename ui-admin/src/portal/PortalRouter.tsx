@@ -1,13 +1,23 @@
 import React, { useContext } from 'react'
-import { Route, Routes, useParams } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+  useParams
+} from 'react-router-dom'
 import StudyRouter from '../study/StudyRouter'
 import PortalDashboard from './PortalDashboard'
-import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
+import {
+  LoadedPortalContextT,
+  PortalContext,
+  PortalParams
+} from './PortalProvider'
 import MailingListView from './MailingListView'
 import PortalEnvView from './PortalEnvView'
-import PortalEnvConfigView from './PortalEnvConfigView'
 import PortalParticipantsView from './PortalParticipantView'
-import { Portal, PortalEnvironment } from '@juniper/ui-core'
+import {
+  Portal,
+  PortalEnvironment
+} from '@juniper/ui-core'
 import SiteContentLoader from './siteContent/SiteContentLoader'
 
 export type PortalEnvContext = {
@@ -50,7 +60,6 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
 
   return <>
     <Routes>
-      <Route path="config" element={<PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}

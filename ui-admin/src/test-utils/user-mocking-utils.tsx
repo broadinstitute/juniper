@@ -1,6 +1,9 @@
 import React from 'react'
 import { AdminUser } from 'api/adminUser'
-import { UserContext, UserContextT } from 'user/UserProvider'
+import {
+  UserContext,
+  UserContextT
+} from 'user/UserProvider'
 
 /** returns simple admin user for testing */
 export const mockAdminUser = (superuser: boolean): AdminUser => {
@@ -13,6 +16,38 @@ export const mockAdminUser = (superuser: boolean): AdminUser => {
     token: 'fakeToken',
     portalAdminUsers: [],
     portalPermissions: {}
+  }
+}
+
+export const mockAdminUserWithPerms = (portalId: string, perms: string[]): AdminUser => {
+  return {
+    id: 'adminUser1',
+    createdAt: 0,
+    lastLogin: 0,
+    username: 'blah',
+    superuser: false,
+    token: 'fakeToken',
+    portalPermissions: {
+      [portalId]: perms
+    },
+    portalAdminUsers: [
+      {
+        portalId,
+        roles: [{
+          name: 'role1',
+          description: 'role1',
+          displayName: 'role1',
+          permissions: perms.map(perm => ({
+            name: perm,
+            description: perm,
+            displayName: perm,
+            permissionId: perm,
+            permissionName: perm,
+            permissionDescription: perm
+          }))
+        }]
+      }
+    ]
   }
 }
 

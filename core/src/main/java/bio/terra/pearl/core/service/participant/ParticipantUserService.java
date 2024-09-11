@@ -39,6 +39,10 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
         return savedParticipantUser;
     }
 
+    public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
+        return dao.findByProperty("shortcode", shortcode);
+    }
+
     @Transactional @Override
     public void delete(UUID userId, Set<CascadeProperty> cascades) {
         portalParticipantUserService.deleteByParticipantUserId(userId);
@@ -57,25 +61,6 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
 
     public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
         return dao.findOne(username, environmentName);
-    }
-
-    public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
-        return dao.findByProperty("shortcode", shortcode);
-    }
-
-    // creates an "ACC"-prefixed shortcode for each participant user that's missing one
-    // we expect to delete this after the backfill-migration has been run on existing participants
-    // see JN-1318: https://broadworkbench.atlassian.net/browse/JN-1318
-    public List<UUID> createMissingShortcodes() {
-        List<ParticipantUser> users = dao.findAllByProperty("shortcode", null);
-
-        users.forEach(participantUser -> {
-            String shortcode = shortcodeService.generateShortcode("ACC", dao::findOneByShortcode);
-            participantUser.setShortcode(shortcode);
-            dao.update(participantUser);
-        });
-
-        return users.stream().map(BaseEntity::getId).toList();
     }
 
 }
