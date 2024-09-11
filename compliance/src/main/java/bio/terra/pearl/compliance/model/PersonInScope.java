@@ -16,6 +16,8 @@ public class PersonInScope {
 
     private String lastName;
 
+    private VantaPerson vantaPerson;
+
     public String getFullName() {
         return firstName + " " + lastName;
     }

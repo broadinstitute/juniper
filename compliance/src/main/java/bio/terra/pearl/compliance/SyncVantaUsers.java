@@ -4,6 +4,7 @@ import bio.terra.pearl.compliance.exception.RateLimitException;
 import bio.terra.pearl.compliance.exception.VantaUpdateException;
 import bio.terra.pearl.compliance.model.AccessToken;
 import bio.terra.pearl.compliance.model.GithubAccount;
+import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
 import bio.terra.pearl.compliance.model.SlackUser;
@@ -12,6 +13,7 @@ import bio.terra.pearl.compliance.model.UserSyncConfig;
 import bio.terra.pearl.compliance.model.VantaCredentials;
 import bio.terra.pearl.compliance.model.VantaIntegration;
 import bio.terra.pearl.compliance.model.VantaObject;
+import bio.terra.pearl.compliance.model.VantaPerson;
 import bio.terra.pearl.compliance.model.VantaResults;
 import bio.terra.pearl.compliance.model.VantaResultsResponse;
 import bio.terra.pearl.compliance.model.WorkdayAccount;
@@ -59,6 +61,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public static final String JIRA_INTEGRATION_ID = "jira";
     public static final String SLACK_INTEGRATION_ID = "slack";
     public static final String GITHUB_INTEGRATION_ID = "github";
+    public static final String JAMF_INTEGRATION_ID = "jamf";
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
 
@@ -170,17 +173,22 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         return elements.get();
     }
 
-    private WebClient getWebClientForIntegration(String accessToken, String integrationId, String resourceKind) {
-        WebClient.Builder webClientBuilder = WebClient.builder().defaultHeaders(h -> {
+    private WebClient.Builder getWebClientForUrl(String accessToken, String url) {
+        return WebClient.builder().defaultHeaders(h -> {
             h.setBearerAuth(accessToken);
             h.setContentType(MediaType.APPLICATION_JSON);
-        });
+        }).baseUrl(url);
 
-        return webClientBuilder.baseUrl(userSyncConfig.getVantaBaseUrl() + "v1/integrations/" + integrationId + "/resource-kinds/" + resourceKind + "/resources").build();
+    }
+
+    private WebClient getWebClientForIntegration(String accessToken, String integrationId, String resourceKind) {
+        return getWebClientForUrl(accessToken, userSyncConfig.getVantaBaseUrl() + "v1/integrations/" + integrationId + "/resource-kinds/" + resourceKind + "/resources").build();
     }
 
     private List<VantaIntegration> getIntegrations() {
         List<VantaIntegration> integrationsToSync = new ArrayList<>();
+        integrationsToSync.add(new VantaIntegration(JAMF_INTEGRATION_ID, "JamfManagedComputer", new ParameterizedTypeReference<VantaResultsResponse<JamfComputer>>() {},
+                userSyncConfig.getResourceIdsToIgnore(JAMF_INTEGRATION_ID)));
         integrationsToSync.add(new VantaIntegration(JIRA_INTEGRATION_ID, "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {},
                 userSyncConfig.getResourceIdsToIgnore(JIRA_INTEGRATION_ID)));
         integrationsToSync.add(new VantaIntegration(SLACK_INTEGRATION_ID, "SlackAccount", new ParameterizedTypeReference<VantaResultsResponse<SlackUser>>() {},
@@ -205,6 +213,21 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         // go through each integration and find scope changes that need to be made.
         int resourceBatchSize = 50;
         List<VantaIntegration> integrationsToSync = getIntegrations();
+
+        Collection<VantaPerson> vantaPeople = collectAllData(getWebClientForUrl(vantaToken.getAccessToken(), userSyncConfig.getVantaBaseUrl() + "v1/people").build(), new ParameterizedTypeReference<>() {});
+
+        // associate each vanta person with people in scope so we can keep track of computers that should be in scope
+        peopleInScope.forEach(personInScope -> {
+            List<VantaPerson> matchingVantaPerson = vantaPeople.stream().filter(vantaPerson -> vantaPerson.getEmailAddress().equalsIgnoreCase(personInScope.getEmail())).toList();
+            if (matchingVantaPerson.size() == 1) {
+                personInScope.setVantaPerson(matchingVantaPerson.getFirst());
+            } else if (matchingVantaPerson.size() > 1) {
+                log.error("Found {} vanta people for {}", matchingVantaPerson.size(), personInScope.getFullName());
+            } else {
+                log.warn("Could not find any matching vanta people for {}", personInScope.getFullName());
+            }
+        });
+
 
         for (VantaIntegration vantaIntegration : integrationsToSync) {
             String integrationId = vantaIntegration.getIntegrationId();
