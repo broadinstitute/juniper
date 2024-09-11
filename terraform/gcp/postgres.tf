@@ -23,7 +23,7 @@ resource "google_sql_database" "database" {
 resource "google_sql_user" "users" {
   name     = "d2p"
   instance = google_sql_database_instance.d2p.name
-  password = "d2p4eva!"
+  password = "d2p4eva!" # todo: make this randomly generated
 }
 
 # Create GSA and assign roles
@@ -77,4 +77,47 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
     "serviceAccount:broad-ddp-dev.svc.id.goog[${kubernetes_service_account.d2p-db-ksa.metadata.0.namespace}/${kubernetes_service_account.d2p-db-ksa.metadata.0.name}]"
   ]
 }
+
+
+# create db secrets
+
+resource "google_secret_manager_secret" "d2p_db_user" {
+  secret_id = "d2p-db-user"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_user_data" {
+  secret = google_secret_manager_secret.d2p_db_user.id
+
+  secret_data = google_sql_user.users.name
+}
+
+resource "google_secret_manager_secret" "d2p_db_name" {
+  secret_id = "d2p-db-name"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_name_data" {
+  secret = google_secret_manager_secret.d2p_db_name.id
+
+  secret_data = google_sql_database.database.name
+}
+
+resource "google_secret_manager_secret" "d2p_db_password" {
+  secret_id = "d2p-db-password"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_password_data" {
+  secret = google_secret_manager_secret.d2p_db_password.id
+
+  secret_data = google_sql_user.users.password
+}
+
 
