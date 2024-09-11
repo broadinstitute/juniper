@@ -5,6 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { CalculatedValue } from 'survey-core'
 import { SplitCalculatedValueEditor } from 'forms/designer/SplitCalculatedValueEditor'
+import {
+  DocsKey,
+  ZendeskLink
+} from 'util/zendeskUtils'
 
 /**
  * A split-view designer for calculated values. On the left side, you can edit the calculated value expression,
@@ -14,22 +18,28 @@ import { SplitCalculatedValueEditor } from 'forms/designer/SplitCalculatedValueE
 export const SplitCalculatedValueDesigner = ({ content, onChange }: {
   content: FormContent, onChange: (newContent: FormContent) => void
 }) => {
-  return <div className="mt-3 container w-100">
-    <div className="d-flex">
-      {renderNewElementButton(content, onChange, -1)}
-    </div>
-    {content && content.calculatedValues && content.calculatedValues.map((_, elementIndex) => (
-      <div key={elementIndex} className="container">
-        <SplitCalculatedValueEditor
-          calculatedValueIndex={elementIndex}
-          editedContent={content}
-          onChange={onChange}/>
-        <div className="d-flex">
-          {renderNewElementButton(content, onChange, elementIndex)}
-        </div>
+  return <>
+    <span className="ms-3 mt-3">
+      Derived values allow you to create hidden data calculated based on survey responses.
+      See <ZendeskLink doc={DocsKey.DERIVED_VALUES}>here</ZendeskLink> for more information.
+    </span>
+    <div className="container w-100">
+      <div className="d-flex">
+        {renderNewElementButton(content, onChange, -1)}
       </div>
-    ))}
-  </div>
+      {content && content.calculatedValues && content.calculatedValues.map((_, elementIndex) => (
+        <div key={elementIndex} className="container">
+          <SplitCalculatedValueEditor
+            calculatedValueIndex={elementIndex}
+            editedContent={content}
+            onChange={onChange}/>
+          <div className="d-flex">
+            {renderNewElementButton(content, onChange, elementIndex)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
 }
 
 const renderNewElementButton = (
@@ -38,8 +48,8 @@ const renderNewElementButton = (
   calculatedValueIdx: number) => {
   return <div className="my-2">
     <Button variant="secondary"
-      aria-label={`Insert a new calculated value`}
-      tooltip={`Insert a new calculated value`}
+      aria-label={`Insert a new derived value`}
+      tooltip={`Insert a new derived value`}
       disabled={false}
       onClick={() => {
         const newContent = { ...formContent }
@@ -51,7 +61,7 @@ const renderNewElementButton = (
         newContent.calculatedValues.splice(calculatedValueIdx + 1, 0, new CalculatedValue())
         onChange(newContent)
       }}>
-      <FontAwesomeIcon icon={faPlus}/> Insert calculated value
+      <FontAwesomeIcon icon={faPlus}/> Insert derived value
     </Button>
   </div>
 }

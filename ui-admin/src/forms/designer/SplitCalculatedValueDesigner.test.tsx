@@ -39,7 +39,7 @@ describe('SplitCalculatedValueDesigner', () => {
 
     render(<TestCalculatedValueDesignerWrapper initialContent={content}/>)
 
-    expect(screen.getByText('Insert calculated value')).toBeInTheDocument()
+    expect(screen.getByText('Insert derived value')).toBeInTheDocument()
   })
   it('should render with calculated values', () => {
     const content: FormContent = {
@@ -54,7 +54,7 @@ describe('SplitCalculatedValueDesigner', () => {
 
     render(<TestCalculatedValueDesignerWrapper initialContent={content}/>)
 
-    expect(screen.getAllByText('Insert calculated value')).toHaveLength(3)
+    expect(screen.getAllByText('Insert derived value')).toHaveLength(3)
     expect(screen.getByText('cv1')).toBeInTheDocument()
     expect(screen.getByText('cv2')).toBeInTheDocument()
   })
@@ -68,15 +68,15 @@ describe('SplitCalculatedValueDesigner', () => {
 
     render(<TestCalculatedValueDesignerWrapper initialContent={content}/>)
 
-    expect(screen.getAllByText('Insert calculated value')).toHaveLength(1)
+    expect(screen.getAllByText('Insert derived value')).toHaveLength(1)
 
-    act(() => screen.getAllByText('Insert calculated value')[0].click())
+    act(() => screen.getAllByText('Insert derived value')[0].click())
 
-    expect(screen.getAllByText('Insert calculated value')).toHaveLength(2)
+    expect(screen.getAllByText('Insert derived value')).toHaveLength(2)
 
-    act(() => screen.getAllByText('Insert calculated value')[0].click())
+    act(() => screen.getAllByText('Insert derived value')[0].click())
 
-    expect(screen.getAllByText('Insert calculated value')).toHaveLength(3)
+    expect(screen.getAllByText('Insert derived value')).toHaveLength(3)
   })
   it('has question preview for calculated values', async () => {
     const content: FormContent = {
