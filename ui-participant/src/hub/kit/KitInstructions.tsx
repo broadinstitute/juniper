@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
-import { Enrollee, PortalEnvironment } from '@juniper/ui-core'
+import { Enrollee, KitRequest, PortalEnvironment } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBox, faCircleExclamation, faHourglassStart, faRefresh } from '@fortawesome/free-solid-svg-icons'
@@ -54,38 +54,48 @@ const BaseKitInstructions = ({ portalEnv }: { portalEnv: PortalEnvironment }) =>
 const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
   const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'ASSIGNED')[0]
 
-  if (!enrollee.consented) {
-    return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
+  if (!enrollee.consented) { return <UnconsentedKitView/> }
+  if (!activeKit) { return <NoActiveKitView enrollee={enrollee}/> }
+  if (activeKit.status === 'COLLECTED') { return <CollectedKitView/> }
+
+  return <ReturnedKitView enrollee={enrollee} activeKit={activeKit}/>
+}
+
+const UnconsentedKitView = () => {
+  return (
+    <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
       <h2 className="d-flex align-items-center mb-3">
         <FontAwesomeIcon className="text-danger me-1" icon={faCircleExclamation}/> Consent Required
       </h2>
       <div className="mb-3">
-        Before completing a sample collection kit, you must read and sign the study consent form.
+          Before completing a sample collection kit, you must read and sign the study consent form.
       </div>
       <div className="d-flex justify-content-center">
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-          Start Consent
+            Start Consent
         </Link>
       </div>
     </div>
-  }
+  )
+}
 
-  if (!activeKit) {
-    return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
+const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
+  return (
+    <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
       <h2 className="d-flex align-items-center mb-3">
         <FontAwesomeIcon className="me-1" icon={faHourglassStart}/> Your kit information
       </h2>
       <div className="mb-3">
-        To receive a sample collection kit, a member of the study team will scan your unique QR code below to
-        associate a kit with your account.
+          To receive a sample collection kit, a member of the study team will scan your unique QR code below to
+          associate a kit with your account.
       </div>
       <div className="d-flex flex-column align-items-center">
         <QRCode value={enrollee.shortcode} size={200}
           className={'pb-3'} aria-label={'assign-qr'}/>
       </div>
       <div className="pb-3">
-        Once you have received a kit, please refresh this page to view the kit information and
-        view further instructions.
+          Once you have received a kit, please refresh this page to view the kit information and
+          view further instructions.
       </div>
       <div className="d-flex justify-content-center">
         <button className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
@@ -94,17 +104,19 @@ const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
         </button>
       </div>
     </div>
-  }
+  )
+}
 
-  if (activeKit.status === 'COLLECTED') {
-    return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
+const CollectedKitView = () => {
+  return (
+    <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
       <h2 className="d-flex align-items-center mb-3">
         <FontAwesomeIcon className="me-1" icon={faBox}/> Your kit information
       </h2>
       <div className="mb-3">
-        A member of the study team has received your sample collection kit. Thank you for your participation.
-        You will receive an email notification when your sample has been processed, and you will be able
-        to view your results on your study dashboard.
+          A member of the study team has received your sample collection kit. Thank you for your participation.
+          You will receive an email notification when your sample has been processed, and you will be able
+          to view your results on your study dashboard.
       </div>
       <div className="d-flex justify-content-center">
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
@@ -112,35 +124,39 @@ const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
         </Link>
       </div>
     </div>
-  }
+  )
+}
 
-  return <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
-    <h2 className="d-flex align-items-center mb-3">
-      <FontAwesomeIcon className="me-1" icon={faBox}/> Your kit information
-    </h2>
-    <div className="mb-3">
-      A member of the team has provided you with a sample collection kit.
-      This sample kit is associated with your account. If you are assisting someone else with their
-      sample collection kit, please ensure that each participant completes their own sample collection kit.
+const ReturnedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activeKit: KitRequest }) => {
+  return (
+    <div className="mb-3 rounded round-3 border border-1 p-3 bg-white">
+      <h2 className="d-flex align-items-center mb-3">
+        <FontAwesomeIcon className="me-1" icon={faBox}/> Your kit information
+      </h2>
+      <div className="mb-3">
+          A member of the team has provided you with a sample collection kit.
+          This sample kit is associated with your account. If you are assisting someone else with their
+          sample collection kit, please ensure that each participant completes their own sample collection kit.
+      </div>
+      <label className="form-label fw-bold mb-0">Your unique kit identifier:</label>
+      <input
+        className="my-2 form-control"
+        disabled={true}
+        placeholder={'No kit provided'}
+        value={activeKit.kitBarcode}>
+      </input>
+      <div className="mb-3 mt-3">
+          After you have completed the sample collection kit, please return it to a member of the study team
+          and show them the QR code below.
+      </div>
+      <div className="d-flex flex-column align-items-center">
+        <QRCode value={enrollee.shortcode} size={200}
+          className={'pb-3'} aria-label={'return-qr'}/>
+      </div>
+      <div className="mb-3 mt-3">
+          If you wish to complete your sample kit at a later time, you may instead
+          choose to return it by shipping it back using the provided return label.
+      </div>
     </div>
-    <label className="form-label fw-bold mb-0">Your unique kit identifier:</label>
-    <input
-      className="my-2 form-control"
-      disabled={true}
-      placeholder={'No kit provided'}
-      value={activeKit.kitBarcode}>
-    </input>
-    <div className="mb-3 mt-3">
-      After you have completed the sample collection kit, please return it to a member of the study team
-      and show them the QR code below.
-    </div>
-    <div className="d-flex flex-column align-items-center">
-      <QRCode value={enrollee.shortcode} size={200}
-        className={'pb-3'} aria-label={'return-qr'}/>
-    </div>
-    <div className="mb-3 mt-3">
-      If you wish to complete your sample kit at a later time, you may instead
-      choose to return it by shipping it back using the provided return label.
-    </div>
-  </div>
+  )
 }
