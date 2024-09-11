@@ -12,12 +12,9 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { Button } from 'components/forms/Button'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
-import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 import WithdrawnEnrolleeList from './WithdrawnEnrolleeList'
 import { useSearchParams } from 'react-router-dom'
+import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -66,40 +63,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         setSearchState={setSearchState}
         disabled={view === 'withdrawn'}
       />
-      <div className="btn-group border my-1">
-        <Button variant='light'
-          aria-label={'Switch to withdrawn view'}
-          className={`btn btn-sm ${view === 'withdrawn' ? 'btn-dark' : 'btn-light'}`}
-          tooltip={'Switch to withdrawn view'}
-          onClick={() => {
-            setSearchParams({ view: 'withdrawn' })
-            setView('withdrawn')
-          }}>
-          <FontAwesomeIcon icon={faUserLargeSlash}/>
-        </Button>
-        <Button variant='light'
-          aria-label={'Switch to participant view'}
-          className={`btn btn-sm ${view === 'participant' ? 'btn-dark' : 'btn-light'}`}
-          tooltip={'Switch to participant view'}
-          onClick={() => {
-            setSearchParams({ view: 'participant' })
-            setView('participant')
-          }}>
-          <FontAwesomeIcon icon={faUserLarge}/>
-        </Button>
-        { familyLinkageEnabled && <Button variant='light'
-          aria-label={'Switch to family view'}
-          className={`btn btn-sm ${view === 'family' ? 'btn-dark' : 'btn-light'}`}
-          tooltip={'Switch to family view'}
-          onClick={() => {
-            setSearchParams({ view: 'family' })
-            setView('family')
-          }}>
-          <FontAwesomeIcon icon={faUsers}/>
-        </Button> }
-      </div>
+      <ParticipantListViewSwitcher
+        view={view}
+        setView={setView}
+        setSearchParams={setSearchParams}
+        familyLinkageEnabled={familyLinkageEnabled}
+      />
     </div>
-
 
     <LoadingSpinner isLoading={isLoading}>
       {view === 'family' &&
