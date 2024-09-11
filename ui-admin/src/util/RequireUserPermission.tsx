@@ -5,6 +5,13 @@ import {
 } from 'user/UserProvider'
 import { Portal } from '@juniper/ui-core'
 
+/**
+ Example use:
+ <RequireUserPermission superuser> things </RequireSuperuserPermission>
+
+ <RequireUserPermission portal={portal} perms={["participant_data_view"]}>stuff</RequireUserPermission>
+ */
+
 
 export type RequireUserPermissionProps = RequireSuperuser | RequirePermissions
 
@@ -44,12 +51,8 @@ export const RequireUserPermission = (props: RequireUserPermissionProps) => {
   }
 
   if (hasPermission()) {
-    return <>
-      {props.children}
-    </>
+    return <>{props.children}</>
   }
 
-  return <>
-    {props.noPermissionMessage || 'You do not have permission to view this content'}
-  </>
+  return <>{props.noPermissionMessage}</>
 }
