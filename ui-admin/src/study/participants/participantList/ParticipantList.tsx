@@ -67,7 +67,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         disabled={view === 'withdrawn'}
       />
       <div className="btn-group border my-1">
-        <Button id="grid" variant='light'
+        <Button variant='light'
           aria-label={'Switch to withdrawn view'}
           className={`btn btn-sm ${view === 'withdrawn' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to withdrawn view'}
@@ -77,7 +77,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           }}>
           <FontAwesomeIcon icon={faUserLargeSlash}/>
         </Button>
-        <Button id="grid" variant='light'
+        <Button variant='light'
           aria-label={'Switch to participant view'}
           className={`btn btn-sm ${view === 'participant' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to participant view'}
@@ -87,7 +87,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           }}>
           <FontAwesomeIcon icon={faUserLarge}/>
         </Button>
-        { familyLinkageEnabled && <Button id="list" variant='light'
+        { familyLinkageEnabled && <Button variant='light'
           aria-label={'Switch to family view'}
           className={`btn btn-sm ${view === 'family' ? 'btn-dark' : 'btn-light'}`}
           tooltip={'Switch to family view'}
