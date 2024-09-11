@@ -31,7 +31,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { useUser } from 'user/UserProvider'
 
 
-/** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
+/** shows a url-routable settings page for both the portal and the selected study */
 export function LoadedSettingsView(
   {
     studyEnvContext,
