@@ -12,6 +12,7 @@ import java.util.*;
 
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
@@ -23,12 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-public class ParticipantTaskService extends DataAuditedService<ParticipantTask, ParticipantTaskDao> {
+public class ParticipantTaskService extends ParticipantDataAuditedService<ParticipantTask, ParticipantTaskDao> {
     private final EnrolleeService enrolleeService;
     private final ParticipantNoteService participantNoteService;
 
-    public ParticipantTaskService(ParticipantTaskDao dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper, @Lazy EnrolleeService enrolleeService, ParticipantNoteService participantNoteService) {
-        super(dao, dataChangeRecordService, objectMapper);
+    public ParticipantTaskService(ParticipantTaskDao dao, ParticipantDataChangeService participantDataChangeService, ObjectMapper objectMapper, @Lazy EnrolleeService enrolleeService, ParticipantNoteService participantNoteService) {
+        super(dao, participantDataChangeService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.participantNoteService = participantNoteService;
     }

@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -126,7 +126,7 @@ public class AnswerProcessingService {
     public <T> ObjectWithChangeLog<T> mapValuesToType(List<Answer> answers, List<AnswerMapping> mappings, T targetObj,
                                  AnswerMappingTargetType targetType) {
         HashMap<String, AnswerMapping> fieldTargetMap = new HashMap<>();
-        List<DataChangeRecord> changeRecords = new ArrayList<>();
+        List<ParticipantDataChange> changeRecords = new ArrayList<>();
         mappings.stream().filter(mapping -> mapping.getTargetType().equals(targetType))
                 .forEach(mapping -> fieldTargetMap.put(mapping.getQuestionStableId(), mapping));
         for (Answer answer : answers) {
@@ -138,7 +138,7 @@ public class AnswerProcessingService {
                     BiFunction<Answer, AnswerMapping, Object> mapFunc = JSON_MAPPERS.get(mapping.getMapType());
                     Object newValue = mapFunc.apply(answer, mapping);
                     PropertyUtils.setNestedProperty(targetObj, mapping.getTargetField(), newValue);
-                    DataChangeRecord changeRecord = DataChangeRecord.builder()
+                    ParticipantDataChange changeRecord = ParticipantDataChange.builder()
                             .modelName(targetType.name())
                             .fieldName(mapping.getTargetField())
                             .oldValue(oldValue)

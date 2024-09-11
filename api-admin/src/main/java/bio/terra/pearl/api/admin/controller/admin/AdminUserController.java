@@ -3,13 +3,19 @@ package bio.terra.pearl.api.admin.controller.admin;
 import bio.terra.pearl.api.admin.api.AdminUserApi;
 import bio.terra.pearl.api.admin.service.admin.AdminUserExtService;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
-import bio.terra.pearl.core.service.exception.ValidationException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,48 +44,88 @@ public class AdminUserController implements AdminUserApi {
   @Override
   public ResponseEntity<Object> get(UUID id, String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    AdminUser adminUser = adminUserExtService.get(id, portalShortcode, operator);
-    return ResponseEntity.ok(adminUser);
+    AdminUser user = null;
+    if (portalShortcode == null) {
+      user = adminUserExtService.get(OperatorAuthContext.of(operator), id);
+    } else {
+      user = adminUserExtService.getInPortal(PortalAuthContext.of(operator, portalShortcode), id);
+    }
+    return ResponseEntity.ok(user);
   }
 
   @Override
   public ResponseEntity<Object> getAll() {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    List<AdminUser> adminUsers = adminUserExtService.getAll(operator);
-    for (AdminUser user : adminUsers) {
-      /**
-       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO
-       * type for this but for now, this saves the trouble of lots of nested mapping
-       */
-      user.setToken(null);
-    }
+    List<AdminUser> adminUsers = adminUserExtService.getAll(OperatorAuthContext.of(operator));
     return ResponseEntity.ok(adminUsers);
   }
 
   @Override
   public ResponseEntity<Object> getByPortal(String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    List<AdminUser> adminUsers = adminUserExtService.findByPortal(portalShortcode, operator);
-    for (AdminUser user : adminUsers) {
-      /**
-       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO
-       * type for this but for now, this saves the trouble of lots of nested mapping
-       */
-      user.setToken(null);
-    }
+    List<AdminUser> adminUsers =
+        adminUserExtService.findByPortal(PortalAuthContext.of(operator, portalShortcode));
     return ResponseEntity.ok(adminUsers);
   }
 
+  /** creates a user outside of any particular portal -- i.e. a superuser */
   @Override
   public ResponseEntity<Object> create(Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    AdminUserExtService.NewAdminUser newUser =
-        objectMapper.convertValue(body, AdminUserExtService.NewAdminUser.class);
-    if (!newUser.superuser() && newUser.portalShortcode() == null) {
-      throw new ValidationException(
-          "Created user must be either a superuser or associated with at least one portal");
-    }
-    AdminUser createdUser = adminUserExtService.create(newUser, operator);
+    NewAdminUser newUser = objectMapper.convertValue(body, NewAdminUser.class);
+    AdminUser createdUser =
+        adminUserExtService.createSuperuser(
+            OperatorAuthContext.of(operator), newUser.getUsername());
     return new ResponseEntity(createdUser, HttpStatus.CREATED);
+  }
+
+  /**
+   * creates a user and associates them with a portal, or associates an existing user with a portal
+   */
+  @Override
+  public ResponseEntity<Object> createInPortal(String portalShortcode, Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    NewAdminUser newUser = objectMapper.convertValue(body, NewAdminUser.class);
+    AdminUser createdUser =
+        adminUserExtService.createAdminUser(
+            PortalAuthContext.of(operator, portalShortcode),
+            newUser.getUsername(),
+            newUser.getRoleNames());
+    return new ResponseEntity(createdUser, HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<Object> setRolesInPortal(
+      String portalShortcode, UUID adminUserId, Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    List<String> roleNames = objectMapper.convertValue(body, new TypeReference<List<String>>() {});
+    List<String> updatedRoles =
+        adminUserExtService.setPortalUserRoles(
+            PortalAuthContext.of(operator, portalShortcode), adminUserId, roleNames);
+    return ResponseEntity.ok(updatedRoles);
+  }
+
+  /** deletes a user and all associated portal users */
+  @Override
+  public ResponseEntity<Void> delete(UUID id) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    adminUserExtService.delete(OperatorAuthContext.of(operator), id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteInPortal(String portalShortcode, UUID adminUserId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    adminUserExtService.deleteInPortal(
+        PortalAuthContext.of(operator, portalShortcode), adminUserId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  public static class NewAdminUser {
+    String username;
+    @Builder.Default List<String> roleNames = new ArrayList<>();
   }
 }

@@ -312,6 +312,12 @@ databaseChangeLog:
       file: changesets/2024_09_05_participant_shortcode.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_08_16_admin_user_change.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_08_20_nested_navbars.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_09_10_participant_shortcode_non_nullable.yaml
       relativeToChangelogFile: true
 

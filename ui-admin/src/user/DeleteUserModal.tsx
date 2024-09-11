@@ -8,14 +8,18 @@ import { doApiLoad } from '../api/api-utils'
 
 /** Modal to remove a user from a portal. */
 const DeleteUserModal = ({ subjUser, portal, userDeleted, onDismiss }:
-                           {subjUser: AdminUser, portal: Portal, userDeleted: () => void, onDismiss: () => void}) => {
+                           {subjUser: AdminUser, portal?: Portal, userDeleted: () => void, onDismiss: () => void}) => {
   const [usernameConfirm, setUsernameConfirm] = useState('')
   const removeString = `remove ${subjUser.username}`
   const canRemove = usernameConfirm === removeString
 
   const doRemove = async () => {
     doApiLoad(async () => {
-      await Api.removePortalUser(subjUser, portal.shortcode)
+      if (portal) {
+        await Api.removePortalUser(subjUser, portal.shortcode)
+      } else {
+        await Api.removeAdminUser(subjUser)
+      }
       Store.addNotification(successNotification(`${subjUser.username} removed`))
       userDeleted()
       onDismiss()
@@ -24,11 +28,11 @@ const DeleteUserModal = ({ subjUser, portal, userDeleted, onDismiss }:
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>Remove portal user</Modal.Title>
+      <Modal.Title>Remove user</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
-        <h3 className="h5">Remove user from portal: {subjUser.username}</h3>
+        <h3 className="h5">Remove user {portal ? ' from portal' : ''}: {subjUser.username}</h3>
         <div className="my-3">
           <label>
           Confirm by typing &quot;{removeString}&quot; below<br/>
@@ -36,7 +40,7 @@ const DeleteUserModal = ({ subjUser, portal, userDeleted, onDismiss }:
               onChange={e => setUsernameConfirm(e.target.value)}/>
           </label>
         </div>
-        <button type="button" className="btn btn-primary" onClick={doRemove} disabled={!canRemove}>Remove user</button>
+        <button type="button" className="btn btn-primary" onClick={doRemove} disabled={!canRemove}>Remove</button>
       </form>
     </Modal.Body>
   </Modal>

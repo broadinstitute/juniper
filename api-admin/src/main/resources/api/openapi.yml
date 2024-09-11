@@ -86,35 +86,6 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/adminUsers:
-    get:
-      summary: Gets the admin users specific to this portal
-      tags: [ adminUser ]
-      operationId: getByPortal
-      parameters:
-        - *portalShortcodeParam
-      responses:
-        '200':
-          description: List of admin users
-          content: *jsonContent
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/portals/v1/{portalShortcode}/adminUser/{adminUserId}:
-    delete:
-      summary: Remove an admin user for portal
-      tags: [ portal ]
-      operationId: removePortalUser
-      parameters:
-        - *portalShortcodeParam
-        - { name: adminUserId, in: path, required: true, schema: { type: string, format: uuid } }
-      responses:
-        '204':
-          description: admin user removed
-        '404':
-          description: admin user not found
-        '500':
-          $ref: '#/components/responses/ServerError'
 
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks:
     get:
@@ -1364,6 +1335,94 @@ paths:
         '200':
           description: admin user object with associated roles
           content: *jsonContent
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Remove an admin user and all associated portal users
+      tags: [ admin_user ]
+      operationId: delete
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: admin user removed
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/roles/v1:
+    get:
+      summary: Gets the list of roles
+      tags: [ roles ]
+      operationId: list
+      responses:
+        '200':
+          description: list of available roles
+          content: *jsonContent
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/adminUsers:
+    get:
+      summary: Gets the admin users specific to this portal
+      tags: [ adminUser ]
+      operationId: getByPortal
+      parameters:
+        - *portalShortcodeParam
+      responses:
+        '200':
+          description: List of admin users
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Creates a new admin user within a portal
+      tags: [ admin_user ]
+      operationId: createInPortal
+      parameters:
+        - *portalShortcodeParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: the new user
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/portals/v1/{portalShortcode}/adminUsers/{adminUserId}:
+    patch:
+      summary: Update roles for a portal admin user
+      tags: [ admin_user ]
+      operationId: setRolesInPortal
+      parameters:
+        - *portalShortcodeParam
+        - { name: adminUserId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: list of roles updated
+          content: *jsonContent
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Remove an admin user for portal
+      tags: [ admin_user ]
+      operationId: deleteInPortal
+      parameters:
+        - *portalShortcodeParam
+        - { name: adminUserId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: admin user removed
         '404':
           description: admin user not found
         '500':

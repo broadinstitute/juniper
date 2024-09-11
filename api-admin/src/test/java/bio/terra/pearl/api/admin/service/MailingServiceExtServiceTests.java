@@ -18,7 +18,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +35,7 @@ public class MailingServiceExtServiceTests extends BaseSpringBootTest {
   @Autowired MailingListContactFactory mailingListContactFactory;
   @Autowired AdminUserFactory adminUserFactory;
   @Autowired PortalService portalService;
-  @Autowired DataChangeRecordService dataChangeRecordService;
+  @Autowired ParticipantDataChangeService participantDataChangeService;
   @Autowired ObjectMapper objectMapper;
 
   @Test

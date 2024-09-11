@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.portal.Portal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -49,12 +48,5 @@ public class PortalController implements PortalApi {
             .map(portal -> objectMapper.convertValue(portal, PortalShallowDto.class))
             .collect(Collectors.toList());
     return ResponseEntity.ok(portalDtos);
-  }
-
-  @Override
-  public ResponseEntity<Void> removePortalUser(String portalShortcode, UUID adminUserId) {
-    AdminUser operator = requestService.requireAdminUser(request);
-    portalExtService.removeUserFromPortal(adminUserId, portalShortcode, operator);
-    return ResponseEntity.noContent().build();
   }
 }

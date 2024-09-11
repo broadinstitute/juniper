@@ -1,4 +1,9 @@
-import { SiteContent, allSectionProps, HtmlSection, SectionProp } from '@juniper/ui-core'
+import {
+  allSectionProps,
+  HtmlSection,
+  SectionProp,
+  SiteContent
+} from '@juniper/ui-core'
 import _union from 'lodash/union'
 import { escapeCsvValue } from 'util/downloadUtils'
 
@@ -156,12 +161,10 @@ export function processSectionConfigs<T>(siteContent: SiteContent, processor: Co
     if (lsc.footerSection) {
       results.push(processor(lsc.footerSection, 'footerSection', lsc.language))
     }
-    lsc.navbarItems.forEach((navbarItem, itemIndex) => {
-      if (navbarItem.itemType === 'INTERNAL') {
-        navbarItem.htmlPage.sections.forEach((section, sectionIndex) => {
-          results.push(processor(section, `navbarItems[${itemIndex}].htmlPage.sections[${sectionIndex}]`, lsc.language))
-        })
-      }
+    lsc.pages.forEach((page, pageIndex) => {
+      page.sections.forEach((section, sectionIndex) => {
+        results.push(processor(section, `pages[${pageIndex}].sections[${sectionIndex}]`, lsc.language))
+      })
     })
   })
   return results

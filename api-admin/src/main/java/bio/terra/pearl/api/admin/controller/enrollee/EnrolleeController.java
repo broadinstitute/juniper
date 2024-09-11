@@ -5,7 +5,7 @@ import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,7 +52,7 @@ public class EnrolleeController implements EnrolleeApi {
       String enrolleeShortcode,
       String modelName) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    List<DataChangeRecord> records =
+    List<ParticipantDataChange> records =
         enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode, modelName);
     return ResponseEntity.ok(records);
   }

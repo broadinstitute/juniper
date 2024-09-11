@@ -28,6 +28,7 @@ public class DataAuditInfo {
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
     private String systemProcess; // if the change was the result of an automatic process, store Class+method here
     private Boolean anonymousUser; // if the change was made by an anonymous user
+    private UUID adminUserId; // if the change is to an admin user, store the id here
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;

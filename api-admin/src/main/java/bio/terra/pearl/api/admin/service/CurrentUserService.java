@@ -1,6 +1,8 @@
 package bio.terra.pearl.api.admin.service;
 
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -20,8 +22,10 @@ public class CurrentUserService {
     Optional<AdminUserWithPermissions> userWithPermsOpt = loadByToken(token);
     userWithPermsOpt.ifPresent(
         userWithPerms -> {
-          userWithPerms.user().setLastLogin(Instant.now());
-          adminUserService.update(userWithPerms.user());
+          AdminUser user = userWithPerms.user();
+          user.setLastLogin(Instant.now());
+          adminUserService.update(
+              user, DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build());
         });
     return userWithPermsOpt;
   }

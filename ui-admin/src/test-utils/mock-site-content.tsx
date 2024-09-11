@@ -1,5 +1,15 @@
-import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem, AddressValidationResult, SectionType } from 'api/api'
-import { HtmlSection, HubResponse } from '@juniper/ui-core'
+import {
+  AddressValidationResult,
+  HtmlPage,
+  LocalSiteContent,
+  NavbarItem,
+  SectionType,
+  SiteContent
+} from 'api/api'
+import {
+  HtmlSection,
+  HubResponse
+} from '@juniper/ui-core'
 
 /** mock site content */
 export const mockSiteContent = (): SiteContent => {
@@ -20,10 +30,19 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
     navbarItems: [],
     language: 'en',
     primaryBrandColor: '#3be',
-    landingPage: mockHtmlPage(),
+    pages: [
+      mockHtmlPage()
+    ],
+    landingPage: mockLandingPage(),
     navLogoVersion: 1,
     navLogoCleanFileName: 'fakeLogo.png'
   }
+}
+
+export const mockLandingPage = (): HtmlPage => {
+  return {
+    sections: [mockHtmlSection()]
+  } as HtmlPage
 }
 
 /** mock html page */

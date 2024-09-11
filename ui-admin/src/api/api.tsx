@@ -31,7 +31,7 @@ import {
 import queryString from 'query-string'
 import {
   AdminUser,
-  NewAdminUser
+  AdminUserParams, Role
 } from './adminUser'
 
 export type {
@@ -416,6 +416,7 @@ export default {
     const loginResult = await this.processJsonResponse(response)
     const user: AdminUser = {
       ...loginResult.user,
+      token: loginResult.token,
       portalPermissions: loginResult.portalPermissions
     }
     return user
@@ -431,6 +432,7 @@ export default {
     const loginResult = await this.processJsonResponse(response)
     const user: AdminUser = {
       ...loginResult.user,
+      token: loginResult.token,
       portalPermissions: loginResult.portalPermissions
     }
     return user
@@ -1258,7 +1260,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createUser(adminUser: NewAdminUser): Promise<AdminUser> {
+  async createSuperuser(adminUser: AdminUserParams): Promise<AdminUser> {
     const url = `${API_ROOT}/adminUsers/v1`
     const response = await fetch(url, {
       method: 'POST',
@@ -1268,13 +1270,49 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async removePortalUser(adminUser: AdminUser, portalShortcode: string): Promise<Response> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/adminUser/${adminUser.id}`
+  async createPortalUser(adminUser: AdminUserParams): Promise<AdminUser> {
+    const url = `${API_ROOT}/portals/v1/${adminUser.portalShortcode}/adminUsers`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(adminUser)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async updatePortalUser(portalShortcode: string, adminUserId: string, roleNames: string[]): Promise<AdminUser> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/adminUsers/${adminUserId}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(roleNames)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  /** removes an admin user, and all associated portal users (this should be superuser only) */
+  async removeAdminUser(adminUser: AdminUser): Promise<Response> {
+    const url = `${API_ROOT}/adminUsers/v1/${adminUser.id}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
     })
     return await this.processResponse(response)
+  },
+
+  async removePortalUser(adminUser: AdminUser, portalShortcode: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/adminUsers/${adminUser.id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
+  async fetchRoles(): Promise<Role[]> {
+    const url = `${API_ROOT}/roles/v1`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async updatePortalEnv(portalShortcode: string, envName: string, update: PortalEnvironment) {

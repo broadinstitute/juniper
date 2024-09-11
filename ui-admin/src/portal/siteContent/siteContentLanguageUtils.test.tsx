@@ -1,9 +1,17 @@
-import { mockHtmlPage, mockNavbarItem, mockSiteContent } from '../../test-utils/mock-site-content'
-import { NavbarItemInternal, SiteContent } from '@juniper/ui-core'
+import {
+  mockHtmlPage,
+  mockNavbarItem,
+  mockSiteContent
+} from '../../test-utils/mock-site-content'
+import {
+  NavbarItemMailingList,
+  SiteContent
+} from '@juniper/ui-core'
 import {
   extractAllTexts,
   extractSectionTexts,
-  languageExtractToCSV, languageImportFromCSV
+  languageExtractToCSV,
+  languageImportFromCSV
 } from './siteContentLanguageUtils'
 
 test('produces language extract from SiteContent', async () => {
@@ -24,7 +32,8 @@ test('produces language extract from SiteContent', async () => {
               })
             }
           ]
-        }
+        },
+        pages: []
       }
     ]
   }
@@ -119,10 +128,8 @@ test('imports a csv with a language', async () => {
             }
           ]
         },
-        navbarItems: [{
-          ...mockNavbarItem(),
-          itemType: 'INTERNAL',
-          htmlPage: {
+        pages: [
+          {
             ...mockHtmlPage(),
             sections: [
               {
@@ -135,17 +142,26 @@ test('imports a csv with a language', async () => {
               }
             ]
           }
+        ],
+        navbarItems: [{
+          ...mockNavbarItem(),
+          itemType: 'MAILING_LIST',
+          text: 'mailing list'
         }]
       }
     ]
   }
   const csvString = languageExtractToCSV(siteContent)
+
   let updatedCsv = csvString.replace('about us', 'about them')
   updatedCsv = updatedCsv.replace('we are the best', 'we are the worst')
   updatedCsv = updatedCsv.replace('join now', 'join later')
+  updatedCsv = updatedCsv.replace('mailing list', 'dont contact me')
   const updatedContent = languageImportFromCSV(siteContent, updatedCsv)
   expect(updatedContent.localizedSiteContents[0].landingPage.sections[0].sectionConfig)
     .toEqual('{"title":"about them","blurb":"we are the worst"}')
-  expect((updatedContent.localizedSiteContents[0].navbarItems[0] as NavbarItemInternal)
-    .htmlPage.sections[0].sectionConfig).toEqual('{"title":"participation","blurb":"join later"}')
+  expect((updatedContent.localizedSiteContents[0].navbarItems[0] as NavbarItemMailingList)
+    .text).toEqual('dont contact me')
+  expect(updatedContent.localizedSiteContents[0].pages[0].sections[0].sectionConfig)
+    .toEqual('{"title":"participation","blurb":"join later"}')
 })

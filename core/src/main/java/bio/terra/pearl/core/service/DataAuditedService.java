@@ -3,8 +3,8 @@ package bio.terra.pearl.core.service;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.model.audit.DataChange;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -22,15 +22,16 @@ import java.util.UUID;
  * to also support passing auditInfo to create/deletes
  * */
 @Slf4j
-public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMutableJdbiDao<M>> {
+public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMutableJdbiDao<M>,
+        C extends BaseEntity & DataChange, CS extends ImmutableEntityService<C, ?>> {
     protected D dao;
     protected final Logger logger;
     protected final ObjectMapper objectMapper;
-    protected final DataChangeRecordService dataChangeRecordService;
+    protected final CS dataChangeService;
 
-    public DataAuditedService(D dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
+    public DataAuditedService(D dao, CS dataChangeService, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.dataChangeRecordService = dataChangeRecordService;
+        this.dataChangeService = dataChangeService;
         logger = log;
         this.dao = dao;
     }
@@ -39,8 +40,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public M create(M model, DataAuditInfo auditInfo) {
         model = dao.create(model);
         if (auditInfo != null) {
-            DataChangeRecord changeRecord = makeCreationChangeRecord(model, auditInfo);
-            dataChangeRecordService.create(changeRecord);
+            C changeRecord = makeCreationChangeRecord(model, auditInfo);
+            dataChangeService.create(changeRecord);
         } else {
             // unaudited creation is allowed for contexts where the auditing is happening on the parent entity, but we log it
             logger.info("raw creation: model: {}, id: {}", model.getClass().getSimpleName(), model.getId());
@@ -52,8 +53,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public void bulkCreate(List<M> modelObjs, DataAuditInfo auditInfo) {
         dao.bulkCreate(modelObjs);
         if (auditInfo != null) {
-            List<DataChangeRecord> changeRecords = modelObjs.stream().map(model -> makeCreationChangeRecord(model, auditInfo)).toList();
-            dataChangeRecordService.bulkCreate(changeRecords);
+            List<C> changeRecords = modelObjs.stream().map(model -> makeCreationChangeRecord(model, auditInfo)).toList();
+            dataChangeService.bulkCreate(changeRecords);
         } else {
             // unaudited creation is allowed for contexts where the auditing is happening on the parent entity, but we log it
             logger.info("raw bulk creation: service: {}, {} entities", this.getClass().getSimpleName(), modelObjs.size());
@@ -64,13 +65,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public M update(M obj, DataAuditInfo auditInfo) {
         try {
             M oldRecord = find(obj.getId()).get();
-            DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
-                    .modelName(oldRecord.getClass().getSimpleName())
-                    .modelId(obj.getId())
-                    .newValue(objectMapper.writeValueAsString(processModelBeforeAuditing(obj)))
-                    .oldValue(objectMapper.writeValueAsString(processModelBeforeAuditing(oldRecord)))
-                    .build();
-            dataChangeRecordService.create(changeRecord);
+            C changeRecord = makeUpdateChangeRecord(obj, oldRecord, auditInfo);
+            dataChangeService.create(changeRecord);
         } catch (Exception e) {
             throw new RuntimeException("Could not serialize for audit log", e);
         }
@@ -92,8 +88,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public void delete(UUID id, DataAuditInfo auditInfo, Set<CascadeProperty> cascade) {
         if (auditInfo != null) {
             M oldRecord = find(id).get();
-            DataChangeRecord changeRecord = makeDeletionChangeRecord(oldRecord, auditInfo);
-            dataChangeRecordService.create(changeRecord);
+            C changeRecord = makeDeletionChangeRecord(oldRecord, auditInfo);
+            dataChangeService.create(changeRecord);
         } else {
             // unaudited deletion is allowed for contexts where the auditing is happening on the parent entity, but we log it
             logger.info("raw deletion: service: {}, id: {}", this.getClass().getSimpleName(), id);
@@ -115,8 +111,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     @Transactional
     public void bulkDelete(List<M> objs, DataAuditInfo auditInfo) {
         if (auditInfo != null) {
-            List<DataChangeRecord> records = objs.stream().map(obj -> makeDeletionChangeRecord(obj, auditInfo)).toList();
-            dataChangeRecordService.bulkCreate(records);
+            List<C> records = objs.stream().map(obj -> makeDeletionChangeRecord(obj, auditInfo)).toList();
+            dataChangeService.bulkCreate(records);
         } else {
             // unaudited deletion is allowed for contexts where the auditing is happening on the parent entity, but we log it
             logger.info("raw bulk deletion: service: {}, {} objects", this.getClass().getSimpleName(), objs.size());
@@ -144,33 +140,11 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
         return model;
     }
 
-    /** note this should be called AFTER the model has been saved, so the generated ID can be included */
-    protected DataChangeRecord makeCreationChangeRecord(M newModel, DataAuditInfo auditInfo) {
-        try {
-            DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
-                    .modelName(newModel.getClass().getSimpleName())
-                    .modelId(newModel.getId())
-                    .newValue(objectMapper.writeValueAsString(processModelBeforeAuditing(newModel)))
-                    .oldValue(null)
-                    .build();
-            return changeRecord;
-        } catch (Exception e) {
-            throw new RuntimeException("Could not serialize for audit log", e);
-        }
-    }
+    protected abstract C makeUpdateChangeRecord(M newModel, M oldModel, DataAuditInfo auditInfo);
 
-    protected DataChangeRecord makeDeletionChangeRecord(M oldModel, DataAuditInfo auditInfo) {
-        try {
-            DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
-                    .modelName(oldModel.getClass().getSimpleName())
-                    .modelId(oldModel.getId())
-                    .newValue(null)
-                    .oldValue(objectMapper.writeValueAsString(processModelBeforeAuditing(oldModel)))
-                    .build();
-            return changeRecord;
-        } catch (Exception e) {
-            throw new RuntimeException("Could not serialize for audit log", e);
-        }
-    }
+    /** note this should be called AFTER the model has been saved, so the generated ID can be included */
+    protected abstract C makeCreationChangeRecord(M newModel, DataAuditInfo auditInfo);
+
+    protected abstract C makeDeletionChangeRecord(M oldModel, DataAuditInfo auditInfo);
 
 }
