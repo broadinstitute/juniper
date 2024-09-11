@@ -98,7 +98,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     @Override
     public void run(String... args) throws Exception {
         log.info("Starting vanta sync app");
-        UserSyncConfig userSyncConfig = loadConfig();
+        loadConfig();
         // now that we've loaded the config, perform the sync
         Instant start = Instant.now();
         String summaryMessage = syncVantaAccounts();
