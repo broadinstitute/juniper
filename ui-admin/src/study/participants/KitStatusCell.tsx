@@ -16,7 +16,7 @@ export default function KitStatusCell(
     'QUEUE': 'Shipping label has been printed',
     'SENT': 'Kit has been sent to the participant',
     'RECEIVED': 'Kit has been returned by the participant',
-    'COLLECTED': 'Participant has returned kit to study staff in-person',
+    'COLLECTED_BY_STAFF': 'Participant has returned kit to study staff in-person',
     'ERRORED': 'There was a problem fulfilling this kit request',
     'DEACTIVATED': 'Kit is deactivated - no further processing will be done'
   }

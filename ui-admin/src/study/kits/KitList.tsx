@@ -80,7 +80,7 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    statuses: ['COLLECTED'],
+    statuses: ['COLLECTED_BY_STAFF'],
     key: 'collected',
     additionalColumns: [
       'creatingAdminUserId',

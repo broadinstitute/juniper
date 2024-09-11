@@ -92,8 +92,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
 
         return switch (kitRequestCreationDto.distributionMethod) {
-            case ASSIGNED -> createNewAssignedKitRequest(operator, enrollee, kitRequestCreationDto);
-            case SHIPPED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
+            case IN_PERSON -> createNewAssignedKitRequest(operator, enrollee, kitRequestCreationDto);
+            case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
@@ -104,7 +104,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .status(KitRequestStatus.CREATED)
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
-                .distributionMethod(DistributionMethod.ASSIGNED)
+                .distributionMethod(DistributionMethod.IN_PERSON)
                 .kitBarcode(kitRequestCreationDto.kitBarcode)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .build();
@@ -380,7 +380,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     public KitRequest collectKit(AdminUser operator, KitRequest kitRequest, KitRequestStatus status) {
-        if(kitRequest.getDistributionMethod() != DistributionMethod.ASSIGNED) {
+        if(kitRequest.getDistributionMethod() != DistributionMethod.IN_PERSON) {
             throw new IllegalArgumentException("You cannot collect a kit that has not been assigned.");
         }
 

@@ -36,7 +36,7 @@ describe('KitInstructions', () => {
     expect(screen.queryByLabelText('return-qr')).not.toBeInTheDocument()
   })
 
-  it('renders assigned kit information', async () => {
+  it('renders in-person kit information', async () => {
     asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
     asMockedFn(useActiveUser).mockReturnValue({
       ...mockUseActiveUser(),
@@ -44,7 +44,7 @@ describe('KitInstructions', () => {
         ...mockEnrollee(),
         profileId: mockUseActiveUser().ppUser?.profileId || '',
         consented: true,
-        kitRequests: [mockAssignedKitRequest('ASSIGNED', 'SALIVA')]
+        kitRequests: [mockAssignedKitRequest('CREATED', 'SALIVA')]
       }]
     })
 

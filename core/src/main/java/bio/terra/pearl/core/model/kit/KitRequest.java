@@ -19,7 +19,7 @@ public class KitRequest extends BaseEntity {
     private UUID kitTypeId;
     private KitType kitType;
     @Builder.Default
-    private DistributionMethod distributionMethod = DistributionMethod.SHIPPED; // default to shipped for now
+    private DistributionMethod distributionMethod = DistributionMethod.MAILED; // default to shipped for now
     /**
      * JSON blob of address data sent to DSM, collected from Profile/MailingAddress.
      * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.

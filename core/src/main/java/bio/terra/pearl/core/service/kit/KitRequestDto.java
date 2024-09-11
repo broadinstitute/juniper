@@ -71,7 +71,7 @@ public class KitRequestDto {
   }
 
   protected static String createRequestDetails(KitRequest kitRequest, ObjectMapper objectMapper) {
-    if(kitRequest.getDistributionMethod() != DistributionMethod.SHIPPED) {
+    if(kitRequest.getDistributionMethod() != DistributionMethod.MAILED) {
       return null;
     }
 

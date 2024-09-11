@@ -52,7 +52,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         enrollee.shortcode,
         {
           kitType: 'SALIVA',
-          distributionMethod: 'ASSIGNED',
+          distributionMethod: 'IN_PERSON',
           kitBarcode,
           skipAddressValidation: false
         }

@@ -55,7 +55,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
                     adminUser, "someportal", "somestudy", EnvironmentName.sandbox),
                 Arrays.asList("enrollee1", "enrollee2"),
                 new KitRequestService.KitRequestCreationDto(
-                    "SALIVA", DistributionMethod.SHIPPED, null, false)));
+                    "SALIVA", DistributionMethod.MAILED, null, false)));
   }
 
   @Test

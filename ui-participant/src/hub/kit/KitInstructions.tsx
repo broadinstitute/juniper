@@ -52,7 +52,7 @@ const BaseKitInstructions = ({ portalEnv }: { portalEnv: PortalEnvironment }) =>
 }
 
 const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
-  const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'ASSIGNED')[0]
+  const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'IN_PERSON')[0]
 
   if (!enrollee.consented) { return <UnconsentedKitView/> }
   if (!activeKit) { return <NoActiveKitView enrollee={enrollee}/> }

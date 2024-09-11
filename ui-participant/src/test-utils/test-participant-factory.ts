@@ -111,7 +111,7 @@ export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest =
 export const mockAssignedKitRequest = (kitStatus: string, kitType: string): KitRequest => {
   return {
     ...mockKitRequest(kitStatus, kitType),
-    distributionMethod: 'ASSIGNED',
+    distributionMethod: 'IN_PERSON',
     kitBarcode: 'assigned-barcode'
   }
 }

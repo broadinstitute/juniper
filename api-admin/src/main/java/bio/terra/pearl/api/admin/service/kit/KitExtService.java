@@ -111,7 +111,7 @@ public class KitExtService {
             authContext.getEnrollee(), kitCollectionDto.kitBarcode());
 
     return kitRequestService.collectKit(
-        authContext.getOperator(), kitRequest, KitRequestStatus.COLLECTED);
+        authContext.getOperator(), kitRequest, KitRequestStatus.COLLECTED_BY_STAFF);
   }
 
   @EnforcePortalEnrolleePermission(permission = "BASE")
