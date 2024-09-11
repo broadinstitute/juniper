@@ -328,6 +328,11 @@ export const renderEmptyMessage = (arr: unknown[], content: React.ReactNode) => 
  * Converts a cell value to an escaped string for csv export
  */
 function cellToCsvString(cellType: string, cellValue: unknown): string {
+  const isArr = Array.isArray(cellValue)
+  if (isArr) {
+    return (cellValue as unknown[]).map(val => cellToCsvString(cellType, val)).join(', ')
+  }
+
   switch (cellType) {
     case 'string':
       return cellValue ? escapeCsvValue(cellValue as string) : ''
