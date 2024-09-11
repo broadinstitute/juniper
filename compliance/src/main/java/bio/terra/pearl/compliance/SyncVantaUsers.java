@@ -149,6 +149,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                             Thread.sleep(Duration.ofSeconds(delayInSeconds));
                         } catch (InterruptedException e) {
                             log.error("Interrupted while sleeping in response to rate limit", e);
+                            Thread.currentThread().interrupt();
                         }
                         return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
                     })
