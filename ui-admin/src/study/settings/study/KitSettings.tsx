@@ -4,7 +4,6 @@ import {
   StudyEnvParams
 } from '@juniper/ui-core'
 import InfoPopup from 'components/forms/InfoPopup'
-import { useUser } from 'user/UserProvider'
 import Select from 'react-select'
 import { Button } from 'components/forms/Button'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -42,8 +41,6 @@ export const KitSettings = (
   const [isUpdatingKitTypes, setIsUpdatingKitTypes] = useState(false)
   const [kitTypeOptions, setKitTypeOptions] = useState<{ value: string, label: string }[]>([])
   const [selectedKitTypes, setSelectedKitTypes] = useState<{ value: string, label: string }[]>([])
-
-  const { user } = useUser()
 
   const studyEnvParams: StudyEnvParams = paramsFromContext(studyEnvContext)
 
