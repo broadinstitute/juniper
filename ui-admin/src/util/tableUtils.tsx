@@ -374,7 +374,9 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
 
   return <div className="ms-auto">
     <Button onClick={() => setShow(!show)}
-      variant="light" className={buttonClass} disabled={disableDownload}
+      variant="light" className={buttonClass}
+      aria-label={'Download table'}
+      disabled={disableDownload}
       tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
       <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
     </Button>
@@ -391,10 +393,13 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={() => {
-          download()
-          setShow(false)
-        }}>Download</Button>
+        <Button
+          variant="primary"
+          aria-label="Confirm download"
+          onClick={() => {
+            download()
+            setShow(false)
+          }}>Download</Button>
         <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
       </Modal.Footer>
     </Modal> }

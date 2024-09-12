@@ -27,14 +27,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
-  faEnvelope, faPlus
+  faEnvelope,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import {
   currentIsoDate,
   instantToDefaultString
 } from '@juniper/ui-core'
-import { Button, EllipsisDropdownButton } from 'components/forms/Button'
+import {
+  Button,
+  EllipsisDropdownButton
+} from 'components/forms/Button'
 import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
 import TableClientPagination from 'util/TablePagination'
