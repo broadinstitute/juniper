@@ -79,7 +79,7 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
 }
 
 
-# create db secrets
+# create google secret manager db secrets
 
 resource "google_secret_manager_secret" "d2p_db_user" {
   secret_id = "d2p-db-user"
