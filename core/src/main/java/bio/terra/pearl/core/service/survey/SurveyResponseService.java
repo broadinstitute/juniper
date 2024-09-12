@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -16,7 +16,7 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private final ParticipantTaskService participantTaskService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final AnswerProcessingService answerProcessingService;
-    private final DataChangeRecordService dataChangeRecordService;
+    private final ParticipantDataChangeService participantDataChangeService;
     private final EventService eventService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
 
@@ -40,14 +40,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 DataChangeRecordService dataChangeRecordService, EventService eventService) {
+                                 ParticipantDataChangeService participantDataChangeService, EventService eventService) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.answerProcessingService = answerProcessingService;
-        this.dataChangeRecordService = dataChangeRecordService;
+        this.participantDataChangeService = participantDataChangeService;
         this.eventService = eventService;
     }
 
@@ -121,8 +121,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
-        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() ->
-                new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
+
+        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() -> new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
 
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();
@@ -251,7 +251,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         for (Answer answer : existingAnswers) {
             existingAnswerMap.put(answer.getQuestionStableId(), answer);
         }
-        List<DataChangeRecord> changeRecords = new ArrayList<>();
+        List<ParticipantDataChange> changeRecords = new ArrayList<>();
         List<Answer> updatedAnswers = answers.stream().map(answer -> {
             Answer existing = existingAnswerMap.get(answer.getQuestionStableId());
             if (existing != null) {
@@ -259,13 +259,13 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             }
             return createAnswer(answer, response, survey, ppUser, operator);
         }).toList();
-        dataChangeRecordService.bulkCreate(changeRecords);
+        participantDataChangeService.bulkCreate(changeRecords);
         return updatedAnswers;
     }
 
     @Transactional
     public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response, String justification,
-                               Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords,
+                               Survey survey, PortalParticipantUser ppUser, List<ParticipantDataChange> changeRecords,
                                ResponsibleEntity operator) {
         if (existing.valuesEqual(updated)) {
             // if the values are the same, don't bother with an update
@@ -280,7 +280,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .build();
         auditInfo.setResponsibleEntity(operator);
 
-        DataChangeRecord change = DataChangeRecord.fromAuditInfo(auditInfo)
+        ParticipantDataChange change = ParticipantDataChange.fromAuditInfo(auditInfo)
                 .operationId(response.getId())
                 .modelName(survey.getStableId())
                 .fieldName(existing.getQuestionStableId())

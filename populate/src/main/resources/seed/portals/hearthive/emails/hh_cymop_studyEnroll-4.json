@@ -1,0 +1,15 @@
+{
+  "createdAt" : 1697638252.903721000,
+  "lastUpdatedAt" : 1697638252.903721000,
+  "stableId" : "hh_cymop_studyEnroll",
+  "name" : "Enrollment email",
+  "version" : 4,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1697638252.903721000,
+    "lastUpdatedAt" : 1697638252.903721000,
+    "language" : "en",
+    "subject" : "Thank you for Signing Up!",
+    "bodyPopulateFile" : "en/hh_cymop_studyEnroll-4.html"
+  } ]
+}

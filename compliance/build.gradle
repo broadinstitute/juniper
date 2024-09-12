@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "8.7.1"
+//    id 'org.springframework.boot' version '3.3.2'
+//    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'bio.terra.pearl.core'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://broadinstitute.jfrog.io/artifactory/plugins-snapshot'
+    }
+}
+
+
+ext {
+    set('springCloudGcpVersion', "5.6.0")
+    set('springCloudVersion', "2023.0.3")
+}
+
+dependencies {
+    implementation project(':core')
+    implementation platform("com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}")
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+    implementation "com.google.cloud:spring-cloud-gcp-starter-secretmanager"
+    implementation "org.springframework.cloud:spring-cloud-function-adapter-gcp"
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.3.2'
+    implementation 'com.slack.api:slack-api-client:1.42.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+jar {
+    dependsOn(":core:jar")
+    zip64 = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes "Main-Class": "bio.terra.pearl.compliance.SyncVantaUsers"
+    }
+
+    exclude("META-INF/*.RSA", "META-INF/*.DSA", "META-INF/*.SF")
+    destinationDirectory.set(file("$buildDir/uber-jar"))
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

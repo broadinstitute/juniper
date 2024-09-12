@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { HtmlPage, HtmlSection, HtmlSectionView, SectionType } from '@juniper/ui-core'
+import {
+  HtmlPage,
+  HtmlSection,
+  HtmlSectionView,
+  LocalSiteContent,
+  NavbarItem,
+  SectionType
+} from '@juniper/ui-core'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import { Button } from 'components/forms/Button'
 import { sectionTemplates } from './sectionTemplates'
@@ -9,8 +16,11 @@ import Api, { SiteMediaMetadata } from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import { filterPriorVersions } from '../media/SiteMediaList'
 import { PortalEnvContext } from 'portal/PortalRouter'
+import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
+import { NavbarSectionEditor } from 'portal/siteContent/NavbarSectionEditor'
 
 type HtmlPageViewProps = {
+  localSiteContent: LocalSiteContent
   portalEnvContext: PortalEnvContext
   htmlPage: HtmlPage
   readOnly: boolean
@@ -18,14 +28,24 @@ type HtmlPageViewProps = {
   setSiteHasInvalidSection: (invalid: boolean) => void
   footerSection?: HtmlSection
   updateFooter: (section?: HtmlSection) => void
+  updateNavbarItems: (items: NavbarItem[]) => void
   updatePage: (page: HtmlPage) => void
   useJsonEditor?: boolean
 }
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({
-  portalEnvContext, htmlPage, readOnly, siteHasInvalidSection, setSiteHasInvalidSection, footerSection,
-  updateFooter, updatePage, useJsonEditor = true
+  localSiteContent,
+  portalEnvContext,
+  htmlPage,
+  readOnly,
+  siteHasInvalidSection,
+  setSiteHasInvalidSection,
+  footerSection,
+  updateFooter,
+  updateNavbarItems,
+  updatePage,
+  useJsonEditor = true
 }: HtmlPageViewProps) => {
   const [mediaList, setMediaList] = useState<SiteMediaMetadata[]>([])
 
@@ -111,13 +131,29 @@ const HtmlPageView = ({
   }
 
   return <div>
+    {localSiteContent.navbarItems && <div className="row g-0">
+      <div className="col-md-4 px-2 pb-2 mb-2">
+        <NavbarSectionEditor
+          updateNavbarItems={updateNavbarItems}
+          localSiteContent={localSiteContent}
+        />
+      </div>
+      <div className="col-md-8">
+        <NavbarPreview
+          portal={portalEnvContext.portal}
+          portalEnv={portalEnvContext.portalEnv}
+          localContent={localSiteContent}
+        />
+      </div>
+    </div>}
     { renderAddSectionButton(0) }
     {htmlPage.sections.map((section, index) => {
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 px-2 pb-2">
           <HtmlSectionEditor portalEnvContext={portalEnvContext}
             updateSection={updateSection(index)} setSiteHasInvalidSection={setSiteHasInvalidSection}
-            moveSection={moveSection(index)} removeSection={removeSection(index)} allowTypeChange={section.id === ''}
+            moveSection={moveSection(index)} removeSection={removeSection(index)}
+            allowTypeChange={section.id === ''}
             siteHasInvalidSection={siteHasInvalidSection} section={section} readOnly={readOnly}
             useJsonEditor={useJsonEditor} siteMediaList={mediaList}/>
         </div>

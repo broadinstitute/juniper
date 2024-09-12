@@ -1,0 +1,2 @@
+basics.complete,account.username,basics.firstname,basics.lastname,basics.birthdate,basics.addressline1,basics.addressline2,basics.city,basics.postcode,basics.state,basics.country
+2024-01-01,user1@foo.com,John,Doe,1990-01-01,123 Main St,,Anytown,12345,CA,US

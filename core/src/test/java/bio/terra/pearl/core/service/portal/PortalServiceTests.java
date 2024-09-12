@@ -42,7 +42,7 @@ public class PortalServiceTests extends BaseSpringBootTest {
         portalAdminUserService.create(PortalAdminUser.builder()
                 .adminUserId(user.getId())
                 .portalId(portal2.getId())
-                .build());
+                .build(), getAuditInfo(info));
         // confirm user can access second portal
         List<Portal> portals = portalService.findByAdminUser(user);
         assertThat(portals, hasSize(1));

@@ -7,12 +7,13 @@ import static org.hamcrest.Matchers.notNullValue;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.admin.PermissionFactory;
+import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
@@ -37,6 +38,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Autowired private RoleFactory roleFactory;
   @Autowired private PermissionFactory permissionFactory;
   @Autowired private PortalAdminUserRoleService portalAdminUserRoleService;
+  @Autowired private PortalAdminUserFactory portalAdminUserFactory;
 
   @Test
   @Transactional
@@ -51,8 +53,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
     // now add the user to a second portal
     Portal portal2 = portalFactory.buildPersisted(getTestName(info));
-    portalAdminUserService.create(
-        PortalAdminUser.builder().adminUserId(user.getId()).portalId(portal2.getId()).build());
+    portalAdminUserFactory.buildPersisted(getTestName(info), user.getId(), portal2.getId());
     // confirm user can access second portal
     Portal authedPortal = authUtilService.authUserToPortal(user, portal2.getShortcode());
     assertThat(authedPortal.getId(), equalTo(portal2.getId()));
@@ -105,21 +106,17 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   public void authUserToPortalWithPermissionAllows(TestInfo info) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
     Portal portal = portalFactory.buildPersisted(getTestName(info));
-    Permission deletePortalPermission = permissionFactory.buildPersisted("delete_portal");
+    permissionFactory.buildPersisted("delete_portal");
     Role portalDeleterRole =
-        roleFactory.buildPersisted("portal_deleter", List.of(deletePortalPermission.getName()));
-
+        roleFactory.buildPersisted(getTestName(info), List.of("delete_portal"));
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     PortalAdminUser portalAdminUser =
         portalAdminUserService.create(
-            PortalAdminUser.builder()
-                .adminUserId(user.getId())
-                .portalId(portal.getId())
-                .roles(List.of(portalDeleterRole))
-                .roleIds(List.of(portalDeleterRole.getId()))
-                .build());
+            PortalAdminUser.builder().adminUserId(user.getId()).portalId(portal.getId()).build(),
+            auditInfo);
 
     portalAdminUserRoleService.setRoles(
-        portalAdminUser.getId(), List.of(portalDeleterRole.getName()));
+        portalAdminUser.getId(), List.of(portalDeleterRole.getName()), auditInfo);
 
     assertThat(
         authUtilService

@@ -10,12 +10,12 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +29,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private ProfileExtService profileExtService;
   @Autowired private EnrolleeFactory enrolleeFactory;
   @Autowired private ProfileService profileService;
-  @Autowired private DataChangeRecordService dataChangeRecordService;
+  @Autowired private ParticipantDataChangeService participantDataChangeService;
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
 
   @Test
@@ -207,10 +207,11 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
     Assertions.assertEquals("TEST", newProfile.getGivenName());
 
-    List<DataChangeRecord> records = dataChangeRecordService.findByEnrollee(enrollee.getId());
+    List<ParticipantDataChange> records =
+        participantDataChangeService.findByEnrollee(enrollee.getId());
     Assertions.assertEquals(1, records.size());
 
-    DataChangeRecord profileUpdateRecord = records.get(0);
+    ParticipantDataChange profileUpdateRecord = records.get(0);
 
     Assertions.assertEquals("Profile", profileUpdateRecord.getModelName());
     Assertions.assertFalse(profileUpdateRecord.getOldValue().contains("TEST"));

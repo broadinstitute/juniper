@@ -68,7 +68,20 @@ public class RoleService extends CrudService<Role, RoleDao> {
         return dao.update(role);
     }
 
-    public Optional<Role> findOne(UUID roleId) { return dao.find(roleId); }
+    public void attachPermissions(List<Role> roles) {
+        List<RolePermission> rolePermissions = rolePermissionService.findAllByRoleIds(roles.stream().map(Role::getId).toList());
+        List<Permission> permissions = permissionService.findAll(rolePermissions.stream().map(RolePermission::getPermissionId).toList());
+        roles.forEach(role -> {
+            List<Permission> rolePermissionsList = rolePermissions.stream()
+                    .filter(rolePermission -> rolePermission.getRoleId().equals(role.getId()))
+                    .map(rolePermission -> permissions.stream()
+                            .filter(permission -> permission.getId().equals(rolePermission.getPermissionId()))
+                            .findFirst()
+                            .orElseThrow())
+                    .toList();
+            role.setPermissions(rolePermissionsList);
+        });
+    }
 
     public Optional<Role> findByName(String roleName) {
         return dao.findByName(roleName);

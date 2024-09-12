@@ -1,0 +1,465 @@
+{
+  "stableId" : "consentFormTheHeartHiveCardiomyopathyStudy",
+  "version" : 38,
+  "name" : "Consent Form - The Heart Hive Cardiomyopathy Study",
+  "surveyType" : "CONSENT",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : true,
+  "allowAdminEdit" : false,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : false,
+  "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "showQuestionNumbers" : "off",
+    "showProgressBar" : "bottom",
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "radiogroup",
+        "name" : "CM_DIAG",
+        "title" : "What type of cardiomyopathy have you been diagnosed with? ",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Dilated Cardiomyopathy",
+          "value" : "1"
+        }, {
+          "text" : "Hypertrophic Cardiomyopathy",
+          "value" : "2"
+        }, {
+          "text" : "Another type of Cardiomyopathy",
+          "value" : "3"
+        }, {
+          "text" : "I have not been diagnosed with cardiomyopathy",
+          "value" : "4"
+        } ]
+      }, {
+        "type" : "text",
+        "name" : "NOT_ELIGIBLE",
+        "title" : "Unfortunately, you are not eligible for this study. Please do not continue filling out this form. ",
+        "description" : "",
+        "isRequired" : false,
+        "inputType" : "text",
+        "visibleIf" : "{CM_DIAG} = \"3\" or {CM_DIAG} = \"4\""
+      }, {
+        "type" : "html",
+        "name" : "Page 1 Intro",
+        "title" : "",
+        "description" : "",
+        "isRequired" : false,
+        "html" : "<h3>The Heart Hive Cardiomyopathy Study</h3><p>Participant Information Sheet</p><p><strong>Chief Investigator Dr James Ware, Imperial College, London</strong></p><p>&nbsp;</p><p>We would like to invite you to join the HeartHive Cardiomyopathy study which has been set up by Imperial College London.</p><p><strong>\nVision </strong></p><p>Our vision is that all patients with cardiovascular disease should have the opportunity to participate in research into their condition, to advance knowledge and treatment.</p><p><strong>The challenge and opportunity</strong></p><p>\n\n\nThe more people take part in research, the more powerful it is.</p><p>Lots of people living with cardiomyopathy want to participate in research - to be proactive in tackling their condition, and to help move science and healthcare forwards toward improved treatments and a better quality of life for themselves and the larger community. &nbsp;</p><p>Many patients say that they can't find a way to get involved in research. &nbsp;Opportunities may be concentrated around a handful of universities and hospitals, and many patients either can't get involved,&nbsp;or need to travel long distances to take part. This is bad for patients, and bad for research.</p><p><strong>The solution</strong></p><p>Give everyone the chance to participate in research.</p><p>Rather than relying solely on a handful of hospitals and doctors, we will enable participants to provide their own data.&nbsp;We will use the latest technologies to facilitate research participation from home, rather than relying on travel to distant specialist centres. &nbsp;We will collect genetic material from saliva using kits sent in the post, and gather clinical information from participants using a web portal and smartphone app.</p><p><strong>HeartHive Cardiomyopathy project: </strong></p><p>This is a study of patients with either dilated cardiomyopathy (DCM) or hypertrophic cardiomyopathy (HCM).&nbsp; Our goal is to further the understanding of DCM and HCM, in particular how genetic and environmental factors interact to cause these conditions and to influence their severity and progression. The study's findings could help develop tailored treatments for patients with cardiomyopathy in the future.</p><p>We are concluding our pilot phase of the project and have secured funding to extend our study for ongoing recruitment. We aim to carry out genetic sequencing for all participants, but our funding is not unlimited, \n\nand we may not be able to carry out genetic analysis if more participants enrol in our study than anticipated.&nbsp;</p><p><strong>\n\n\nIt's up to you</strong></p><p>We are inviting you to sign up to take part in the HeartHive Cardiomyopathy study.</p><p>Take time to decide whether or not you wish to take part. Please read the following information carefully and discuss it with others if you wish.&nbsp;</p><p>Make sure you clearly understand the study.&nbsp; Before you decide whether to participate in any study it is important for you to understand why the research is being done and what it will involve.</p><p>Thank you for taking the time to read this<em>.</em></p><p><strong>This study is conducted entirely online.</strong></p><p><strong>You can download a copy of the study information sheet at any time.</strong></p>"
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "DCM_Why is the study needed",
+        "title" : "test",
+        "description" : "",
+        "isRequired" : false,
+        "html" : " <p style=\"text-align: center;\"><strong>HeartHive Cardiomyopathy study - Why is this study needed? </strong></p> \n\n<p> We need to better understand the genetic and environmental factors that contribute to DCM and HCM in order to develop tailored treatments and improve the health and well-being of patients with this condition. &nbsp;The information below is relevant for participants with DCM.</p> \n\n<p> <strong>Dilated cardiomyopathy (DCM) is a disease of the heart muscle. &nbsp;</strong>The muscle walls become stretched and the chambers of the heart become bigger and weaker. &nbsp;This means the heart cannot pump blood around the body as effectively as it should.&nbsp;</p> \n\n<p> DCM often runs in families. &nbsp;A strong genetic cause can be identified in up to half (1 in 2) of all patients. &nbsp;But in many patients the cause of DCM is unknown.&nbsp;</p> \n\n<p> It can be difficult to predict how DCM will progress. For some patients DCM causes life-threatening problems including severe heart failure and heart rhythm abnormalities, but many others have only mild disease with few symptoms or problems. &nbsp;Even within the same family DCM can be very variable and can present at different ages and with different severity.</p> \n\n<p> At the moment we don&rsquo;t know the reason for the variability we see in DCM. &nbsp;It is likely to be due to a combination of genes with small effects and environmental factors acting together but we need to study very large numbers of patients to look for these factors.</p> \n\n<p> If we can identify the factors that influence DCM variability the information could be used to help tailor treatments or develop new treatments for DCM in the future.</p>"
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "HCM_Why is the study needed",
+        "title" : "test",
+        "description" : "",
+        "isRequired" : false,
+        "html" : " <p style=\"text-align: center;\"><strong>HeartHive Cardiomyopathy study - Why is this study needed? </strong></p> \n\n<p> We need to better understand the genetic and environmental factors that contribute to DCM and HCM in order to develop tailored treatments and improve the health and well-being of patients with this condition. &nbsp;The information below is relevant for participants with HCM.</p> \n\n<p> <strong>Hypertrophic cardiomyopathy (HCM) is a disease of the heart muscle.&nbsp;</strong>  The muscle walls become thickened and stiff. &nbsp; This means the heart cannot pump blood around the body as effectively as it should. &nbsp;</p> \n\n<p> HCM often runs in families.  A strong genetic cause can be identified in up to half (1 in 2) of all patients.  But in many patients the cause of HCM is unknown.  &nbsp;</p> \n\n<p> It can be difficult to predict how HCM will progress. For some patients HCM causes life-threatening problems including heart rhythm abnormalities and symptoms of chest pain and shortness of breath, but many others have only mild disease with few symptoms or problems. &nbsp; Even within the same family HCM can be very variable and can present at different ages and with different severity.</p> \n\n<p> At the moment we don&rsquo;t know the reason for the variability we see in HCM. &nbsp; It is likely to be due to a combination of genes with small effects and environmental factors acting together but we need to study very large numbers of patients to look for these factors. </p> \n\n<p>If we can identify the factors that influence HCM variability the information could be used to help tailor treatments or develop new treatments for HCM in the future.</p>"
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "DCM_study purpose  3",
+        "html" : "<b>What is the purpose of the study?</b><br><br>\n\nThe main aim of this research study is to better understand how genetic and environmental factors interact to contribute to developing DCM and influence severity and disease course.  \n<br><br>\nIn other words we are looking for the genes and environmental factors that influence the age at which DCM presents and how mild or severe it is.  We are also looking for new genes that can cause DCM.\n<br><br>\nThis information could help doctors better advise patients and families about what to expect from DCM and may help develop tailored treatments or new treatments for patients with this disease in the future.\n<br><br>\nThis research study is available to patients with DCM through our online study portal.  Participants will give a saliva sample for genetic testing.  Participants will also be asked to complete The Heart Hive registry online questionnaires about their diagnosis of DCM and their health and lifestyle and to consent to share that data with this study.\n<br>",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "DCMeligibility",
+        "html" : "<b>Why have I been invited and am I eligible?</b>\n<br><br>\nYou are eligible to take part in the study if you:<br>\n-\tAre aged 18 or over.<br>\n-\tHave DCM<br>\n<br>\nYou are not eligible to take part in the study if you:<br>\n-\tDo not have internet access or are unable to provide an email address for study correspondence.<br>\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "Do I have to take part",
+        "html" : "<b>Do I have to take part?</b>\n<br><br>\nNo, it is completely up to you. If you decide to take part you will be asked to sign an eConsent (online consent form). You are free to withdraw at any time and without giving a reason. This study is entirely separate from your clinical care.  A decision to withdraw at any time, or a decision not to take part, will not affect the standard of care you receive from your doctors.  \n\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "What does taking part involve",
+        "html" : "<b>What does taking part in the study involve?</b>\n<br><br>\nTaking part in the HeartHive Cardiomyopathy study would involve you:<br><br>\n-\tBeing asked to give a saliva sample in a kit that we will send you in the post.<br><br>\n-\tCompleting The Heart Hive registry online health questionnaire and consenting to share that data with us at the time you enrol and completing a follow-up health survey once a year after that.  <br><br>\n-\tAgreeing for us to collect information about your health from national registries such as the Office for National Statistics and Hospital Episodes Statistics which routinely collect certain NHS data (e.g. admissions to hospital, mortality, cause of death).<br><br>\n-\tAgreeing for us to collect information about your health from your medical records (GP and hospital records)<br>\n-\tAgreeing to have your samples, questionnaire data, health-related and other information stored by the HeartHive Cardiomyopathy study team and used, for many years, in a de-identified form by researchers for a range of ethically-approved scientific health studies.<br><br>\n-\tBeing contacted by the HeartHive Cardiomyopathy study team about further studies organised by Imperial College and/or our collaborators in other universities or hospitals. These studies will build on results and samples generated from the HeartHive Cardiomyopathy study to further understand the links between lifestyle, genes, traits and diseases.  It is completely up to you if you would like to take part in further studies or not.<br>\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q1",
+        "title" : "Taking part involves sharing which type of health information?",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Your Heart Hive registry online health questionnaire",
+          "value" : "1"
+        }, {
+          "text" : "Your medical records",
+          "value" : "2"
+        }, {
+          "text" : "Information about you in national registries such as the Office for National Statistics",
+          "value" : "3"
+        } ],
+        "showOtherItem" : false,
+        "otherText" : "Other",
+        "otherPlaceholder" : "Please specify",
+        "otherErrorText" : "A description is required for choices of \"other\"."
+      }, {
+        "type" : "html",
+        "name" : "A-Q1-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nTaking part involves sharing all of the following types of health information:\n\n- Your Heart Hive registry online health questionnaire\n- Your medical records\n- Information about you in national registries such as the Office for National Statistics\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q1-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n\n\n<br><br>\nTaking part involves sharing all of the following types of health information:\n\n- Your Heart Hive registry online health questionnaire\n- Your medical records\n- Information about you in national registries such as the Office for National Statistics\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "what happens to my saliva sample",
+        "html" : "<b>What will happen to my saliva sample?</b>\n<br><br>\nSamples collected for the purposes of the research will either be used immediately for genetic testing or will be stored for use in future research.   \n<br><br>\nIn particular, we want to know how genes interact with each other and with your environment to influence the development and severity of cardiomyopathy. Variants in lots of different genes influence the behaviour of cells in your heart and the rest of your body and so we need to analyse your DNA in detail. As part of this study, we will test your DNA for many genes and we may determine the sequence of your entire DNA code.\n<br><br>\nStored samples (saliva and DNA) will be:<br><br>\n-\tKept securely at central laboratories. They will not be labelled with your name or contact details, but only with a unique study number.<br><br>\n-\tUsed by the study investigators for medical and health-related studies which have relevant scientific and ethics approval<br>\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "DCM - What happens after I enrol",
+        "html" : "<b>What happens immediately after I enrol?</b>\n<br><br>\nThis study is conducted entirely online.  You can access a copy of this study information sheet at any time.  Once you have enrolled through our online study portal you will be able to access a copy of your signed consent form.\n<br><br>\nDuring enrolment you will be asked to consent to share access to your The Heart Hive registry health questionnaires. If you have not already completed the questionnaire you will be asked to complete it once you have enrolled.  The questionnaire has two parts: the first asks about the time you were first diagnosed with DCM and about your health and lifestyle up until that point.  The second part asks about the most recent information relating to your DCM and any changes to your general health and lifestyle since you were first diagnosed.\n<br><br>",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "DCM_What happens next",
+        "html" : "<b>What happens next?</b>\n<br><br>\nEvery year we will send you an email asking you to complete a brief online questionnaire (taking less than 15 minutes) which will ask you:<br><br>\n•\tto rate your general health and your symptoms<br><br>\n•\tto report any <br><br>\n•\thospital admissions<br><br>\n•\tmedical events (new symptoms or diagnoses)<br><br>\n•\tchanges to your medication <br><br>\n•\tnew treatments or interventions for your DCM<br><br>\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q2",
+        "title" : "How often will we invite you to complete a follow up questionnaire?",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Every month",
+          "value" : "1"
+        }, {
+          "text" : "Once a year",
+          "value" : "2"
+        }, {
+          "text" : "Never",
+          "value" : "3"
+        } ],
+        "showOtherItem" : false,
+        "otherText" : "Other",
+        "otherPlaceholder" : "Please specify",
+        "otherErrorText" : "A description is required for choices of \"other\"."
+      }, {
+        "type" : "html",
+        "name" : "A-Q2-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\n-  We will invite you to complete a follow up questionnaire once a year\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q2-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n\n\n<br><br>\n- We will invite you to complete a follow up questionnaire once a year\n\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "DCM_benefits",
+        "html" : "<b>Are there any benefits for me in joining the study?</b>\n<br><br>\nThere will be no immediate direct benefit to you should you participate.  However, there may be benefits to future patients with DCM because the results of the study could help in developing tailored treatments and tests for this condition.<br>\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "Are there any risks ",
+        "html" : "<b>Are there any risks for me in joining the study?</b>\n<br><br>\nThere are no risks to you from joining this study\n<br>",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "How will my info be kept confidentially",
+        "html" : "<b>How will information about me be kept confidential?</b>\n<br><br>\nWe will protect your privacy at all times. \n<br>\nThe steps taken to ensure confidentiality are detailed below:<br>\n<br>\n-\tWhen you enrol in the Heart Hive you will be asked to enter personal identifiers including your name, date of birth and email address.  This information will be stored in a single table linking your personal identifiers to your unique study identification number. This table is stored separately from your study health data on a secure (password protected, encrypted and firewalled) database which may be accessed by the study data manager only.\n<br><br>\n-\tDe-identification is the process of using your unique study identification number instead of your personal details to label any other information about you.\n<br><br>\n-\tYour samples and health data will be de-identified – they will not be labelled with any personal identifying details; they will be stored using your unique study identification number instead.  Researchers working with your samples and data will, therefore, never know your identity. \n<br><br>\n-\tAll health data will be stored in a secure (password protected, encrypted and firewalled) data table and linked to your study identification number. The health database will be separate to the data table containing your personal details.\n<br><br>\n-\tAccess to the HeartHive database of health information will be restricted to members of the Heart Hive study team. A snapshop of this deidentified data will be provided to named researchers working on this study under the direct supervision of the senior scientific investigators.\n<br><br>\n-\tThe table containing your personal identifiers will be used to access your email address when we need to communicate with you, and your postal address to send you a sample collection kit.\n<br><br>\n-\tThe table containing your personal identifiers will be used to retrieve relevant health information from national registries. The retrieved information will be de-identified, any personal identifying details will be removed and replaced by your unique study identification number, before it is stored.\n<br><br>\n-\tOur online study portal and database is developed by an American research institute and our databases are stored in their secure location.  The USA has different privacy laws compared to the UK, however we will ensure that all data is protected in accordance with UK data protection legislation (GDPR).  If we change provider, we will ensure an equivalent level of protection.\n\n<br>",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "DCM_What will be stored on the heart Hive",
+        "html" : "<b>What will be stored on the HeartHive Cardiomyopathy research database?</b>\n<br><br>\nYour de-identified data will be stored on Imperial College approved IT systems study database and will be used by the study investigators to understand how genetic and environmental factors act together to influence how DCM develops and progresses.\n<br><br>\nStored de-identified data may also be used for future medical and health-related studies which have relevant scientific and ethics approval. \n<br><br>\nInformation that will be stored on the database will be de-identified and will include:<br><br>\n-\tData from the online health questionnaires (described above)<br>\n-\tGenetic information generated by testing DNA extracted from your saliva sample <br>\n-\tInformation about your health which is collected routinely by the NHS for national registries such as the Office for National Statistics and Hospital Episodes Statistics e.g. whether you have had any hospital admissions<br>\n-\tInformation relevant to your diagnosis of DCM collected form your medical records<br>\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q3",
+        "title" : "We will protect your privacy by:",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "De-identifying your health data and biological samples using your unique study identification number.",
+          "value" : "1"
+        }, {
+          "text" : "Keeping our database secure and encrypted",
+          "value" : "2"
+        }, {
+          "text" : "Complying with GDPR",
+          "value" : "3"
+        } ],
+        "showOtherItem" : false,
+        "otherText" : "Other",
+        "otherPlaceholder" : "Please specify",
+        "otherErrorText" : "A description is required for choices of \"other\"."
+      }, {
+        "type" : "html",
+        "name" : "A-Q3-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nWe will protect your privacy by:<br>\n- De-identifing your health data and biological samples using your unique study identification number.\n- Keeping our database secure and encrypted\n- Complying with GDPR\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q3-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n\n<br><br>\nWe will protect your privacy by:<br>\n- De-identifing your health data and biological samples using your unique study identification number.\n- Keeping our database secure and encrypted\n- Complying with GDPR\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q4",
+        "title" : "What information will this study store?",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Information about your health.",
+          "value" : "1"
+        }, {
+          "text" : "Genetic information generated from testing DNA from your saliva sample",
+          "value" : "2"
+        } ],
+        "showOtherItem" : false,
+        "otherText" : "Other",
+        "otherPlaceholder" : "Please specify",
+        "otherErrorText" : "A description is required for choices of \"other\"."
+      }, {
+        "type" : "html",
+        "name" : "A-Q4-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nThis study will store:\n\n- Information about your health \n- Genetic information generated from testing DNA from your saliva sample\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q4-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n<br><br>\nThis study will store:\n\n- Information about your health \n- Genetic information generated from testing DNA from your saliva sample\n\n\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "What if I change my mind",
+        "html" : "<b>What if I change my mind?</b>\n<br><br>\nYou can change your mind at any time – you can let us know using the ‘I’ve changed my mind’ form on our online study portal \n<br>\nThere are 2 withdrawal options:<br>\n<br><br>\n1. No further contact<br><br>\n-\tWe would no longer contact you directly (for follow-up surveys and invites to future studies).  <br><br>\n-\tWe would still have your permission to retain and use information and samples provided previously and to obtain and use further information from national registries.\n<br><br><br>\n2.  No further use<br><br>\n-\tWe would no longer contact you directly (for follow-up surveys and invites to future studies).  <br><br>\n-\tSamples and information collected previously would no longer be available to researchers and we would not obtain further information about you from national registries.<br><br>\n-\tThe research information about you will be deleted so it cannot be used again.  <br><br>\n-\tStored samples will be destroyed.<br><br>\n\nIf you change your mind after a long time, your samples and information may have already been used. We cannot recall samples or information once they have been used. If, by then, your taking part in the study has already helped create new knowledge, that information cannot be undiscovered and will contribute to medical understanding.  <br><br>\nIf we do not hear from you we will assume that you still consent to be part of this study and we will continue to collect and store health information.\n\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "boolean",
+        "name" : "Q5",
+        "title" : "Can you withdraw from the study at any time?",
+        "description" : "",
+        "isRequired" : true
+      }, {
+        "type" : "html",
+        "name" : "A-Q5-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nYou can withdraw from the study at any time",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q5-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n<br><br>\nYou can withdraw from the study at any time\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "Who can access my samples and data",
+        "html" : "<b>Who can access my samples and health information?</b>\n<br><br>\n\nThe researchers involved in this study will have access to your de-identified samples and health information. Your samples and health information will be labelled with a study code number instead of your name.  \n<br>\n<br>\n\nYour de-identified information and samples may be shared with other researchers who have relevant scientific and ethics approvals for their planned research. This could include researchers who are working in other countries and in commercial companies who are looking for new treatments or laboratory tests.\n<br>\n<br>\n\nInsurance companies and employers will not be given any individual’s information, samples or test results, and we will not allow access to the police, security services, relatives or lawyers, unless forced to do so by the courts.\n<br>\n<br>\n\nRelevant sections of your health information collected during the study may be looked at by individuals from Imperial College or regulatory organisations to check the accuracy of the research study.  This information will be de-identified and the people who analyse the information will not be able to identify you.\n<br>\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q6",
+        "title" : "Who can access your samples and health information?",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Researchers in this study",
+          "value" : "1"
+        }, {
+          "text" : "Other researchers who have relevant scientific and ethics approvals",
+          "value" : "2"
+        }, {
+          "text" : "Insurance companies",
+          "value" : "3"
+        }, {
+          "text" : "Your employer",
+          "value" : "4"
+        } ]
+      }, {
+        "type" : "html",
+        "name" : "A-Q6-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nYour samples and health information can be accessed by researchers in this study and other researchers who have relevant scientific and ethics approvals\n\n\n</p><p>We will not release your information to insurance companies or your employer\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q6-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n<br><br>\n\nYour samples and health information can be accessed by researchers in this study and other researchers who have relevant scientific and ethics approvals\n\n\n</p><p>We will not release your information to insurance companies or your employer",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "DCM_Can I know my genetic results",
+        "html" : "<b>Can I know the results obtained from my saliva samples?</b>\n<br><br>\nYou can opt in to receive genetic results from a panel of genes that cause cardiomyopathy.  \n<br><br>\nIf you opt in we will notify you in the event that we find a research result that could be clinically relevant to your diagnosis of DCM.  We will provide you with a letter to give to your specialist cardiologist or clinical geneticist so that they can request a copy of the research result.  We do not provide the result directly to you because it needs to be validated in an NHS lab and interpreted together with your full clinical record and family history information in order to know whether the finding is meaningful.   Your doctor will feed back the full result to you and explain what it means for you. \n <br><br>\nWe will not be in contact with you if we <b>do not</b> find any genetic results relevant to your heart disease.\n<br>\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "radiogroup",
+        "name" : "ICC_results_opt_in",
+        "title" : "Do you want to opt in to receive your genetic results via your doctor?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes, I would like to be notified if there is a research genetic result that could be relevant to my cardiomyopathy.   I understand I will receive a letter to take to my specialist cardiologist or clinical geneticist so that they can request a copy of my result to be validated in an NHS lab.  I understand my doctor will feed back the result to me.",
+          "value" : "1"
+        }, {
+          "text" : "No, I do not want to receive any individual genetic results from this study.",
+          "value" : "0"
+        } ]
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "What will happen to the results of the study",
+        "html" : "<b>What will happen to the results of the research study?</b>\n<br><br>\n\nThere will be a requirement to publish the overall results of the research arising out of the samples and data collected during the study so that people can benefit from it, however your identity will not be revealed. \n<br>\n<br>\n\n\nThe overall results (but not individual results) will also be made available to participants and anyone else who might be interested though our online study portal.\n<br>\n<br>\n\nTo increase the benefit from your participation in this study, we may share our genetic research findings with other researchers.  Results from genetic research on your samples and health information may be published on controlled access databases.  Controlled access databases mean that only researchers who apply for and get permission to use the information for a specific research project can access the information.  Your genetic and health information would be de-identified and could not be used to identify you.  Researchers approved to access information in the database will agree not to attempt to identify you.  \n<br>\n<br>\n\nSharing research results on controlled access databases will allow researchers from other organisations to use your information to study genetic causes of diseases.  These databases may be located in countries outside of the European Union.  Data protection laws in other countries may not offer the same level of privacy protection as those in the UK, but none of your personal information (name, date of birth, etc.) will be included on these databases.\n<br>\n",
+        "isRequired" : false
+      }, {
+        "type" : "checkbox",
+        "name" : "Q7",
+        "title" : "What results will you receive from the study?",
+        "description" : "Please check all that apply",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "The overall study outcomes will be posted online at the end of the project",
+          "value" : "1"
+        }, {
+          "text" : "I can opt in to be told about my personal research results that could inform my clinical care.",
+          "value" : "2"
+        }, {
+          "text" : "No individual genetic results will be returned",
+          "value" : "3"
+        } ]
+      }, {
+        "type" : "html",
+        "name" : "A-Q7-Correct",
+        "html" : "<b>Correct!</b>\n<br><br>\n\nThe overall study outcomes will be posted online at the end of the project.\n</p><p>I can opt in to be told about my personal research results that could inform my clinical care. \n</p><p>Individual genetic results will be returned.\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "A-Q7-Incorrect",
+        "html" : "<b>Whoops! We should have explained that better</b>\n<br><br>\n\nThe overall study outcomes will be posted online at the end of the project.\n</p><p>I can opt in to be told about my personal research results that could inform my clinical care.\n</p><p>Individual genetic results will be returned.\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "What will happen to my samples",
+        "html" : "<b>What will happen to my samples?</b>\n<br><br>\n\nYour samples will be stored in a secure location in the UK and only the research team will have access to them.  Your samples will be used for genetic tests.  Your samples may be shared with other researchers, including those based outside of the United Kingdom.  \n<br>\n<br>\n\nAt the end of the project if any of your samples remain, they will be stored by the research team and may be used in other research projects.  An ethics committee will review and approve any new projects that your samples may be used for.  If your samples are not used for any other research projects, they may be disposed of according to hospital guidelines for disposal of human samples.\n<br>\n\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "What will happen if an invention is made using my sample",
+        "html" : "<b>What will happen if an invention is made using my sample</b>\n\n<br><br>\n\nYou are giving your sample as an absolute gift, i.e., without receiving a payment and without attaching conditions. The Online Cardiomyopathy study is operating on a non-commercial basis, meaning it does not sell your sample to make a profit and will not allow anyone else who is working with the sample to do so either. \n<br>\n<br>\n\nIn the future, your sample may help researchers in the public and private sector to make an invention, e.g. develop a new product to diagnose, prevent or treat disease. If an invention results from the research undertaken with your sample you will not receive any compensation or payment. Online Cardiomyopathy partners in the public sector may work together with commercial companies to develop inventions for the benefit of patient care; and we hope that such products are brought into use by the NHS to improve health care in the future.\n<br>\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "What if something goes wrong",
+        "html" : "<b>What if something goes wrong?</b>\n<br>\nThe risk of participants suffering harm as a result of taking part is minimal.\n<br>\n<br>\n\nImperial College London holds insurance policies which apply to this study. If you experience harm or injury as a result of taking part in this study, you will be eligible to claim compensation without having to prove that Imperial College is at fault. This does not affect your legal rights to seek compensation.\n<br>\n<br>\n\nIf you are harmed due to someone's negligence, then you may have grounds for a legal action. Regardless of this, if you wish to complain, or have any concerns about any aspect of the way you have been treated during the course of this study then you should immediately inform the Investigator Dr James Ware, <a href=\"mailto:j.ware@imperial.ac.uk\">j.ware@imperial.ac.uk</a>. The normal National Health Service mechanisms are also available to you. If you are still not satisfied with the response, you may contact the Imperial College, Joint Research Compliance Office.\n<br>\n<br>\n\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "Who is organising and funding the research ",
+        "html" : "<b>Who is organising and funding the research?</b>\n<br><br>\n\nThis research project is being funded by Cardiomyopathy UK, the Wellcome Trust and the Department of Health and is organised by a research team at Imperial College, London.  \n<br>\n",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "Who has approved the study",
+        "html" : "<b>Who has approved the study?</b>\n<br><br>\nThis study was given a favourable ethical opinion by HSC REC B Research Ethics Committee.\n\n<br>",
+        "isRequired" : false
+      }, {
+        "type" : "html",
+        "name" : "Further Info",
+        "html" : "<b>Contact for Further Information</b>\n<br><br>\nFor further information about this study you can contact:-\n<br><br>\n<a href=\"mailto:info@thehearthive.org\">info@thehearthive.org</a>\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "GDPR",
+        "html" : "<b>HeartHive Cardiomyopathy Study : GDPR and Privacy notice</b>\n<br><br><br>\n\n\n<b>What will happen to your data</b>\n<br>\n<br>\n\nImperial College London is the sponsor for this study and will act as the data controller for this study. This means that we are responsible for looking after your information and using it properly. Imperial College London will keep your personal data for:<br>\n\n•\t10 years after the study has finished in relation to data subject consent forms.<br>\n\n•\t10 years after the study has completed in relation to primary research data.<br>\n\n\nIn this research study we will use information from you and your medical records for this research project.  We will let very few people know your name or contact details, and only if they really need it for this study. Everyone involved in this study will keep your data safe and secure. We will also follow all privacy rules. \n<br>\n<br>\n\nThis information will include your <br>\n\n•\tNHS number<br>\n\n•\tName<br>\n\n•\tContact details<br>\n\n•\tDate of Birth<br>\n\n<br>\n\nPeople who do not need to know who you are will not be able to see your name or contact details. Your data will have a code number instead. We will keep all information about you safe and secure.  Some of your information will be sent to the USA. They must follow our rules about keeping your information safe.\n<br>\n<br>\n\nOnce we have finished the study, we will keep some of the data so we can check the results. We will write our reports in a way that no-one can work out that you took part in the study.\n<br>\n<br>\n\nLEGAL BASIS<br>\n\nAs a university we use personally-identifiable information to conduct research to improve health, care and services. As a publicly-funded organisation, we have to ensure that it is in the public interest when we use personally-identifiable information from people who have agreed to take part in research.  This means that when you agree to take part in a research study, we will use your data in the ways needed to conduct and analyse the research study.\nHealth and care research should serve the public interest, which means that we have to demonstrate that our research serves the interests of society as a whole. We do this by following the UK Policy Framework for Health and Social Care Research.\n<br>\n<br>\n\nINTERNATIONAL TRANSFERS<br>\n\nThere may be a requirement to transfer information to countries outside the European Economic Area (for example, to a research partner). Where this information contains your personal data, Imperial College London will ensure that it is transferred in accordance with data protection legislation. If the data is transferred to a country which is not subject to a European Commission (EC) adequacy decision in respect of its data protection standards, Imperial College London will enter into a data sharing agreement with the recipient organisation that incorporates EC approved standard contractual clauses that safeguard how your personal data is processed.\n<br>\n<br>\n\nSHARING YOUR INFORMATION WITH OTHERS <br>\n\nFor the purposes referred to in this privacy notice and relying on the bases for processing as set out above, we will share your personal data with certain third parties. <br>\n<br>\n\n\n•\tOther College employees, agents, contractors and service providers (for example, suppliers of printing and mailing services, email communication services or web services, or suppliers who help us carry out any of the activities described above). Our third party service providers are required to enter into data processing agreements with us. We only permit them to process your personal data for specified purposes and in accordance with our policies.<br>\n\n•\tOur online study portal and database is developed by an American not-for-profit research institute – The Broad Institute of MIT and Harvard  and our databases are stored in their secure location.  The USA has different privacy laws compared to the UK and Europe, however we will ensure that all data is protected in accordance with UK & European data protection legislation (GDPR).  The Broad Institute may engage with subcontractors and affiliates to process the data they're being provided. If we change provider, we will ensure an equivalent level of protection. We will not store data collected from national registries or medical record on the portal database. <br>\n<br>\n\n\n\nWHAT ARE YOUR CHOICES ABOUT HOW YOUR INFORMATION IS USED? <br>\n\nYou can stop being part of the study at any time, without giving a reason, but we may need to keep information about you that we already have for our research to be reliable. <br>\n\n•\tIf you choose to stop taking part in the study, we would like to continue collecting information about your health from central NHS records/ your hospital/ your GP. If you do not want this to happen, tell us and we will stop.<br>\n\n•\tWe need to manage your records in specific ways for the research to be reliable. This means that we won’t be able to let you see or change the data we hold about you. <br>\n\n•\tIf you agree to take part in this study, you will have the option to take part in future research using your data saved from this study.<br>\n<br>\n\n\nWHERE CAN YOU FIND OUT MORE ABOUT HOW YOUR INFORMATION IS USED?<br>\n\n You can find out more about how we use your information  <br>\n\n•\tat www.hra.nhs.uk/information-about-patients/ <br>\n\n•\tby asking one of the research team <br>\n\n•\tby sending an email to info@thehearthive.org<br>\n\n•\tat our website thehearthive.org<br>\n\n\n\n\n<br>\n\nCOMPLAINT <br>\n\nIf you wish to raise a complaint on how we have handled your personal data, please contact Imperial College London’s Data Protection Officer via email at dpo@imperial.ac.uk, via telephone on 020 7594 3502 and/or via post at Imperial College London, Data Protection Officer, Faculty Building Level 4, London SW7 2AZ. If you are not satisfied with our response or believe we are processing your personal data in a way that is not lawful you can complain to the Information Commissioner’s Office (ICO). The ICO does recommend that you seek to resolve matters with the data controller (us) first before involving the regulator.<br>\n\n\n\n\n",
+        "isRequired" : false
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "matrix",
+        "name" : "consent_table_ICC_opt_in",
+        "title" : "Consent Agreement",
+        "description" : "",
+        "alternateRows" : true,
+        "isAllRowRequired" : true,
+        "columns" : [ {
+          "value" : "1",
+          "text" : "Yes"
+        } ],
+        "rows" : [ {
+          "value" : "read_and_understood",
+          "text" : "I confirm that I have read and understand the subject information sheet for the above study and have had the opportunity to ask questions which have been answered fully."
+        }, {
+          "value" : "understand_can_withdraw",
+          "text" : "I understand that my participation is voluntary and I am free to withdraw at any time without giving any reason, without my medical care or legal rights being affected."
+        }, {
+          "value" : "permission_for_saliva",
+          "text" : "I give permission for my saliva samples to be used to obtain DNA for use in this study and to be used in future medical and health-related studies which have relevant scientific and ethics approval."
+        }, {
+          "value" : "agree_medical_record_release",
+          "text" : "I agree for information relating to my heart condition to be released to the research team. I agree to the collection of information relating to my heart condition from national electronic registries and NHS databases including my hospital records and GP.  I agree to this information being collected over my lifetime and after my death.  I agree to this information being stored at Imperial College."
+        }, {
+          "value" : "future_studies_contact",
+          "text" : "I agree to be contacted by the research team to be invited to participate in future medical and health-related studies which have relevant scientific and ethics approval. I understand that I do not have to participate in any future studies."
+        }, {
+          "value" : "agree_databases",
+          "text" : "I understand that results from research on my samples and medical information may be published on databases.  This may include genetic information.  I understand that no information that would reveal my identity will be included on these databases."
+        }, {
+          "value" : "agree_sharing",
+          "text" : "I understand that my samples and data may be shared with other researchers. I understand that information from my samples and data will only be made available to researchers in a form that protects my identity."
+        }, {
+          "value" : "agree_USA",
+          "text" : "I understand my samples and data may be sent outside the EU, including to the USA."
+        }, {
+          "value" : "confidentiality",
+          "text" : "I understand that my samples and medical information will be treated confidentially."
+        }, {
+          "value" : "regulatory_authority",
+          "text" : "I understand that sections of any of my medical notes may be looked at by responsible individuals from Imperial College or from regulatory authorities where it is relevant to my taking part in this research.  I give permission for these individuals to access my records that are relevant to this research"
+        }, {
+          "value" : "agree_take_part",
+          "text" : "I agree to take part in the above study."
+        }, {
+          "value" : "results_opt_in",
+          "text" : "I confirm I have opted in to receive my personal research"
+        } ]
+      } ]
+    } ]
+  }
+}

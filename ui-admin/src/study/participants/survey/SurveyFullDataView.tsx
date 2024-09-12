@@ -156,7 +156,7 @@ export const getDisplayValue = (answer: Answer,
   const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue ?? answer.booleanValue
 
   let displayValue: React.ReactNode = answerValue
-  if ((question as Question).choices) {
+  if ((question as Question).choices?.length) {
     if (answer.objectValue) {
       try {
         const valueArray = JSON.parse(answer.objectValue)

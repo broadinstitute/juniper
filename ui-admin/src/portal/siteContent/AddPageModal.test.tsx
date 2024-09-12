@@ -1,16 +1,19 @@
 import { userEvent } from '@testing-library/user-event'
 import { mockPortalEnvironment } from 'test-utils/mocking-utils'
-import AddNavbarItemModal from './AddNavbarItemModal'
-import { render, screen } from '@testing-library/react'
+import AddPageModal from 'portal/siteContent/AddPageModal'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import React from 'react'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AddPageModal', () => {
   test('disables Create button when title and path aren\'t filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewNavItem={jest.fn()}
+      insertNewPage={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -24,9 +27,9 @@ describe('AddPageModal', () => {
 
   test('enables Create button when title and path are filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewNavItem={jest.fn()}
+      insertNewPage={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -48,9 +51,9 @@ describe('AddPageModal', () => {
   test('Create button calls insertNewPage with a new page', async () => {
     //Arrange
     const mockInsertNewPageFn = jest.fn()
-    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
+    const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewNavItem={mockInsertNewPageFn}
+      insertNewPage={mockInsertNewPageFn}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -68,10 +71,13 @@ describe('AddPageModal', () => {
 
     //Assert
     expect(mockInsertNewPageFn).toHaveBeenCalledWith({
-      href: 'newPage',
-      itemOrder: -1,
-      itemType: 'INTERNAL',
-      text: 'My New Page'
+      title: 'My New Page',
+      path: 'newPage',
+      sections: [{
+        'id': '',
+        'sectionConfig': '{"title":"My New Page","blurb":"Add content here","blurbAlign":"center","buttons":[]}',
+        'sectionType': 'HERO_WITH_IMAGE'
+      }]
     })
   })
 })

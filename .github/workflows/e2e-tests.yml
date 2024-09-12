@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - development
+  pull_request:
+    branches:
+      - development
 
 jobs:
   test:
@@ -54,3 +57,15 @@ jobs:
         path: |
           e2e-tests/playwright-report/**
           e2e-tests/test-results/**
+    - name: Notify slack on failure
+      uses: broadinstitute/action-slack@v3.8.0
+      if: failure() && github.ref == 'refs/heads/development'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        channel: '#juniper-dev-notifications'
+        status: failure
+        author_name: End-to-end failed on merge to development
+        fields: job
+        text: "End-to-end tests failed :sadpanda:"
+        username: 'Juniper Build Notifications'

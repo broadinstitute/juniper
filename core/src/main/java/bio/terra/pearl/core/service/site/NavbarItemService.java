@@ -1,34 +1,41 @@
 package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.NavbarItemDao;
-import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class NavbarItemService extends ImmutableEntityService<NavbarItem, NavbarItemDao> {
-    private HtmlPageService htmlPageService;
-    public NavbarItemService(NavbarItemDao dao, HtmlPageService htmlPageService) {
+    public NavbarItemService(NavbarItemDao dao) {
         super(dao);
-        this.htmlPageService = htmlPageService;
     }
 
+    @Transactional
     @Override
     public NavbarItem create(NavbarItem item) {
-        HtmlPage htmlPage = item.getHtmlPage();
-        if (htmlPage != null) {
-            htmlPage.setLocalizedSiteContentId(item.getLocalizedSiteContentId());
-            htmlPage = htmlPageService.create(htmlPage);
-            item.setHtmlPageId(htmlPage.getId());
+        NavbarItem savedItem = dao.create(item);
+
+        List<NavbarItem> savedItems = new ArrayList<>();
+        if (item.getItems() != null && !item.getItems().isEmpty()) {
+            for (int i = 0; i < item.getItems().size(); i++) {
+                NavbarItem groupedItem = item.getItems().get(i);
+                groupedItem.setParentNavbarItemId(savedItem.getId());
+                groupedItem.setLocalizedSiteContentId(savedItem.getLocalizedSiteContentId());
+                groupedItem.setItemOrder(i);
+                groupedItem = this.create(groupedItem);
+                savedItems.add(groupedItem);
+            }
         }
-        item = dao.create(item);
-        item.setHtmlPage(htmlPage);
-        return item;
+        savedItem.setItems(savedItems);
+        return savedItem;
     }
 
     public void deleteByLocalSiteId(UUID localSiteId, Set<CascadeProperty> cascades) {

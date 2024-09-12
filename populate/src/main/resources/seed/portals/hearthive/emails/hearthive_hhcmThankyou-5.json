@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1721749442.510314000,
+  "lastUpdatedAt" : 1725381783.482575000,
+  "stableId" : "hearthive_hhcmThankyou",
+  "name" : "hhcm_thankyou",
+  "version" : 5,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1721749442.504001000,
+    "lastUpdatedAt" : 1721749442.504002000,
+    "language" : "en",
+    "subject" : "Thank you for consenting to the Cardiomyopathy Study",
+    "bodyPopulateFile" : "en/hearthive_hhcmThankyou-5.html"
+  } ]
+}

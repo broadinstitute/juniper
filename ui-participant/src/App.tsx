@@ -1,9 +1,18 @@
-import React, { lazy, Suspense, useEffect } from 'react'
+import React, {
+  lazy,
+  Suspense,
+  useEffect
+} from 'react'
 
 import LandingPage from 'landing/LandingPage'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation
+} from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import Api, { NavbarItem, NavbarItemInternal } from 'api/api'
+import Api, { HtmlPage } from 'api/api'
 import HtmlPageView from 'landing/HtmlPageView'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { AuthProvider } from 'react-oidc-context'
@@ -20,8 +29,14 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
-import { ApiProvider, I18nProvider } from '@juniper/ui-core'
-import { BrandConfiguration, brandStyles } from './util/brandUtils'
+import {
+  ApiProvider,
+  I18nProvider
+} from '@juniper/ui-core'
+import {
+  BrandConfiguration,
+  brandStyles
+} from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import InvitationPage from './landing/registration/InvitationPage'
 import AuthError from './login/AuthError'
@@ -84,13 +99,12 @@ function App() {
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
-    landingRoutes = localContent.navbarItems
-      .filter((navItem: NavbarItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
-      .map((navItem: NavbarItemInternal, index: number) => (
+    landingRoutes = localContent.pages
+      .map((page: HtmlPage, index: number) => (
         <Route
           key={index}
-          path={navItem.htmlPage.path}
-          element={<HtmlPageView page={navItem.htmlPage}/>}
+          path={page.path}
+          element={<HtmlPageView page={page}/>}
         />
       ))
     landingRoutes.push(

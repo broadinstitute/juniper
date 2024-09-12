@@ -12,6 +12,9 @@
   "allowParticipantStart" : true,
   "allowParticipantReedit" : true,
   "prepopulate" : false,
+  "assignToAllNewEnrollees" : true,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
   "jsonContent" : {
     "title" : "cardiomyopathy registration",
     "logoPosition" : "right",
@@ -60,7 +63,7 @@
         "type" : "html",
         "name" : "privacy_text",
         "title" : "privacy",
-        "html": "I have read and understood how my data will be used as described in the <a href=\"https://thehearthive.org/api/public/portals/v1/hearthive/env/live/siteMedia/1/privacy_notice.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">privacy notice</a>\nnotice"
+        "html" : "I have read and understood how my data will be used as described in the <a href=\"https://thehearthive.org/api/public/portals/v1/hearthive/env/live/siteImages/1/privacy_notice.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">privacy notice</a>\nnotice"
       }, {
         "type" : "checkbox",
         "name" : "privacy_notice",

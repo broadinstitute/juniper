@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: "admin_user_change"
+      author: dbush
+      changes:
+        - dropColumn:   # this was a holdover from the prototype where we rolled our own fake auth, hasn't been used for years
+            tableName: admin_user
+            columnName: token
+        - renameTable:
+            oldTableName: data_change_record
+            newTableName: participant_data_change
+        - createTable:
+            tableName: admin_data_change
+            columns:
+              - column:
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column:
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: responsible_admin_user_id, type: uuid, constraints: { foreignKeyName: fk_admin_data_change_admin_user, references: admin_user(id) } }
+              - column:
+                  { name: system_process, type: text }
+              - column:
+                  { name: operation_id, type: uuid }
+              - column:
+                  { name: admin_user_id, type: uuid }
+              - column:
+                  { name: portal_id, type: uuid, constraints: { foreignKeyName: fk_admin_data_change_portal, references: portal(id) } }
+              - column:
+                  { name: model_id, type: uuid }
+              - column:
+                  { name: model_name, type: text }
+              - column:
+                  { name: old_value, type: text }
+              - column:
+                  { name: new_value, type: text }

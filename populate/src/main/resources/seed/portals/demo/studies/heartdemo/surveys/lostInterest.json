@@ -26,7 +26,7 @@
             ]
           },
           {
-            "name": "lost_interest_question",
+            "name": "lookingForwardTo",
             "type": "radiogroup",
             "title": "Is there something you are currently looking forward to?",
             "choices": [

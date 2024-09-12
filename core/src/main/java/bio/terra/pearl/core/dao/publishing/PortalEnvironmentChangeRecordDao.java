@@ -22,6 +22,10 @@ public class PortalEnvironmentChangeRecordDao extends BaseJdbiDao<PortalEnvironm
         deleteByProperty("portal_id", portalId);
     }
 
+    public void deleteByResponsibleAdminUserId(UUID adminUserId) {
+        deleteByProperty("admin_user_id", adminUserId);
+    }
+
     @Override
     protected Class<PortalEnvironmentChangeRecord> getClazz() {
         return PortalEnvironmentChangeRecord.class;
