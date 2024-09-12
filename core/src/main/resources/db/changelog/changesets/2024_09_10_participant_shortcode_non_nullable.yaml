@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "participant_shortcode_non_nullable"
+      author: mbemis
+      changes:
+        - addNotNullConstraint:
+            columnName: shortcode
+            tableName: participant_user

@@ -17,8 +17,8 @@ indicated in VANTA_CONFIG_SECRET.
 
 ## Building and deploying
 ```
-# build the jar file, putting an executable jar file into build/uber-jar
-../gradlew jar
+# build the jar file, putting an executable jar file into build/uber-jar (from repo root)
+./gradlew compliance:jar
 
 # deploy as GCP cloud function
 gcloud --project=[GCP project] functions deploy --gen2 sync-vanta-scope \

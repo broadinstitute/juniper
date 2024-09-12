@@ -189,7 +189,7 @@ public class PopulateExtService {
   public Object populateCommand(
       OperatorAuthContext authContext, String command, Object commandParams) {
     if ("CREATE_PARTICIPANT_SHORTCODES".equals(command)) {
-      return participantUserService.createMissingShortcodes();
+      throw new IllegalArgumentException("that command is no longer supported");
     }
     if ("CONVERT_CONSENTS".equals(command)) {
       throw new IllegalArgumentException("that command is no longer supported");
