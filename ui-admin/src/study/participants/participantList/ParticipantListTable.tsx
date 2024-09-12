@@ -218,39 +218,47 @@ function ParticipantListTable({
         <RowVisibilityCount table={table}/>
       </div>}
       <div className="d-flex">
-        <EllipsisDropdownButton aria-label="Actions" text="Actions" className="ms-auto"/>
-        <div className="dropdown-menu">
-          <ul className="list-unstyled pt-3">
+        <EllipsisDropdownButton variant={'light'} aria-label="Actions" text="Actions" className="ms-auto border my-1"/>
+        <ul className="dropdown-menu">
+          <ul className="list-unstyled">
             <li>
               <Button onClick={() => setShowEmailModal(allowSendEmail)}
-                variant="light" className="bg-white border-0" disabled={!allowSendEmail}
+                variant="light"
+                className={'dropdown-item d-flex align-items-center'}
+                disabled={!allowSendEmail}
                 tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-                <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
+                <FontAwesomeIcon icon={faEnvelope} className="fa-lg me-2"/> Send email
               </Button>
             </li>
+            <div className="dropdown-divider my-1"></div>
             <li>
-              <DownloadControl table={table} buttonClass="bg-white border-0"
+              <DownloadControl table={table} buttonClass={'dropdown-item'}
                 fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
             </li>
-            {(currentEnv.environmentName != 'live') && <li>
-              <Button variant="light" className="bg-white border-0"
+            {(currentEnv.environmentName != 'live') && <><div className="dropdown-divider my-1"></div><li>
+              <Button variant="light" className={'dropdown-item d-flex align-items-center'}
+                tooltip={'Add a synthetic participant to this study environment'}
                 onClick={() => setShowSyntheticModal(!showSyntheticModal)}>
-                <FontAwesomeIcon icon={faPlus}/> Add synthetic participant
+                <FontAwesomeIcon icon={faPlus} className={'fa-lg me-2'}/> Add synthetic participant
               </Button>
-            </li>}
+            </li></>
+            }
           </ul>
-        </div>
+        </ul>
 
 
         <ColumnVisibilityControl table={table}/>
         {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}
-        { showSyntheticModal &&
-          <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
-            onDismiss={() => setShowSyntheticModal(false)}
-            onSubmit={() => { setShowSyntheticModal(false); reload() }}
-          />}
+        {showSyntheticModal &&
+            <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
+              onDismiss={() => setShowSyntheticModal(false)}
+              onSubmit={() => {
+                setShowSyntheticModal(false)
+                reload()
+              }}
+            />}
       </div>
     </div>
     {basicTableLayout(table, { filterable: !disableColumnFiltering, tableClass })}
