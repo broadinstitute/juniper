@@ -13,6 +13,7 @@ import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
     private TransactionTemplate txTemplate;
 
     @Test
+    @Transactional
     public void testPopulateHeartHive() {
         // manually manage the transaction so that we can add a save point midway through for a rollback
         txTemplate.execute(status -> {

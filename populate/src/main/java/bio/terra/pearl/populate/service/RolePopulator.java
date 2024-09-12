@@ -4,11 +4,11 @@ import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.admin.PermissionService;
-import bio.terra.pearl.core.service.admin.RolePermissionService;
 import bio.terra.pearl.core.service.admin.RoleService;
 import bio.terra.pearl.populate.dto.RoleDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -32,6 +32,7 @@ public class RolePopulator extends BasePopulator<Role, RoleDto, FilePopulateCont
     }
 
     @Override
+    @Transactional
     public Role createNew(RoleDto popDto, FilePopulateContext context, boolean overwrite) {
         popDto.getPermissionNames().forEach(permissionName -> {
             Optional<Permission> permission = permissionService.findByName(permissionName);
@@ -45,12 +46,14 @@ public class RolePopulator extends BasePopulator<Role, RoleDto, FilePopulateCont
     }
 
     @Override
+    @Transactional
     public Role overwriteExisting(Role existingObj, RoleDto popDto, FilePopulateContext context) {
         roleService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
         return createNew(popDto, context, true);
     }
 
     @Override
+    @Transactional
     public Role createPreserveExisting(Role existingObj, RoleDto popDto, FilePopulateContext context) {
         popDto.setId(existingObj.getId());
         popDto.getPermissions().clear();
