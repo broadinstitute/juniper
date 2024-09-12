@@ -24,7 +24,7 @@ export const SplitCalculatedValueDesigner = ({ content, onChange }: {
       See <ZendeskLink doc={DocsKey.DERIVED_VALUES}>here</ZendeskLink> for more information.
     </span>
     <div className="container w-100">
-      <div className="d-flex">
+      <div className="py-2">
         {renderNewElementButton(content, onChange, -1)}
       </div>
       {content && content.calculatedValues && content.calculatedValues.map((_, elementIndex) => (
@@ -33,7 +33,7 @@ export const SplitCalculatedValueDesigner = ({ content, onChange }: {
             calculatedValueIndex={elementIndex}
             editedContent={content}
             onChange={onChange}/>
-          <div className="d-flex">
+          <div className="py-2">
             {renderNewElementButton(content, onChange, elementIndex)}
           </div>
         </div>
@@ -46,22 +46,20 @@ const renderNewElementButton = (
   formContent: FormContent,
   onChange: (newContent: FormContent) => void,
   calculatedValueIdx: number) => {
-  return <div className="my-2">
-    <Button variant="secondary"
-      aria-label={`Insert a new derived value`}
-      tooltip={`Insert a new derived value`}
-      disabled={false}
-      onClick={() => {
-        const newContent = { ...formContent }
+  return <Button variant="secondary"
+    aria-label={`Insert a new derived value`}
+    tooltip={`Insert a new derived value`}
+    disabled={false}
+    onClick={() => {
+      const newContent = { ...formContent }
 
-        if (!newContent.calculatedValues) {
-          newContent.calculatedValues = []
-        }
+      if (!newContent.calculatedValues) {
+        newContent.calculatedValues = []
+      }
 
-        newContent.calculatedValues.splice(calculatedValueIdx + 1, 0, new CalculatedValue())
-        onChange(newContent)
-      }}>
-      <FontAwesomeIcon icon={faPlus}/> Insert derived value
-    </Button>
-  </div>
+      newContent.calculatedValues.splice(calculatedValueIdx + 1, 0, new CalculatedValue())
+      onChange(newContent)
+    }}>
+    <FontAwesomeIcon icon={faPlus}/> Insert derived value
+  </Button>
 }
