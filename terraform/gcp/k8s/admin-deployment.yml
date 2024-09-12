@@ -69,6 +69,8 @@ spec:
               value: "broad-ddp-dev"
             - name: DATABASE_NAME
               value: "d2p"
+            - name: DEPLOYMENT_ZONE
+              value: "demo"
 
           resources:
             requests:
