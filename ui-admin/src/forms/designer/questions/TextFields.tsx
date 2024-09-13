@@ -18,7 +18,7 @@ export const TextFields = (props: TextFieldsProps) => {
   return (
     <div className="bg-white rounded-bottom-3 p-2 mb-2 border border-top-0">
       <>
-        <label className="form-label fw-semibold" htmlFor="text-question-input-type">Input type</label>
+        <label className="form-label fw-semibold mb-0" htmlFor="text-question-input-type">Input type</label>
         <select
           className="form-select"
           id="text-question-input-type"
@@ -39,9 +39,10 @@ export const TextFields = (props: TextFieldsProps) => {
         <fieldset>
           <div className="my-3">
             <NumberInput
-              description="Minimum value accepted for this question."
               disabled={disabled}
               label="Minimum"
+              labelClassname="mb-0"
+              infoContent="Minimum value accepted for this question."
               placeholder="Undefined"
               value={question.min}
               onChange={value => {
@@ -53,9 +54,10 @@ export const TextFields = (props: TextFieldsProps) => {
 
           <div>
             <NumberInput
-              description="Maximum value accepted for this question."
               disabled={disabled}
               label="Maximum"
+              labelClassname="mb-0"
+              infoContent="Maximum value accepted for this question."
               placeholder="Undefined"
               value={question.max}
               onChange={value => {

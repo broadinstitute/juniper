@@ -29,8 +29,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
     return null
   }
   return (
-    <div className="bg-white rounded-bottom-3 p-2 mb-2 border border-top-0">
-      <table className="ms-2 table">
+    <div className="bg-white rounded-bottom-3 border border-top-0 mb-2">
+      <table className="table">
         <thead>
           <tr>
             <td className="fw-semibold">text</td>
@@ -94,58 +94,61 @@ export const ChoicesList = (props: ChoicesListProps) => {
                   />
                 </td>
 
-                <td className="d-flex ms-2">
-                  <IconButton
-                    aria-label="Move this choice before the previous one"
-                    disabled={readOnly || i === 0}
-                    icon={faChevronUp}
-                    variant="light"
-                    onClick={() => {
-                      onChange({
-                        ...question,
-                        choices: [
-                          ...question.choices.slice(0, i - 1),
-                          question.choices[i],
-                          question.choices[i - 1],
-                          ...question.choices.slice(i + 1)
-                        ]
-                      })
-                    }}
-                  />
+                <td>
+                  <div className="d-flex">
+                    <IconButton
+                      aria-label="Move this choice before the previous one"
+                      disabled={readOnly || i === 0}
+                      icon={faChevronUp}
+                      variant="light"
+                      onClick={() => {
+                        onChange({
+                          ...question,
+                          choices: [
+                            ...question.choices.slice(0, i - 1),
+                            question.choices[i],
+                            question.choices[i - 1],
+                            ...question.choices.slice(i + 1)
+                          ]
+                        })
+                      }}
+                    />
 
-                  <IconButton
-                    aria-label="Move this choice after the next one"
-                    disabled={readOnly || i === question.choices.length - 1}
-                    icon={faChevronDown}
-                    variant="light"
-                    onClick={() => {
-                      onChange({
-                        ...question,
-                        choices: [
-                          ...question.choices.slice(0, i),
-                          question.choices[i + 1],
-                          question.choices[i],
-                          ...question.choices.slice(i + 2)
-                        ]
-                      })
-                    }}
-                  />
-                  <IconButton
-                    aria-label="Delete this choice"
-                    disabled={readOnly}
-                    icon={faTimes}
-                    className="ms-2"
-                    variant="light"
-                    onClick={() => {
-                      onChange({
-                        ...question,
-                        choices: [
-                          ...question.choices.slice(0, i),
-                          ...question.choices.slice(i + 1)
-                        ]
-                      })
-                    }}
-                  />
+                    <IconButton
+                      aria-label="Move this choice after the next one"
+                      disabled={readOnly || i === question.choices.length - 1}
+                      icon={faChevronDown}
+                      className="ms-1"
+                      variant="light"
+                      onClick={() => {
+                        onChange({
+                          ...question,
+                          choices: [
+                            ...question.choices.slice(0, i),
+                            question.choices[i + 1],
+                            question.choices[i],
+                            ...question.choices.slice(i + 2)
+                          ]
+                        })
+                      }}
+                    />
+                    <IconButton
+                      aria-label="Delete this choice"
+                      disabled={readOnly}
+                      icon={faTimes}
+                      className="ms-1"
+                      variant="light"
+                      onClick={() => {
+                        onChange({
+                          ...question,
+                          choices: [
+                            ...question.choices.slice(0, i),
+                            ...question.choices.slice(i + 1)
+                          ]
+                        })
+                      }}
+                    />
+                  </div>
                 </td>
               </tr>
             )
@@ -167,18 +170,22 @@ export const ChoicesList = (props: ChoicesListProps) => {
       >
         <FontAwesomeIcon icon={faPlus}/> Add a choice
       </Button>
-      <OtherOptionFields
-        disabled={readOnly}
-        question={question}
-        onChange={onChange}
-      />
+      <div className="px-2">
+        <OtherOptionFields
+          disabled={readOnly}
+          question={question}
+          onChange={onChange}
+        />
+      </div>
       {
         question.type === 'checkbox' && (
-          <CheckboxFields
-            disabled={readOnly}
-            question={question}
-            onChange={onChange}
-          />
+          <div className="px-2">
+            <CheckboxFields
+              disabled={readOnly}
+              question={question}
+              onChange={onChange}
+            />
+          </div>
         )
       }
     </div>

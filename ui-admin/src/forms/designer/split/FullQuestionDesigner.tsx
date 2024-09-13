@@ -192,21 +192,23 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
           title={<><FontAwesomeIcon icon={faGear}/> Advanced</>}
         >
           <div className='bg-white rounded-left-3 rounded-bottom-3 p-2 mb-2 border border-top-0'>
-            <Textarea
-              infoContent="Optional additional context for the question.
-           Will be displayed in a smaller font beneath the main question text"
-              disabled={readOnly}
-              label="Description"
-              labelClassname={'mb-0'}
-              rows={2}
-              value={i18nSurveyText(question.description)}
-              onChange={value => {
-                onChange({
-                  ...question,
-                  description: value
-                })
-              }}
-            />
+            <div className="m-2">
+              <Textarea
+                infoContent="Optional additional context for the question.
+                Will be displayed in a smaller font beneath the main question text"
+                disabled={readOnly}
+                label="Description"
+                labelClassname={'mb-0'}
+                rows={2}
+                value={i18nSurveyText(question.description)}
+                onChange={value => {
+                  onChange({
+                    ...question,
+                    description: value
+                  })
+                }}
+              />
+            </div>
           </div>
         </Tab>
       </Tabs>

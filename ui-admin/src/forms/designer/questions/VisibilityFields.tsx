@@ -38,7 +38,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
 
   return (
     <div className="bg-white rounded-left-3 rounded-bottom-3 p-2 mb-2 border border-top-0">
-      <div className="my-2">
+      <div className="m-2">
         <Checkbox
           checked={hasVisibleIfExpression}
           disabled={disabled}
@@ -57,7 +57,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
       </div>
 
       {hasVisibleIfExpression && (
-        <div className="mb-3">
+        <div className="m-2">
           <TextInput
             infoContent={infoPopupContent}
             // eslint-disable-next-line max-len
