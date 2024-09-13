@@ -22,6 +22,14 @@ resource "google_project_iam_binding" "access-postgres" {
   ]
 }
 
+resource "google_project_iam_binding" "access-artifact-registry" {
+  project = var.project
+  role    = "roles/artifactregistry.reader"
+  members = [
+    "serviceAccount:${google_service_account.d2p-db-gsa.email}"
+  ]
+}
+
 resource "google_project_iam_binding" "access-secrets" {
   project = var.project
   role    = "roles/secretmanager.secretAccessor"
@@ -29,6 +37,7 @@ resource "google_project_iam_binding" "access-secrets" {
     "serviceAccount:${google_service_account.d2p-db-gsa.email}"
   ]
 }
+
 
 
 # Create KSA + workload identity to link it to GSA with DB access

@@ -27,7 +27,7 @@ resource "google_compute_network" "juniper_compute_network" {
 }
 
 resource "google_container_cluster" "juniper_cluster" {
-  name = data.google_container_cluster.juniper_cluster.name
+  name = "juniper-cluster"
 
   location                 = var.region
   enable_autopilot         = true
@@ -45,4 +45,15 @@ resource "google_container_cluster" "juniper_cluster" {
   # Set `deletion_protection` to `true` will ensure that one cannot
   # accidentally delete this instance by use of Terraform.
   deletion_protection = false
+}
+
+data "google_compute_default_service_account" "default" {
+}
+
+resource "google_project_iam_binding" "cluster-access-artifact-registry" {
+  project = var.project
+  role    = "roles/artifactregistry.reader"
+  members = [
+    "serviceAccount:${data.google_compute_default_service_account.default.email}"
+  ]
 }

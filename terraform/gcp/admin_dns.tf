@@ -1,3 +1,7 @@
+resource "google_compute_address" "admin_ip_address" {
+  name = "juniper-admin-ip"
+}
+
 # resource "google_dns_managed_zone" "juniper_admin_dns_zone" {
 #   description = "<url>.org zone"
 #   dns_name    = "<url>.org."
