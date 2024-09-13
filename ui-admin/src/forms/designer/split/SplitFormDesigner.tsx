@@ -5,11 +5,12 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCaretLeft, faCaretRight, faCaretUp, faListUl, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { baseQuestions } from '../questions/questionTypes'
 import { SplitFormTableOfContents } from './SplitFormTableOfContents'
 import { PageControls } from './navigation/PageControls'
+import classNames from 'classnames'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -19,26 +20,35 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
   const [currentPageNo, setCurrentPageNo] = useState(0)
+  const [showTableOfContents, setShowTableOfContents] = useState(true)
 
   return <div className="container-fluid">
     <div className="row w-100">
-      <div className="col-3 border-end" style={{ overflowY: 'scroll' }}>
-        <SplitFormTableOfContents
+      <div className={classNames('border-end', showTableOfContents ? 'col-3' : 'd-none')}
+        style={{ overflowY: 'scroll' }}>
+        { showTableOfContents && <SplitFormTableOfContents
           formContent={content}
           selectedElementPath={'selectedElementPath'}
           onSelectElement={() => {}}
-        />
+        />}
       </div>
-      <div className="col-9">
+      <div className={classNames('col', showTableOfContents ? 'col-9' : 'col-12')}>
         <div className="d-flex justify-content-between">
-          <AddElementControls
-            formContent={content} onChange={onChange}
-            elementIndex={-1} pageIndex={0}/>
+          <Button variant="light" className="border m-1"
+            onClick={() => setShowTableOfContents(!showTableOfContents)}
+            tooltip={showTableOfContents ? 'Hide table of contents' : 'Show table of contents'}>
+            {showTableOfContents && <FontAwesomeIcon icon={faCaretLeft}/>}
+            <FontAwesomeIcon icon={faListUl}/>
+            {!showTableOfContents && <FontAwesomeIcon icon={faCaretRight}/>}
+          </Button>
           <PageControls
             currentPageNo={currentPageNo}
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
         </div>
+        <AddElementControls
+          formContent={content} onChange={onChange}
+          elementIndex={-1} pageIndex={0}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
             content.pages[currentPageNo].elements.map((element, elementIndex) => (
               <div key={elementIndex} className="container">
