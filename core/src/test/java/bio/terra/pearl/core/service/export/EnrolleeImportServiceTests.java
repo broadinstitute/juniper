@@ -16,13 +16,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-<<<<<<< Updated upstream
 import bio.terra.pearl.core.model.survey.*;
-=======
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
->>>>>>> Stashed changes
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -86,11 +80,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private ImportItemService importItemService;
     @Autowired
-<<<<<<< Updated upstream
     private EnrolleeFactory enrolleeFactory;
-=======
+    @Autowired
     private SurveyResponseService surveyResponseService;
->>>>>>> Stashed changes
+
+
     @Autowired
     KitRequestService kitRequestService;
 
