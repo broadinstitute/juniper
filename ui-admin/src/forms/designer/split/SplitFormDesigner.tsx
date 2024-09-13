@@ -2,12 +2,14 @@ import {
   FormContent,
   PortalEnvironmentLanguage
 } from '@juniper/ui-core'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight, faArrowUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCaretUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { baseQuestions } from '../questions/questionTypes'
+import { SplitFormTableOfContents } from './SplitFormTableOfContents'
+import { PageControls } from './navigation/PageControls'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -17,57 +19,57 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
   const [currentPageNo, setCurrentPageNo] = useState(0)
-  const [currentPage, setCurrentPage] = useState(content.pages[currentPageNo])
+  // const [currentPageNo2, setCurrentPageNo2] = useState(0)
+  const [currentPage, setCurrentPage] = useState(content.pages[0])
 
-  const handlePageChange = (direction: 'next' | 'previous') => {
-    if (direction === 'next') {
-      setCurrentPageNo(currentPageNo + 1)
-      setCurrentPage(content.pages[currentPageNo + 1])
-    } else {
-      setCurrentPageNo(currentPageNo - 1)
-      setCurrentPage(content.pages[currentPageNo - 1])
-    }
-    handleScrollToTop()
-  }
+  useEffect(() => {
+    setCurrentPage(content.pages[currentPageNo])
+  }, [currentPageNo])
 
-  const handleScrollToTop = () => {
-    window.scrollTo(0, 0)
-  }
+  console.log(currentPageNo)
 
-  return <div className="mt-3 container w-100">
-    <div className="d-flex">
-      {renderNewElementButton(content, onChange, -1, currentPageNo, 'question')}
-      {renderNewElementButton(content, onChange, -1, currentPageNo, 'panel')}
-    </div>
-    <>
-      {currentPage && currentPage.elements && currentPage.elements.map((element, elementIndex) => (
-        <div key={elementIndex} className="container">
-          <SplitFormElementDesigner currentPageNo={currentPageNo}
-            elementIndex={elementIndex} editedContent={content}
-            element={content.pages[currentPageNo].elements[elementIndex]}
-            currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
-            onChange={onChange}/>
-          <div className="d-flex">
-            {renderNewElementButton(content, onChange, elementIndex, currentPageNo, 'question')}
-            {renderNewElementButton(content, onChange, elementIndex, currentPageNo, 'panel')}
-          </div>
+  return <div className="container-fluid">
+    <div className="row w-100">
+      <div className="col-3 border-end" style={{ overflowY: 'scroll' }}>
+        <SplitFormTableOfContents
+          formContent={content}
+          selectedElementPath={'selectedElementPath'}
+          onSelectElement={() => {}}
+        />
+      </div>
+      <div className="col-9">
+        <div className="d-flex justify-content-between">
+          <AddElementControls
+            formContent={content} onChange={onChange}
+            elementIndex={-1} pageIndex={0}/>
+          <PageControls
+            currentPageNo={currentPageNo}
+            content={content}
+            setCurrentPageNo={setCurrentPageNo}/>
         </div>
-      ))}
-    </>
-    <div className="d-flex justify-content-between mt-3 mb-5">
-      <Button variant="light" className="border m-1"
-        disabled={currentPageNo === 0}
-        onClick={() => handlePageChange('previous')}>
-        <FontAwesomeIcon icon={faArrowLeft}/> Previous page
-      </Button>
-      <Button className="border m-1" variant="light" onClick={() => handleScrollToTop()}>
-        <FontAwesomeIcon icon={faArrowUp}/> Scroll to top
-      </Button>
-      <Button variant="light" className="border m-1"
-        disabled={currentPageNo === content.pages.length - 1}
-        onClick={() => handlePageChange('next')}>
-        Next page <FontAwesomeIcon icon={faArrowRight}/>
-      </Button>
+        {currentPage && currentPage.elements && currentPage.elements.map((element, elementIndex) => (
+          <div key={elementIndex} className="container">
+            <SplitFormElementDesigner currentPageNo={currentPageNo}
+              elementIndex={elementIndex} editedContent={content}
+              element={content.pages[currentPageNo].elements[elementIndex]}
+              currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
+              onChange={onChange}/>
+            <AddElementControls
+              formContent={content} onChange={onChange}
+              elementIndex={elementIndex} pageIndex={currentPageNo}/>
+          </div>
+        ))}
+        <div className="d-flex justify-content-between mb-3">
+          <Button variant="light" className="border m-1"
+            onClick={() => window.scrollTo(0, 0)}>
+            <FontAwesomeIcon icon={faCaretUp}/> Scroll to top
+          </Button>
+          <PageControls
+            currentPageNo={currentPageNo}
+            content={content}
+            setCurrentPageNo={setCurrentPageNo}/>
+        </div>
+      </div>
     </div>
   </div>
 }
@@ -92,5 +94,14 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
       }}>
       <FontAwesomeIcon icon={faPlus}/> Insert {elementType}
     </Button>
+  </div>
+}
+
+const AddElementControls = ({ formContent, onChange, elementIndex, pageIndex }: {
+    formContent: FormContent, onChange: (newContent: FormContent) => void, elementIndex: number, pageIndex: number
+    }) => {
+  return <div className="d-flex">
+    {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
+    {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
   </div>
 }
