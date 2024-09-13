@@ -49,7 +49,7 @@ export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageC
         onClick={() => handlePageChange('previous')}>
         <FontAwesomeIcon icon={faCaretLeft}/>
       </Button>
-      <span>Page {currentPageNo + 1} of {numPages}</span>
+      <span className={'px-1'}>Page {currentPageNo + 1} of {numPages}</span>
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === content.pages.length - 1}
         onClick={() => handlePageChange('next')}>

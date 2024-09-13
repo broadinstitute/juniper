@@ -57,14 +57,14 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
           />
         </div>
         <IconButton
-          className="mb-2"
+          className="mb-2 border mx-1"
           icon={isStableIdLocked ? faLock : faUnlock}
           aria-label={isStableIdLocked ? 'Edit stable ID' : 'Lock stable ID'}
           onClick={() => setIsStableIdLocked(!isStableIdLocked)}
         />
         { (!isTemplated && question.type !== 'html') &&
             <IconButton
-              className={classNames('mb-2', question.isRequired ? 'text-danger' : 'text-muted')}
+              className={classNames('mb-2', 'border', question.isRequired ? 'text-danger' : 'text-muted')}
               icon={faAsterisk}
               aria-label={'Toggle required'}
               onClick={() => {

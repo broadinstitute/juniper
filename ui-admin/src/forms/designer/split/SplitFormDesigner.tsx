@@ -67,8 +67,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   </div>
 }
 
+type ElementType = 'question' | 'panel'
+
 const renderNewElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
-  elementIndex: number, pageIndex: number, elementType: 'question' | 'panel') => {
+  elementIndex: number, pageIndex: number, elementType: ElementType) => {
   return <div className="my-2">
     <Button variant="secondary"
       aria-label={`Insert a new ${elementType}`}
@@ -91,10 +93,12 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
 }
 
 const AddElementControls = ({ formContent, onChange, elementIndex, pageIndex }: {
-    formContent: FormContent, onChange: (newContent: FormContent) => void, elementIndex: number, pageIndex: number
-    }) => {
-  return <div className="d-flex">
-    {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
-    {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
-  </div>
+  formContent: FormContent, onChange: (newContent: FormContent) => void, elementIndex: number, pageIndex: number
+}) => {
+  return (
+    <div className="d-flex">
+      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
+      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
+    </div>
+  )
 }
