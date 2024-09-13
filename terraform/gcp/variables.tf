@@ -4,12 +4,6 @@ variable "project" {
   description = "GCP project"
 }
 
-variable "cluster" {
-  type = string
-  default = "juniper"
-  description = "GKE cluster name"
-}
-
 variable "region" {
   type = string
   default = "us-central1"
@@ -20,4 +14,10 @@ variable "db_tier" {
   type = string
   default = "db-f1-micro"
   description = "Database tier"
+}
+
+variable "dns_ttl" {
+  type = number
+  default = 300
+  description = "DNS TTL"
 }

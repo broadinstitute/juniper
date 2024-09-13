@@ -21,7 +21,7 @@ provider "google" {
 data "google_client_config" "provider" {}
 
 data "google_container_cluster" "juniper_cluster" {
-  name     = var.cluster
+  name     = "juniper-cluster"
   location = var.region
 }
 

@@ -27,7 +27,7 @@ resource "google_compute_network" "juniper_compute_network" {
 }
 
 resource "google_container_cluster" "juniper_cluster" {
-  name = "juniper-cluster"
+  name = data.google_container_cluster.juniper_cluster.name
 
   location                 = var.region
   enable_autopilot         = true
