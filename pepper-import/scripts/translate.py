@@ -1,12 +1,12 @@
 import argparse
 import csv
+import json
 import os.path
 import re
 from copy import copy
 from datetime import datetime
-from typing import Any, Union
-
 from openpyxl import load_workbook
+from typing import Any, Union
 
 
 # todo s:
@@ -533,11 +533,9 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
     dsm_question = translation.dsm_question_definition
 
     if juniper_question.question_type == 'paneldynamic':
-        # todo: make sure this is right; does it need to be parsed as a string?
-        juniper_data[juniper_question.stable_id] = get_dynamic_panel_values(translation, dsm_data)
+        juniper_data[juniper_question.stable_id] = json.dumps(get_dynamic_panel_values(translation, dsm_data))
     elif dsm_question.question_type.lower() == 'multiselect':
-        # todo: make sure this is correct, possibly convert to string?
-        juniper_data[juniper_question.stable_id] = get_multi_panel_values(translation, dsm_data)
+        juniper_data[juniper_question.stable_id] = json.dumps(get_multi_panel_values(translation, dsm_data))
     else:
         simple_translate(
             translation, dsm_data, juniper_data
