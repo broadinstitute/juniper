@@ -47,8 +47,8 @@ export const SplitFormElementDesigner = memo(({
   const elementType = element.type === 'panel' ? 'panel' : 'question'
 
   return <div key={elementIndex} className="row">
-    <div className="col-md-6 p-3 rounded-start-3"
-      style={{ backgroundColor: '#f3f3f3', borderRight: '1px solid #fff' }}>
+    <div className="col-md-6 p-3 rounded-start-3 border border-end-0"
+      style={{  }}>
       <div className="d-flex justify-content-between">
         <span className="h5">Edit {elementType}</span>
         <div className="d-flex justify-content-end">
@@ -88,7 +88,7 @@ export const SplitFormElementDesigner = memo(({
         />
       }
     </div>
-    <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
+    <div className="col-md-6 p-3 rounded-end-3 border survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
       <SurveyComponent model={surveyModel} readOnly={false}/>
     </div>

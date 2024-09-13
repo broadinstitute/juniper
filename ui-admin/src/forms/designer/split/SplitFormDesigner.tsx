@@ -5,7 +5,7 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretLeft, faCaretRight, faCaretUp, faListUl, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCaretUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { baseQuestions } from '../questions/questionTypes'
 import { SplitFormTableOfContents } from './SplitFormTableOfContents'
@@ -37,10 +37,18 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
           <Button variant="light" className="border m-1"
             onClick={() => setShowTableOfContents(!showTableOfContents)}
             tooltip={showTableOfContents ? 'Hide table of contents' : 'Show table of contents'}>
-            {showTableOfContents && <FontAwesomeIcon icon={faCaretLeft}/>}
-            <FontAwesomeIcon icon={faListUl}/>
-            {!showTableOfContents && <FontAwesomeIcon icon={faCaretRight}/>}
+            <FontAwesomeIcon icon={faArrowRightFromBracket}
+              className={classNames(showTableOfContents ? 'fa-rotate-180' : '')}/>
           </Button>
+          {/*<Button variant="light" className="border m-1"*/}
+          {/*  onClick={() => {*/}
+          {/*    const newContent = { ...content }*/}
+          {/*    newContent.pages.splice(currentPageNo + 1, 0, { elements: [] })*/}
+          {/*    onChange(newContent)*/}
+          {/*    setCurrentPageNo(currentPageNo + 1)*/}
+          {/*  }}>*/}
+          {/*  <FontAwesomeIcon icon={faPlus}/> Insert page*/}
+          {/*</Button>*/}
           <PageControls
             currentPageNo={currentPageNo}
             content={content}
@@ -62,6 +70,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
                   elementIndex={elementIndex} pageIndex={currentPageNo}/>
               </div>
             ))}
+        {content.pages[currentPageNo].elements.length === 0 &&
+          <div className="alert alert-secondary">
+            This page is empty. Insert a new question or panel to get started.
+          </div>}
         <div className="d-flex justify-content-between mb-3">
           <Button variant="light" className="border m-1"
             onClick={() => window.scrollTo(0, 0)}>

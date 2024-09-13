@@ -64,7 +64,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
         />
       </div>}
 
-      <div className="bg-white rounded-3 px-2 py-1 mb-1">
+      <div className="bg-white rounded-3 p-2 mb-2">
         <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
           sectionLabel={'Additional options'}/>
         <div className="mb-3 collapse hide" id={additionalFieldsTargetId}>

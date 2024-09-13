@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { HtmlQuestion, PortalEnvironmentLanguage, Question, QuestionType } from '@juniper/ui-core'
 
@@ -10,7 +10,7 @@ import { TextFields } from '../questions/TextFields'
 import { VisibilityFields } from '../questions/VisibilityFields'
 import { TextInput } from 'components/forms/TextInput'
 import { IconButton } from 'components/forms/Button'
-import { faAsterisk, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
 import QuestionTypeSelector from './QuestionTypeSelector'
 import classNames from 'classnames'
 import { baseQuestions } from '../questions/questionTypes'
@@ -35,7 +35,6 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
   } = props
 
   const isTemplated = 'questionTemplateName' in question
-  const [isStableIdLocked, setIsStableIdLocked] = useState(true)
 
   return (
     <div>
@@ -47,7 +46,6 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
             className={'mb-2'}
             required={true}
             value={question.name}
-            disabled={isStableIdLocked}
             onChange={name => {
               onChange({
                 ...question,
@@ -56,15 +54,9 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
             }}
           />
         </div>
-        <IconButton
-          className="mb-2 border mx-1"
-          icon={isStableIdLocked ? faLock : faUnlock}
-          aria-label={isStableIdLocked ? 'Edit stable ID' : 'Lock stable ID'}
-          onClick={() => setIsStableIdLocked(!isStableIdLocked)}
-        />
         { (!isTemplated && question.type !== 'html') &&
             <IconButton
-              className={classNames('mb-2', 'border', question.isRequired ? 'text-danger' : 'text-muted')}
+              className={classNames('mb-2', 'ms-1', 'border', question.isRequired ? 'text-danger' : 'text-muted')}
               icon={faAsterisk}
               aria-label={'Toggle required'}
               onClick={() => {
