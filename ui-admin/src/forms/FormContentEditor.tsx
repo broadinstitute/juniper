@@ -94,7 +94,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         <Tab
           disabled={activeTab !== 'split' && !tabsEnabled}
           eventKey="split"
-          title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+          title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
         >
           <ErrorBoundary>
             <SplitFormDesigner

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { HtmlQuestion, PortalEnvironmentLanguage, Question, QuestionType } from '@juniper/ui-core'
 
@@ -6,14 +6,16 @@ import { Textarea } from 'components/forms/Textarea'
 import { i18nSurveyText } from 'util/juniperSurveyUtils'
 import { BaseFields } from '../questions/BaseFields'
 import { ChoicesList } from '../questions/ChoicesList'
-import { TextFields } from '../questions/TextFields'
 import { VisibilityFields } from '../questions/VisibilityFields'
 import { TextInput } from 'components/forms/TextInput'
 import { IconButton } from 'components/forms/Button'
-import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk, faEye, faGear, faList, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import QuestionTypeSelector from './QuestionTypeSelector'
 import classNames from 'classnames'
 import { baseQuestions } from '../questions/questionTypes'
+import { Tab, Tabs } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { TextFields } from '../questions/TextFields'
 
 export type QuestionDesignerProps = {
     question: Question
@@ -33,7 +35,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
     question, isNewQuestion, readOnly,
     onChange, currentLanguage, supportedLanguages
   } = props
-
+  const [activeTab, setActiveTab] = useState<string | null>('visibility')
   const isTemplated = 'questionTemplateName' in question
 
   return (
@@ -92,6 +94,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
 
       <BaseFields
         showIsRequired={false}
+        hideDescription={true}
         disabled={readOnly}
         currentLanguage={currentLanguage}
         supportedLanguages={supportedLanguages}
@@ -101,28 +104,28 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
 
       {!isTemplated && (
         <>
+          {/*{*/}
+          {/*  (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (*/}
+          {/*    <>*/}
+          {/*      <ChoicesList*/}
+          {/*        question={question}*/}
+          {/*        isNewQuestion={isNewQuestion}*/}
+          {/*        currentLanguage={currentLanguage}*/}
+          {/*        supportedLanguages={supportedLanguages}*/}
+          {/*        readOnly={readOnly}*/}
+          {/*        onChange={onChange}*/}
+          {/*      />*/}
+          {/*    </>*/}
+          {/*  )*/}
+          {/*}*/}
           {
-            (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (
-              <>
-                <ChoicesList
-                  question={question}
-                  isNewQuestion={isNewQuestion}
-                  currentLanguage={currentLanguage}
-                  supportedLanguages={supportedLanguages}
-                  readOnly={readOnly}
-                  onChange={onChange}
-                />
-              </>
-            )
-          }
-          {
-            question.type === 'text' && (
-              <TextFields
-                disabled={readOnly}
-                question={question}
-                onChange={onChange}
-              />
-            )
+            // question.type === 'text' && (
+            //   <TextFields
+            //     disabled={readOnly}
+            //     question={question}
+            //     onChange={onChange}
+            //   />
+            // )
           }
           {
             question.type === 'html' &&
@@ -144,11 +147,71 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
         </>
       )}
 
-      <VisibilityFields
-        disabled={readOnly}
-        question={question}
-        onChange={onChange}
-      />
+      <Tabs
+        activeKey={activeTab ?? undefined}
+        mountOnEnter
+        unmountOnExit
+        onSelect={setActiveTab}
+      >
+        <Tab
+          eventKey="visibility"
+          title={<><FontAwesomeIcon icon={faEye}/> Visibility</>}
+        >
+          <VisibilityFields
+            disabled={readOnly}
+            question={question}
+            onChange={onChange}
+          />
+        </Tab>
+        { (!isTemplated && question.type === 'text') && <Tab
+          eventKey="input"
+          title={<><FontAwesomeIcon icon={faPenToSquare}/> Input</>}
+        >
+          <TextFields
+            disabled={readOnly}
+            question={question}
+            onChange={onChange}
+          />
+        </Tab> }
+        { (!isTemplated &&
+            (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup')) && <Tab
+          eventKey="choices"
+          title={<><FontAwesomeIcon icon={faList}/> Choices ({question.choices.length})</>}
+        >
+          <ChoicesList
+            question={question}
+            isNewQuestion={isNewQuestion}
+            currentLanguage={currentLanguage}
+            supportedLanguages={supportedLanguages}
+            readOnly={readOnly}
+            onChange={onChange}
+          />
+        </Tab> }
+        <Tab
+          eventKey="advanced"
+          title={<><FontAwesomeIcon icon={faGear}/> Advanced</>}
+        >
+          <div className='bg-white rounded-left-3 rounded-bottom-3 p-2 mb-2 border border-top-0'>
+            <Textarea
+              infoContent="Optional additional context for the question.
+           Will be displayed in a smaller font beneath the main question text"
+              disabled={readOnly}
+              label="Description"
+              labelClassname={'mb-0'}
+              rows={2}
+              value={i18nSurveyText(question.description)}
+              onChange={value => {
+                onChange({
+                  ...question,
+                  description: value
+                })
+              }}
+            />
+          </div>
+        </Tab>
+      </Tabs>
+
+
     </div>
   )
 }

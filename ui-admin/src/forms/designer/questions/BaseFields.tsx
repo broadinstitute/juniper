@@ -1,14 +1,14 @@
-import React, { useId } from 'react'
+import React from 'react'
 
 import { HtmlQuestion, InteractiveQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
 import { i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
-import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
 
 type BaseFieldsProps = {
-    showIsRequired?: boolean
+  showIsRequired?: boolean
+  hideDescription?: boolean
   disabled: boolean
   question: Question
   currentLanguage: PortalEnvironmentLanguage
@@ -18,12 +18,11 @@ type BaseFieldsProps = {
 
 /** Controls for editing base question fields. */
 export const BaseFields = (props: BaseFieldsProps) => {
-  const { showIsRequired = true, disabled, question, onChange } = props
+  const { showIsRequired = true, hideDescription = false, disabled, question, onChange } = props
   if ((question as HtmlQuestion).type === 'html') {
     return null
   }
   const regularQuestion = question as InteractiveQuestion
-  const additionalFieldsTargetId = useId()
 
   return (
     <>
@@ -65,26 +64,22 @@ export const BaseFields = (props: BaseFieldsProps) => {
         />
       </div>}
 
-      <div className="bg-white rounded-3 p-2 mb-2 border">
-        <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
-          sectionLabel={'Additional options'}/>
-        <div className="mb-3 collapse hide" id={additionalFieldsTargetId}>
-          <Textarea
-            infoContent="Optional additional context for the question.
+      { !hideDescription && <div className="bg-white rounded-3 p-2 mb-2 border">
+        <Textarea
+          infoContent="Optional additional context for the question.
            Will be displayed in a smaller font beneath the main question text"
-            disabled={disabled}
-            label="Description"
-            rows={2}
-            value={i18nSurveyText(regularQuestion.description)}
-            onChange={value => {
-              onChange({
-                ...regularQuestion,
-                description: value
-              })
-            }}
-          />
-        </div>
-      </div>
+          disabled={disabled}
+          label="Description"
+          rows={2}
+          value={i18nSurveyText(regularQuestion.description)}
+          onChange={value => {
+            onChange({
+              ...regularQuestion,
+              description: value
+            })
+          }}
+        />
+      </div> }
     </>
   )
 }
