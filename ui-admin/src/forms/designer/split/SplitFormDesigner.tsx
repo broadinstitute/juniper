@@ -5,12 +5,12 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket, faCaretUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
-import { baseQuestions } from '../questions/questionTypes'
 import { SplitFormTableOfContents } from './SplitFormTableOfContents'
-import { PageControls } from './navigation/PageControls'
+import { PageControls } from './controls/PageControls'
 import classNames from 'classnames'
+import { NewElementControls } from './controls/NewElementControls'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -54,7 +54,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
         </div>
-        <AddElementControls
+        <NewElementControls
           formContent={content} onChange={onChange}
           elementIndex={-1} pageIndex={0}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
@@ -65,7 +65,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
                   element={content.pages[currentPageNo].elements[elementIndex]}
                   currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
                   onChange={onChange}/>
-                <AddElementControls
+                <NewElementControls
                   formContent={content} onChange={onChange}
                   elementIndex={elementIndex} pageIndex={currentPageNo}/>
               </div>
@@ -87,41 +87,4 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
       </div>
     </div>
   </div>
-}
-
-type ElementType = 'question' | 'panel'
-
-const renderNewElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
-  elementIndex: number, pageIndex: number, elementType: ElementType) => {
-  return <div className="my-2">
-    <Button variant="light"
-      className={'border m-1'}
-      aria-label={`Insert a new ${elementType}`}
-      tooltip={`Insert a new ${elementType}`}
-      disabled={false}
-      onClick={() => {
-        const newContent = { ...formContent }
-        newContent.pages[pageIndex].elements.splice(elementIndex + 1, 0, (elementType == 'panel') ? {
-          title: '',
-          type: 'panel',
-          elements: []
-        } :
-          baseQuestions['text']
-        )
-        onChange(newContent)
-      }}>
-      <FontAwesomeIcon icon={faPlus}/> Insert {elementType}
-    </Button>
-  </div>
-}
-
-const AddElementControls = ({ formContent, onChange, elementIndex, pageIndex }: {
-  formContent: FormContent, onChange: (newContent: FormContent) => void, elementIndex: number, pageIndex: number
-}) => {
-  return (
-    <div className="d-flex">
-      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
-      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
-    </div>
-  )
 }

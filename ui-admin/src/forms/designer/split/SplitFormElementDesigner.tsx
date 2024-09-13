@@ -43,18 +43,12 @@ export const SplitFormElementDesigner = memo(({
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
 
-  // @ts-ignore
-  const elementType = element.type === 'panel' ? 'panel' : 'question'
-
   return <div key={elementIndex} className="row">
-    <div className="col-md-6 p-3 rounded-start-3 border border-end-0"
-      style={{  }}>
-      <div className="d-flex justify-content-between">
-        <span className="h5">Edit {elementType}</span>
-        <div className="d-flex justify-content-end">
+    <div className="col-md-6 px-3 rounded-start-3 border border-end-0">
+      <div className="d-flex justify-content-end">
+        <div className="d-flex border rounded-3 rounded-top-0 border-top-0 bg-light">
           <IconButton icon={faCode}
             aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
-            className="ms-2"
             onClick={() => setShowJsonEditor(!showJsonEditor)}
           />
           <ListElementController
