@@ -2,7 +2,7 @@ import {
   FormContent,
   PortalEnvironmentLanguage
 } from '@juniper/ui-core'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretUp, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -19,14 +19,6 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
   const [currentPageNo, setCurrentPageNo] = useState(0)
-  // const [currentPageNo2, setCurrentPageNo2] = useState(0)
-  const [currentPage, setCurrentPage] = useState(content.pages[0])
-
-  useEffect(() => {
-    setCurrentPage(content.pages[currentPageNo])
-  }, [currentPageNo])
-
-  console.log(currentPageNo)
 
   return <div className="container-fluid">
     <div className="row w-100">
@@ -47,18 +39,19 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
         </div>
-        {currentPage && currentPage.elements && currentPage.elements.map((element, elementIndex) => (
-          <div key={elementIndex} className="container">
-            <SplitFormElementDesigner currentPageNo={currentPageNo}
-              elementIndex={elementIndex} editedContent={content}
-              element={content.pages[currentPageNo].elements[elementIndex]}
-              currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
-              onChange={onChange}/>
-            <AddElementControls
-              formContent={content} onChange={onChange}
-              elementIndex={elementIndex} pageIndex={currentPageNo}/>
-          </div>
-        ))}
+        {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
+            content.pages[currentPageNo].elements.map((element, elementIndex) => (
+              <div key={elementIndex} className="container">
+                <SplitFormElementDesigner currentPageNo={currentPageNo}
+                  elementIndex={elementIndex} editedContent={content}
+                  element={content.pages[currentPageNo].elements[elementIndex]}
+                  currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
+                  onChange={onChange}/>
+                <AddElementControls
+                  formContent={content} onChange={onChange}
+                  elementIndex={elementIndex} pageIndex={currentPageNo}/>
+              </div>
+            ))}
         <div className="d-flex justify-content-between mb-3">
           <Button variant="light" className="border m-1"
             onClick={() => window.scrollTo(0, 0)}>
