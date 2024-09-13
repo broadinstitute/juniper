@@ -7,6 +7,7 @@ import bio.terra.pearl.compliance.model.GithubAccount;
 import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
+import bio.terra.pearl.compliance.model.PubsubPayload;
 import bio.terra.pearl.compliance.model.SlackUser;
 import bio.terra.pearl.compliance.model.UpdateVantaMetadata;
 import bio.terra.pearl.compliance.model.UserSyncConfig;
@@ -24,7 +25,6 @@ import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import io.cloudevents.CloudEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,6 +63,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public static final String SLACK_INTEGRATION_ID = "slack";
     public static final String GITHUB_INTEGRATION_ID = "github";
     public static final String JAMF_INTEGRATION_ID = "jamf";
+
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
 
@@ -72,20 +74,55 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private final Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
+    // ever growing list of pubsub ids we've already seen.  this probably
+    // won't blow out memory for years.  we're keeping track of these
+    // to avoid pubsub retries since this script takes longer to run
+    // than the max pubsub timeout.
+    public static final Set<String> pubsubIdsProcessed = new HashSet<>();
+
     private final SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
 
+    /**
+     * Runs the sync, as dispatched from cloud function.
+     * @param event must have {@link PubsubPayload} as the data
+     * @throws Exception
+     */
     @Override
     public void accept(CloudEvent event) throws Exception {
-        try {
-            app.run("");
-        } catch (Exception e) {
-            log.error("Vanta sync failed", e);
+        log.info("Since last init, we have processed {} messages", pubsubIdsProcessed.size());
+        log.info("Received payload {}", new String(event.getData().toBytes()));
+
+        boolean forceRun = false;
+        if (event != null) {
+            if (event.getData() != null) {
+                PubsubPayload pubsubPayload = new Gson().fromJson(new String(event.getData().toBytes()), PubsubPayload.class);
+                log.info("Trigger message received with force={}", forceRun);
+                runFromPubsubEvent(pubsubPayload);
+            } else {
+                log.error("No payload data in driver message, cannot run sync without " + PubsubPayload.class.getName());
+            }
+        }
+    }
+
+    private void runFromPubsubEvent(PubsubPayload payload) {
+        if (!pubsubIdsProcessed.contains(payload.getPubsubMessageId()) || payload.isForce()) {
+            pubsubIdsProcessed.add(payload.getPubsubMessageId());
+            try {
+                app.run("");
+            } catch (Exception e) {
+                log.error("Could not run vanta user sync", e);
+            }
+        } else {
+            if (pubsubIdsProcessed.contains(payload.getPubsubMessageId())) {
+                log.info("Skipping duplicate processing of pubsub message {}", payload.getPubsubMessageId());
+            }
+            log.info("To force the run, send in " + PubsubPayload.class.getName() + " payload with force=true");
         }
     }
 
     public static void main(String[] args) {
         try {
-            new SyncVantaUsers().accept(null);
+            new SyncVantaUsers().runFromPubsubEvent(new PubsubPayload(true));
         } catch (Exception e) {
             log.error("Could not run sync", e);
         }
@@ -120,6 +157,26 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         }
     }
 
+    private WebClient.ResponseSpec add429StatusHander(WebClient.ResponseSpec spec) {
+        return spec.onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
+            List<String> header = res.headers().header("Retry-After");
+            int delayInSeconds;
+            if (!header.isEmpty()) {
+                delayInSeconds = Integer.parseInt(header.get(0));
+            } else {
+                delayInSeconds = 70;
+            }
+            log.info("Vanta rate limit exceeded; waiting for {}s", delayInSeconds);
+            try {
+                Thread.sleep(Duration.ofSeconds(delayInSeconds));
+            } catch (InterruptedException e) {
+                log.error("Interrupted while sleeping in response to rate limit", e);
+                Thread.currentThread().interrupt();
+            }
+            return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
+        });
+    }
+
     /**
      * Given a ready-to-retrieve rest client, fetches
      * all data in the results.data[] array and converts
@@ -132,30 +189,21 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
         while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
             log.debug("Getting cursor number {}", cursorCount);
-            VantaResultsResponse<T> response = wc.get().uri(uriBuilder -> {
+
+            add429StatusHander(wc.get().uri(uriBuilder -> {
+                if (cursorCount.get() > 0) {
+                    uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
+                }
+                uriBuilder.queryParam("pageSize", 100);
+                return uriBuilder.build();
+            }).retrieve());
+            VantaResultsResponse<T> response = add429StatusHander(wc.get().uri(uriBuilder -> {
                         if (cursorCount.get() > 0) {
                             uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
                         }
                         uriBuilder.queryParam("pageSize", 100);
                         return uriBuilder.build();
-                    }).retrieve()
-                    .onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
-                        List<String> header = res.headers().header("Retry-After");
-                        int delayInSeconds;
-                        if (!header.isEmpty()) {
-                            delayInSeconds = Integer.parseInt(header.get(0));
-                        } else {
-                            delayInSeconds = 70;
-                        }
-                        log.info("Vanta rate limit exceeded; waiting for {}s with {} {} objects", delayInSeconds, elements.get().size(), type.getType().getTypeName());
-                        try {
-                            Thread.sleep(Duration.ofSeconds(delayInSeconds));
-                        } catch (InterruptedException e) {
-                            log.error("Interrupted while sleeping in response to rate limit", e);
-                            Thread.currentThread().interrupt();
-                        }
-                        return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
-                    })
+                    }).retrieve())
                     .bodyToMono(type)
                     .retryWhen(Retry.withThrowable(throwableFlux -> throwableFlux.filter(RateLimitException.class::isInstance).map(t ->
                             Retry.fixedDelay(5, ((RateLimitException)t).getRetryAfterDelayDuration())))).block();
@@ -228,7 +276,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             }
         });
 
-
         for (VantaIntegration vantaIntegration : integrationsToSync) {
             String integrationId = vantaIntegration.getIntegrationId();
             log.debug("Synchronizing {}", integrationId);
@@ -280,7 +327,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                     msg = String.format("No objects added to scope in %s", integrationId);
                 } else {
                     msg = String.format("Added the following %s objects to scope in %s: %s", idsAddedToScope.size(), integrationId,
-                            StringUtils.join(idsAddedToScope, ","));
+                            String.join(",",idsAddedToScope));
                 }
                 log.info(msg);
                 summary.append(msg).append("\n");
@@ -289,7 +336,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                     msg = String.format("No objects removed from scope in %s", integrationId);
                 } else {
                     msg = String.format("Removed the following %s objects from scope in %s: %s", idsRemovedFromScope.size(), integrationId,
-                            StringUtils.join(idsRemovedFromScope, ","));
+                            String.join(",", idsRemovedFromScope));
                 }
                 log.info(msg);
                 summary.append(msg).append("\n");
@@ -309,10 +356,12 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         updateMetadata.setInScope(isInScope);
         vantaObjects.forEach(vantaObject -> updateMetadata.addResourceId(vantaObject.getResourceId()));
         try {
-            String updateResult = getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
-                    .patch().bodyValue(updateMetadata).retrieve().onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res ->
+            String updateResult = add429StatusHander(getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
+                    .patch().bodyValue(updateMetadata).retrieve()).onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res ->
                             res.bodyToMono(String.class).map(VantaUpdateException::new)
-                    ).bodyToMono(String.class).block();
+                    ).bodyToMono(String.class)
+                    .retryWhen(Retry.withThrowable(throwableFlux -> throwableFlux.filter(RateLimitException.class::isInstance).map(t ->
+                            Retry.fixedDelay(5, ((RateLimitException)t).getRetryAfterDelayDuration())))).block();
             log.debug("Updated {} {} objects to {} with response {}", updateMetadata.getResourceIds().size(), integrationId, isInScope, updateResult);
         } catch (VantaUpdateException e) {
             log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.getResourceIds().size(), e.getMessage());
