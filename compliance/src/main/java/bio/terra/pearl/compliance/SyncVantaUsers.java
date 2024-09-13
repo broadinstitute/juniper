@@ -97,6 +97,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             if (event.getData() != null) {
                 PubsubPayload pubsubPayload = new Gson().fromJson(new String(event.getData().toBytes()), PubsubPayload.class);
                 log.info("Trigger message received with force={}", forceRun);
+                pubsubPayload.setPubsubMessageId(event.getId());
                 runFromPubsubEvent(pubsubPayload);
             } else {
                 log.error("No payload data in driver message, cannot run sync without " + PubsubPayload.class.getName());
