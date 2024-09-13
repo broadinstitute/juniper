@@ -30,9 +30,10 @@ export const BaseFields = (props: BaseFieldsProps) => {
       <div className="mb-3">
         <Textarea
           disabled={disabled}
+          labelClassname={'mb-0'}
           label="Text"
           required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
-          rows={2}
+          rows={3}
           value={i18nSurveyText(regularQuestion.title, props.currentLanguage.languageCode)}
           onChange={valueText => {
             onChange({
@@ -64,7 +65,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
         />
       </div>}
 
-      <div className="bg-white rounded-3 p-2 mb-2">
+      <div className="bg-white rounded-3 p-2 mb-2 border">
         <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
           sectionLabel={'Additional options'}/>
         <div className="mb-3 collapse hide" id={additionalFieldsTargetId}>

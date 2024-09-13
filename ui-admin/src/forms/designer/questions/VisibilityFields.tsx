@@ -39,7 +39,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
   )
 
   return (
-    <div className="bg-white rounded-3 p-2 mb-2">
+    <div className="bg-white rounded-3 p-2 mb-2 border">
       <CollapsibleSectionButton targetSelector={`#${targetId}`} sectionLabel={'Visibility'}/>
       <div className="collapse hide" id={targetId}>
         <div className="mb-3">

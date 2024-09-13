@@ -94,7 +94,8 @@ type ElementType = 'question' | 'panel'
 const renderNewElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
   elementIndex: number, pageIndex: number, elementType: ElementType) => {
   return <div className="my-2">
-    <Button variant="secondary"
+    <Button variant="light"
+      className={'border m-1'}
       aria-label={`Insert a new ${elementType}`}
       tooltip={`Insert a new ${elementType}`}
       disabled={false}

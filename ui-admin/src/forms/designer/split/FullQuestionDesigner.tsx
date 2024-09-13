@@ -38,7 +38,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
 
   return (
     <div>
-      <label className={'form-label fw-semibold'}>Stable ID</label>
+      <label className={'form-label fw-semibold mb-0'}>Stable ID</label>
       <span className="text-danger fw-semibold ms-1">*</span>
       <div className="d-flex align-items-center">
         <div className="w-100">

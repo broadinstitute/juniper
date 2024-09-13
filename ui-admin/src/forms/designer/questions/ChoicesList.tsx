@@ -31,7 +31,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
     return null
   }
   return (
-    <div className="bg-white rounded-3 p-2 mb-2">
+    <div className="bg-white rounded-3 p-2 mb-2 border">
       <CollapsibleSectionButton targetSelector={`#${labelId}`} sectionLabel={`Choices (${question.choices.length})`}/>
       <div className="collapse hide" id={labelId}>
         <table className="ms-2 table">
