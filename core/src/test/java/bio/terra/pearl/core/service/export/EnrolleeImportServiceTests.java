@@ -16,7 +16,13 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+<<<<<<< Updated upstream
 import bio.terra.pearl.core.model.survey.*;
+=======
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
+>>>>>>> Stashed changes
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -29,6 +35,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -79,7 +86,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private ImportItemService importItemService;
     @Autowired
+<<<<<<< Updated upstream
     private EnrolleeFactory enrolleeFactory;
+=======
+    private SurveyResponseService surveyResponseService;
+>>>>>>> Stashed changes
     @Autowired
     KitRequestService kitRequestService;
 
@@ -485,6 +496,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(tasks, hasSize(1));
         assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).isComplete(), equalTo(true));
 
         List<Answer> answers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), "importTest1");
         assertThat(answers, hasSize(2));

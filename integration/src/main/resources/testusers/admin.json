@@ -1,5 +1,0 @@
-{
-  "name": "admin",
-  "userEmail": "datacatalogadmin@test.firecloud.org",
-  "delegatorServiceAccountFile": "delegate-user-sa.json"
-}

@@ -1,9 +1,0 @@
-{
-  "name": "FullIntegration",
-  "description": "All integration tests",
-  "serverSpecificationFile": "local.json",
-  "testConfigurationFiles": [
-    "integration/GetStatus.json",
-    "integration/GetVersion.json"
-  ]
-}
