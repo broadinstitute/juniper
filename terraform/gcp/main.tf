@@ -14,15 +14,15 @@
 # resources associated with the cluster
 
 provider "google" {
-  project     = "broad-ddp-dev"
-  region      = "us-central1"
+  project     = var.project
+  region      = var.region
 }
 
 data "google_client_config" "provider" {}
 
 data "google_container_cluster" "juniper_cluster" {
-  name     = "juniper-test-cluster-2"
-  location = "us-central1"
+  name     = var.cluster
+  location = var.region
 }
 
 provider "kubernetes" {

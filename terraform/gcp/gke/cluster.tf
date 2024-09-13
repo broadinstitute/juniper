@@ -9,7 +9,7 @@ resource "google_compute_network" "juniper_compute_network" {
   name = "juniper-subnetwork"
 
   ip_cidr_range = "10.0.0.0/16"
-  region        = "us-central1"
+  region        = var.region
 
   stack_type       = "IPV4_IPV6"
   ipv6_access_type = "EXTERNAL" # Change to "EXTERNAL" if creating an external loadbalancer
@@ -29,7 +29,7 @@ resource "google_compute_network" "juniper_compute_network" {
 resource "google_container_cluster" "juniper_cluster" {
   name = "juniper-cluster"
 
-  location                 = "us-central1"
+  location                 = var.region
   enable_autopilot         = true
   enable_l4_ilb_subsetting = true
 
