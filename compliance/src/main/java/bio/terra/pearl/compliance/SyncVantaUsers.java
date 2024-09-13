@@ -39,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -90,12 +91,13 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     @Override
     public void accept(CloudEvent event) throws Exception {
         log.info("Since last init, we have processed {} messages", pubsubIdsProcessed.size());
-        log.info("Received payload {}", new String(event.getData().toBytes()));
+        String payload = new String(event.getData().toBytes(), StandardCharsets.UTF_8);
+        log.info("Received payload {}", payload);
 
         boolean forceRun = false;
         if (event != null) {
             if (event.getData() != null) {
-                PubsubPayload pubsubPayload = new Gson().fromJson(new String(event.getData().toBytes()), PubsubPayload.class);
+                PubsubPayload pubsubPayload = new Gson().fromJson(payload, PubsubPayload.class);
                 log.info("Trigger message received with force={}", forceRun);
                 pubsubPayload.setPubsubMessageId(event.getId());
                 runFromPubsubEvent(pubsubPayload);
