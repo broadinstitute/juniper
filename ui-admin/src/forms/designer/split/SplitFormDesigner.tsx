@@ -10,7 +10,7 @@ import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { SplitFormTableOfContents } from './SplitFormTableOfContents'
 import { PageControls } from './controls/PageControls'
 import classNames from 'classnames'
-import { NewElementControls } from './controls/NewElementControls'
+import { InsertElementControls } from './controls/InsertElementControls'
 import { useSearchParams } from 'react-router-dom'
 
 /**
@@ -92,21 +92,23 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
         </div>
-        <NewElementControls
+        <InsertElementControls
           formContent={content} onChange={onChange}
           elementIndex={-1} pageIndex={0}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
             content.pages[currentPageNo].elements.map((element, elementIndex) => (
-              <div id={`element[${elementIndex}]`} key={elementIndex} className="container">
-                <SplitFormElementDesigner currentPageNo={currentPageNo}
-                  elementIndex={elementIndex} editedContent={content}
-                  element={content.pages[currentPageNo].elements[elementIndex]}
-                  currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
-                  onChange={onChange}/>
-                <NewElementControls
+              <>
+                <div id={`element[${elementIndex}]`} key={elementIndex} className={'mx-3'}>
+                  <SplitFormElementDesigner currentPageNo={currentPageNo}
+                    elementIndex={elementIndex} editedContent={content}
+                    element={content.pages[currentPageNo].elements[elementIndex]}
+                    currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
+                    onChange={onChange}/>
+                </div>
+                <InsertElementControls
                   formContent={content} onChange={onChange}
                   elementIndex={elementIndex} pageIndex={currentPageNo}/>
-              </div>
+              </>
             ))}
         {content.pages[currentPageNo].elements.length === 0 &&
           <div className="alert alert-secondary">

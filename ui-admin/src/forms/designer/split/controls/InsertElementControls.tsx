@@ -5,20 +5,20 @@ import { baseQuestions } from 'forms/designer/questions/questionTypes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-export const NewElementControls = ({ formContent, onChange, elementIndex, pageIndex }: {
+export const InsertElementControls = ({ formContent, onChange, elementIndex, pageIndex }: {
     formContent: FormContent, onChange: (newContent: FormContent) => void, elementIndex: number, pageIndex: number
 }) => {
   return (
     <div className='d-flex'>
-      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
-      {renderNewElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
+      {renderInsertElementButton(formContent, onChange, elementIndex, pageIndex, 'question')}
+      {renderInsertElementButton(formContent, onChange, elementIndex, pageIndex, 'panel')}
     </div>
   )
 }
 
 type ElementType = 'question' | 'panel'
 
-const renderNewElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
+const renderInsertElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
   elementIndex: number, pageIndex: number, elementType: ElementType) => {
   return <div className="my-2">
     <Button variant="light"
