@@ -39,7 +39,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
   const isTemplated = 'questionTemplateName' in question
 
   return (
-    <div>
+    <div className={'pb-2'}>
       <label className={'form-label fw-semibold mb-0'}>Stable ID</label>
       <span className="text-danger fw-semibold ms-1">*</span>
       <div className="d-flex align-items-center">
@@ -104,29 +104,6 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
 
       {!isTemplated && (
         <>
-          {/*{*/}
-          {/*  (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (*/}
-          {/*    <>*/}
-          {/*      <ChoicesList*/}
-          {/*        question={question}*/}
-          {/*        isNewQuestion={isNewQuestion}*/}
-          {/*        currentLanguage={currentLanguage}*/}
-          {/*        supportedLanguages={supportedLanguages}*/}
-          {/*        readOnly={readOnly}*/}
-          {/*        onChange={onChange}*/}
-          {/*      />*/}
-          {/*    </>*/}
-          {/*  )*/}
-          {/*}*/}
-          {
-            // question.type === 'text' && (
-            //   <TextFields
-            //     disabled={readOnly}
-            //     question={question}
-            //     onChange={onChange}
-            //   />
-            // )
-          }
           {
             question.type === 'html' &&
               <div className="mb-3">
@@ -187,7 +164,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
             onChange={onChange}
           />
         </Tab> }
-        <Tab
+        { (!isTemplated && question.type !== 'html') && <Tab
           eventKey="advanced"
           title={<><FontAwesomeIcon icon={faGear}/> Advanced</>}
         >
@@ -210,7 +187,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
               />
             </div>
           </div>
-        </Tab>
+        </Tab> }
       </Tabs>
 
 
