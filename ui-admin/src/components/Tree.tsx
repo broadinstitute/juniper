@@ -5,7 +5,7 @@ import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 
 export type TreeItemT<T> = {
   /** User facing label. */
-  label: React.ReactNode
+  label?: React.ReactNode
 
   /** Data associated with this tree item. */
   data: T
@@ -78,7 +78,7 @@ export const TreeItem = <T, >(props: TreeItemProps<T>) => {
       }}
     >
       {/* Wrapper span provides a larger click target than just the icon. */}
-      <span
+      {item.label && <><span
         aria-hidden
         style={{
           position: 'absolute',
@@ -127,7 +127,7 @@ export const TreeItem = <T, >(props: TreeItemProps<T>) => {
         }}
       >
         {item.label}
-      </a>
+      </a></>}
       {isExpanded && (
         <ul
           aria-label={`${item.label} children`}

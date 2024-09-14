@@ -11,6 +11,7 @@ import { SplitFormTableOfContents } from './SplitFormTableOfContents'
 import { PageControls } from './controls/PageControls'
 import classNames from 'classnames'
 import { NewElementControls } from './controls/NewElementControls'
+import { useSearchParams } from 'react-router-dom'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -21,6 +22,37 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 }) => {
   const [currentPageNo, setCurrentPageNo] = useState(0)
   const [showTableOfContents, setShowTableOfContents] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
+
+  //TODO this is kinda wonky across page changes, but it works for now
+  const setSelectedElementPath = (path: string) => {
+    searchParams.set('selectedElementPath', path)
+    setSearchParams(searchParams)
+
+    //parses path, i.e.: selectedElementPath=pages%5B0%5D.elements%5B0%5D
+    const pathParts = path.split('.')
+    const pageElement = pathParts[0]
+    const pageElementIndex = parseInt(pageElement.replace('pages[', '').replace(']', ''))
+    setCurrentPageNo(pageElementIndex)
+
+    if (pathParts.length === 1) {
+      window.scrollTo(0, 0)
+    }
+
+    if (pathParts.length > 1) {
+      const elementIndex = parseInt(pathParts[1].replace('elements[', '').replace(']', ''))
+      scrollToElement(elementIndex)
+    }
+  }
+
+  //scrolls to the element with id `element[${elementIndex}]`
+  const scrollToElement = (elementIndex: number) => {
+    const element = document.getElementById(`element[${elementIndex}]`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'auto' })
+    }
+  }
 
   return <div className="container-fluid">
     <div className="row w-100">
@@ -28,8 +60,8 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         style={{ overflowY: 'scroll' }}>
         { showTableOfContents && <SplitFormTableOfContents
           formContent={content}
-          selectedElementPath={'selectedElementPath'}
-          onSelectElement={() => {}}
+          selectedElementPath={selectedElementPath}
+          onSelectElement={setSelectedElementPath}
         />}
       </div>
       <div className={classNames('col', showTableOfContents ? 'col-9' : 'col-12')}>
@@ -59,7 +91,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
           elementIndex={-1} pageIndex={0}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
             content.pages[currentPageNo].elements.map((element, elementIndex) => (
-              <div key={elementIndex} className="container">
+              <div id={`element[${elementIndex}]`} key={elementIndex} className="container">
                 <SplitFormElementDesigner currentPageNo={currentPageNo}
                   elementIndex={elementIndex} editedContent={content}
                   element={content.pages[currentPageNo].elements[elementIndex]}

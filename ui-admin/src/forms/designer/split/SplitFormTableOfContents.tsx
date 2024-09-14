@@ -39,7 +39,6 @@ const getSplitTableOfContentsTreeHelper = (parentPath: string) => {
 /** Convert a FormContent object into a TreeItemT to render the table of contents as a string. */
 export const getSplitTableOfContentsTree = (formContent: FormContent): SplitFormContentTableOfContentsTreeItem => {
   return {
-    label: 'Pages',
     data: {
       isSelectable: true,
       path: 'pages'
