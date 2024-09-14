@@ -20,8 +20,11 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     content: FormContent, onChange: (newContent: FormContent) => void,
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
+  const HIDE_TABLE_OF_CONTENTS_KEY = 'formDesigner.hideTableOfContents'
+
   const [currentPageNo, setCurrentPageNo] = useState(0)
-  const [showTableOfContents, setShowTableOfContents] = useState(true)
+  const [hideTableOfContents, setHideTableOfContents] = useState(
+    localStorage.getItem(HIDE_TABLE_OF_CONTENTS_KEY) === 'true')
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
 
@@ -56,21 +59,24 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 
   return <div className="container-fluid">
     <div className="row w-100">
-      <div className={classNames('border-end', showTableOfContents ? 'col-3' : 'd-none')}
+      <div className={classNames('border-end', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
-        { showTableOfContents && <SplitFormTableOfContents
+        { !hideTableOfContents && <SplitFormTableOfContents
           formContent={content}
           selectedElementPath={selectedElementPath}
           onSelectElement={setSelectedElementPath}
         />}
       </div>
-      <div className={classNames('col', showTableOfContents ? 'col-9' : 'col-12')}>
+      <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
         <div className="d-flex justify-content-between">
           <Button variant="light" className="border m-1"
-            onClick={() => setShowTableOfContents(!showTableOfContents)}
-            tooltip={showTableOfContents ? 'Hide table of contents' : 'Show table of contents'}>
+            onClick={() => {
+              setHideTableOfContents(!hideTableOfContents)
+              localStorage.setItem(HIDE_TABLE_OF_CONTENTS_KEY, (!hideTableOfContents).toString())
+            }}
+            tooltip={hideTableOfContents ? 'Show table of contents' : 'Hide table of contents'}>
             <FontAwesomeIcon icon={faArrowRightFromBracket}
-              className={classNames(showTableOfContents ? 'fa-rotate-180' : '')}/>
+              className={classNames(hideTableOfContents ? '' : 'fa-rotate-180')}/>
           </Button>
           {/*<Button variant="light" className="border m-1"*/}
           {/*  onClick={() => {*/}
