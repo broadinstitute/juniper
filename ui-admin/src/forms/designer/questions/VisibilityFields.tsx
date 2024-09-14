@@ -21,7 +21,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
   const infoPopupContent = (
     <div>
       <p>
-        Here are a few examples:
+        If this expression evaluates to true, the question will be shown. Here are a few examples:
         <li><code>{'{age} >= 21'}</code></li>
         <li><code>{'{name} notempty'}</code></li>
         <li><code>{'{languages} contains \'Spanish\''}</code></li>
@@ -60,8 +60,6 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
         <div className="m-2">
           <TextInput
             infoContent={infoPopupContent}
-            // eslint-disable-next-line max-len
-            description={'If this expression evaluates to true, the question will be shown.'}
             disabled={disabled}
             label="Visibility expression"
             labelClassname={'mb-0'}
