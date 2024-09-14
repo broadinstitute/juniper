@@ -18,6 +18,7 @@ export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageC
   }
 
   const handlePageChange = (direction: PageDirection) => {
+    handleScrollToTop()
     switch (direction) {
       case 'next':
         setCurrentPageNo(currentPageNo + 1)
@@ -32,7 +33,6 @@ export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageC
         setCurrentPageNo(content.pages.length - 1)
         break
     }
-    handleScrollToTop()
   }
 
   const numPages = content.pages.length
