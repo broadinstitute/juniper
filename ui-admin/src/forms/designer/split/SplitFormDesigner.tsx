@@ -33,7 +33,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     //parses path, i.e.: selectedElementPath=pages%5B0%5D.elements%5B0%5D
     const pathParts = path.split('.')
     const pageElement = pathParts[0]
-    const pageElementIndex = parseInt(pageElement.replace('pages[', '').replace(']', ''))
+    const pageElementIndex = parseInt(pageElement.replace('pages[', '').replace(/\]/g, ''))
     setCurrentPageNo(pageElementIndex)
 
     if (pathParts.length === 1) {
@@ -41,7 +41,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     }
 
     if (pathParts.length > 1) {
-      const elementIndex = parseInt(pathParts[1].replace('elements[', '').replace(']', ''))
+      const elementIndex = parseInt(pathParts[1].replace('elements[', '').replace(/\]/g, ''))
       scrollToElement(elementIndex)
     }
   }
