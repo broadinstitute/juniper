@@ -38,6 +38,8 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('visibility')
   const isTemplated = 'questionTemplateName' in question
 
+  console.log(currentLanguage.languageCode)
+
   return (
     <div className={'pb-2'}>
       <label className={'form-label fw-semibold mb-0'}>Stable ID</label>

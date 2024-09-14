@@ -70,7 +70,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         {userHasPermission(user, portal.id, 'prototype_tester') &&< Tab
           disabled={activeTab !== 'designer' && !tabsEnabled}
           eventKey="designer"
-          title="Designer"
+          title={<>Designer<span className='badge bg-primary fw-light ms-2'>LEGACY</span></>}
         >
           <ErrorBoundary>
             <FormDesigner
@@ -94,7 +94,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         <Tab
           disabled={activeTab !== 'split' && !tabsEnabled}
           eventKey="split"
-          title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+          title="Designer"
         >
           <ErrorBoundary>
             <SplitFormDesigner
