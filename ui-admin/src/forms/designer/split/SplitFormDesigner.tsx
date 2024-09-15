@@ -5,7 +5,7 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCaretUp, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { SplitFormTableOfContents } from './SplitFormTableOfContents'
 import { PageControls } from './controls/PageControls'
@@ -68,25 +68,38 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         />}
       </div>
       <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
-        <div className="d-flex justify-content-between">
-          <Button variant="light" className="border m-1"
-            onClick={() => {
-              setHideTableOfContents(!hideTableOfContents)
-              localStorage.setItem(HIDE_TABLE_OF_CONTENTS_KEY, (!hideTableOfContents).toString())
-            }}
-            tooltip={hideTableOfContents ? 'Show table of contents' : 'Hide table of contents'}>
-            <FontAwesomeIcon icon={faArrowRightFromBracket}
-              className={classNames(hideTableOfContents ? '' : 'fa-rotate-180')}/>
-          </Button>
-          {/*<Button variant="light" className="border m-1"*/}
-          {/*  onClick={() => {*/}
-          {/*    const newContent = { ...content }*/}
-          {/*    newContent.pages.splice(currentPageNo + 1, 0, { elements: [] })*/}
-          {/*    onChange(newContent)*/}
-          {/*    setCurrentPageNo(currentPageNo + 1)*/}
-          {/*  }}>*/}
-          {/*  <FontAwesomeIcon icon={faPlus}/> Insert page*/}
-          {/*</Button>*/}
+        <div className="d-flex justify-content-between border rounded-3 p-2 bg-light">
+          <div>
+            <Button variant="light" className="border m-1"
+              onClick={() => {
+                setHideTableOfContents(!hideTableOfContents)
+                localStorage.setItem(HIDE_TABLE_OF_CONTENTS_KEY, (!hideTableOfContents).toString())
+              }}
+              tooltip={hideTableOfContents ? 'Show table of contents' : 'Hide table of contents'}>
+              <FontAwesomeIcon icon={faArrowRightFromBracket}
+                className={classNames(hideTableOfContents ? '' : 'fa-rotate-180')}/>
+            </Button>
+            <Button variant="light" className="border m-1"
+              tooltip={'Create a new page after this one'}
+              onClick={() => {
+                const newContent = { ...content }
+                newContent.pages.splice(currentPageNo + 1, 0, { elements: [] })
+                onChange(newContent)
+                setCurrentPageNo(currentPageNo + 1)
+              }}>
+              <FontAwesomeIcon icon={faPlus}/> Create page
+            </Button>
+            <Button variant="light" className="border m-1"
+              tooltip={'Delete this page'}
+              onClick={() => {
+                const newContent = { ...content }
+                newContent.pages.splice(currentPageNo, 1)
+                onChange(newContent)
+                setCurrentPageNo(Math.min(currentPageNo, newContent.pages.length - 1))
+              }}>
+              <FontAwesomeIcon icon={faTrash}/> Delete page
+            </Button>
+          </div>
           <PageControls
             currentPageNo={currentPageNo}
             content={content}
@@ -94,7 +107,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         </div>
         <InsertElementControls
           formContent={content} onChange={onChange}
-          elementIndex={-1} pageIndex={0}/>
+          elementIndex={-1} pageIndex={currentPageNo}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
             content.pages[currentPageNo].elements.map((element, elementIndex) => (
               <>
@@ -111,10 +124,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
               </>
             ))}
         {content.pages[currentPageNo].elements.length === 0 &&
-          <div className="alert alert-secondary">
-            This page is empty. Insert a new question or panel to get started.
+          <div className="text-muted fst-italic my-5 pb-3 text-center">
+            This page is empty. Insert a new question to get started.
           </div>}
-        <div className="d-flex justify-content-between mb-3">
+        <div className="d-flex justify-content-between mb-3 border rounded-3 p-2 bg-light">
           <Button variant="light" className="border m-1"
             onClick={() => window.scrollTo(0, 0)}>
             <FontAwesomeIcon icon={faCaretUp}/> Scroll to top

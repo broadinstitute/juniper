@@ -154,7 +154,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 onClick={() => setShowErrors(!showErrors)} aria-label="view errors">
                     View errors <FontAwesomeIcon icon={faExclamationCircle} className="fa-lg"/>
               </button>
-              { showErrors && <div className="position-absolute border border-gray rounded bg-white p-3"
+              { showErrors && <div className="position-absolute border border-gray rounded bg-white p-3 z-1"
                 style={{ width: '750px', right: 0 }}>
                 <div className="border-b border-black">
                   <label>
