@@ -59,7 +59,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
-      <div className={classNames('px-0 border-start border-end bg-light', hideTableOfContents ? 'd-none' : 'col-3')}
+      <div className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
         { !hideTableOfContents && <SplitFormTableOfContents
           formContent={content}
