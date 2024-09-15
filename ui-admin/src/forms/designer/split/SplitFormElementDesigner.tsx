@@ -52,12 +52,17 @@ export const SplitFormElementDesigner = memo(({
             onClick={() => setShowJsonEditor(!showJsonEditor)}
           />
           <IconButton icon={faClone}
-            aria-label={'Clone this question'}
+            aria-label={'Clone'}
             onClick={() => {
               const newContent = { ...editedContent }
               const newQuestion = { ...element, name: '' }
               newContent.pages[currentPageNo].elements.splice(elementIndex + 1, 0, newQuestion)
               onChange(newContent)
+              //scroll to the new element
+              const newElement = document.getElementById(`element[${elementIndex + 1}]`)
+              if (newElement) {
+                newElement.scrollIntoView({ behavior: 'auto' })
+              }
             }}
           />
           <ListElementController
