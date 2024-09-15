@@ -62,7 +62,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
       <Tabs
         activeKey={activeTab ?? undefined}
-        className="mb-1"
         mountOnEnter
         unmountOnExit
         onSelect={setActiveTab}

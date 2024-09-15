@@ -57,9 +57,9 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     }
   }
 
-  return <div className="container-fluid">
-    <div className="row w-100">
-      <div className={classNames('border-end', hideTableOfContents ? 'd-none' : 'col-3')}
+  return <div className="container-fluid overflow-scroll">
+    <div className="row w-100 mx-0">
+      <div className={classNames('px-0', 'border-end', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
         { !hideTableOfContents && <SplitFormTableOfContents
           formContent={content}
@@ -68,7 +68,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         />}
       </div>
       <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
-        <div className="d-flex justify-content-between border rounded-3 p-2 bg-light">
+        <div className="d-flex justify-content-between border border-top-0 rounded-bottom-3 p-2 bg-light">
           <div>
             <Button variant="light" className="border m-1"
               onClick={() => {
@@ -110,7 +110,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
           elementIndex={-1} pageIndex={currentPageNo}/>
         {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
             content.pages[currentPageNo].elements.map((element, elementIndex) => (
-              <>
+              <React.Fragment key={elementIndex}>
                 <div id={`element[${elementIndex}]`} key={elementIndex} className={'mx-3'}>
                   <SplitFormElementDesigner currentPageNo={currentPageNo}
                     elementIndex={elementIndex} editedContent={content}
@@ -121,13 +121,13 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
                 <InsertElementControls
                   formContent={content} onChange={onChange}
                   elementIndex={elementIndex} pageIndex={currentPageNo}/>
-              </>
+              </React.Fragment>
             ))}
         {content.pages[currentPageNo].elements.length === 0 &&
           <div className="text-muted fst-italic my-5 pb-3 text-center">
             This page is empty. Insert a new question to get started.
           </div>}
-        <div className="d-flex justify-content-between mb-3 border rounded-3 p-2 bg-light">
+        <div className="d-flex justify-content-between m-1 mb-3 border rounded-3 p-2 bg-light">
           <Button variant="light" className="border m-1"
             onClick={() => window.scrollTo(0, 0)}>
             <FontAwesomeIcon icon={faCaretUp}/> Scroll to top
