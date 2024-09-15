@@ -10,7 +10,7 @@ export const FormElementJsonEditor = ({ question, onChange }: {
 }) => {
   const [editedContent, setEditedContent] = useState(JSON.stringify(question, null, 2))
   return <Textarea
-    className="form-control"
+    className="form-control mb-3 p-2"
     value={editedContent}
     rows={15}
     onChange={updatedContent => {
@@ -21,7 +21,8 @@ export const FormElementJsonEditor = ({ question, onChange }: {
         setEditedContent(updatedContent)
       }
     }}
-    label={'Element JSON'}
+    label={'JSON'}
+    labelClassname={'mb-0'}
     infoContent={'Edit the element JSON directly. Learn more about SurveyJS JSON here.'}
   />
 }

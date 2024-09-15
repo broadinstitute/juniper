@@ -34,7 +34,7 @@ export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   return (
     <div className="d-flex flex-column flex-grow-1">
       <textarea
-        className={classNames('w-100 flex-grow-1 form-control font-monospace',
+        className={classNames('w-100 flex-grow-1 form-control font-monospace border-top-0 rounded-top-0',
           { 'is-invalid': !isEmpty(validationErrors) })}
         readOnly={readOnly}
         style={{

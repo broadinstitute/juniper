@@ -46,6 +46,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
         <div className="w-100">
           <TextInput
             className={'mb-2'}
+            placeholder={'Enter a stable identifier for this question'}
             required={true}
             value={question.name}
             onChange={name => {
@@ -110,6 +111,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
                 <Textarea
                   disabled={readOnly}
                   label="HTML"
+                  labelClassname={'mb-0'}
                   rows={5}
                   value={i18nSurveyText((question as HtmlQuestion)?.html)}
                   onChange={value => {

@@ -7,7 +7,7 @@ import {
 } from '@juniper/ui-core'
 import React, { memo, useState } from 'react'
 import { IconButton } from 'components/forms/Button'
-import { faCode } from '@fortawesome/free-solid-svg-icons'
+import { faClone, faCode } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { isEqual } from 'lodash'
@@ -50,6 +50,15 @@ export const SplitFormElementDesigner = memo(({
           <IconButton icon={faCode}
             aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
             onClick={() => setShowJsonEditor(!showJsonEditor)}
+          />
+          <IconButton icon={faClone}
+            aria-label={'Clone this question'}
+            onClick={() => {
+              const newContent = { ...editedContent }
+              const newQuestion = { ...element, name: '' }
+              newContent.pages[currentPageNo].elements.splice(elementIndex + 1, 0, newQuestion)
+              onChange(newContent)
+            }}
           />
           <ListElementController
             index={elementIndex}

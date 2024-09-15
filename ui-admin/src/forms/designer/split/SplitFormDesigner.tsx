@@ -59,7 +59,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
-      <div className={classNames('px-0', 'border-end', hideTableOfContents ? 'd-none' : 'col-3')}
+      <div className={classNames('px-0 border-start border-end bg-light', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
         { !hideTableOfContents && <SplitFormTableOfContents
           formContent={content}
@@ -80,7 +80,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
                 className={classNames(hideTableOfContents ? '' : 'fa-rotate-180')}/>
             </Button>
             <Button variant="light" className="border m-1"
-              tooltip={'Create a new page after this one'}
+              tooltip={'Create a new page'}
               onClick={() => {
                 const newContent = { ...content }
                 newContent.pages.splice(currentPageNo + 1, 0, { elements: [] })
@@ -92,6 +92,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
             <Button variant="light" className="border m-1"
               tooltip={'Delete this page'}
               onClick={() => {
+                //TODO: add confirmation dialog as this can be quite destructive
                 const newContent = { ...content }
                 newContent.pages.splice(currentPageNo, 1)
                 onChange(newContent)
