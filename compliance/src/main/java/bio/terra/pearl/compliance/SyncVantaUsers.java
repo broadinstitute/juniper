@@ -3,6 +3,7 @@ package bio.terra.pearl.compliance;
 import bio.terra.pearl.compliance.exception.RateLimitException;
 import bio.terra.pearl.compliance.exception.VantaUpdateException;
 import bio.terra.pearl.compliance.model.AccessToken;
+import bio.terra.pearl.compliance.model.CloudEventPayload;
 import bio.terra.pearl.compliance.model.GithubAccount;
 import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
@@ -30,6 +31,7 @@ import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import io.cloudevents.CloudEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
@@ -55,6 +57,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +87,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public static final String GITHUB_INTEGRATION_ID = "github";
     public static final String JAMF_INTEGRATION_ID = "jamf";
 
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    private Gson gson = newGson();
 
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
@@ -114,8 +117,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
 
-    private PubsubPayload pubsubPayload = new PubsubPayload(false);
-
     /**
      * Runs the sync, as dispatched from cloud function.
      * @param event must have {@link PubsubPayload} as the data
@@ -124,28 +125,20 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     @Override
     public void accept(CloudEvent event) throws Exception {
         String payload = new String(event.getData().toBytes(), StandardCharsets.UTF_8);
-        log.info("Received payload {}", payload);
-        boolean forceRun = false;
-        if (event != null) {
-            if (event.getData() != null) {
-                PubsubPayload pubsubPayload = gson.fromJson(payload, PubsubPayload.class);
-                log.info("Trigger message received with force={}", forceRun);
-                pubsubPayload.setPubsubMessageId(event.getId());
-                runFromPubsubEvent(pubsubPayload);
-            } else {
-                log.error("No payload data in driver message, cannot run sync without " + PubsubPayload.class.getName());
-            }
-        }
+        app.run(payload);
     }
 
-    private void runFromPubsubEvent(PubsubPayload payload) throws IOException {
-        this.pubsubPayload = payload;
-        app.run("");
+    private static Gson newGson() {
+        return new GsonBuilder().serializeNulls().create();
     }
 
     public static void main(String[] args) {
         try {
-            new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build().run("");
+            new SpringApplicationBuilder(SyncVantaUsers.class)
+                    .web(WebApplicationType.NONE)
+                    .bannerMode(Banner.Mode.OFF)
+                    .build()
+                    .run(newGson().toJson(new CloudEventPayload()));
         } catch (Exception e) {
             log.error("Could not run sync", e);
         }
@@ -160,15 +153,22 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         return userSyncConfig;
     }
 
+    private boolean shouldRun(CloudEventPayload payload) throws IOException {
+        return payload == null || StringUtils.isBlank(payload.getMessageId()) || !getMessageIdsToIgnore().contains(payload.getMessageId());
+    }
+
     @Override
     public void run(String... args) throws Exception {
-        log.info("Starting vanta sync app");
+        CloudEventPayload pubsubPayload = gson.fromJson(args[0], CloudEventPayload.class);
+        log.info("Starting vanta sync app in response to message id {}", pubsubPayload.getMessageId());
         loadConfig();
         final Set<String> pubsubIdsProcessed = new HashSet<>(getMessageIdsToIgnore());
         log.info("List of message ids to ignore has {} items", pubsubIdsProcessed.size());
-        if (!pubsubIdsProcessed.contains(pubsubPayload.getPubsubMessageId()) || pubsubPayload.isForce()) {
-            pubsubIdsProcessed.add(pubsubPayload.getPubsubMessageId());
-            saveMessageIdsToIgnore(new PubsubIdsToIgnore(pubsubIdsProcessed));
+        if (shouldRun(pubsubPayload)) {
+            if (StringUtils.isNotBlank(pubsubPayload.getMessageId())) {
+                pubsubIdsProcessed.add(pubsubPayload.getMessageId());
+                saveMessageIdsToIgnore(new PubsubIdsToIgnore(pubsubIdsProcessed));
+            }
             Instant start = Instant.now();
             String summaryMessage = syncVantaAccounts();
             Duration duration = Duration.between(start, Instant.now());
@@ -185,8 +185,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                 }
             }
         } else {
-            if (pubsubIdsProcessed.contains(pubsubPayload.getPubsubMessageId())) {
-                log.info("Skipping duplicate processing of pubsub message {}", pubsubPayload.getPubsubMessageId());
+            if (pubsubIdsProcessed.contains(pubsubPayload.getMessageId())) {
+                log.info("Skipping duplicate processing of pubsub message {}", pubsubPayload.getMessageId());
             }
             log.info("To force the run, send in " + PubsubPayload.class.getName() + " payload with force=true");
         }
@@ -412,9 +412,9 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             throw new RuntimeException("Bucket " + gcsResource.getBucketName() + " not found");
         }
         if (!gcsResource.exists()) {
-            log.info("Creating {}", gcsResource.getBlobName());
+            log.debug("Creating {}", gcsResource.getBlobName());
             Blob blob = gcsResource.createBlob();
-            log.info("Created blob {}", blob.getName());
+            log.debug("Created blob {}", blob.getName());
             saveMessageIdsToIgnore(new PubsubIdsToIgnore());
         }
         String contentsAsString = StreamUtils.copyToString(gcsResource.getInputStream(), Charset.defaultCharset());
@@ -427,5 +427,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             os.write(gson.toJson(idsToIgnore).getBytes());
             os.flush();
         }
+        log.debug("Wrote {} as list of pubsub ids to ignore", gson.toJson(idsToIgnore));
     }
 }
