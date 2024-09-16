@@ -40,9 +40,3 @@ resource "google_project_iam_binding" "cluster-log-write" {
     "serviceAccount:${data.google_compute_default_service_account.default.email}"
   ]
 }
-
-
-data "google_container_cluster" "juniper_cluster" {
-  name     = "juniper-cluster"
-  location = var.region
-}
