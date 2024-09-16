@@ -21,3 +21,23 @@ variable "dns_ttl" {
   default = 300
   description = "DNS TTL"
 }
+
+variable "admin_url" {
+  type = string
+  description = "Admin URL"
+}
+
+
+variable "environment" {
+  type = string
+  validation {
+    condition = can(regex("^(dev|prod)$", var.environment))
+  }
+  default = "dev"
+  description = "Environment (dev or prod)"
+}
+
+variable "juniper_folder_id" {
+  type = string
+  description = "Juniper folder ID"
+}

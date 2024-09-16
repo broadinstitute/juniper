@@ -56,25 +56,9 @@ spec:
 
         - name: admin
           image: us-central1-docker.pkg.dev/broad-juniper-dev/dev-test-repo/juniper-admin:1.3.75
-          #          readinessProbe:
-          #            httpGet:
-          #              path: /status
-          #              port: 8080
-          #              scheme: HTTP
-          #            initialDelaySeconds: 5
-          #            periodSeconds: 10
-          #            timeoutSeconds: 5
-          #          livenessProbe:
-          #            httpGet:
-          #              path: /status
-          #              port: 8080
-          #              scheme: HTTP
-          #            initialDelaySeconds: 5
-          #            periodSeconds: 10
-          #            timeoutSeconds: 5
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: gcp
+              value: gcp,staging
             - name: DB_NAME_SECRET_ID
               value: "d2p-db-name"
             - name: DB_PASSWORD_SECRET_ID
@@ -87,6 +71,10 @@ spec:
               value: "d2p"
             - name: DEPLOYMENT_ZONE
               value: "demo"
+            - name: ADMIN_API_HOSTNAME
+              value: "juniper-cmi.dev"
+            - name: ADMIN_UI_HOSTNAME
+              value: "juniper-cmi.dev"
 
           resources:
             requests:

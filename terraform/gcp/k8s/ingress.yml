@@ -3,16 +3,22 @@ kind: Ingress
 metadata:
   name: juniper-ingress
   annotations:
+    kubernetes.io/ingress.global-static-ip-name: admin-ip
+    networking.gke.io/managed-certificates: admin-cert
     # If the class annotation is not specified it defaults to "gce".
     kubernetes.io/ingress.class: "gce"
 spec:
-  rules:
-    - http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: admin-service
-                port:
-                  number: 80
+  defaultBackend:
+    service:
+      name: admin-service
+      port:
+        number: 80
+#    - http:
+#        paths:
+#          - path: /*
+#            pathType: ImplementationSpecific
+#            backend:
+#              service:
+#                name: admin-service
+#                port:
+#                  number: 80
