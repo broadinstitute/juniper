@@ -4,18 +4,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @ToString
 public class PubsubIdsToIgnore {
 
-    private Set<String> idsToIgnore;
+    private Set<String> idsToIgnore = new HashSet<>();
 
     public PubsubIdsToIgnore(Set<String> idsToIgnore) {
         this.idsToIgnore = idsToIgnore;

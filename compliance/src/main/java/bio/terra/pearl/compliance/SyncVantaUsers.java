@@ -25,6 +25,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.spring.secretmanager.SecretManagerTemplate;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import io.cloudevents.CloudEvent;
@@ -65,6 +66,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * various vanta integrations to use only the team members
  * needed for our audit.  When running locally, set the
  * GOOGLE_CLOUD_PROJECT and VANTA_CONFIG_SECRET environment vars.
+ *
+ * Because this job takes longer than the max pubsub
+ * ack timeout, pubsub will retry messages.  We keep a list
+ * of messages tells us which ones we've seen before
+ * and can safely ignore.  We store it in cloud storage and it's
+ * possible that with multiple jobs running at once, there is a chance
+ * of race conditions and overwrites, but that isn't something
+ * that matters for this scheduled job.
  */
 @Slf4j
 @SpringBootApplication
@@ -74,6 +83,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public static final String SLACK_INTEGRATION_ID = "slack";
     public static final String GITHUB_INTEGRATION_ID = "github";
     public static final String JAMF_INTEGRATION_ID = "jamf";
+
+    private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Autowired
     private SecretManagerTemplate secretManagerTemplate;
@@ -91,17 +102,19 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
      * of race conditions and overwrites, but that isn't something
      * that matters for this scheduled job.
      */
-    @Value("gs://#{environment.PUBSUB_IDS_FILE_BUCKET}/idsToIgnore.json")
-    private Resource pathToMessageIdsFile;
+    //@Value("gs://#{environment.PUBSUB_IDS_FILE_BUCKET}/idsToIgnore.json")
+    //private Resource pathToMessageIdsFile;
 
     @Autowired
     private Storage storage;
 
     private UserSyncConfig userSyncConfig;
 
-    private final Collection<PersonInScope> peopleInScope = new ArrayList<>();
+    private Collection<PersonInScope> peopleInScope = new ArrayList<>();
 
-    private final SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
+    private SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
+
+    private PubsubPayload pubsubPayload = new PubsubPayload(false);
 
     /**
      * Runs the sync, as dispatched from cloud function.
@@ -112,11 +125,10 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public void accept(CloudEvent event) throws Exception {
         String payload = new String(event.getData().toBytes(), StandardCharsets.UTF_8);
         log.info("Received payload {}", payload);
-
         boolean forceRun = false;
         if (event != null) {
             if (event.getData() != null) {
-                PubsubPayload pubsubPayload = new Gson().fromJson(payload, PubsubPayload.class);
+                PubsubPayload pubsubPayload = gson.fromJson(payload, PubsubPayload.class);
                 log.info("Trigger message received with force={}", forceRun);
                 pubsubPayload.setPubsubMessageId(event.getId());
                 runFromPubsubEvent(pubsubPayload);
@@ -127,23 +139,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     }
 
     private void runFromPubsubEvent(PubsubPayload payload) throws IOException {
-        final Set<String> pubsubIdsProcessed = new HashSet<>();
-        pubsubIdsProcessed.addAll(getMessageIdsToIgnore());
-        log.info("List of message ids to ignore has {} items", pubsubIdsProcessed.size());
-        if (!pubsubIdsProcessed.contains(payload.getPubsubMessageId()) || payload.isForce()) {
-            pubsubIdsProcessed.add(payload.getPubsubMessageId());
-            saveMessageIdsToIgnore(new PubsubIdsToIgnore(pubsubIdsProcessed));
-            try {
-                app.run("");
-            } catch (Exception e) {
-                log.error("Could not run vanta user sync", e);
-            }
-        } else {
-            if (pubsubIdsProcessed.contains(payload.getPubsubMessageId())) {
-                log.info("Skipping duplicate processing of pubsub message {}", payload.getPubsubMessageId());
-            }
-            log.info("To force the run, send in " + PubsubPayload.class.getName() + " payload with force=true");
-        }
+        this.pubsubPayload = payload;
+        app.run("");
     }
 
     public static void main(String[] args) {
@@ -155,9 +152,11 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     }
 
     private UserSyncConfig loadConfig() {
-        userSyncConfig = new Gson().fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
-        peopleInScope.clear();
-        peopleInScope.addAll(userSyncConfig.getPeopleInScope());
+        if (userSyncConfig == null) {
+            userSyncConfig = gson.fromJson(secretManagerTemplate.getSecretString(vantaConfigSecret), UserSyncConfig.class);
+            peopleInScope.clear();
+            peopleInScope.addAll(userSyncConfig.getPeopleInScope());
+        }
         return userSyncConfig;
     }
 
@@ -165,21 +164,31 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public void run(String... args) throws Exception {
         log.info("Starting vanta sync app");
         loadConfig();
-        // now that we've loaded the config, perform the sync
-        Instant start = Instant.now();
-        String summaryMessage = syncVantaAccounts();
-        Duration duration = Duration.between(start, Instant.now());
+        final Set<String> pubsubIdsProcessed = new HashSet<>(getMessageIdsToIgnore());
+        log.info("List of message ids to ignore has {} items", pubsubIdsProcessed.size());
+        if (!pubsubIdsProcessed.contains(pubsubPayload.getPubsubMessageId()) || pubsubPayload.isForce()) {
+            pubsubIdsProcessed.add(pubsubPayload.getPubsubMessageId());
+            saveMessageIdsToIgnore(new PubsubIdsToIgnore(pubsubIdsProcessed));
+            Instant start = Instant.now();
+            String summaryMessage = syncVantaAccounts();
+            Duration duration = Duration.between(start, Instant.now());
 
-        log.info("Vanta sync completed after {}m.  Posting update to slack.", duration.toMinutes());
+            log.info("Vanta sync completed after {}m.  Posting update to slack.", duration.toMinutes());
 
-        try (Slack slack = Slack.getInstance()) {
-            ChatPostMessageResponse response = slack.methods(userSyncConfig.getSlackToken()).chatPostMessage(req -> req
-                    .channel(userSyncConfig.getSlackChannel())
-                    .text("Vanta sync complete after " + duration.toMinutes() + "m.\n" + summaryMessage));
+            try (Slack slack = Slack.getInstance()) {
+                ChatPostMessageResponse response = slack.methods(userSyncConfig.getSlackToken()).chatPostMessage(req -> req
+                        .channel(userSyncConfig.getSlackChannel())
+                        .text("Vanta sync complete after " + duration.toMinutes() + "m.\n" + summaryMessage));
 
-            if (!response.isOk()) {
-                log.info("Slack message returned {} {}", response.getMessage(), response.getError());
+                if (!response.isOk()) {
+                    log.info("Slack message returned {} {}", response.getMessage(), response.getError());
+                }
             }
+        } else {
+            if (pubsubIdsProcessed.contains(pubsubPayload.getPubsubMessageId())) {
+                log.info("Skipping duplicate processing of pubsub message {}", pubsubPayload.getPubsubMessageId());
+            }
+            log.info("To force the run, send in " + PubsubPayload.class.getName() + " payload with force=true");
         }
     }
 
@@ -394,8 +403,11 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         }
     }
 
+    /**
+     * Loads the message ids to ignore from the gs path indicated in the config secret.
+     */
     private Set<String> getMessageIdsToIgnore() throws IOException {
-        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, pathToMessageIdsFile.getURI().toString()); // todo arz move to field
+        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, userSyncConfig.getMessageIdsBucketPath()); // todo arz move to field
         if (!gcsResource.bucketExists()) {
             throw new RuntimeException("Bucket " + gcsResource.getBucketName() + " not found");
         }
@@ -405,14 +417,14 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             log.info("Created blob {}", blob.getName());
             saveMessageIdsToIgnore(new PubsubIdsToIgnore());
         }
-        String contentsAsString = StreamUtils.copyToString(pathToMessageIdsFile.getInputStream(), Charset.defaultCharset());
-        return new Gson().fromJson(contentsAsString, PubsubIdsToIgnore.class).getIdsToIgnore(); // todo arz move to field
+        String contentsAsString = StreamUtils.copyToString(gcsResource.getInputStream(), Charset.defaultCharset());
+        return gson.fromJson(contentsAsString, PubsubIdsToIgnore.class).getIdsToIgnore();
     }
 
     private void saveMessageIdsToIgnore(PubsubIdsToIgnore idsToIgnore) throws IOException {
-        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, pathToMessageIdsFile.getURI().toString());
+        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, userSyncConfig.getMessageIdsBucketPath());
         try (OutputStream os = ((WritableResource) gcsResource).getOutputStream()) {
-            os.write(new Gson().toJson(idsToIgnore).getBytes());
+            os.write(gson.toJson(idsToIgnore).getBytes());
             os.flush();
         }
     }
