@@ -212,6 +212,7 @@ export type TextQuestion = TitledQuestion & {
   size?: number
   min?: number
   max?: number
+  placeholder?: I18nSurveyElement
 }
 
 export type SignatureQuestion = TitledQuestion & {

@@ -98,7 +98,7 @@ function App() {
 
 
   let landingRoutes: JSX.Element[] = []
-  if (localContent.navbarItems) {
+  if (localContent.pages) {
     landingRoutes = localContent.pages
       .map((page: HtmlPage, index: number) => (
         <Route

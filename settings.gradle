@@ -1,4 +1,4 @@
 rootProject.name = 'juniper'
-include('core', 'populate', 'pepper-import', 'api-admin', 'api-participant')
+include('core', 'populate', 'pepper-import', 'api-admin', 'api-participant', 'compliance')
 
 gradle.ext.releaseVersion = '1.0.75'

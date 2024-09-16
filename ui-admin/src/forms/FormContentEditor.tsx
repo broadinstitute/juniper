@@ -1,10 +1,22 @@
 import React, { useState } from 'react'
-import { Tab, Tabs } from 'react-bootstrap'
+import {
+  Tab,
+  Tabs
+} from 'react-bootstrap'
 
-import { AnswerMapping, FormContent, Portal, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
+import {
+  AnswerMapping,
+  FormContent,
+  Portal,
+  PortalEnvironmentLanguage,
+  VersionedForm
+} from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
-import { OnChangeAnswerMappings, OnChangeFormContent } from './formEditorTypes'
+import {
+  OnChangeAnswerMappings,
+  OnChangeFormContent
+} from './formEditorTypes'
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
@@ -13,6 +25,7 @@ import { isEmpty } from 'lodash'
 import useStateCallback from 'util/useStateCallback'
 import AnswerMappingEditor from 'study/surveys/AnswerMappingEditor'
 import { SplitFormDesigner } from './designer/split/SplitFormDesigner'
+import { SplitCalculatedValueDesigner } from 'forms/designer/SplitCalculatedValueDesigner'
 import { userHasPermission, useUser } from 'user/UserProvider'
 
 type FormContentEditorProps = {
@@ -39,7 +52,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     onAnswerMappingChange
   } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('designer')
+  const [activeTab, setActiveTab] = useState<string | null>('split')
   const [tabsEnabled, setTabsEnabled] = useState(true)
   const { user } = useUser()
 
@@ -54,7 +67,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         unmountOnExit
         onSelect={setActiveTab}
       >
-        <Tab
+        {userHasPermission(user, portal.id, 'prototype_tester') &&< Tab
           disabled={activeTab !== 'designer' && !tabsEnabled}
           eventKey="designer"
           title="Designer"
@@ -77,8 +90,8 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               }}
             />
           </ErrorBoundary>
-        </Tab>
-        {userHasPermission(user, portal.id, 'prototype_tester') && <Tab
+        </Tab> }
+        <Tab
           disabled={activeTab !== 'split' && !tabsEnabled}
           eventKey="split"
           title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
@@ -100,7 +113,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               }}
             />
           </ErrorBoundary>
-        </Tab> }
+        </Tab>
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
@@ -132,6 +145,16 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             initialAnswerMappings={initialAnswerMappings}
             onChange={onAnswerMappingChange}
           />
+        </Tab>
+        <Tab
+          title={'Derived Values'}
+          eventKey={'derivedvalues'}
+          disabled={activeTab !== 'derivedvalues' && !tabsEnabled}
+        >
+          <SplitCalculatedValueDesigner content={editedContent} onChange={newForm => {
+            setEditedContent(newForm)
+            onFormContentChange([], newForm)
+          }}/>
         </Tab>
         <Tab
           disabled={activeTab !== 'preview' && !tabsEnabled}
