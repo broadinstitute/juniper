@@ -122,7 +122,7 @@ const descriptionForStatus = (kitRequest: KitRequest) => {
 
 function KitStatus({ kitRequest }: {kitRequest: KitRequest}) {
   return <div className={kitEventClass} style={kitEventProps}>
-    <div className="d-flex justify-content-between">
+    <div className="d-flex justify-content-between px-0">
       <div className={iconClass}>
         <FontAwesomeIcon className="pt-1" icon={iconForStatus(kitRequest.status)} style={iconProps}/>
       </div>

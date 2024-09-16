@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
-import { Enrollee, KitRequest, PortalEnvironment } from '@juniper/ui-core'
-import { usePortalEnv } from 'providers/PortalProvider'
+import { Enrollee, KitRequest } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBox, faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import QRCode from 'react-qr-code'
@@ -10,7 +9,6 @@ import QRCode from 'react-qr-code'
 //TODO: JN-1294, implement i18n for this entire component
 export default function KitInstructions() {
   const { ppUser, enrollees } = useActiveUser()
-  const { portalEnv } = usePortalEnv()
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
 
   return <div
@@ -20,11 +18,11 @@ export default function KitInstructions() {
       <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
         <div className="card-body">
           <div className="align-items-center">
-            <BaseKitInstructions portalEnv={portalEnv}/>
+            <BaseKitInstructions/>
             {activeEnrollee ?
               <KitContent enrollee={activeEnrollee}/> :
               <div className="text-danger">
-                No enrollee found. Please contact a member of the study team.
+                No enrollee found. Please contact a member of the study team for assistance.
               </div>
             }
           </div>
@@ -34,19 +32,16 @@ export default function KitInstructions() {
   </div>
 }
 
-const BaseKitInstructions = ({ portalEnv }: { portalEnv: PortalEnvironment }) => {
-  const studySupportEmail = portalEnv.portalEnvironmentConfig.emailSourceAddress
-
+const BaseKitInstructions = () => {
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
     <h1 className="pb-3">Sample Kit Instructions</h1>
     <div className="pb-3">
-      If you are receiving a sample collection kit in-person, you will have the option to
-      complete the collection kit now and return it immediately, or take it home and ship it
-      back using the provided return label.
+      If you are completing a sample collection kit in-person, please follow the instructions provided
+        by a member of the study team. Any additional information that you may need, such as your unique
+        participant identifier, will be provided below.
     </div>
     <div className="pb-3">
-      If you have any questions, please ask a member of the
-      study team or email <a href={`mailto:${studySupportEmail}`}>{studySupportEmail}</a>
+      If you have any questions, please ask a member of the study team.
     </div>
   </div>
 }
@@ -65,14 +60,14 @@ const UnconsentedKitView = () => {
   return (
     <div className="mb-3 rounded round-3 p-3 bg-white shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="text-danger me-1" icon={faCircleExclamation}/> Consent Required
+        <FontAwesomeIcon className="text-danger me-2" icon={faCircleExclamation}/> Consent Required
       </h2>
       <div className="mb-3">
-          Before completing a sample collection kit, you must read and sign the study consent form.
+        Before completing a sample collection kit, you must read and sign the study consent form.
       </div>
       <div className="d-flex justify-content-center">
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-            Start Consent
+          Start Consent
         </Link>
       </div>
     </div>
@@ -83,7 +78,7 @@ const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
   return (
     <div className="mb-3 rounded round-3 py-4 px-md-5 bg-white shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-1" icon={faBox}/> Your sample collection kit
+        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
       </h2>
       <div>
           To receive a sample collection kit, a member of the study team will scan your unique participation code
@@ -111,7 +106,7 @@ const CollectedKitView = () => {
   return (
     <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-1" icon={faBox}/> Your sample collection kit
+        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
       </h2>
       <div className="mb-3">
           A member of the study team has received your sample collection kit.
@@ -123,7 +118,7 @@ const CollectedKitView = () => {
       </div>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-                Return to Dashboard
+          Return to Dashboard
         </Link>
       </div>
     </div>
@@ -134,7 +129,7 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
   return (
     <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-md-5">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-1" icon={faBox}/> Your sample collection kit
+        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
       </h2>
       <div className="mb-3">
           A member of the team has provided you with a sample collection kit.
@@ -144,14 +139,14 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
       </div>
       <label className="form-label fw-bold mb-0">Your kit identifier:</label>
       <input
-        className="mb-2 form-control"
+        className="mb-2 form-control bg-white"
         disabled={true}
         placeholder={'No kit provided'}
         value={activeKit.kitBarcode}>
       </input>
       <div className="mt-3">
-              After you have completed the sample collection kit, please return it to a member of the study team
-              and allow them to scan your participation code below.
+          After you have completed the sample collection kit, please return it to a member of the study team
+          and allow them to scan your participation code below.
       </div>
       <div className="d-flex flex-column align-items-center">
         <QRCode value={enrollee.shortcode} size={300}
@@ -159,7 +154,7 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
       </div>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-                  Return to Dashboard
+          Return to Dashboard
         </Link>
       </div>
     </div>
