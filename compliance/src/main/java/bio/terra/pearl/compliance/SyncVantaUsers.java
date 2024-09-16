@@ -7,6 +7,7 @@ import bio.terra.pearl.compliance.model.GithubAccount;
 import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
+import bio.terra.pearl.compliance.model.PubsubIdsToIgnore;
 import bio.terra.pearl.compliance.model.PubsubPayload;
 import bio.terra.pearl.compliance.model.SlackUser;
 import bio.terra.pearl.compliance.model.UpdateVantaMetadata;
@@ -19,6 +20,9 @@ import bio.terra.pearl.compliance.model.VantaResults;
 import bio.terra.pearl.compliance.model.VantaResultsResponse;
 import bio.terra.pearl.compliance.model.WorkdayAccount;
 import com.google.cloud.functions.CloudEventsFunction;
+import com.google.cloud.spring.storage.GoogleStorageResource;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
 import com.google.cloud.spring.secretmanager.SecretManagerTemplate;
 import com.google.gson.Gson;
 import com.slack.api.Slack;
@@ -34,11 +38,17 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -71,15 +81,25 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
 
+    /**
+     * Storage path to list of message ids to ignore.
+     * Because this job takes longer than the max pubsub
+     * ack timeout, pubsub will retry messages.  This list
+     * of messages tells us which ones we've seen before
+     * and can safely ignore.  Since this is gcs storage and it's
+     * possible that multiple jobs run at once, there is a chance
+     * of race conditions and overwrites, but that isn't something
+     * that matters for this scheduled job.
+     */
+    @Value("gs://#{environment.PUBSUB_IDS_FILE_BUCKET}/idsToIgnore.json")
+    private Resource pathToMessageIdsFile;
+
+    @Autowired
+    private Storage storage;
+
     private UserSyncConfig userSyncConfig;
 
     private final Collection<PersonInScope> peopleInScope = new ArrayList<>();
-
-    // ever growing list of pubsub ids we've already seen.  this probably
-    // won't blow out memory for years.  we're keeping track of these
-    // to avoid pubsub retries since this script takes longer to run
-    // than the max pubsub timeout.
-    public static final Set<String> pubsubIdsProcessed = new HashSet<>();
 
     private final SpringApplication app = new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build();
 
@@ -90,7 +110,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
      */
     @Override
     public void accept(CloudEvent event) throws Exception {
-        log.info("Since last init, we have processed {} messages", pubsubIdsProcessed.size());
         String payload = new String(event.getData().toBytes(), StandardCharsets.UTF_8);
         log.info("Received payload {}", payload);
 
@@ -107,9 +126,13 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         }
     }
 
-    private void runFromPubsubEvent(PubsubPayload payload) {
+    private void runFromPubsubEvent(PubsubPayload payload) throws IOException {
+        final Set<String> pubsubIdsProcessed = new HashSet<>();
+        pubsubIdsProcessed.addAll(getMessageIdsToIgnore());
+        log.info("List of message ids to ignore has {} items", pubsubIdsProcessed.size());
         if (!pubsubIdsProcessed.contains(payload.getPubsubMessageId()) || payload.isForce()) {
             pubsubIdsProcessed.add(payload.getPubsubMessageId());
+            saveMessageIdsToIgnore(new PubsubIdsToIgnore(pubsubIdsProcessed));
             try {
                 app.run("");
             } catch (Exception e) {
@@ -125,7 +148,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     public static void main(String[] args) {
         try {
-            new SyncVantaUsers().runFromPubsubEvent(new PubsubPayload(true));
+            new SpringApplicationBuilder(SyncVantaUsers.class).web(WebApplicationType.NONE).bannerMode(Banner.Mode.OFF).build().run("");
         } catch (Exception e) {
             log.error("Could not run sync", e);
         }
@@ -368,6 +391,29 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             log.debug("Updated {} {} objects to {} with response {}", updateMetadata.getResourceIds().size(), integrationId, isInScope, updateResult);
         } catch (VantaUpdateException e) {
             log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.getResourceIds().size(), e.getMessage());
+        }
+    }
+
+    private Set<String> getMessageIdsToIgnore() throws IOException {
+        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, pathToMessageIdsFile.getURI().toString()); // todo arz move to field
+        if (!gcsResource.bucketExists()) {
+            throw new RuntimeException("Bucket " + gcsResource.getBucketName() + " not found");
+        }
+        if (!gcsResource.exists()) {
+            log.info("Creating {}", gcsResource.getBlobName());
+            Blob blob = gcsResource.createBlob();
+            log.info("Created blob {}", blob.getName());
+            saveMessageIdsToIgnore(new PubsubIdsToIgnore());
+        }
+        String contentsAsString = StreamUtils.copyToString(pathToMessageIdsFile.getInputStream(), Charset.defaultCharset());
+        return new Gson().fromJson(contentsAsString, PubsubIdsToIgnore.class).getIdsToIgnore(); // todo arz move to field
+    }
+
+    private void saveMessageIdsToIgnore(PubsubIdsToIgnore idsToIgnore) throws IOException {
+        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, pathToMessageIdsFile.getURI().toString());
+        try (OutputStream os = ((WritableResource) gcsResource).getOutputStream()) {
+            os.write(new Gson().toJson(idsToIgnore).getBytes());
+            os.flush();
         }
     }
 }
