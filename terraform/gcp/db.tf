@@ -19,7 +19,7 @@ resource "google_sql_database" "database" {
   instance = google_sql_database_instance.d2p.name
 }
 
-resource "random_string" "random_db_password" {
+resource "random_password" "random_db_password" {
   length           = 24
   special          = true
 }
@@ -28,7 +28,7 @@ resource "random_string" "random_db_password" {
 resource "google_sql_user" "users" {
   name     = "d2p"
   instance = google_sql_database_instance.d2p.name
-  password = random_string.random_db_password.result
+  password = random_password.random_db_password.result
 }
 
 
