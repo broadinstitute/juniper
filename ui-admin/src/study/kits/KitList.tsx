@@ -23,12 +23,13 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import KitStatusCell from 'study/participants/KitStatusCell'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { faExternalLinkAlt, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
-import { KitRequestDetails } from 'study/participants/KitRequests'
+import { convertToHumanReadable, KitRequestDetails } from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { faFedex } from '@fortawesome/free-brands-svg-icons'
 
 type KitStatusTabConfig = {
   statuses: string[],
@@ -84,7 +85,7 @@ const statusTabs: KitStatusTabConfig[] = [
     key: 'collected',
     additionalColumns: [
       'creatingAdminUserId',
-      'collectingAdminUserId'
+      'collectingAdminUserId', 'returnTrackingNumber'
     ]
   },
   {
@@ -244,7 +245,8 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Kit Origin',
     accessorKey: 'distributionMethod',
-    enableColumnFilter: false
+    enableColumnFilter: false,
+    accessorFn: data => convertToHumanReadable(data.distributionMethod)
   }, {
     header: 'Requested By',
     accessorKey: 'creatingAdminUserId',
@@ -263,7 +265,13 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Return Tracking Number',
     accessorKey: 'returnTrackingNumber',
-    enableColumnFilter: false
+    enableColumnFilter: false,
+    cell: data => data.getValue() ? <><FontAwesomeIcon icon={faFedex} className={'fa-xl me-1'}/>
+      <a href={`https://www.fedex.com/apps/fedextrack/?tracknumbers=${data.getValue()}`} target="_blank">
+        {/* todo: these might not always be fedex */}
+        {data.getValue()} <FontAwesomeIcon icon={faExternalLinkAlt}/>
+      </a>
+    </> : <span className={'text-muted'}>n/a</span>
   }, {
     header: 'Returned',
     accessorKey: 'receivedAt',

@@ -2,6 +2,7 @@ import React from 'react'
 import InfoPopup from 'components/forms/InfoPopup'
 import { Placement } from 'react-bootstrap/types'
 import { KitRequest } from '@juniper/ui-core'
+import { convertToHumanReadable } from './KitRequests'
 
 /**
  * Component to render the currentStatus as reported by Pepper, including some help text to explain what the statuses
@@ -25,7 +26,7 @@ export default function KitStatusCell(
   const errorMessage = kitRequest.errorMessage ? `: ${kitRequest.errorMessage}` : ''
   const content = `${info}${errorMessage}`
   return <>
-    {kitRequest.status}
+    {convertToHumanReadable(kitRequest.status)}
     {info && <InfoPopup content={content} placement={infoPlacement}/>}
   </>
 }

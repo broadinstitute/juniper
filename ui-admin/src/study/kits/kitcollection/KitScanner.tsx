@@ -12,8 +12,8 @@ import { BarcodeScanner } from './BarcodeScanner'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCircle,
   faCircleCheck,
-  faCircleDot,
   faCircleExclamation,
   faCircleQuestion,
   faSearch
@@ -31,12 +31,14 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [selectedScanMode, setSelectedScanMode] = useState<{ value: string, label: string } | undefined>()
   const [showEnrolleeCodeScanner, setShowEnrolleeCodeScanner] = useState(false)
   const [showKitScanner, setShowKitScanner] = useState(false)
+  const [showReturnTrackingNumberScanner, setShowReturnTrackingNumberScanner] = useState(false)
   const [enrollee, setEnrollee] = useState<Enrollee>()
   const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
   const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
-  const [kitBarcode, setKitBarcode] = useState<string | undefined>()
+  const [kitBarcode, setKitBarcode] = useState<string>()
   const [kitCodeError, setKitCodeError] = useState<string>()
-  //todo implement kit return label scanning
+  const [returnTrackingNumber, setReturnTrackingNumber] = useState<string>()
+  const [returnTrackingNumberError, setReturnTrackingNumberError] = useState<string>()
 
   const [enableManualOverride, setEnableManualOverride] = useState(false)
   const [enrolleeShortcodeOverride, setEnrolleeShortcodeOverride] = useState<string>()
@@ -69,7 +71,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   }
 
   const collectKit = async () => {
-    if (!enrollee || !kitBarcode) { return }
+    if (!enrollee || !kitBarcode || !returnTrackingNumber) { return } //notify of an error here
     doApiLoad(async () => {
       await Api.collectKit(
         studyEnvContext.portal.shortcode,
@@ -77,7 +79,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         studyEnvContext.currentEnv.environmentName,
         enrollee.shortcode,
         {
-          kitBarcode
+          kitBarcode,
+          returnTrackingNumber
         }
       )
       Store.addNotification(successNotification('Kit successfully collected'))
@@ -239,19 +242,19 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       </Button>
       { showKitScanner &&
         <BarcodeScanner
-          expectedFormats={['code_128']}
+          expectedFormats={['upc_a']}
           onError={error => setKitCodeError(error)}
           onSuccess={result => {
             setKitBarcode(result.rawValue)
             setShowKitScanner(false)
           }}/>
       }
-      { enableManualOverride && <TextInput
+      <TextInput
         className="my-2"
         disabled={false}
         value={kitBarcode}
         onChange={e => setKitBarcode(e)}>
-      </TextInput> }
+      </TextInput>
       { kitCodeError &&
             <div className="text-danger">{kitCodeError}</div>
       }
@@ -259,36 +262,36 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
     { selectedScanMode?.value === 'COLLECT' &&
         <KitCollectionStepWrapper
           title={'Step 5'}
-          status={kitBarcode ? 'COMPLETE' : 'INCOMPLETE'}
+          status={returnTrackingNumber ? 'COMPLETE' : 'INCOMPLETE'}
         >
           <div className="mb-3">Place the kit in the provided return packaging, and
         click to open the camera and scan the kit return label</div>
           <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
-            tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
-            onClick={() => setShowKitScanner(!showKitScanner)}>
+            tooltip={!kitBarcode ? 'You must complete the prior steps first' : ''}
+            onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
         Click to scan kit return label
           </Button>
           { showKitScanner &&
           <BarcodeScanner
-            expectedFormats={['code_128']}
-            onError={error => setKitCodeError(error)}
+            expectedFormats={['upc_a']}
+            onError={error => setReturnTrackingNumberError(error)}
             onSuccess={result => {
-              setKitBarcode(result.rawValue)
-              setShowKitScanner(false)
+              setReturnTrackingNumber(result.rawValue)
+              setShowReturnTrackingNumberScanner(false)
             }}/>
           }
-          { enableManualOverride && <TextInput
+          <TextInput
             className="my-2"
             disabled={false}
-            value={kitBarcode}
-            onChange={e => setKitBarcode(e)}>
-          </TextInput> }
-          { kitCodeError &&
-          <div className="text-danger">{kitCodeError}</div>
+            value={returnTrackingNumber}
+            onChange={e => setReturnTrackingNumber(e)}>
+          </TextInput>
+          { returnTrackingNumberError &&
+          <div className="text-danger">{returnTrackingNumberError}</div>
           }
         </KitCollectionStepWrapper> }
     <div className="d-flex justify-content-end">
-      <Button disabled={!(kitBarcode && enrollee && selectedScanMode)} variant={'primary'}
+      <Button disabled={!(kitBarcode && enrollee && selectedScanMode)} variant={'primary'} //todo check return label
         onClick={async () => {
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
@@ -326,7 +329,7 @@ export const stepStatusToIcon = (status: StepStatus) => {
     case 'COMPLETE':
       return <FontAwesomeIcon className="text-success me-1" icon={faCircleCheck}/>
     case 'INCOMPLETE':
-      return <FontAwesomeIcon className="text-muted me-1" icon={faCircleDot}/>
+      return <FontAwesomeIcon className="text-muted me-1" icon={faCircle}/>
     case 'ERROR':
       return <FontAwesomeIcon className="text-danger me-1" icon={faCircleExclamation}/>
     default:

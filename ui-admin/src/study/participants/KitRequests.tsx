@@ -31,7 +31,7 @@ function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string })
   if (!sentToAddressJson) {
     return <div className="text-muted fst-italic">n/a<InfoPopup content={
       <div>
-        <div className="d=flex">Kits assigned to a participant in person will not have a shipping address</div>
+        <div className="d=flex">Kits distributed to a participant in person will not have a shipping address</div>
       </div>
     } placement='left'/></div>
   }
@@ -60,7 +60,8 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
 }, {
   header: 'Distribution Method',
-  accessorKey: 'distributionMethod'
+  accessorKey: 'distributionMethod',
+  accessorFn: data => convertToHumanReadable(data.distributionMethod)
 }, {
   header: 'Details',
   accessorKey: 'details',
@@ -123,4 +124,9 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       {renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}
     </div>}
   </InfoCard>
+}
+
+export const convertToHumanReadable = (value: string) => {
+  //takes a string such as IN_PERSON and converts it to In Person
+  return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
 }

@@ -139,7 +139,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitBarcode, boolean skipAddressValidation) { }
 
-    public record KitCollectionDto(String kitBarcode) {}
+    public record KitCollectionDto(String kitBarcode, String returnTrackingNumber) {}
 
     /**
      * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address
