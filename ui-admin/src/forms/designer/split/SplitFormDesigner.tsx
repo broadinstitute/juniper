@@ -7,11 +7,11 @@ import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faCaretUp, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
-import { SplitFormTableOfContents } from './SplitFormTableOfContents'
 import { PageControls } from './controls/PageControls'
 import classNames from 'classnames'
 import { InsertElementControls } from './controls/InsertElementControls'
 import { useSearchParams } from 'react-router-dom'
+import { FormTableOfContents } from '../../FormTableOfContents'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -61,7 +61,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     <div className="row w-100 mx-0">
       <div className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
-        { !hideTableOfContents && <SplitFormTableOfContents
+        { !hideTableOfContents && <FormTableOfContents
           formContent={content}
           selectedElementPath={selectedElementPath}
           onSelectElement={setSelectedElementPath}

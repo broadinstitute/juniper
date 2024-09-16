@@ -39,42 +39,18 @@ const getTableOfContentsTreeHelper = (parentPath: string) => {
 /** Convert a FormContent object into a TreeItemT to render the table of contents as a string. */
 export const getTableOfContentsTree = (formContent: FormContent): FormContentTableOfContentsTreeItem => {
   return {
-    label: 'Form',
     data: {
-      isSelectable: false,
-      path: ''
+      isSelectable: true,
+      path: 'pages'
     },
-    children: [
-      {
-        label: 'Pages',
-        data: {
-          isSelectable: true,
-          path: 'pages'
-        },
-        children: (formContent.pages || []).map((page, pageIndex) => ({
-          label: `Page ${pageIndex + 1}`,
-          data: {
-            isSelectable: true,
-            path: `pages[${pageIndex}]`
-          },
-          children: page.elements.map(getTableOfContentsTreeHelper(`pages[${pageIndex}].elements`))
-        }))
+    children: (formContent.pages || []).map((page, pageIndex) => ({
+      label: `Page ${pageIndex + 1}`,
+      data: {
+        isSelectable: true,
+        path: `pages[${pageIndex}]`
       },
-      {
-        label: 'Question templates',
-        data: {
-          isSelectable: true,
-          path: 'questionTemplates'
-        },
-        children: (formContent.questionTemplates || []).map((question, questionIndex) => ({
-          label: question.name,
-          data: {
-            isSelectable: true,
-            path: `questionTemplates[${questionIndex}]`
-          }
-        }))
-      }
-    ]
+      children: page.elements.map(getTableOfContentsTreeHelper(`pages[${pageIndex}].elements`))
+    }))
   }
 }
 
