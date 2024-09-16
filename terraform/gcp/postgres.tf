@@ -23,7 +23,7 @@ resource "google_sql_database" "database" {
 resource "google_sql_user" "users" {
   name     = "d2p"
   instance = google_sql_database_instance.d2p.name
-  password = "d2p4eva!"
+  password = "d2p4eva!" # todo: make this randomly generated
 }
 
 # Create GSA and assign roles
@@ -49,11 +49,14 @@ resource "google_project_iam_binding" "access-postgres" {
   ]
 }
 
-# resource "google_project_iam_member" "db_iam_user_cloudsql_instance_user" {
-#   project = "broad-ddp-dev"
-#   role    = "roles/cloudsql.instanceUser"
-#   member  = format("user:%s", google_sql_user.db_iam_user.name)
-# }
+resource "google_project_iam_binding" "access-secrets" {
+  project = "broad-ddp-dev"
+  role    = "roles/secretmanager.secretAccessor"
+  members = [
+    "serviceAccount:${google_service_account.d2p-db-gsa.email}"
+  ]
+}
+
 
 # Create KSA + workload identity to link it to GSA with DB access
 
@@ -74,4 +77,47 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
     "serviceAccount:broad-ddp-dev.svc.id.goog[${kubernetes_service_account.d2p-db-ksa.metadata.0.namespace}/${kubernetes_service_account.d2p-db-ksa.metadata.0.name}]"
   ]
 }
+
+
+# create google secret manager db secrets
+
+resource "google_secret_manager_secret" "d2p_db_user" {
+  secret_id = "d2p-db-user"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_user_data" {
+  secret = google_secret_manager_secret.d2p_db_user.id
+
+  secret_data = google_sql_user.users.name
+}
+
+resource "google_secret_manager_secret" "d2p_db_name" {
+  secret_id = "d2p-db-name"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_name_data" {
+  secret = google_secret_manager_secret.d2p_db_name.id
+
+  secret_data = google_sql_database.database.name
+}
+
+resource "google_secret_manager_secret" "d2p_db_password" {
+  secret_id = "d2p-db-password"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "d2p_db_password_data" {
+  secret = google_secret_manager_secret.d2p_db_password.id
+
+  secret_data = google_sql_user.users.password
+}
+
 
