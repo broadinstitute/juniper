@@ -5,13 +5,13 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket, faCaretUp, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCaretUp, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { PageControls } from './controls/PageControls'
 import classNames from 'classnames'
 import { InsertElementControls } from './controls/InsertElementControls'
 import { useSearchParams } from 'react-router-dom'
-import { FormTableOfContents } from '../../FormTableOfContents'
+import { FormTableOfContents } from 'forms/FormTableOfContents'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -31,7 +31,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   const setSelectedElementPath = (path: string) => {
     searchParams.set('selectedElementPath', path)
     setSearchParams(searchParams)
+    scrollToElement(path)
+  }
 
+  const scrollToElement = (path: string) => {
     //parses path from url params, i.e.: selectedElementPath=pages%5B0%5D.elements%5B0%5D
     const pathParts = path.split('.')
     const pageElement = pathParts[0]
@@ -44,28 +47,26 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 
     if (pathParts.length > 1) {
       const elementIndex = parseInt(pathParts[1].replace('elements[', '').replace(/\]/g, ''))
+      const element = document.getElementById(`element[${elementIndex}]`)
       //we need to wait for the element to be rendered so we can scroll to it
-      setTimeout(() => scrollToElement(elementIndex), 100)
-    }
-  }
-
-  //scrolls to the element with id `element[${elementIndex}]`
-  const scrollToElement = (elementIndex: number) => {
-    const element = document.getElementById(`element[${elementIndex}]`)
-    if (element) {
-      element.scrollIntoView({ behavior: 'auto' })
+      if (element) {
+        setTimeout(() => element.scrollIntoView({ behavior: 'auto' }), 100)
+      }
     }
   }
 
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
-      <div className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}
+      <div
+        className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}
         style={{ overflowY: 'scroll' }}>
-        { !hideTableOfContents && <FormTableOfContents
-          formContent={content}
-          selectedElementPath={selectedElementPath}
-          onSelectElement={setSelectedElementPath}
-        />}
+        { !hideTableOfContents &&
+            <FormTableOfContents
+              formContent={content}
+              selectedElementPath={selectedElementPath}
+              onSelectElement={setSelectedElementPath}
+            />
+        }
       </div>
       <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
         <div className="d-flex justify-content-between border border-top-0 rounded-bottom-3 p-2 bg-light">
@@ -96,9 +97,9 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
                 const newContent = { ...content }
                 newContent.pages.splice(currentPageNo, 1)
                 onChange(newContent)
-                setCurrentPageNo(Math.min(currentPageNo, newContent.pages.length - 1))
+                setCurrentPageNo(Math.max(0, currentPageNo - 1))
               }}>
-              <FontAwesomeIcon icon={faTrash}/> Delete page
+              <FontAwesomeIcon icon={faTrashAlt}/> Delete page
             </Button>
           </div>
           <PageControls

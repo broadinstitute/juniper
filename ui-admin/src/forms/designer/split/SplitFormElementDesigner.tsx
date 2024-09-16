@@ -44,7 +44,7 @@ export const SplitFormElementDesigner = memo(({
   surveyModel.showQuestionNumbers = false
 
   return <div key={elementIndex} className="row">
-    <div className="col-md-6 px-3 rounded-start-3 border border-end-0">
+    <div className="col-md-6 px-3 rounded-start-3 border border-end-0 bg-light-subtle">
       <div className="d-flex justify-content-end">
         <div className="d-flex border rounded-3 rounded-top-0 border-top-0 bg-light">
           <IconButton icon={faCode}
