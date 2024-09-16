@@ -36,6 +36,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
   const [kitBarcode, setKitBarcode] = useState<string | undefined>()
   const [kitCodeError, setKitCodeError] = useState<string>()
+  //todo implement kit return label scanning
 
   const [enableManualOverride, setEnableManualOverride] = useState(false)
   const [enrolleeShortcodeOverride, setEnrolleeShortcodeOverride] = useState<string>()
@@ -255,6 +256,37 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
             <div className="text-danger">{kitCodeError}</div>
       }
     </KitCollectionStepWrapper>
+    { selectedScanMode?.value === 'COLLECT' &&
+        <KitCollectionStepWrapper
+          title={'Step 5'}
+          status={kitBarcode ? 'COMPLETE' : 'INCOMPLETE'}
+        >
+          <div className="mb-3">Place the kit in the provided return packaging, and
+        click to open the camera and scan the kit return label</div>
+          <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
+            tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
+            onClick={() => setShowKitScanner(!showKitScanner)}>
+        Click to scan kit return label
+          </Button>
+          { showKitScanner &&
+          <BarcodeScanner
+            expectedFormats={['code_128']}
+            onError={error => setKitCodeError(error)}
+            onSuccess={result => {
+              setKitBarcode(result.rawValue)
+              setShowKitScanner(false)
+            }}/>
+          }
+          { enableManualOverride && <TextInput
+            className="my-2"
+            disabled={false}
+            value={kitBarcode}
+            onChange={e => setKitBarcode(e)}>
+          </TextInput> }
+          { kitCodeError &&
+          <div className="text-danger">{kitCodeError}</div>
+          }
+        </KitCollectionStepWrapper> }
     <div className="d-flex justify-content-end">
       <Button disabled={!(kitBarcode && enrollee && selectedScanMode)} variant={'primary'}
         onClick={async () => {
