@@ -41,12 +41,14 @@ export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageC
     <div className="d-flex align-items-center">
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === 0}
+        aria-label={'Go to first page'}
         tooltip={'Go to first page'}
         onClick={() => handlePageChange('first')}>
         <FontAwesomeIcon icon={faBackward}/>
       </Button>
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === 0}
+        aria-label={'Go to previous page'}
         tooltip={'Go to previous page'}
         onClick={() => handlePageChange('previous')}>
         <FontAwesomeIcon icon={faCaretLeft}/>
@@ -54,12 +56,14 @@ export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageC
       <span className={'px-1'}>Page {currentPageNo + 1} of {numPages}</span>
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === content.pages.length - 1}
+        aria-label={'Go to next page'}
         tooltip={'Go to next page'}
         onClick={() => handlePageChange('next')}>
         <FontAwesomeIcon icon={faCaretRight}/>
       </Button>
       <Button variant="light" className="border m-1"
         disabled={currentPageNo === content.pages.length - 1}
+        aria-label={'Go to last page'}
         tooltip={'Go to last page'}
         onClick={() => handlePageChange('last')}>
         <FontAwesomeIcon icon={faForward}/>

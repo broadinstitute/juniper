@@ -96,8 +96,7 @@ export const SplitFormElementDesigner = memo(({
         />
       }
     </div>
-    <div className="col-md-6 p-3 rounded-end-3 border survey-hide-complete"
-      style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
+    <div className="col-md-6 rounded-end-3 border survey-hide-complete" style={{ backgroundColor: '#f3f3f3' }}>
       <SurveyComponent model={surveyModel} readOnly={false}/>
     </div>
   </div>
