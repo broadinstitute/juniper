@@ -9,7 +9,6 @@ import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
 import bio.terra.pearl.compliance.model.PubsubIdsToIgnore;
-import bio.terra.pearl.compliance.model.PubsubPayload;
 import bio.terra.pearl.compliance.model.SlackUser;
 import bio.terra.pearl.compliance.model.UpdateVantaMetadata;
 import bio.terra.pearl.compliance.model.UserSyncConfig;
@@ -41,7 +40,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,7 +55,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,8 +116,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     /**
      * Runs the sync, as dispatched from cloud function.
-     * @param event must have {@link PubsubPayload} as the data
-     * @throws Exception
      */
     @Override
     public void accept(CloudEvent event) throws Exception {
@@ -188,7 +183,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             if (pubsubIdsProcessed.contains(pubsubPayload.getMessageId())) {
                 log.info("Skipping duplicate processing of pubsub message {}", pubsubPayload.getMessageId());
             }
-            log.info("To force the run, send in " + PubsubPayload.class.getName() + " payload with force=true");
         }
     }
 
