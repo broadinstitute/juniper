@@ -41,3 +41,8 @@ variable "juniper_folder_id" {
   type = string
   description = "Juniper folder ID"
 }
+
+variable "portals" {
+  type = list(string)
+  description = "Portals"
+}

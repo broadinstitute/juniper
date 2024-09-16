@@ -30,10 +30,8 @@ resource "google_dns_record_set" "www_juniper_admin" {
   type         = "CNAME"
 }
 
+# create sandbox, irb, live subdomains for the demo project
 resource "google_dns_record_set" "sandbox_demo_juniper_admin" {
-  # only in dev
-  count = var.environment == "dev" ? 1 : 0
-
   managed_zone = google_dns_managed_zone.juniper_admin_dns_zone.name
 
   # create a cname for each environment
@@ -41,7 +39,12 @@ resource "google_dns_record_set" "sandbox_demo_juniper_admin" {
   dynamic "environment" {
     for_each = ["sandbox", "irb", "live"]
     content {
-      name = "${environment}.demo.${google_dns_managed_zone.juniper_admin_dns_zone.dns_name}"
+      dynamic "portal" {
+        for_each = var.portals
+        content {
+          name = "${environment}.${portal}.${google_dns_managed_zone.juniper_admin_dns_zone.dns_name}"
+        }
+      }
     }
   }
 
