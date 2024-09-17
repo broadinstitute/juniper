@@ -5,13 +5,15 @@ import {
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket, faCaretUp, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { SplitFormElementDesigner } from './SplitFormElementDesigner'
-import { PageControls } from './controls/PageControls'
+import { PageNavigationControls } from './controls/PageNavigationControls'
 import classNames from 'classnames'
 import { InsertElementControls } from './controls/InsertElementControls'
 import { useSearchParams } from 'react-router-dom'
 import { FormTableOfContents } from 'forms/FormTableOfContents'
+import { handleScrollToTop } from '../utils/formDesignerUtils'
+import { PageEditControls } from './controls/PageEditControls'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -42,7 +44,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     setCurrentPageNo(pageElementIndex)
 
     if (pathParts.length === 1) {
-      window.scrollTo(0, 0)
+      handleScrollToTop()
     }
 
     if (pathParts.length > 1) {
@@ -57,9 +59,8 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
 
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
-      <div
-        className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}
-        style={{ overflowY: 'scroll' }}>
+      <div style={{ overflowY: 'scroll' }}
+        className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}>
         { !hideTableOfContents &&
             <FormTableOfContents
               formContent={content}
@@ -80,29 +81,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
               <FontAwesomeIcon icon={faArrowRightFromBracket}
                 className={classNames(hideTableOfContents ? '' : 'fa-rotate-180')}/>
             </Button>
-            <Button variant="light" className="border m-1"
-              tooltip={'Create a new page'}
-              onClick={() => {
-                const newContent = { ...content }
-                newContent.pages.splice(currentPageNo + 1, 0, { elements: [] })
-                onChange(newContent)
-                setCurrentPageNo(currentPageNo + 1)
-              }}>
-              <FontAwesomeIcon icon={faPlus}/> Create page
-            </Button>
-            <Button variant="light" className="border m-1"
-              tooltip={'Delete this page'}
-              onClick={() => {
-                //TODO: add confirmation dialog as this can be quite destructive
-                const newContent = { ...content }
-                newContent.pages.splice(currentPageNo, 1)
-                onChange(newContent)
-                setCurrentPageNo(Math.max(0, currentPageNo - 1))
-              }}>
-              <FontAwesomeIcon icon={faTrashAlt}/> Delete page
-            </Button>
+            <PageEditControls content={content} onChange={onChange}
+              currentPageNo={currentPageNo} setCurrentPageNo={setCurrentPageNo}/>
           </div>
-          <PageControls
+          <PageNavigationControls
             currentPageNo={currentPageNo}
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
@@ -110,31 +92,18 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         <InsertElementControls
           formContent={content} onChange={onChange}
           elementIndex={-1} pageIndex={currentPageNo}/>
-        {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
-            content.pages[currentPageNo].elements.map((element, elementIndex) => (
-              <React.Fragment key={elementIndex}>
-                <div id={`element[${elementIndex}]`} key={elementIndex} className={'mx-3'}>
-                  <SplitFormElementDesigner currentPageNo={currentPageNo}
-                    elementIndex={elementIndex} editedContent={content}
-                    element={content.pages[currentPageNo].elements[elementIndex]}
-                    currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
-                    onChange={onChange}/>
-                </div>
-                <InsertElementControls
-                  formContent={content} onChange={onChange}
-                  elementIndex={elementIndex} pageIndex={currentPageNo}/>
-              </React.Fragment>
-            ))}
-        {content.pages[currentPageNo].elements.length === 0 &&
-          <div className="text-muted fst-italic my-5 pb-3 text-center">
-            This page is empty. Insert a new question to get started.
-          </div>}
+        <PageContent
+          content={content}
+          currentPageNo={currentPageNo}
+          currentLanguage={currentLanguage}
+          supportedLanguages={supportedLanguages}
+          onChange={onChange}/>
         <div className="d-flex justify-content-between m-1 mb-3 border rounded-3 p-2 bg-light">
           <Button variant="light" className="border m-1"
-            onClick={() => window.scrollTo(0, 0)}>
+            onClick={() => handleScrollToTop()}>
             <FontAwesomeIcon icon={faCaretUp}/> Scroll to top
           </Button>
-          <PageControls
+          <PageNavigationControls
             currentPageNo={currentPageNo}
             content={content}
             setCurrentPageNo={setCurrentPageNo}/>
@@ -142,4 +111,44 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
       </div>
     </div>
   </div>
+}
+
+type PageContentProps = {
+  content: FormContent,
+  currentPageNo: number,
+  currentLanguage: PortalEnvironmentLanguage,
+  supportedLanguages: PortalEnvironmentLanguage[],
+  onChange: (newContent: FormContent) => void
+}
+
+export const PageContent = ({
+  content,
+  currentPageNo,
+  currentLanguage,
+  supportedLanguages,
+  onChange
+}: PageContentProps) => {
+  return (
+    <>
+      {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
+        content.pages[currentPageNo].elements.map((element, elementIndex) => (
+          <React.Fragment key={elementIndex}>
+            <div id={`element[${elementIndex}]`} key={elementIndex} className={'mx-3'}>
+              <SplitFormElementDesigner currentPageNo={currentPageNo}
+                elementIndex={elementIndex} editedContent={content}
+                element={content.pages[currentPageNo].elements[elementIndex]}
+                currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
+                onChange={onChange}/>
+            </div>
+            <InsertElementControls
+              formContent={content} onChange={onChange}
+              elementIndex={elementIndex} pageIndex={currentPageNo}/>
+          </React.Fragment>
+        ))}
+      {content.pages[currentPageNo].elements.length === 0 &&
+        <div className="text-muted fst-italic my-5 pb-3 text-center">
+          This page is empty. Insert a new question to get started.
+        </div>}
+    </>
+  )
 }

@@ -3,6 +3,7 @@ import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackward, faCaretLeft, faCaretRight, faForward } from '@fortawesome/free-solid-svg-icons'
 import { FormContent } from '@juniper/ui-core'
+import { handleScrollToTop } from '../../utils/formDesignerUtils'
 
 type PageControlsProps = {
     currentPageNo: number
@@ -12,11 +13,7 @@ type PageControlsProps = {
 
 type PageDirection = 'next' | 'previous' | 'first' | 'last'
 
-export const PageControls = ({ currentPageNo, content, setCurrentPageNo }: PageControlsProps) => {
-  const handleScrollToTop = () => {
-    window.scrollTo(0, 0)
-  }
-
+export const PageNavigationControls = ({ currentPageNo, content, setCurrentPageNo }: PageControlsProps) => {
   const handlePageChange = (direction: PageDirection) => {
     handleScrollToTop()
     switch (direction) {

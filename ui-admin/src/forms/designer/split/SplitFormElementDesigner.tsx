@@ -6,13 +6,11 @@ import {
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, { memo, useState } from 'react'
-import { IconButton } from 'components/forms/Button'
-import { faClone, faCode } from '@fortawesome/free-solid-svg-icons'
-import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { isEqual } from 'lodash'
 import { FormElementEditor } from './FormElementEditor'
 import { FormElementJsonEditor } from './FormElementJsonEditor'
+import { FormElementOptions } from './controls/FormElementOptions'
 
 /* Note that this component is memoized using React.memo
  * Since survey pages can contain many elements, we need to be mindful of
@@ -45,37 +43,15 @@ export const SplitFormElementDesigner = memo(({
 
   return <div key={elementIndex} className="row">
     <div className="col-md-6 px-3 rounded-start-3 border border-end-0 bg-light-subtle">
-      <div className="d-flex justify-content-end">
-        <div className="d-flex border rounded-3 rounded-top-0 border-top-0 bg-light">
-          <IconButton icon={faCode}
-            aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
-            onClick={() => setShowJsonEditor(!showJsonEditor)}
-          />
-          <IconButton icon={faClone}
-            aria-label={'Clone'}
-            onClick={() => {
-              const newContent = { ...editedContent }
-              const newQuestion = { ...element, name: '' }
-              newContent.pages[currentPageNo].elements.splice(elementIndex + 1, 0, newQuestion)
-              onChange(newContent)
-              //scroll to the new element
-              const newElement = document.getElementById(`element[${elementIndex + 1}]`)
-              if (newElement) {
-                newElement.scrollIntoView({ behavior: 'auto' })
-              }
-            }}
-          />
-          <ListElementController
-            index={elementIndex}
-            items={editedContent.pages[currentPageNo].elements}
-            updateItems={newItems => {
-              const newContent = { ...editedContent }
-              newContent.pages[currentPageNo].elements = newItems
-              onChange(newContent)
-            }}
-          />
-        </div>
-      </div>
+      <FormElementOptions
+        showJsonEditor={showJsonEditor}
+        setShowJsonEditor={setShowJsonEditor}
+        elementIndex={elementIndex}
+        element={element}
+        currentPageNo={currentPageNo}
+        editedContent={editedContent}
+        onChange={onChange}
+      />
       { !showJsonEditor ?
         <FormElementEditor
           element={element}
