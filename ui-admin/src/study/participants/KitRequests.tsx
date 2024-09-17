@@ -61,7 +61,7 @@ const columns: ColumnDef<KitRequest, string>[] = [{
 }, {
   header: 'Distribution Method',
   accessorKey: 'distributionMethod',
-  accessorFn: data => convertToHumanReadable(data.distributionMethod)
+  accessorFn: data => prettifyString(data.distributionMethod)
 }, {
   header: 'Details',
   accessorKey: 'details',
@@ -81,12 +81,9 @@ export const KitRequestDetails = ({ kitRequest }: { kitRequest: KitRequest }) =>
 }
 
 /** Shows a list of all kit requests for an enrollee. */
-export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
-                                      {
-                                        enrollee: Enrollee,
-                                        studyEnvContext: StudyEnvContextT,
-                                        onUpdate: () => void
-                                      }) {
+export default function KitRequests({ enrollee, studyEnvContext, onUpdate }: {
+  enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
+}) {
   const { user } = useUser()
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
@@ -106,10 +103,10 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       <div className="d-flex justify-content-between align-items-center w-100">
         <div className="fw-bold lead my-1">Kit Requests</div>
         {user?.superuser &&
-            <Button onClick={() => setShowRequestKitModal(true)}
-              variant="light" className="border m-1">
-              <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
-            </Button>
+          <Button onClick={() => setShowRequestKitModal(true)}
+            variant="light" className="border m-1">
+            <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
+          </Button>
         }
       </div>
     </InfoCardHeader>
@@ -126,7 +123,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
   </InfoCard>
 }
 
-export const convertToHumanReadable = (value: string) => {
-  //takes a string such as IN_PERSON and converts it to In Person
+export const prettifyString = (value: string) => {
+  //takes a string such as COLLECTED_BY_STAFF and converts it to Collected By Staff
   return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
 }

@@ -48,11 +48,10 @@ export default function KitBanner({ kitRequests }: {kitRequests: KitRequest[]}) 
     return null
   }
 
-  // for now, only show un-returned kits
-  const unreturnedKits = kitRequests.filter(kitRequest => kitRequest.status === 'SENT')
-  const inPersonKits = kitRequests.filter(kitRequest => kitRequest.distributionMethod === 'IN_PERSON')
-
-  const kitsToDisplay = unreturnedKits.concat(inPersonKits)
+  // for now, only show un-returned kits or kits distributed in person
+  const kitsToDisplay = kitRequests
+    .filter(kitRequest =>
+      kitRequest.status === 'SENT' || kitRequest.distributionMethod === 'IN_PERSON')
 
   if (kitsToDisplay.length === 0) {
     return null
@@ -82,7 +81,7 @@ const titleForStatus = (status: string) => {
     case 'COLLECTED_BY_STAFF':
       return 'Your sample kit was collected by the study team'
     default:
-      return 'Unknown sample status'
+      return 'Unknown kit status'
   }
 }
 

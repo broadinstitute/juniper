@@ -27,7 +27,7 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
-import { convertToHumanReadable, KitRequestDetails } from 'study/participants/KitRequests'
+import { prettifyString, KitRequestDetails } from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 
 type KitStatusTabConfig = {
@@ -251,7 +251,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     header: 'Distribution Method',
     accessorKey: 'distributionMethod',
     enableColumnFilter: false,
-    accessorFn: data => convertToHumanReadable(data.distributionMethod)
+    accessorFn: data => prettifyString(data.distributionMethod)
   }, {
     header: 'Requested By',
     accessorKey: 'creatingAdminUserId',

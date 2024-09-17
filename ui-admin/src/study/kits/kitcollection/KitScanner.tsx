@@ -242,7 +242,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       </Button>
       { showKitScanner &&
         <BarcodeScanner
-          expectedFormats={['upc_a']}
+          expectedFormats={['code_128']}
           onError={error => setKitCodeError(error)}
           onSuccess={result => {
             setKitBarcode(result.rawValue)
@@ -273,7 +273,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           </Button>
           { showKitScanner &&
           <BarcodeScanner
-            expectedFormats={['upc_a']}
+            expectedFormats={['code_128']}
             onError={error => setReturnTrackingNumberError(error)}
             onSuccess={result => {
               setReturnTrackingNumber(result.rawValue)
