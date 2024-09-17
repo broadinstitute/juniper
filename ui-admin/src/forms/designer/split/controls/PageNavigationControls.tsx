@@ -3,7 +3,7 @@ import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackward, faCaretLeft, faCaretRight, faForward } from '@fortawesome/free-solid-svg-icons'
 import { FormContent } from '@juniper/ui-core'
-import { handleScrollToTop } from '../../utils/formDesignerUtils'
+import { handleScrollToTop } from 'forms/designer/utils/formDesignerUtils'
 
 type PageControlsProps = {
     currentPageNo: number

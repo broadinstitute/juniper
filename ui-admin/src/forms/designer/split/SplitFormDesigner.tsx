@@ -6,14 +6,14 @@ import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faCaretUp } from '@fortawesome/free-solid-svg-icons'
-import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { PageNavigationControls } from './controls/PageNavigationControls'
 import classNames from 'classnames'
 import { InsertElementControls } from './controls/InsertElementControls'
 import { useSearchParams } from 'react-router-dom'
 import { FormTableOfContents } from 'forms/FormTableOfContents'
-import { handleScrollToTop } from '../utils/formDesignerUtils'
+import { handleScrollToTop, scrollToElement } from '../utils/formDesignerUtils'
 import { PageEditControls } from './controls/PageEditControls'
+import { FormPageContent } from './FormPageContent'
 
 /**
  * A split-view form designer that allows editing content on the left and previewing it on the right.
@@ -33,28 +33,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   const setSelectedElementPath = (path: string) => {
     searchParams.set('selectedElementPath', path)
     setSearchParams(searchParams)
-    scrollToElement(path)
-  }
-
-  const scrollToElement = (path: string) => {
-    //parses path from url params, i.e.: selectedElementPath=pages%5B0%5D.elements%5B0%5D
-    const pathParts = path.split('.')
-    const pageElement = pathParts[0]
-    const pageElementIndex = parseInt(pageElement.replace('pages[', '').replace(/\]/g, ''))
-    setCurrentPageNo(pageElementIndex)
-
-    if (pathParts.length === 1) {
-      handleScrollToTop()
-    }
-
-    if (pathParts.length > 1) {
-      const elementIndex = parseInt(pathParts[1].replace('elements[', '').replace(/\]/g, ''))
-      const element = document.getElementById(`element[${elementIndex}]`)
-      //we need to wait for the element to be rendered so we can scroll to it
-      if (element) {
-        setTimeout(() => element.scrollIntoView({ behavior: 'auto' }), 100)
-      }
-    }
+    scrollToElement(path, setCurrentPageNo)
   }
 
   return <div className="container-fluid overflow-scroll">
@@ -92,7 +71,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         <InsertElementControls
           formContent={content} onChange={onChange}
           elementIndex={-1} pageIndex={currentPageNo}/>
-        <PageContent
+        <FormPageContent
           content={content}
           currentPageNo={currentPageNo}
           currentLanguage={currentLanguage}
@@ -111,44 +90,4 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
       </div>
     </div>
   </div>
-}
-
-type PageContentProps = {
-  content: FormContent,
-  currentPageNo: number,
-  currentLanguage: PortalEnvironmentLanguage,
-  supportedLanguages: PortalEnvironmentLanguage[],
-  onChange: (newContent: FormContent) => void
-}
-
-export const PageContent = ({
-  content,
-  currentPageNo,
-  currentLanguage,
-  supportedLanguages,
-  onChange
-}: PageContentProps) => {
-  return (
-    <>
-      {content.pages[currentPageNo] && content.pages[currentPageNo].elements &&
-        content.pages[currentPageNo].elements.map((element, elementIndex) => (
-          <React.Fragment key={elementIndex}>
-            <div id={`element[${elementIndex}]`} key={elementIndex} className={'mx-3'}>
-              <SplitFormElementDesigner currentPageNo={currentPageNo}
-                elementIndex={elementIndex} editedContent={content}
-                element={content.pages[currentPageNo].elements[elementIndex]}
-                currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
-                onChange={onChange}/>
-            </div>
-            <InsertElementControls
-              formContent={content} onChange={onChange}
-              elementIndex={elementIndex} pageIndex={currentPageNo}/>
-          </React.Fragment>
-        ))}
-      {content.pages[currentPageNo].elements.length === 0 &&
-        <div className="text-muted fst-italic my-5 pb-3 text-center">
-          This page is empty. Insert a new question to get started.
-        </div>}
-    </>
-  )
 }
