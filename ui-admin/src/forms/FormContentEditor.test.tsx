@@ -1,8 +1,17 @@
-import { render } from '@testing-library/react'
+import {
+  render,
+  screen, waitFor
+} from '@testing-library/react'
 import React from 'react'
 
 import { FormContentEditor } from './FormContentEditor'
 import { mockPortal } from 'test-utils/mocking-utils'
+import { userHasPermission } from '../user/UserProvider'
+
+jest.mock('user/UserProvider', () => ({
+  ...jest.requireActual('user/UserProvider'),
+  userHasPermission: jest.fn()
+}))
 
 //This is valid JSON, but invalid survey JSON
 const formContent: string = JSON.stringify({
@@ -14,6 +23,9 @@ const formContent: string = JSON.stringify({
 
 describe('FormContentEditor', () => {
   it('should trap FormDesigner errors in an ErrorBoundary', () => {
+    (userHasPermission as jest.Mock).mockImplementation(() => {
+      return true
+    })
     // avoid cluttering the console with the error message from the expected error
     jest.spyOn(console, 'error').mockImplementation(jest.fn())
     const { container } = render(<FormContentEditor
@@ -26,8 +38,12 @@ describe('FormContentEditor', () => {
       onAnswerMappingChange={jest.fn()}
     />)
 
+    screen.getByText('Designer').click()
+
     // Our custom ErrorBoundary text
-    expect(container).toHaveTextContent('Something went wrong')
+    waitFor(() => {
+      expect(container).toHaveTextContent('Something went wrong')
+    })
     // JSON Editor and Preview tabs should still be visible
     expect(container).toHaveTextContent('JSON Editor')
     expect(container).toHaveTextContent('Preview')
