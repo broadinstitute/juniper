@@ -169,7 +169,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     public KitRequest findByEnrolleeAndBarcode(Enrollee enrollee, String barcode) {
-        return dao.findByEnrolleeAndBarcode(enrollee.getId(), barcode).orElseThrow(() ->
+        return dao.findByEnrolleeAndLabel(enrollee.getId(), barcode).orElseThrow(() ->
                 new NotFoundException("Kit request not found for enrollee %s and barcode %s"
                         .formatted(enrollee.getShortcode(), barcode)));
     }

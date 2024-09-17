@@ -45,6 +45,16 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
 
   const { user } = useUser()
 
+  const isSubmitDisabled = () => {
+    if (!kitLabel || !enrollee || !selectedScanMode) {
+      return true
+    }
+    if (selectedScanMode.value === 'COLLECT' && !returnTrackingNumber) {
+      return true
+    }
+    return false
+  }
+
   const assignKit = async () => {
     if (!enrollee || !kitLabel) { return }
     doApiLoad(async () => {
@@ -294,7 +304,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           }
         </KitCollectionStepWrapper> }
     <div className="d-flex justify-content-end">
-      <Button disabled={!(kitLabel && enrollee && selectedScanMode)} variant={'primary'} //todo check return label
+      <Button disabled={isSubmitDisabled()}
+        variant={'primary'}
         onClick={async () => {
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
@@ -302,6 +313,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setEnrolleeCodeError(undefined)
           setEnrolleeShortcodeOverride(undefined)
           setSelectedScanMode(undefined)
+          setReturnTrackingNumber(undefined)
+          setReturnTrackingNumberError(undefined)
           if (selectedScanMode?.value === 'ASSIGN') {
             await assignKit()
           } if (selectedScanMode?.value === 'COLLECT') {
