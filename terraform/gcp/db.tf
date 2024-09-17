@@ -1,7 +1,7 @@
 # Create database
 resource "google_sql_database_instance" "d2p" {
   name = "d2p"
-  database_version = "POSTGRES_15"
+  database_version = "POSTGRES_16"
   region           = var.region
   deletion_protection = false
   settings {
