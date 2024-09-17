@@ -57,7 +57,7 @@ describe('KitInstructions', () => {
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('assigned-barcode')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
     expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
   })
 
