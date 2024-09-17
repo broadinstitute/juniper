@@ -69,10 +69,10 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * Because this job takes longer than the max pubsub
  * ack timeout, pubsub will retry messages.  We keep a list
- * of messages tells us which ones we've seen before
+ * of messages to tell us which ones we've seen before
  * and can safely ignore.  We store it in cloud storage and it's
- * possible that with multiple jobs running at once, there is a chance
- * of race conditions and overwrites, but that isn't something
+ * possible that with multiple jobs running at once there may
+ * be race condition overwrites, but that isn't something
  * that matters for this scheduled job.
  */
 @Slf4j
@@ -91,19 +91,6 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     @Value("#{environment.VANTA_CONFIG_SECRET}")
     private String vantaConfigSecret;
-
-    /**
-     * Storage path to list of message ids to ignore.
-     * Because this job takes longer than the max pubsub
-     * ack timeout, pubsub will retry messages.  This list
-     * of messages tells us which ones we've seen before
-     * and can safely ignore.  Since this is gcs storage and it's
-     * possible that multiple jobs run at once, there is a chance
-     * of race conditions and overwrites, but that isn't something
-     * that matters for this scheduled job.
-     */
-    //@Value("gs://#{environment.PUBSUB_IDS_FILE_BUCKET}/idsToIgnore.json")
-    //private Resource pathToMessageIdsFile;
 
     @Autowired
     private Storage storage;
@@ -125,6 +112,10 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private static Gson newGson() {
         return new GsonBuilder().serializeNulls().create();
+    }
+
+    private GoogleStorageResource getStorageResource() {
+        return new GoogleStorageResource(this.storage, userSyncConfig.getMessageIdsBucketPath());
     }
 
     public static void main(String[] args) {
@@ -401,7 +392,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
      * Loads the message ids to ignore from the gs path indicated in the config secret.
      */
     private Set<String> getMessageIdsToIgnore() throws IOException {
-        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, userSyncConfig.getMessageIdsBucketPath()); // todo arz move to field
+        GoogleStorageResource gcsResource = getStorageResource();
         if (!gcsResource.bucketExists()) {
             throw new RuntimeException("Bucket " + gcsResource.getBucketName() + " not found");
         }
@@ -416,11 +407,11 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     }
 
     private void saveMessageIdsToIgnore(PubsubIdsToIgnore idsToIgnore) throws IOException {
-        GoogleStorageResource gcsResource = new GoogleStorageResource(this.storage, userSyncConfig.getMessageIdsBucketPath());
+        GoogleStorageResource gcsResource = getStorageResource();
         try (OutputStream os = ((WritableResource) gcsResource).getOutputStream()) {
             os.write(gson.toJson(idsToIgnore).getBytes());
             os.flush();
         }
-        log.debug("Wrote {} as list of pubsub ids to ignore", gson.toJson(idsToIgnore));
+        log.debug("Wrote {} items as list of pubsub ids to ignore", idsToIgnore.getIdsToIgnore().size());
     }
 }
