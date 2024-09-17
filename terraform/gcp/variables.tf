@@ -32,17 +32,23 @@ variable "environment" {
   type = string
   validation {
     condition = can(regex("^(dev|prod)$", var.environment))
+    error_message = "must be dev or prod"
   }
   default = "dev"
   description = "Environment (dev or prod)"
 }
 
-variable "juniper_folder_id" {
-  type = string
-  description = "Juniper folder ID"
+variable "portals" {
+  type = set(string)
+  description = "Portals"
 }
 
-variable "portals" {
-  type = list(string)
-  description = "Portals"
+variable "infra_project" {
+  type = string
+  description = "Infra project"
+}
+
+variable "infra_region" {
+  type = string
+  description = "Infra region"
 }

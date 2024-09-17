@@ -18,6 +18,13 @@ provider "google" {
   region      = var.region
 }
 
+# need to create some infra IAM bindings, so create secondary provider
+provider "google" {
+  project = var.infra_project
+  region  = var.infra_region
+  alias  = "infra"
+}
+
 data "google_client_config" "provider" {}
 
 provider "kubernetes" {
@@ -26,4 +33,12 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(
     google_container_cluster.juniper_cluster.master_auth[0].cluster_ca_certificate,
   )
+}
+
+
+terraform {
+  backend "gcs" {
+    bucket = "broad-juniper-terraform-remote-state"
+    prefix = "juniper"
+  }
 }

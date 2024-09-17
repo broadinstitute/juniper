@@ -14,7 +14,7 @@ spec:
       labels:
         app: admin
     spec:
-      serviceAccountName: d2p-db-ksa
+      serviceAccountName: juniper-app-ksa
       containers:
         - name: cloud-sql-proxy
           # It is recommended to use the latest version of the Cloud SQL Auth Proxy
@@ -55,10 +55,10 @@ spec:
               cpu: "1"
 
         - name: admin
-          image: us-central1-docker.pkg.dev/broad-juniper-dev/dev-test-repo/juniper-admin:1.3.75
+          image: us-central1-docker.pkg.dev/broad-juniper-eng-infra/juniper/juniper-admin:1.3.75
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: gcp,staging
+              value: gcp
             - name: DB_NAME_SECRET_ID
               value: "d2p-db-name"
             - name: DB_PASSWORD_SECRET_ID

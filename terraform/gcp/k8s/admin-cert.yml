@@ -4,5 +4,9 @@ metadata:
   name: admin-cert
 spec:
   domains:
+    # all juniper-cmi.dev subdomains
     - juniper-cmi.dev
     - www.juniper-cmi.dev
+    - sandbox.demo.juniper-cmi.dev
+    - irb.demo.juniper-cmi.dev
+    - live.demo.juniper-cmi.dev
