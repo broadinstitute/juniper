@@ -35,7 +35,7 @@ describe('HubPageKits', () => {
 
     expect(screen.getByText('Sample collection kits')).toBeInTheDocument()
     expect(screen.getByText(sentDate)).toBeInTheDocument()
-    expect(screen.getByText('A sample kit has been provided to you')).toBeInTheDocument()
+    expect(screen.getByText('You have received a sample kit')).toBeInTheDocument()
   })
 
   it('renders a kit collected banner', () => {
@@ -49,6 +49,6 @@ describe('HubPageKits', () => {
 
     expect(screen.getByText('Sample collection kits')).toBeInTheDocument()
     expect(screen.getByText(sentDate)).toBeInTheDocument()
-    expect(screen.getByText('Your sample kit was collected by the study team')).toBeInTheDocument()
+    expect(screen.getByText('Your sample kit has been received')).toBeInTheDocument()
   })
 })

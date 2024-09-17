@@ -77,9 +77,9 @@ const titleForStatus = (status: string) => {
     case 'SENT':
       return 'A sample kit was shipped'
     case 'CREATED':
-      return 'A sample kit has been provided to you'
+      return 'You have received a sample kit'
     case 'COLLECTED_BY_STAFF':
-      return 'Your sample kit was collected by the study team'
+      return 'Your sample kit has been received'
   }
 }
 
@@ -124,7 +124,7 @@ function KitStatus({ kitRequest }: {kitRequest: KitRequest}) {
   return <div className={kitEventClass} style={kitEventProps}>
     <div className="d-flex justify-content-between px-0">
       <div className={iconClass}>
-        <FontAwesomeIcon className="pt-1" icon={iconForStatus(kitRequest.status)} style={iconProps}/>
+        <FontAwesomeIcon className="pt-1 pe-2" icon={iconForStatus(kitRequest.status)} style={iconProps}/>
       </div>
       <div className={eventTextClass}>
         <div className="fw-bold">{titleForStatus(kitRequest.status)}</div>

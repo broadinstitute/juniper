@@ -12,7 +12,7 @@ export default function KitInstructions() {
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
 
   return <div
-    className="hub-dashboard-background flex-grow-1"
+    className="hub-dashboard-background flex-grow-1 px-2"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
