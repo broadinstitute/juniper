@@ -16,7 +16,7 @@ export const TextFields = (props: TextFieldsProps) => {
   const { disabled, question, onChange } = props
 
   return (
-    <div className="bg-white rounded-bottom-3 p-2 mb-2 border border-top-0">
+    <div className="bg-white rounded-bottom-3 p-3 mb-2 border border-top-0">
       <>
         <label className="form-label fw-semibold mb-0" htmlFor="text-question-input-type">Input type</label>
         <select
