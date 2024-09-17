@@ -47,7 +47,11 @@ const BaseKitInstructions = () => {
 }
 
 const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
-  const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'IN_PERSON')[0]
+  //in the event that there are multiple in-person kits for an enrollee, we want to display the most recent one.
+  //the assumption is that there will only ever be one, but in case study staff have to reissue a kit, we want to
+  //display the most recent one
+  const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'IN_PERSON')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
 
   if (!enrollee.consented) { return <UnconsentedKitView/> }
   if (!activeKit) { return <NoActiveKitView enrollee={enrollee}/> }
