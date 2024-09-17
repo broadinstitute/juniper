@@ -50,6 +50,7 @@ const defaultColumns: VisibilityState = {
   'returnTrackingNumber': false,
   'creatingAdminUserId': false,
   'collectingAdminUserId': false,
+  'kitBarcode': false,
   'receivedAt': false,
   'status': false,
   'distributionMethod': false
@@ -241,6 +242,10 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Tracking Number',
     accessorKey: 'trackingNumber',
+    enableColumnFilter: false
+  }, {
+    header: 'Kit Barcode',
+    accessorKey: 'kitBarcode',
     enableColumnFilter: false
   }, {
     header: 'Distribution Method',

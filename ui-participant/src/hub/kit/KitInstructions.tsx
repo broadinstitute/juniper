@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { Enrollee, KitRequest } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBox, faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import QRCode from 'react-qr-code'
 
 //TODO: JN-1294, implement i18n for this entire component
@@ -15,7 +15,7 @@ export default function KitInstructions() {
     className="hub-dashboard-background flex-grow-1"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
-      <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
+      <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
         <div className="card-body">
           <div className="align-items-center">
             <BaseKitInstructions/>
@@ -78,7 +78,7 @@ const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
   return (
     <div className="mb-3 rounded round-3 py-4 px-md-5 bg-white shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
+        Your sample collection kit
       </h2>
       <div>
           To receive a sample collection kit, a member of the study team will scan your unique participation code
@@ -106,7 +106,7 @@ const CollectedKitView = () => {
   return (
     <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
+        Your sample collection kit
       </h2>
       <div className="mb-3">
           A member of the study team has received your sample collection kit.
@@ -129,7 +129,7 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
   return (
     <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-md-5">
       <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="me-2" icon={faBox}/> Sample collection kit
+        Your sample collection kit
       </h2>
       <div className="mb-3">
           A member of the team has provided you with a sample collection kit.
