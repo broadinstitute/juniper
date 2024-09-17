@@ -69,7 +69,7 @@ export function useReactMultiSelect<T>(items: T[],
 
   const onChange: ((opts: MultiValue<{ label: ReactNode, value: T } | undefined>) => void)
     = (opts: MultiValue<{label: ReactNode, value: T} | undefined>) =>
-    setSelectedItems(opts.map(opt => opt ? opt.value : undefined)
-      .filter(opt => !!opt) as T[])
+      setSelectedItems(opts.map(opt => opt ? opt.value : undefined)
+        .filter(opt => !!opt) as T[])
   return { onChange, options, selectedOptions, selectInputId }
 }
