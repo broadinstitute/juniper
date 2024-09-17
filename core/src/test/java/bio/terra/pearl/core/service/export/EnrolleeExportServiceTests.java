@@ -31,6 +31,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -608,8 +609,34 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         // should still export survey responses for the old version of the survey
         assertThat(enrolleeMap.get("examplesurvey.examplePanel.firstName[0]"), equalTo("John"));
         assertThat(enrolleeMap.get("examplesurvey.examplePanel.lastName[0]"), equalTo("Doe"));
-
-
     }
 
+    @Test
+    @Transactional
+    public void testExportSubheadersOption(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        ExportOptions opts = ExportOptions.builder()
+                .fileFormat(ExportFileFormat.CSV)
+                .includeSubHeaders(false).build();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnv.getId(), baos);
+        baos.close();
+        String export = baos.toString();
+        assertThat(export, containsString(",enrollee.createdAt"));
+        assertThat(export, not(containsString(",Created at")));
+
+        // now check it includes subheaders if asked
+        opts = ExportOptions.builder()
+                .includeSubHeaders(true)
+                .fileFormat(ExportFileFormat.CSV).build();
+        baos = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnv.getId(), baos);
+        baos.close();
+        export = baos.toString();
+        assertThat(export, containsString(",enrollee.createdAt"));
+        assertThat(export, containsString(",Created At"));
+    }
 }

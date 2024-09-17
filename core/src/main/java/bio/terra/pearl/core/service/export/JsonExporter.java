@@ -19,7 +19,8 @@ public class JsonExporter extends BaseExporter {
         this.objectMapper = objectMapper;
     }
 
-    public void export(OutputStream os) {
+    /** the 'includeSubheaders' parameter is ignored for JSON export -- subheaders are always available in the returned JSON object */
+    public void export(OutputStream os, boolean includeSubHeaders) {
         PrintWriter printWriter = new PrintWriter(os);
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();

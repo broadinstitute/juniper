@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -53,6 +54,8 @@ public class ExportController implements ExportApi {
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
       Boolean includeOnlyMostRecent,
+      Boolean includeSubheaders,
+      List<String> excludeModules,
       String searchExpression,
       String fileFormat,
       Integer limit) {
@@ -66,7 +69,9 @@ public class ExportController implements ExportApi {
             limit,
             splitOptionsIntoColumns,
             stableIdsForOptions,
-            includeOnlyMostRecent);
+            includeOnlyMostRecent,
+            includeSubheaders,
+            excludeModules);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.export(
@@ -97,7 +102,9 @@ public class ExportController implements ExportApi {
             null,
             splitOptionsIntoColumns,
             stableIdsForOptions,
-            includeOnlyMostRecent);
+            includeOnlyMostRecent,
+            true,
+            List.of());
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.exportDictionary(
@@ -113,7 +120,9 @@ public class ExportController implements ExportApi {
       Integer limit,
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
-      Boolean includeOnlyMostRecent) {
+      Boolean includeOnlyMostRecent,
+      Boolean includeSubHeaders,
+      List<String> excludeModules) {
     EnrolleeSearchExpression filter =
         Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
             ? enrolleeSearchExpressionParser.parseRule(searchExpression)
@@ -129,6 +138,8 @@ public class ExportController implements ExportApi {
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)
+            .includeSubHeaders(includeSubHeaders)
+            .excludeModules(excludeModules)
             .build();
     return exportOptions;
   }
