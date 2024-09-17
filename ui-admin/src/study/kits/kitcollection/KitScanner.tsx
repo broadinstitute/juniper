@@ -19,7 +19,7 @@ import {
   faSearch
 } from '@fortawesome/free-solid-svg-icons'
 import { Checkbox } from 'components/forms/Checkbox'
-import { successNotification } from 'util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
 const kitScanModeOptions = [
@@ -71,7 +71,10 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   }
 
   const collectKit = async () => {
-    if (!enrollee || !kitBarcode || !returnTrackingNumber) { return } //notify of an error here
+    if (!enrollee || !kitBarcode || !returnTrackingNumber) {
+      Store.addNotification(failureNotification('Please complete all steps before submitting'))
+      return
+    }
     doApiLoad(async () => {
       await Api.collectKit(
         studyEnvContext.portal.shortcode,

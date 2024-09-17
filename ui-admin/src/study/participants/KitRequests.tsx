@@ -52,7 +52,7 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   accessorKey: 'status',
   cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
 }, {
-  header: 'Created',
+  header: 'Date Created',
   accessorKey: 'createdAt',
   accessorFn: data => instantToDefaultString(data.createdAt)
 }, {
@@ -124,6 +124,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }: {
 }
 
 export const prettifyString = (value: string) => {
+  if (!value) { return '' }
   //takes a string such as COLLECTED_BY_STAFF and converts it to Collected By Staff
   return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
 }

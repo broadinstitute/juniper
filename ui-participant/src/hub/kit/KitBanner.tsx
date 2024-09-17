@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faHandHolding, faQuestion, faTruckFast } from '@fortawesome/free-solid-svg-icons'
 import { KitRequest } from '@juniper/ui-core'
 import { NavLink } from 'react-router-dom'
-import { instantToDateString } from '../../util/timeUtils'
+import { instantToDateString } from 'util/timeUtils'
 
 const kitEventProps = {
   padding: '1em 0em',
@@ -80,8 +80,6 @@ const titleForStatus = (status: string) => {
       return 'A sample kit has been provided to you'
     case 'COLLECTED_BY_STAFF':
       return 'Your sample kit was collected by the study team'
-    default:
-      return 'Unknown kit status'
   }
 }
 
@@ -101,21 +99,24 @@ const iconForStatus = (status: string) => {
 const descriptionForStatus = (kitRequest: KitRequest) => {
   switch (kitRequest.status) {
     case 'SENT':
-      return <>Your {kitRequest.kitType.displayName.toLowerCase()} kit is on its way.
-            Once you receive your kit, please complete and send it back to us
-            with the prepaid envelope provided.</>
+      return <>
+        Your {kitRequest.kitType.displayName.toLowerCase()} kit is on its way.
+        Once you receive your kit, please complete and send it back to us
+        with the prepaid envelope provided.
+      </>
     case 'CREATED':
-      return <>A member of the study team has provided you
+      return <>
+        A member of the study team has provided you
         with a {kitRequest.kitType.displayName.toLowerCase()} kit in-person.
         Please complete the kit and return it to the study team. <NavLink to={'/hub/kits'}>
-          Click here</NavLink> for more information.
+        Click here</NavLink> for more information.
       </>
     case 'COLLECTED_BY_STAFF':
-      return <>A member of the study team has collected your
-        completed {kitRequest.kitType.displayName.toLowerCase()} kit. Thank you for
-        your participation.</>
-    default:
-      return 'Unknown'
+      return <>
+        A member of the study team has collected your
+        completed {kitRequest.kitType.displayName.toLowerCase()} kit.
+        Thank you for your participation.
+      </>
   }
 }
 
