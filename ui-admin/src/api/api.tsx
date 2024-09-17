@@ -927,7 +927,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitBarcode: string }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitLabel: string }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
@@ -944,7 +944,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitBarcode: string, returnTrackingNumber: string }
+    kitOptions: { kitLabel: string, returnTrackingNumber: string }
   ): Promise<string> {
     const url =
         `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/collectKit`

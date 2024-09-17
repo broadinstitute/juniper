@@ -35,7 +35,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [enrollee, setEnrollee] = useState<Enrollee>()
   const [enrolleeCodeError, setEnrolleeCodeError] = useState<string>()
   const [isEnrolleeIdentityConfirmed, setIsEnrolleeIdentityConfirmed] = useState(false)
-  const [kitBarcode, setKitBarcode] = useState<string>()
+  const [kitLabel, setKitLabel] = useState<string>()
   const [kitCodeError, setKitCodeError] = useState<string>()
   const [returnTrackingNumber, setReturnTrackingNumber] = useState<string>()
   const [returnTrackingNumberError, setReturnTrackingNumberError] = useState<string>()
@@ -46,7 +46,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const { user } = useUser()
 
   const assignKit = async () => {
-    if (!enrollee || !kitBarcode) { return }
+    if (!enrollee || !kitLabel) { return }
     doApiLoad(async () => {
       await Api.createKitRequest(
         studyEnvContext.portal.shortcode,
@@ -56,7 +56,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         {
           kitType: 'SALIVA',
           distributionMethod: 'IN_PERSON',
-          kitBarcode,
+          kitLabel,
           skipAddressValidation: false
         }
       )
@@ -71,7 +71,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   }
 
   const collectKit = async () => {
-    if (!enrollee || !kitBarcode || !returnTrackingNumber) {
+    if (!enrollee || !kitLabel || !returnTrackingNumber) {
       Store.addNotification(failureNotification('Please complete all steps before submitting'))
       return
     }
@@ -82,7 +82,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         studyEnvContext.currentEnv.environmentName,
         enrollee.shortcode,
         {
-          kitBarcode,
+          kitLabel,
           returnTrackingNumber
         }
       )
@@ -159,7 +159,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setSelectedScanMode(kitScanModeOptions.find(option => option.value === selectedOption?.value))
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
-          setKitBarcode(undefined)
+          setKitLabel(undefined)
         }}
       />
     </KitCollectionStepWrapper>
@@ -176,7 +176,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         setEnrollee(undefined)
         setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
         setIsEnrolleeIdentityConfirmed(false)
-        setKitBarcode(undefined)
+        setKitLabel(undefined)
       }}>
         Click to scan enrollee code
       </Button>
@@ -235,28 +235,28 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
 
     <KitCollectionStepWrapper
       title={'Step 4'}
-      status={kitBarcode ? 'COMPLETE' : 'INCOMPLETE'}
+      status={kitLabel ? 'COMPLETE' : 'INCOMPLETE'}
     >
-      <div className="mb-3">Click to open the camera and scan the kit barcode</div>
+      <div className="mb-3">Click to open the camera and scan the kit label</div>
       <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
         tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
         onClick={() => setShowKitScanner(!showKitScanner)}>
-            Click to scan kit barcode
+            Click to scan kit label
       </Button>
       { showKitScanner &&
         <BarcodeScanner
           expectedFormats={['code_128']}
           onError={error => setKitCodeError(error)}
           onSuccess={result => {
-            setKitBarcode(result.rawValue)
+            setKitLabel(result.rawValue)
             setShowKitScanner(false)
           }}/>
       }
       <TextInput
         className="my-2"
         disabled={false}
-        value={kitBarcode}
-        onChange={e => setKitBarcode(e)}>
+        value={kitLabel}
+        onChange={e => setKitLabel(e)}>
       </TextInput>
       { kitCodeError &&
             <div className="text-danger">{kitCodeError}</div>
@@ -270,7 +270,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           <div className="mb-3">Place the kit in the provided return packaging, and
         click to open the camera and scan the kit return label</div>
           <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
-            tooltip={!kitBarcode ? 'You must complete the prior steps first' : ''}
+            tooltip={!kitLabel ? 'You must complete the prior steps first' : ''}
             onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
         Click to scan kit return label
           </Button>
@@ -294,11 +294,11 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           }
         </KitCollectionStepWrapper> }
     <div className="d-flex justify-content-end">
-      <Button disabled={!(kitBarcode && enrollee && selectedScanMode)} variant={'primary'} //todo check return label
+      <Button disabled={!(kitLabel && enrollee && selectedScanMode)} variant={'primary'} //todo check return label
         onClick={async () => {
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
-          setKitBarcode(undefined)
+          setKitLabel(undefined)
           setEnrolleeCodeError(undefined)
           setEnrolleeShortcodeOverride(undefined)
           setSelectedScanMode(undefined)

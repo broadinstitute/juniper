@@ -146,7 +146,7 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
         className="mb-2 form-control bg-white"
         disabled={true}
         placeholder={'No kit provided'}
-        value={activeKit.kitBarcode}>
+        value={activeKit.kitLabel}>
       </input>
       <div className="mt-3">
           After you have completed the sample collection kit, please return it to a member of the study team

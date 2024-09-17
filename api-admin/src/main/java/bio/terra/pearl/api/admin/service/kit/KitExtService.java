@@ -108,7 +108,7 @@ public class KitExtService {
 
     KitRequest kitRequest =
         kitRequestService.findByEnrolleeAndBarcode(
-            authContext.getEnrollee(), kitCollectionDto.kitBarcode());
+            authContext.getEnrollee(), kitCollectionDto.kitLabel());
 
     kitRequest.setReturnTrackingNumber(kitCollectionDto.returnTrackingNumber());
 

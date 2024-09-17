@@ -105,7 +105,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
-                .kitBarcode(kitRequestCreationDto.kitBarcode)
+                .kitLabel(kitRequestCreationDto.kitLabel)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .build();
         dao.createWithIdSpecified(inPersonKitRequest);
@@ -137,9 +137,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitBarcode, boolean skipAddressValidation) { }
+    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel, boolean skipAddressValidation) { }
 
-    public record KitCollectionDto(String kitBarcode, String returnTrackingNumber) {}
+    public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
 
     /**
      * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address

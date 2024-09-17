@@ -114,7 +114,7 @@ export const mockAssignedKitRequest = (kitStatus: string, kitType: string): KitR
   return {
     ...mockKitRequest(kitStatus, kitType),
     distributionMethod: 'IN_PERSON',
-    kitBarcode: 'assigned-barcode',
+    kitLabel: 'assigned-label',
     returnTrackingNumber: 'some-tracking'
   }
 }
