@@ -56,70 +56,44 @@ describe('getTableOfContentsTree', () => {
 
     // Assert
     expect(tableOfContentsTree).toEqual({
-      label: 'Form',
       data: {
-        isSelectable: false,
-        path: ''
+        isSelectable: true,
+        path: 'pages'
       },
       children: [
         {
-          label: 'Pages',
+          label: 'Page 1',
           data: {
             isSelectable: true,
-            path: 'pages'
+            path: 'pages[0]'
           },
           children: [
             {
-              label: 'Page 1',
+              label: 'page1_intro',
               data: {
                 isSelectable: true,
-                path: 'pages[0]'
+                path: 'pages[0].elements[0]'
+              }
+            },
+            {
+              label: <span>Panel <span className="fw-light fst-italic">({2} items)</span></span>,
+              data: {
+                isSelectable: true,
+                path: 'pages[0].elements[1]'
               },
               children: [
                 {
-                  label: 'page1_intro',
+                  label: 'first_name',
                   data: {
                     isSelectable: true,
-                    path: 'pages[0].elements[0]'
+                    path: 'pages[0].elements[1].elements[0]'
                   }
                 },
                 {
-                  label: <span>Panel <span className="fw-light fst-italic">({2} items)</span></span>,
+                  label: 'last_name',
                   data: {
                     isSelectable: true,
-                    path: 'pages[0].elements[1]'
-                  },
-                  children: [
-                    {
-                      label: 'first_name',
-                      data: {
-                        isSelectable: true,
-                        path: 'pages[0].elements[1].elements[0]'
-                      }
-                    },
-                    {
-                      label: 'last_name',
-                      data: {
-                        isSelectable: true,
-                        path: 'pages[0].elements[1].elements[1]'
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              label: 'Page 2',
-              data: {
-                isSelectable: true,
-                path: 'pages[1]'
-              },
-              children: [
-                {
-                  label: 'address',
-                  data: {
-                    isSelectable: true,
-                    path: 'pages[1].elements[0]'
+                    path: 'pages[0].elements[1].elements[1]'
                   }
                 }
               ]
@@ -127,22 +101,23 @@ describe('getTableOfContentsTree', () => {
           ]
         },
         {
-          label: 'Question templates',
+          label: 'Page 2',
           data: {
             isSelectable: true,
-            path: 'questionTemplates'
+            path: 'pages[1]'
           },
           children: [
             {
-              label: 'address_template',
+              label: 'address',
               data: {
                 isSelectable: true,
-                path: 'questionTemplates[0]'
+                path: 'pages[1].elements[0]'
               }
             }
           ]
         }
       ]
-    })
+    }
+    )
   })
 })
