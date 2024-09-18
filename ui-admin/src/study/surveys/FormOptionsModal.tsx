@@ -79,18 +79,22 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
               /> Required
             </label>
             <label className="form-label d-block">
-              <input type="checkbox" checked={workingForm.assignToAllNewEnrollees}
+              <input type="checkbox" checked={workingForm.autoAssign}
                 onChange={e => updateWorkingForm({
-                  ...workingForm, assignToAllNewEnrollees: e.target.checked
+                  ...workingForm, autoAssign: e.target.checked
                 })}
-              /> Auto-assign to new participants
+              /> Auto-assign to participants based on eligibility <InfoPopup placement="right" content={<div>
+              if unchecked, the survey must be manually assigned by staff
+              </div>}/>
             </label>
             <label className="form-label d-block">
               <input type="checkbox" checked={workingForm.assignToExistingEnrollees}
                 onChange={e => updateWorkingForm({
                   ...workingForm, assignToExistingEnrollees: e.target.checked
                 })}
-              /> Auto-assign to existing participants
+              /> Auto-assign to existing participants <InfoPopup placement="right" content={<div>
+              If there are already-enrolled participants when this survey is first published, they will be assigned it
+              </div>}/>
             </label>
             <label className="form-label d-block">
               <input type="checkbox" checked={workingForm.autoUpdateTaskAssignments}
