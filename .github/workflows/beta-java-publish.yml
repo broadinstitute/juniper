@@ -1,0 +1,115 @@
+name: Publish and deploy
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - cb-github-action-upload-to-gcr
+
+env:
+  SERVICE_NAME: ${{ github.event.repository.name }}
+  GOOGLE_PROJECT: broad-juniper-eng-infra
+  GOOGLE_DOCKER_REPOSITORY: us-central1-docker.pkg.dev
+  IMAGE_REPOSITORY_NAME: juniper
+
+jobs:
+  get-version-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: Parse Tag
+        id: tag
+        run: echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+
+  publish-admin-image:
+    needs: get-version-tag
+    permissions:
+      contents: 'read'
+      id-token:  'write'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build-publish.outputs.published-image }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: build and publish image
+        id: build-publish
+        uses: ./.github/actions/juniper-eng-build-push-image
+        with:
+          version-tag: ${{ needs.get-version-tag.outputs.tag }}
+          image-repo: 'us-central1-docker.pkg.dev'
+          image-name: "broad-juniper-eng-infra/juniper/${{ github.event.repository.name }}-admin"
+          gradle-build-args: ':api-admin:jibDockerBuild'
+
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: Publish docker Image
+          fields: job
+          text: "Publish to juniper eng infra failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
+          username: 'Juniper Build Notifications'
+    
+  publish-participant-image:
+    needs: get-version-tag
+    permissions:
+      contents: 'read'
+      id-token:  'write'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build-publish.outputs.published-image }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: build and publish image
+        id: build-publish
+        uses: ./.github/actions/juniper-eng-build-push-image
+        with:
+          version-tag: ${{ needs.get-version-tag.outputs.tag }}
+          image-repo: 'us-central1-docker.pkg.dev'
+          image-name: "broad-juniper-eng-infra/juniper/${{ github.event.repository.name }}-participant"
+          gradle-build-args: ':api-participant:jibDockerBuild'
+
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: Publish docker Image
+          fields: job
+          text: "Publish to broad-juniper-eng-infra failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
+          username: 'Juniper Build Notifications'
+
+  notify-upon-completion:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [get-version-tag]
+    steps:
+      - uses: broadinstitute/action-slack@v3.8.0
+        env: 
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          # Result status on the set version in dev job which actually performs the deploy
+          author_name: Image published to juniper eng infra
+          fields: job
+          text: Deploy to dev of ${{ needs.get-version-tag.outputs.tag }} completed successfully
+          username: 'Juniper Build Notifications'
+
+
