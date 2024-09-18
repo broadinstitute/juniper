@@ -21,6 +21,7 @@
     {
       "creatingAdminUsername": "heartdemostaff@gmail.com",
       "kitTypeName": "SALIVA",
+      "distributionMethod": "MAILED",
       "status": "SENT",
       "skipAddressValidation": true,
       "externalKitJson": {

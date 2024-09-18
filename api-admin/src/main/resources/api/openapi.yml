@@ -848,6 +848,26 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/collectKit:
+    post:
+      summary: Collects a sample kit from an enrollee and updates the kit status
+      tags: [ kit ]
+      operationId: collectKit
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
+      requestBody:
+        required: true
+        description: kit request creation dto
+        content: *jsonContent
+      responses:
+        '200':
+          description: Kit request
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/participantNote:
     post:
       summary: Create a participant note

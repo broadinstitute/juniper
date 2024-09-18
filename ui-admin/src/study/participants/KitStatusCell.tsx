@@ -2,6 +2,7 @@ import React from 'react'
 import InfoPopup from 'components/forms/InfoPopup'
 import { Placement } from 'react-bootstrap/types'
 import { KitRequest } from '@juniper/ui-core'
+import { prettifyString } from './KitRequests'
 
 /**
  * Component to render the currentStatus as reported by Pepper, including some help text to explain what the statuses
@@ -16,6 +17,7 @@ export default function KitStatusCell(
     'QUEUE': 'Shipping label has been printed',
     'SENT': 'Kit has been sent to the participant',
     'RECEIVED': 'Kit has been returned by the participant',
+    'COLLECTED_BY_STAFF': 'Participant has returned kit to study staff in-person',
     'ERRORED': 'There was a problem fulfilling this kit request',
     'DEACTIVATED': 'Kit is deactivated - no further processing will be done'
   }
@@ -24,7 +26,7 @@ export default function KitStatusCell(
   const errorMessage = kitRequest.errorMessage ? `: ${kitRequest.errorMessage}` : ''
   const content = `${info}${errorMessage}`
   return <>
-    {kitRequest.status}
+    {prettifyString(kitRequest.status)}
     {info && <InfoPopup content={content} placement={infoPlacement}/>}
   </>
 }

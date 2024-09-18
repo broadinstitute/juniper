@@ -33,7 +33,7 @@ export default function HubRouter() {
         element={<ManageProfiles/>}/>
       <Route path="profile/:ppUserId?"
         element={<ParticipantProfile/>}/>
-      <Route path="kitInstructions"
+      <Route path="kits"
         element={<KitInstructions/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>

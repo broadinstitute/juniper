@@ -14,9 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class KitRequest extends BaseEntity {
     private UUID creatingAdminUserId;
+    private UUID collectingAdminUserId;
     private UUID enrolleeId;
     private UUID kitTypeId;
     private KitType kitType;
+    @Builder.Default
+    private DistributionMethod distributionMethod = DistributionMethod.MAILED; // default to mailed for now
     /**
      * JSON blob of address data sent to DSM, collected from Profile/MailingAddress.
      * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.
@@ -30,6 +33,7 @@ public class KitRequest extends BaseEntity {
     private Instant receivedAt;
     private String trackingNumber;
     private String returnTrackingNumber;
+    private String kitLabel;  // the barcode 
     private String errorMessage;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture

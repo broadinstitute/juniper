@@ -1,10 +1,11 @@
 package bio.terra.pearl.api.admin.service.kit;
 
-import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
@@ -24,44 +25,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KitExtService {
-  private final AuthUtilService authUtilService;
   private final KitRequestService kitRequestService;
   private final StudyEnvironmentService studyEnvironmentService;
   private final StudyService studyService;
 
   public KitExtService(
-      AuthUtilService authUtilService,
       KitRequestService kitRequestService,
       StudyEnvironmentService studyEnvironmentService,
       StudyService studyService) {
-    this.authUtilService = authUtilService;
     this.kitRequestService = kitRequestService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.studyService = studyService;
-  }
-
-  public KitRequestListResponse requestKits(
-      AdminUser adminUser,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      List<String> enrolleeShortcodes,
-      KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
-    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    KitRequestListResponse response = new KitRequestListResponse();
-    for (String enrolleeShortcode : enrolleeShortcodes) {
-      try {
-        KitRequestDto kitDto =
-            requestKit(adminUser, studyShortcode, enrolleeShortcode, kitRequestCreationDto);
-        response.addKitRequest(kitDto);
-      } catch (Exception e) {
-        // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
-        // this,
-        // a structured response might be useful here
-        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
-      }
-    }
-    return response;
   }
 
   @Getter
@@ -81,41 +55,76 @@ public class KitExtService {
     }
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
   public Collection<KitRequestDto> getKitRequestsByStudyEnvironment(
-      AdminUser adminUser,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-
+      PortalStudyEnvAuthContext authContext) {
     StudyEnvironment studyEnvironment =
-        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+        studyEnvironmentService.verifyStudy(
+            authContext.getStudyShortcode(), authContext.getEnvironmentName());
     return kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
   }
 
+  @EnforcePortalEnrolleePermission(permission = "BASE")
   public KitRequestDto requestKit(
-      AdminUser adminUser,
-      String studyShortcode,
-      String enrolleeShortcode,
+      PortalEnrolleeAuthContext authContext,
       KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitRequestCreationDto);
+    return kitRequestService.requestKit(
+        authContext.getOperator(),
+        authContext.getStudyShortcode(),
+        authContext.getEnrollee(),
+        kitRequestCreationDto);
   }
 
-  public Collection<KitRequestDto> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.findByEnrollee(enrollee);
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
+  public KitRequestListResponse requestKits(
+      PortalStudyEnvAuthContext authContext,
+      List<String> enrolleeShortcodes,
+      KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
+    KitRequestListResponse response = new KitRequestListResponse();
+    for (String enrolleeShortcode : enrolleeShortcodes) {
+      try {
+        KitRequestDto kitDto =
+            requestKit(
+                PortalEnrolleeAuthContext.of(
+                    authContext.getOperator(),
+                    authContext.getPortalShortcode(),
+                    authContext.getStudyShortcode(),
+                    authContext.getEnvironmentName(),
+                    enrolleeShortcode),
+                kitRequestCreationDto);
+        response.addKitRequest(kitDto);
+      } catch (Exception e) {
+        // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
+        // this, a structured response might be useful here
+        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
+      }
+    }
+    return response;
   }
 
-  public void refreshKitStatuses(
-      AdminUser adminUser,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName)
+  @EnforcePortalEnrolleePermission(permission = "BASE")
+  public KitRequest collectKit(
+      PortalEnrolleeAuthContext authContext, KitRequestService.KitCollectionDto kitCollectionDto) {
+
+    KitRequest kitRequest =
+        kitRequestService.findByEnrolleeAndBarcode(
+            authContext.getEnrollee(), kitCollectionDto.kitLabel());
+
+    kitRequest.setReturnTrackingNumber(kitCollectionDto.returnTrackingNumber());
+
+    return kitRequestService.collectKit(
+        authContext.getOperator(), kitRequest, KitRequestStatus.COLLECTED_BY_STAFF);
+  }
+
+  @EnforcePortalEnrolleePermission(permission = "BASE")
+  public Collection<KitRequestDto> getKitRequests(PortalEnrolleeAuthContext authContext) {
+    return kitRequestService.findByEnrollee(authContext.getEnrollee());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "BASE")
+  public void refreshKitStatuses(PortalStudyEnvAuthContext authContext)
       throws PepperApiException, PepperParseException {
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    Study study = studyService.find(portalStudy.getStudyId()).get();
-    kitRequestService.syncKitStatusesForStudyEnv(study, environmentName);
+    Study study = studyService.find(authContext.getPortalStudy().getStudyId()).get();
+    kitRequestService.syncKitStatusesForStudyEnv(study, authContext.getEnvironmentName());
   }
 }

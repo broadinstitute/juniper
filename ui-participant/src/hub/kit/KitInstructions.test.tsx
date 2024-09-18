@@ -4,7 +4,7 @@ import KitInstructions from './KitInstructions'
 import { asMockedFn, setupRouterTest } from '@juniper/ui-core'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'
-import { mockEnrollee } from 'test-utils/test-participant-factory'
+import { mockAssignedKitRequest, mockEnrollee } from 'test-utils/test-participant-factory'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
 
@@ -31,8 +31,61 @@ describe('KitInstructions', () => {
 
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Step 1: Confirm Eligibility', { exact: false })).toBeInTheDocument()
-    expect(screen.getByLabelText('eligibility-qr')).toBeInTheDocument()
+    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.getByLabelText('assign-qr')).toBeInTheDocument()
+    expect(screen.queryByLabelText('return-qr')).not.toBeInTheDocument()
+  })
+
+  it('renders in-person kit information', async () => {
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      enrollees: [{
+        ...mockEnrollee(),
+        profileId: mockUseActiveUser().ppUser?.profileId || '',
+        consented: true,
+        kitRequests: [mockAssignedKitRequest('CREATED', 'SALIVA')]
+      }]
+    })
+
+    const { RoutedComponent } = setupRouterTest(
+      <KitInstructions/>)
+    await act(async () => {
+      render(RoutedComponent)
+    })
+
+    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
+    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
+    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+  })
+
+  it('renders collected kit notice', async () => {
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      enrollees: [{
+        ...mockEnrollee(),
+        profileId: mockUseActiveUser().ppUser?.profileId || '',
+        consented: true,
+        kitRequests: [mockAssignedKitRequest('COLLECTED_BY_STAFF', 'SALIVA')]
+      }]
+    })
+
+    const { RoutedComponent } = setupRouterTest(
+      <KitInstructions/>)
+    await act(async () => {
+      render(RoutedComponent)
+    })
+
+    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
+    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.queryByDisplayValue('assigned-barcode')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+    expect(screen.getByText('A member of the study team has received your sample collection kit.',
+      { exact: false })).toBeInTheDocument()
   })
 
   it('renders Consent Required message if enrollee has not consented', () => {
@@ -41,7 +94,9 @@ describe('KitInstructions', () => {
       ...mockUseActiveUser(),
       enrollees: [{
         ...mockUseActiveUser().enrollees[0],
-        consented: false
+        profileId: mockUseActiveUser().ppUser?.profileId || '',
+        consented: false,
+        kitRequests: []
       }]
     })
 
@@ -51,7 +106,7 @@ describe('KitInstructions', () => {
 
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.getByText('Consent Required')).toBeInTheDocument()
-    expect(screen.queryByText('Step 1: Confirm Eligibility', { exact: false })).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('eligibility-qr')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('return-qr')).not.toBeInTheDocument()
   })
 })

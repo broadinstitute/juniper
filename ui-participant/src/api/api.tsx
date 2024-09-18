@@ -58,16 +58,6 @@ export type LoginResult = {
   profile: Profile
 }
 
-export type KitRequest = {
-  id: string,
-  createdAt: number,
-  kitType: KitType,
-  sentToAddress?: string,
-  status: string,
-  sentAt?: number,
-  receivedAt?: number
-}
-
 export type KitType = {
   id: string,
   name: string,

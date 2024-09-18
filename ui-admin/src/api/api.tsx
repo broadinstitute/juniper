@@ -927,10 +927,27 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, skipAddressValidation: boolean }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitLabel: string }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitOptions)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async collectKit(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    kitOptions: { kitLabel: string, returnTrackingNumber: string }
+  ): Promise<string> {
+    const url =
+        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/collectKit`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

@@ -25,9 +25,17 @@ import {
   InfoCard,
   InfoCardHeader
 } from 'components/InfoCard'
+import { startCase } from 'lodash'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
+  if (!sentToAddressJson) {
+    return <div className="text-muted fst-italic">n/a<InfoPopup content={
+      <div>
+        <div className="d=flex">Kits distributed to a participant in person will not have a shipping address</div>
+      </div>
+    } placement='left'/></div>
+  }
   const address = JSON.parse(sentToAddressJson)
   return <div>
     <div>{address.firstName} {address.lastName}</div>
@@ -45,12 +53,16 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   accessorKey: 'status',
   cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
 }, {
-  header: 'Created',
+  header: 'Date Created',
   accessorKey: 'createdAt',
   accessorFn: data => instantToDefaultString(data.createdAt)
 }, {
   header: 'Address',
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
+}, {
+  header: 'Distribution Method',
+  accessorKey: 'distributionMethod',
+  accessorFn: data => prettifyString(data.distributionMethod)
 }, {
   header: 'Details',
   accessorKey: 'details',
@@ -70,12 +82,9 @@ export const KitRequestDetails = ({ kitRequest }: { kitRequest: KitRequest }) =>
 }
 
 /** Shows a list of all kit requests for an enrollee. */
-export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
-                                      {
-                                        enrollee: Enrollee,
-                                        studyEnvContext: StudyEnvContextT,
-                                        onUpdate: () => void
-                                      }) {
+export default function KitRequests({ enrollee, studyEnvContext, onUpdate }: {
+  enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
+}) {
   const { user } = useUser()
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
@@ -95,10 +104,10 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       <div className="d-flex justify-content-between align-items-center w-100">
         <div className="fw-bold lead my-1">Kit Requests</div>
         {user?.superuser &&
-            <Button onClick={() => setShowRequestKitModal(true)}
-              variant="light" className="border m-1">
-              <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
-            </Button>
+          <Button onClick={() => setShowRequestKitModal(true)}
+            variant="light" className="border m-1">
+            <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
+          </Button>
         }
       </div>
     </InfoCardHeader>
@@ -113,4 +122,10 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       {renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}
     </div>}
   </InfoCard>
+}
+
+export const prettifyString = (value: string) => {
+  if (!value) { return '' }
+  //takes a string such as COLLECTED_BY_STAFF and converts it to Collected By Staff
+  return value.split('_').map(s => startCase(s.toLowerCase())).join(' ')
 }

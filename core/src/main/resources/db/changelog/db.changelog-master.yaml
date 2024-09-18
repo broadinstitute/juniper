@@ -309,6 +309,9 @@ databaseChangeLog:
       file: changesets/2024_08_12_add_parent_to_question_def.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_08_28_in_person_kits.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_09_05_participant_shortcode.yaml
       relativeToChangelogFile: true
   - include:
