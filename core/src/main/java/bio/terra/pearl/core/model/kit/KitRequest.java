@@ -33,7 +33,7 @@ public class KitRequest extends BaseEntity {
     private Instant receivedAt;
     private String trackingNumber;
     private String returnTrackingNumber;
-    private String kitLabel;
+    private String kitLabel;  // the barcode 
     private String errorMessage;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
