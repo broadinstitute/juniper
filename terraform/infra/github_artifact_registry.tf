@@ -56,7 +56,7 @@ resource "google_artifact_registry_repository_iam_binding" "github_artifact_regi
     repository = google_artifact_registry_repository.juniper_repo.name
     location = var.region
     project = var.project
-    role = "roles/artifactregistry.reader"
+    role = "roles/artifactregistry.writer"
     members = [
         "serviceAccount:${google_service_account.github_actions.email}"
     ]
