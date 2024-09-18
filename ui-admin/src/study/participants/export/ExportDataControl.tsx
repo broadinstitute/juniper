@@ -19,7 +19,7 @@ const FILE_FORMATS = [{
   value: 'TSV',
   fileSuffix: 'tsv'
 }, {
-  label: 'Comma-delimted (.tsv)',
+  label: 'Comma-delimited (.csv)',
   value: 'CSV',
   fileSuffix: 'csv'
 }, {
