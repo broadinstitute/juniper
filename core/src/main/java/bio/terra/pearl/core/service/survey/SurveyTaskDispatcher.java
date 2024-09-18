@@ -56,7 +56,6 @@ public class SurveyTaskDispatcher {
         this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
-
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
                                         UUID studyEnvironmentId,
                                         ResponsibleEntity operator) {
@@ -112,31 +111,24 @@ public class SurveyTaskDispatcher {
     /** create the survey tasks for an enrollee's initial creation */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
-    public void createSurveyTasks(EnrolleeCreationEvent enrolleeEvent) {
-        DataAuditInfo auditInfo = DataAuditInfo.builder()
-                .systemProcess(getClass().getSimpleName() + ".createSurveyTasks")
-                .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
-                .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
-        List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
-                .findAllByStudyEnvIdWithSurveyNoContent(enrolleeEvent.getEnrollee().getStudyEnvironmentId(), true);
-
-        for (StudyEnvironmentSurvey studyEnvSurvey: studyEnvSurveys) {
-            if (studyEnvSurvey.getSurvey().isAssignToAllNewEnrollees()) {
-                createTaskIfApplicable(studyEnvSurvey, enrolleeEvent, auditInfo);
-            }
-        }
+    public void updateSurveyTasksForNewEnrollee(EnrolleeCreationEvent enrolleeEvent) {
+        updateSurveyTasks(enrolleeEvent);
     }
 
     /** survey responses can update what surveys a person is eligible for -- recompute as needed */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
-    public void updateSurveyTasks(EnrolleeSurveyEvent enrolleeEvent) {
+    public void updateSurveyTasksFromSurvey(EnrolleeSurveyEvent enrolleeEvent) {
         /** for now, only recompute on updates involving a completed survey.  This will
          * avoid assigning surveys based on an answer that was quickly changed, since we don't
          * yet have functions for unassigning surveys */
         if (!enrolleeEvent.getSurveyResponse().isComplete()) {
             return;
         }
+        updateSurveyTasks(enrolleeEvent);
+    }
+
+    protected void updateSurveyTasks(EnrolleeEvent enrolleeEvent) {
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .systemProcess(getClass().getSimpleName() + ".updateSurveyTasks")
                 .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
@@ -146,9 +138,12 @@ public class SurveyTaskDispatcher {
                 .findAllByStudyEnvIdWithSurveyNoContent(enrolleeEvent.getEnrollee().getStudyEnvironmentId(), true);
 
         for (StudyEnvironmentSurvey studyEnvSurvey: studyEnvSurveys) {
-           createTaskIfApplicable(studyEnvSurvey, enrolleeEvent, auditInfo);
+            if (studyEnvSurvey.getSurvey().isAutoAssign()) {
+                createTaskIfApplicable(studyEnvSurvey, enrolleeEvent, auditInfo);
+            }
         }
     }
+
 
     private void createTaskIfApplicable(StudyEnvironmentSurvey studyEnvSurvey, EnrolleeEvent event, DataAuditInfo auditInfo) {
         Optional<ParticipantTask> taskOpt = buildTaskIfApplicable(event.getEnrollee(),
