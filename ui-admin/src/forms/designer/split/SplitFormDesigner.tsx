@@ -55,7 +55,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         }
       </div>
       <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
-        <div className="d-flex justify-content-between border rounded-3 mt-2 p-2 bg-light">
+        <div className="d-flex justify-content-between border rounded-3 mt-2 mx-1 p-2 bg-light">
           <div>
             <Button variant="light" className="border m-1"
               onClick={() => {
