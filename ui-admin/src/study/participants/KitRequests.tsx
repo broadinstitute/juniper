@@ -25,6 +25,7 @@ import {
   InfoCard,
   InfoCardHeader
 } from 'components/InfoCard'
+import { startCase } from 'lodash'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -126,5 +127,5 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }: {
 export const prettifyString = (value: string) => {
   if (!value) { return '' }
   //takes a string such as COLLECTED_BY_STAFF and converts it to Collected By Staff
-  return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+  return value.split('_').map(s => startCase(s.toLowerCase())).join(' ')
 }
