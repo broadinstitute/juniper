@@ -6,13 +6,11 @@ import {
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, { memo, useState } from 'react'
-import { IconButton } from 'components/forms/Button'
-import { faCode } from '@fortawesome/free-solid-svg-icons'
-import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { isEqual } from 'lodash'
 import { FormElementEditor } from './FormElementEditor'
 import { FormElementJsonEditor } from './FormElementJsonEditor'
+import { FormElementOptions } from './controls/FormElementOptions'
 
 /* Note that this component is memoized using React.memo
  * Since survey pages can contain many elements, we need to be mindful of
@@ -42,32 +40,19 @@ export const SplitFormElementDesigner = memo(({
 
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
-
-  // @ts-ignore
-  const elementType = element.type === 'panel' ? 'panel' : 'question'
+  surveyModel.locale = currentLanguage.languageCode
 
   return <div key={elementIndex} className="row">
-    <div className="col-md-6 p-3 rounded-start-3"
-      style={{ backgroundColor: '#f3f3f3', borderRight: '1px solid #fff' }}>
-      <div className="d-flex justify-content-between">
-        <span className="h5">Edit {elementType}</span>
-        <div className="d-flex justify-content-end">
-          <IconButton icon={faCode}
-            aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
-            className="ms-2"
-            onClick={() => setShowJsonEditor(!showJsonEditor)}
-          />
-          <ListElementController
-            index={elementIndex}
-            items={editedContent.pages[currentPageNo].elements}
-            updateItems={newItems => {
-              const newContent = { ...editedContent }
-              newContent.pages[currentPageNo].elements = newItems
-              onChange(newContent)
-            }}
-          />
-        </div>
-      </div>
+    <div className="col-md-6 px-3 rounded-start-3 border border-end-0 bg-light-subtle">
+      <FormElementOptions
+        showJsonEditor={showJsonEditor}
+        setShowJsonEditor={setShowJsonEditor}
+        elementIndex={elementIndex}
+        element={element}
+        currentPageNo={currentPageNo}
+        editedContent={editedContent}
+        onChange={onChange}
+      />
       { !showJsonEditor ?
         <FormElementEditor
           element={element}
@@ -88,15 +73,14 @@ export const SplitFormElementDesigner = memo(({
         />
       }
     </div>
-    <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
-      style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
+    <div className="col-md-6 rounded-end-3 border survey-hide-complete" style={{ backgroundColor: '#f3f3f3' }}>
       <SurveyComponent model={surveyModel} readOnly={false}/>
     </div>
   </div>
 }, (prevProps, nextProps) => {
   // Only re-render if the question has changed. Note that React.memo only does a shallow object comparison
   // by default, which is why we have this custom propsAreEqual that uses lodash isEqual, which does a deep comparison.
-  return isEqual(prevProps.element, nextProps.element)
+  return isEqual(prevProps.element, nextProps.element) && isEqual(prevProps.currentLanguage, nextProps.currentLanguage)
 })
 
 SplitFormElementDesigner.displayName = 'SplitFormElementDesigner'

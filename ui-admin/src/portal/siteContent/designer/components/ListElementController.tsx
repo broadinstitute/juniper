@@ -1,6 +1,6 @@
 import React from 'react'
 import { IconButton } from 'components/forms/Button'
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 type ListControllerProps<T> = {
     items: T[],
@@ -27,11 +27,11 @@ export const ListElementController = <T, >({ items, updateItems, index }: ListCo
 
   return (
     <div className="d-flex justify-content-end">
-      <IconButton icon={faChevronUp} aria-label={'Move Up'} disabled={index < 1}
+      <IconButton icon={faChevronUp} aria-label={'Move up'} disabled={index < 1}
         onClick={() => moveItem('up')}/>
-      <IconButton icon={faChevronDown} aria-label={'Move Down'} disabled={index > items.length - 2}
+      <IconButton icon={faChevronDown} aria-label={'Move down'} disabled={index > items.length - 2}
         onClick={() => moveItem('down')}/>
-      <IconButton icon={faTimes} className={'text-danger'} aria-label={'Delete'} onClick={() => {
+      <IconButton icon={faTrashAlt} aria-label={'Delete'} onClick={() => {
         const newItems = [...items]
         newItems.splice(index, 1)
         updateItems(newItems)

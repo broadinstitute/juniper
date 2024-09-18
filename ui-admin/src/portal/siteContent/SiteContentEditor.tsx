@@ -342,7 +342,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           >
             <Tab
               eventKey="designer"
-              title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+              title={'Designer'}
               disabled={hasInvalidSection}
             >
               <ErrorBoundary>

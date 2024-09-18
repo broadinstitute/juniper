@@ -27,7 +27,7 @@ export const FormElementEditor = ({
 
   return (
     <>
-      {elementType === 'question' &&
+      {(elementType === 'question' || elementType === 'html') &&
         <FullQuestionDesigner
           question={element as Question}
           isNewQuestion={false}

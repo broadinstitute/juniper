@@ -38,7 +38,7 @@ describe('FormContentEditor', () => {
       onAnswerMappingChange={jest.fn()}
     />)
 
-    screen.getByText('Designer').click()
+    screen.getAllByText('Designer')[0].click()
 
     // Our custom ErrorBoundary text
     waitFor(() => {

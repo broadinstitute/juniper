@@ -138,7 +138,7 @@ describe('SurveyEditorView', () => {
         onCancel={jest.fn()}
         onSave={jest.fn()}
       />)
-    await userEvent.click(screen.getByText('Designer'))
+    await userEvent.click(screen.getAllByText('Designer')[1])
 
     await userEvent.click(screen.getByText('testQ'))
     expect(screen.getByText('English question')).toBeInTheDocument()

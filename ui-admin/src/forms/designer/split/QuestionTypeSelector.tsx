@@ -23,7 +23,7 @@ const QuestionTypeSelector = ({ questionType, onChange }: {
 
   return (
     <div className="mb-3">
-      <label className={'fw-semibold mb-2'} htmlFor={labelId}>Type</label>
+      <label className={'fw-semibold'} htmlFor={labelId}>Type</label>
       <span className="text-danger fw-semibold ms-1">*</span>
       <Select inputId={labelId} options={questionTypes}
         value={questionTypes.find(opt => opt.value === selectedQuestionType)}

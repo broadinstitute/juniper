@@ -1,13 +1,14 @@
 import React from 'react'
 
 import { SplitFormDesigner } from './SplitFormDesigner'
-import { screen, render, act } from '@testing-library/react'
+import { screen, act } from '@testing-library/react'
+import { renderWithRouter } from '@juniper/ui-core'
 
 jest.spyOn(window, 'scrollTo').mockImplementation(() => { })
 
 describe('SplitFormDesigner', () => {
   it('should render SplitFormDesigner for an empty form', () => {
-    render(
+    renderWithRouter(
       <SplitFormDesigner
         content={{ 'title': 'Test empty form', 'pages': [{ 'elements': [] }] }}
         onChange={() => jest.fn()}
@@ -16,13 +17,13 @@ describe('SplitFormDesigner', () => {
       />)
     expect(screen.getByLabelText('Insert a new question')).toBeInTheDocument()
     expect(screen.getByLabelText('Insert a new panel')).toBeInTheDocument()
-    expect(screen.getByText('Previous page')).toBeInTheDocument()
+    expect(screen.getAllByLabelText('Go to previous page')[0]).toBeInTheDocument()
     expect(screen.getByText('Scroll to top')).toBeInTheDocument()
-    expect(screen.getByText('Next page')).toBeInTheDocument()
+    expect(screen.getAllByLabelText('Go to next page')[0]).toBeInTheDocument()
   })
 
   it('should handle page change', () => {
-    render(
+    renderWithRouter(
       <SplitFormDesigner
         content={
           {
@@ -46,13 +47,13 @@ describe('SplitFormDesigner', () => {
     expect(screen.getAllByText('question1')).toHaveLength(2)
     expect(screen.queryAllByText('question2')).toHaveLength(0)
 
-    act(() => screen.getByText('Next page').click())
+    act(() => screen.getAllByLabelText('Go to next page')[0].click())
 
     //Confirm next page view is correct
     expect(screen.queryAllByText('question1')).toHaveLength(0)
     expect(screen.getAllByText('question2')).toHaveLength(2)
 
-    act(() => screen.getByText('Previous page').click())
+    act(() => screen.getAllByLabelText('Go to previous page')[0].click())
 
     //Confirm returning to the original page view is correct
     expect(screen.getAllByText('question1')).toHaveLength(2)
@@ -60,7 +61,7 @@ describe('SplitFormDesigner', () => {
   })
 
   it('should scroll to top', () => {
-    render(
+    renderWithRouter(
       <SplitFormDesigner
         content={{ 'title': 'Foo', 'pages': [{ 'elements': [] }] }}
         onChange={() => jest.fn()}
