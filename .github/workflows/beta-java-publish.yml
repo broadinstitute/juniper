@@ -47,19 +47,6 @@ jobs:
           image-repo: 'us-central1-docker.pkg.dev'
           image-name: "broad-juniper-eng-infra/juniper/${{ github.event.repository.name }}-admin"
           gradle-build-args: ':api-admin:jibDockerBuild'
-
-      - name: Notify slack on failure
-        uses: broadinstitute/action-slack@v3.8.0
-        if: failure()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          channel: '#juniper-dev-notifications'
-          status: failure
-          author_name: Publish docker Image
-          fields: job
-          text: "Publish to juniper eng infra failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
-          username: 'Juniper Build Notifications'
     
   publish-participant-image:
     needs: get-version-tag
