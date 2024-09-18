@@ -8,7 +8,7 @@ resource "google_dns_managed_zone" "juniper_admin_dns_zone" {
   dnssec_config {
     kind          = "dns#managedZoneDnsSecConfig"
     non_existence = "nsec3"
-    state         = "off"
+    state         = "on"
   }
   name       = "juniper-admin-dns-zone"
   visibility = "public"

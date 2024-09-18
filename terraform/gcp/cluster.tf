@@ -18,12 +18,12 @@ resource "google_compute_subnetwork" "juniper_subnetwork" {
   network = google_compute_network.juniper_network.id
   secondary_ip_range {
     range_name    = "services-range"
-    ip_cidr_range = "192.168.0.0/24"
+    ip_cidr_range = "192.168.0.0/18"
   }
 
   secondary_ip_range {
     range_name    = "pod-ranges"
-    ip_cidr_range = "192.168.1.0/24"
+    ip_cidr_range = "192.168.64.0/18"
   }
 }
 
