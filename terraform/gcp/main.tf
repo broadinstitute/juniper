@@ -14,21 +14,31 @@
 # resources associated with the cluster
 
 provider "google" {
-  project     = "broad-ddp-dev"
-  region      = "us-central1"
+  project     = var.project
+  region      = var.region
+}
+
+# need to create some infra IAM bindings, so create secondary provider
+provider "google" {
+  project = var.infra_project
+  region  = var.infra_region
+  alias  = "infra"
 }
 
 data "google_client_config" "provider" {}
 
-data "google_container_cluster" "juniper_cluster" {
-  name     = "juniper-test-cluster-2"
-  location = "us-central1"
-}
-
 provider "kubernetes" {
-  host  = "https://${data.google_container_cluster.juniper_cluster.endpoint}"
+  host  = "https://${google_container_cluster.juniper_cluster.endpoint}"
   token = data.google_client_config.provider.access_token
   cluster_ca_certificate = base64decode(
-    data.google_container_cluster.juniper_cluster.master_auth[0].cluster_ca_certificate,
+    google_container_cluster.juniper_cluster.master_auth[0].cluster_ca_certificate,
   )
+}
+
+
+terraform {
+  backend "gcs" {
+    bucket = "broad-juniper-terraform-remote-state"
+    prefix = "juniper"
+  }
 }
