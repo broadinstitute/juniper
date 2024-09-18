@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { HtmlQuestion, PortalEnvironmentLanguage, Question, QuestionType } from '@juniper/ui-core'
 
 import { Textarea } from 'components/forms/Textarea'
-import { i18nSurveyText } from 'util/juniperSurveyUtils'
+import { i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
 import { BaseFields } from '../questions/BaseFields'
 import { ChoicesList } from '../questions/ChoicesList'
 import { VisibilityFields } from '../questions/VisibilityFields'
@@ -117,7 +117,12 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
                   onChange={value => {
                     onChange({
                       ...question,
-                      html: value
+                      html: updateI18nSurveyText({
+                        valueText: value,
+                        oldValue: question.html,
+                        languageCode: currentLanguage.languageCode,
+                        supportedLanguages
+                      })
                     })
                   }}
                 />
@@ -183,7 +188,12 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
                 onChange={value => {
                   onChange({
                     ...question,
-                    description: value
+                    description: updateI18nSurveyText({
+                      valueText: value,
+                      oldValue: question.description,
+                      languageCode: currentLanguage.languageCode,
+                      supportedLanguages
+                    })
                   })
                 }}
               />
