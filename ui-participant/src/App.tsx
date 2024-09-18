@@ -31,7 +31,7 @@ import { useCookiesAcknowledged } from './browserPersistentState'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import {
   ApiProvider,
-  I18nProvider
+  I18nProvider, initializeMixpanel
 } from '@juniper/ui-core'
 import {
   BrandConfiguration,
@@ -43,8 +43,7 @@ import AuthError from './login/AuthError'
 import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
-
-import { initializeMixpanel } from './util/mixpanelUtils'
+import mixpanel from 'mixpanel-browser'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -62,6 +61,7 @@ const ScrollToTop = () => {
 
 // The actual project token is injected into the event by the backend
 initializeMixpanel('placeholder-token')
+mixpanel.register({ source: 'PARTICIPANT_UI' })
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent

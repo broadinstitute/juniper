@@ -29,6 +29,8 @@ import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
 import AdminUserRouter from './user/AdminUserRouter'
 import LogEventViewer from './health/LogEventViewer'
+import { initializeMixpanel } from '@juniper/ui-core'
+import mixpanel from 'mixpanel-browser'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -40,6 +42,9 @@ const ScrollToTop = () => {
   return null
 }
 
+// The actual project token is injected into the event by the backend
+initializeMixpanel('placeholder-token')
+mixpanel.register({ source: 'ADMIN_UI' })
 
 /** container for the app including the router  */
 function App() {
