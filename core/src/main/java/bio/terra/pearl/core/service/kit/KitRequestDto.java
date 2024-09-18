@@ -39,7 +39,7 @@ public class KitRequestDto {
   private Instant receivedAt;
   private String trackingNumber;
   private String returnTrackingNumber;
-  private String kitLabel;
+  private String kitLabel;   // the barcode from the kit label
   private boolean skipAddressValidation;
   private String errorMessage;
   /**
