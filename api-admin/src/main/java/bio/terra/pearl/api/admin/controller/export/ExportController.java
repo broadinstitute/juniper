@@ -139,7 +139,7 @@ public class ExportController implements ExportApi {
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)
             .includeSubHeaders(includeSubHeaders)
-            .excludeModules(excludeModules)
+            .excludeModules(excludeModules != null ? excludeModules : List.of())
             .build();
     return exportOptions;
   }
