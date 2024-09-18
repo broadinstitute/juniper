@@ -39,7 +39,7 @@ public class KitRequestDto {
   private Instant receivedAt;
   private String trackingNumber;
   private String returnTrackingNumber;
-  private String kitBarcode;
+  private String kitLabel;   // the barcode from the kit label
   private boolean skipAddressValidation;
   private String errorMessage;
   /**
@@ -63,7 +63,7 @@ public class KitRequestDto {
     this.receivedAt = kitRequest.getReceivedAt();
     this.trackingNumber = kitRequest.getTrackingNumber();
     this.returnTrackingNumber = kitRequest.getReturnTrackingNumber();
-    this.kitBarcode = kitRequest.getKitBarcode();
+    this.kitLabel = kitRequest.getKitLabel();
     this.errorMessage = kitRequest.getErrorMessage();
     this.skipAddressValidation = kitRequest.isSkipAddressValidation();
     this.details = createRequestDetails(kitRequest, objectMapper);

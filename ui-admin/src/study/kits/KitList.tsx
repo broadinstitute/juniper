@@ -27,7 +27,7 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
-import { KitRequestDetails } from 'study/participants/KitRequests'
+import { prettifyString, KitRequestDetails } from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 
 type KitStatusTabConfig = {
@@ -50,6 +50,7 @@ const defaultColumns: VisibilityState = {
   'returnTrackingNumber': false,
   'creatingAdminUserId': false,
   'collectingAdminUserId': false,
+  'kitLabel': false,
   'receivedAt': false,
   'status': false,
   'distributionMethod': false
@@ -84,7 +85,8 @@ const statusTabs: KitStatusTabConfig[] = [
     key: 'collected',
     additionalColumns: [
       'creatingAdminUserId',
-      'collectingAdminUserId'
+      'collectingAdminUserId',
+      'returnTrackingNumber'
     ]
   },
   {
@@ -242,9 +244,14 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     accessorKey: 'trackingNumber',
     enableColumnFilter: false
   }, {
-    header: 'Kit Origin',
-    accessorKey: 'distributionMethod',
+    header: 'Kit Label',
+    accessorKey: 'kitLabel',
     enableColumnFilter: false
+  }, {
+    header: 'Distribution Method',
+    accessorKey: 'distributionMethod',
+    enableColumnFilter: false,
+    accessorFn: data => prettifyString(data.distributionMethod)
   }, {
     header: 'Requested By',
     accessorKey: 'creatingAdminUserId',

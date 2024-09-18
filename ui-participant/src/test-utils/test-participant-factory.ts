@@ -1,5 +1,4 @@
 import {
-  KitRequest,
   KitType,
   ParticipantTask,
   ParticipantTaskStatus,
@@ -9,7 +8,7 @@ import {
 import {
   defaultSurvey,
   Enrollee,
-  HubResponse,
+  HubResponse, KitRequest,
   ParticipantUser,
   Profile
 } from '@juniper/ui-core'
@@ -20,6 +19,7 @@ export const mockParticipantUser: () => ParticipantUser = () => {
   return {
     id: 'user1',
     username: 'mockUser1@mock.com',
+    shortcode: 'ACC_fakeShortcode',
     token: 'fakeToken',
     lastLogin: 0
   }
@@ -100,6 +100,8 @@ export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest =
   return {
     id: 'kitRequest1',
     kitType: mockKitType(kitType),
+    distributionMethod: 'MAILED',
+    skipAddressValidation: false,
     createdAt: now,
     status: kitStatus,
     sentToAddress: '123 Main St',
@@ -112,7 +114,8 @@ export const mockAssignedKitRequest = (kitStatus: string, kitType: string): KitR
   return {
     ...mockKitRequest(kitStatus, kitType),
     distributionMethod: 'IN_PERSON',
-    kitBarcode: 'assigned-barcode'
+    kitLabel: 'assigned-label',
+    returnTrackingNumber: 'some-tracking'
   }
 }
 

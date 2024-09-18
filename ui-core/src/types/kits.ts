@@ -17,7 +17,7 @@ export type KitRequest = {
     receivedAt?: number,
     trackingNumber?: string,
     returnTrackingNumber?: string,
-    kitBarcode?: string,
+    kitLabel?: string,
     errorMessage?: string,
     details?: string,
     enrolleeShortcode?: string,
