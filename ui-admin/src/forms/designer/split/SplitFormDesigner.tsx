@@ -2,7 +2,7 @@ import {
   FormContent,
   PortalEnvironmentLanguage
 } from '@juniper/ui-core'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faCaretUp } from '@fortawesome/free-solid-svg-icons'
@@ -35,6 +35,10 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     setSearchParams(searchParams)
     scrollToElement(path, setCurrentPageNo)
   }
+
+  useEffect(() => {
+    scrollToElement(selectedElementPath, setCurrentPageNo)
+  }, [])
 
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
