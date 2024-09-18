@@ -37,7 +37,9 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   }
 
   useEffect(() => {
-    scrollToElement(selectedElementPath, setCurrentPageNo)
+    if (selectedElementPath && selectedElementPath !== 'pages') {
+      scrollToElement(selectedElementPath, setCurrentPageNo)
+    }
   }, [])
 
   return <div className="container-fluid overflow-scroll">

@@ -65,31 +65,8 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         mountOnEnter
         unmountOnExit
         onSelect={setActiveTab}
+        className="px-3"
       >
-        {userHasPermission(user, portal.id, 'prototype_tester') &&< Tab
-          disabled={activeTab !== 'designer' && !tabsEnabled}
-          eventKey="designer"
-          title={<>Designer<span className='badge bg-primary fw-light ms-2'>LEGACY</span></>}
-        >
-          <ErrorBoundary>
-            <FormDesigner
-              readOnly={readOnly}
-              content={editedContent}
-              currentLanguage={currentLanguage}
-              supportedLanguages={supportedLanguages}
-              onChange={(newContent, callback?: () => void) => {
-                setEditedContent(newContent, callback)
-                try {
-                  const errors = validateFormContent(newContent)
-                  onFormContentChange(errors, newContent)
-                } catch (err) {
-                  //@ts-ignore
-                  onFormContentChange([err.message], undefined)
-                }
-              }}
-            />
-          </ErrorBoundary>
-        </Tab> }
         <Tab
           disabled={activeTab !== 'split' && !tabsEnabled}
           eventKey="split"
@@ -164,6 +141,30 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} currentLanguage={currentLanguage} />
           </ErrorBoundary>
         </Tab>
+        {userHasPermission(user, portal.id, 'prototype_tester') &&< Tab
+          disabled={activeTab !== 'designer' && !tabsEnabled}
+          eventKey="designer"
+          title={<>Designer<span className='badge bg-primary fw-light ms-2'>LEGACY</span></>}
+        >
+          <ErrorBoundary>
+            <FormDesigner
+              readOnly={readOnly}
+              content={editedContent}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
+              onChange={(newContent, callback?: () => void) => {
+                setEditedContent(newContent, callback)
+                try {
+                  const errors = validateFormContent(newContent)
+                  onFormContentChange(errors, newContent)
+                } catch (err) {
+                  //@ts-ignore
+                  onFormContentChange([err.message], undefined)
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </Tab> }
       </Tabs>
     </div>
   )
