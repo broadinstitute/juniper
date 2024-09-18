@@ -61,7 +61,7 @@ const ScrollToTop = () => {
 
 // The actual project token is injected into the event by the backend
 initializeMixpanel('placeholder-token')
-mixpanel.register({ source: 'PARTICIPANT_UI' })
+mixpanel.register({ application: 'PARTICIPANT_UI' })
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
