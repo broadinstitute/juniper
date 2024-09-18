@@ -113,7 +113,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
                   label="HTML"
                   labelClassname={'mb-0'}
                   rows={5}
-                  value={i18nSurveyText((question as HtmlQuestion)?.html)}
+                  value={i18nSurveyText((question as HtmlQuestion)?.html, currentLanguage.languageCode)}
                   onChange={value => {
                     onChange({
                       ...question,
@@ -179,7 +179,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
                 label="Description"
                 labelClassname={'mb-0'}
                 rows={2}
-                value={i18nSurveyText(question.description)}
+                value={i18nSurveyText(question.description, currentLanguage.languageCode)}
                 onChange={value => {
                   onChange({
                     ...question,
