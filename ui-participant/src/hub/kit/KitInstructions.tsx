@@ -62,14 +62,14 @@ const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
 
 const UnconsentedKitView = () => {
   return (
-    <div className="mb-3 rounded round-3 p-3 bg-white shadow-sm">
+    <div className="mb-3 rounded round-3 py-4 px-md-5 bg-white shadow-sm">
       <h2 className="d-flex align-items-center mb-3">
         <FontAwesomeIcon className="text-danger me-2" icon={faCircleExclamation}/> Consent Required
       </h2>
-      <div className="mb-3">
+      <div className="pb-3">
         Before completing a sample collection kit, you must read and sign the study consent form.
       </div>
-      <div className="d-flex justify-content-center">
+      <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
           Start Consent
         </Link>
