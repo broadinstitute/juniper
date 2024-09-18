@@ -29,6 +29,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -80,6 +81,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private ImportItemService importItemService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private SurveyResponseService surveyResponseService;
+
+
     @Autowired
     KitRequestService kitRequestService;
 
@@ -485,6 +490,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(tasks, hasSize(1));
         assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).isComplete(), equalTo(true));
 
         List<Answer> answers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), "importTest1");
         assertThat(answers, hasSize(2));

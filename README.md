@@ -45,7 +45,7 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 ### Setup
 
 #### Database setup
-Run `./local-dev/run_postgres.sh start`
+Run `./scripts/postgres/run_postgres.sh start`
 This will start a Postgres container with a schema and database user configured. This Postgres container is utilized by both the
 local development environment and the unit/integration tests.
 
@@ -73,7 +73,7 @@ In IntelliJ, File -> New -> Project from Existing Sources.  When importing the p
      * ApiAdminApp (in api-admin module)
        * Set the Active profiles field to: `human-readable-logging, development`
        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
-       * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`. 
+       * Render environment variables with `bash ./scripts/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`. 
          * The output should be a semicolon-separated list of environment variables.
          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
@@ -81,7 +81,7 @@ In IntelliJ, File -> New -> Project from Existing Sources.  When importing the p
      * ApiParticipantApp (in api-participant module)
         * Set the Active profiles field to: `human-readable-logging, development`
         * Disable launch optimization by clicking `Modify options > Disable launch optimization`
-        * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
+        * Render environment variables with `bash ./scripts/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
           * The output should be a semicolon-separated list of environment variables.
           * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
         * Your final Run Configuration should look similar to this:
@@ -98,7 +98,7 @@ In basic development mode, this will only serve the API, not the frontend assets
 To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
 from the root project directory, run
 ```
-./scripts/populate_portal.sh ourhealth
+./scripts/populate/populate_portal.sh demo
 ```
 
 ##### Admin UI (ui-admin module)
@@ -143,7 +143,7 @@ Then, you are ready to run the UI:
   ```
 
 (note that you can just run `VITE_UNAUTHED_LOGIN=true HTTPS=true npm -w ui-participant start` if you don't need to test B2C login functionality)
-Then go to `sandbox.ourhealth.localhost:3001`
+Then go to `sandbox.demo.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)  There are a number of pre-existing participants you 
 can log in as, such as jsalk@test.com or consented@test.com.  All synthetic users have the password 'd2p4eva!'
 
