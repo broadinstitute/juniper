@@ -45,7 +45,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   return <div className="container-fluid overflow-scroll">
     <div className="row w-100 mx-0">
       <div style={{ overflowY: 'scroll' }}
-        className={classNames('px-0 border-start border-end bg-white', hideTableOfContents ? 'd-none' : 'col-3')}>
+        className={classNames('px-0 bg-white', hideTableOfContents ? 'd-none' : 'col-3')}>
         { !hideTableOfContents &&
             <FormTableOfContents
               formContent={content}
@@ -55,7 +55,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         }
       </div>
       <div className={classNames('col', hideTableOfContents ? 'col-12' : 'col-9')}>
-        <div className="d-flex justify-content-between border border-top-0 rounded-bottom-3 p-2 bg-light">
+        <div className="d-flex justify-content-between border rounded-3 mt-2 p-2 bg-light">
           <div>
             <Button variant="light" className="border m-1"
               onClick={() => {

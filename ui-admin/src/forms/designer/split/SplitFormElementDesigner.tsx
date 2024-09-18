@@ -40,6 +40,7 @@ export const SplitFormElementDesigner = memo(({
 
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
+  surveyModel.locale = currentLanguage.languageCode
 
   return <div key={elementIndex} className="row">
     <div className="col-md-6 px-3 rounded-start-3 border border-end-0 bg-light-subtle">
@@ -79,7 +80,7 @@ export const SplitFormElementDesigner = memo(({
 }, (prevProps, nextProps) => {
   // Only re-render if the question has changed. Note that React.memo only does a shallow object comparison
   // by default, which is why we have this custom propsAreEqual that uses lodash isEqual, which does a deep comparison.
-  return isEqual(prevProps.element, nextProps.element)
+  return isEqual(prevProps.element, nextProps.element) && isEqual(prevProps.currentLanguage, nextProps.currentLanguage)
 })
 
 SplitFormElementDesigner.displayName = 'SplitFormElementDesigner'
