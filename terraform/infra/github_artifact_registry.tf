@@ -28,7 +28,9 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_pool_provi
     "attribute.actor"            = "assertion.actor"
     "attribute.aud"              = "assertion.aud"
     "attribute.repository"       = "assertion.repository"
+    "attribute.repository_id"    = "assertion.repository_id"
     "attribute.repository_owner" = "assertion.repository_owner"
+    "attribute.repository_owner_id" = "assertion.repository_owner_id"
   }
 
   # NOTE: this is what restricts external access, this ids are from github
