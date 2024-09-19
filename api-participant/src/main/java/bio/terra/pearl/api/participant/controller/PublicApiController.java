@@ -104,7 +104,8 @@ public class PublicApiController implements PublicApi {
 
   @CrossOrigin(
       origins = {
-        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo only)
+        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo)
+        "https://juniperdemoprod.b2clogin.com", // Demo Portal (prod)
         "https://junipercmidemo.b2clogin.com", // CMI (demo only)
         "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
         "https://ourhealthdev.b2clogin.com", // OurHealth (demo)
