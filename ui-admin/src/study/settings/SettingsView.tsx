@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Api, {
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -91,14 +91,6 @@ export function LoadedSettingsView(
       portalContext.reloadPortal(portalContext.portal.shortcode)
     }, { setIsLoading: setIsLoadingStudyConfig })
   }
-
-  useEffect(() => {
-    setPortalConfig(portalEnv.portalEnvironmentConfig)
-    setHasPortalConfigChanged(false)
-    setStudyConfig(studyEnvContext.currentEnv.studyEnvironmentConfig)
-    setHasStudyConfigChanged(false)
-  }, [studyEnvContext.currentEnv.environmentName])
-
 
   if (isLoadingStudyConfig || isLoadingPortalConfig) {
     return <LoadingSpinner/>
