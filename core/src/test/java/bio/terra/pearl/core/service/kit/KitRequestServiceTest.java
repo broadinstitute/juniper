@@ -33,6 +33,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,6 +55,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -110,6 +113,64 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThrows(PepperApiException.class, () ->
                 kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false))
         );
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitMailed(TestInfo testInfo) throws JsonProcessingException {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        Profile profile = enrollee.getProfile();
+        profile.setGivenName("Alex");
+        profile.setFamilyName("Tester");
+        profile.setPhoneNumber("111-222-3333");
+        profile.getMailingAddress().setStreet1("123 Fake Street");
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
+        PepperKitAddress expectedSentToAddress = PepperKitAddress.builder()
+                .firstName("Alex")
+                .lastName("Tester")
+                .street1("123 Fake Street")
+                .phoneNumber("111-222-3333")
+                .build();
+
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false));
+        KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
+
+        assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        assertThat(savedKit.getStatus(), equalTo(KitRequestStatus.CREATED));
+        assertThat(savedKit.getSentToAddress(), equalTo(objectMapper.writeValueAsString(expectedSentToAddress)));
+        assertThat(savedKit.getDistributionMethod(), equalTo(DistributionMethod.MAILED));
+
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), ArgumentMatchers.eq(false));
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitInPerson(TestInfo testInfo) {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        Profile profile = enrollee.getProfile();
+        profile.setGivenName("Alex");
+        profile.setFamilyName("Tester");
+        profile.setPhoneNumber("111-222-3333");
+        profile.getMailingAddress().setStreet1("123 Fake Street");
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
+
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, null, false));
+        KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
+
+        assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        assertThat(savedKit.getCollectingAdminUserId(), equalTo(null));
+        assertThat(savedKit.getSentToAddress(), equalTo(null));
+        assertThat(savedKit.getStatus(), equalTo(KitRequestStatus.CREATED));
+        assertThat(savedKit.getDistributionMethod(), equalTo(DistributionMethod.IN_PERSON));
+
+        // Requesting an IN_PERSON kit does not make any requests to DSM
+        Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
     @Transactional
@@ -253,6 +314,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(collectedKit.getStatus(), equalTo(KitRequestStatus.COLLECTED_BY_STAFF));
         assertThat(collectedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(collectedKit.getCollectingAdminUserId(), equalTo(adminUser.getId()));
+
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), ArgumentMatchers.eq(true));
     }
 
     @Transactional
