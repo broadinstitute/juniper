@@ -34,7 +34,8 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_pool_provi
   }
 
   # NOTE: this is what restricts external access, this ids are from github
-  attribute_condition = "assertion.repository_owner_id == '393552' && assertion.repository_id == '566938309'"
+  #attribute_condition = "assertion.repository_owner_id == '393552' && assertion.repository_id == '566938309'"
+  attribute_condition = "assertion.repository_owner_id == '123456' && assertion.repository_id == '568901234'"
   oidc {
     allowed_audiences = []
     issuer_uri = "https://token.actions.githubusercontent.com"
