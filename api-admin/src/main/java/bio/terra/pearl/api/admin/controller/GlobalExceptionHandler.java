@@ -39,7 +39,8 @@ public class GlobalExceptionHandler {
     NoHandlerFoundException.class,
     ValidationException.class,
     BadRequestException.class,
-    HttpMessageNotReadableException.class
+    HttpMessageNotReadableException.class,
+    org.springframework.web.bind.MissingServletRequestParameterException.class
   })
   public ResponseEntity<ErrorReport> badRequestExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.BAD_REQUEST, request);
