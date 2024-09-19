@@ -43,7 +43,7 @@ const ScrollToTop = () => {
 }
 
 // The actual project token is injected into the event by the backend
-initializeMixpanel('placeholder-token')
+initializeMixpanel('frontend-placeholder-token')
 mixpanel.register({ application: 'ADMIN_UI' })
 
 /** container for the app including the router  */
