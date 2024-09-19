@@ -35,7 +35,7 @@ export type Survey = VersionedForm & {
   blurb?: string
   required: boolean
   rule?: string
-  assignToAllNewEnrollees: boolean
+  autoAssign: boolean
   assignToExistingEnrollees: boolean
   autoUpdateTaskAssignments: boolean
   recur: boolean
@@ -49,7 +49,7 @@ export type Survey = VersionedForm & {
 
 export const defaultSurvey = {
   required: false,
-  assignToAllNewEnrollees: true,
+  autoAssign: true,
   assignToExistingEnrollees: false,
   autoUpdateTaskAssignments: false,
   recur: false,

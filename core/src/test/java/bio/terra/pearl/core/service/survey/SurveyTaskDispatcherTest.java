@@ -11,9 +11,11 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -97,6 +99,36 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         boolean isDuplicate = SurveyTaskDispatcher.isDuplicateTask(studyEnvironmentSurvey, outreachTask2,
                 existingTasks);
         assertTrue(isDuplicate);
+    }
+
+    @Test
+    @Transactional
+    public void testAutoAssign(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
+                .stableId("main")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
+                        .portalId(sandboxBundle.getPortal().getId())
+                .autoAssign(true));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+        Survey followUpSurvey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
+                .stableId("followUp")
+                .portalId(sandboxBundle.getPortal().getId())
+                .autoAssign(false));
+        surveyFactory.attachToEnv(followUpSurvey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo), sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
+
+        // confirm only the main survey is assigned automatically
+        List<ParticipantTask> participantTasks = participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId());
+        assertThat(participantTasks, hasSize(1));
+        assertThat(participantTasks.get(0).getTargetStableId(), equalTo("main"));
+
+        // confirm that even after a survey submit event with a completion, the followup task is still not assigned
+        surveyResponseFactory.submitStringAnswer(participantTasks.get(0), "diagnosis", "sick", true, sandbox1, sandboxBundle.getPortal());
+        participantTasks = participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId());
+        assertThat(participantTasks, hasSize(1));
+        assertThat(participantTasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
     }
 
     @Test

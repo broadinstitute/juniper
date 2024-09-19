@@ -51,7 +51,7 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     @Builder.Default
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recur is true)
     @Builder.Default
-    private boolean assignToAllNewEnrollees = true; // whether to assign the survey to all new enrollees by default
+    private boolean autoAssign = true; // whether to assign the survey to enrollees automatically once they meet the eligibility criteria
     @Builder.Default
     private boolean assignToExistingEnrollees = false; // whether to assign the survey automatically to existing enrollees
     @Builder.Default
