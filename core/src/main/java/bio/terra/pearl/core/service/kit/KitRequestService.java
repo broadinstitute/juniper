@@ -101,22 +101,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         };
     }
 
-    public KitRequest collectKit(AdminUser operator, String studyShortcode, KitRequest kitRequest) {
-        if(kitRequest.getDistributionMethod() != DistributionMethod.IN_PERSON) {
-            throw new IllegalArgumentException("You can only collect kits that were distributed in person.");
-        }
-        KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
-                .formatted(kitRequest.getId())));
-        kitRequest.setKitType(kitType);
-        createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
-        KitRequestStatus priorStatus = kitRequest.getStatus();
-        kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);
-        kitRequest.setCollectingAdminUserId(operator.getId());
-        KitRequest request = dao.update(kitRequest);
-        notifyKitStatusChange(kitRequest, priorStatus);
-        return request;
-    }
-
     /*
         This only creates the kit request in Juniper, it does not send the request to Pepper.
         Once the kit is collected by staff later on, the kit request will be sent to Pepper as "returnOnly".
@@ -425,6 +409,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
 
         notifyKitStatusChange(kitRequest, priorStatus);
+    }
+
+    public KitRequest collectKit(AdminUser operator, String studyShortcode, KitRequest kitRequest) {
+        if(kitRequest.getDistributionMethod() != DistributionMethod.IN_PERSON) {
+            throw new IllegalArgumentException("You can only collect kits that were distributed in person.");
+        }
+        KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
+                .formatted(kitRequest.getId())));
+        kitRequest.setKitType(kitType);
+        createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
+        KitRequestStatus priorStatus = kitRequest.getStatus();
+        kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);
+        kitRequest.setCollectingAdminUserId(operator.getId());
+        KitRequest request = dao.update(kitRequest);
+        notifyKitStatusChange(kitRequest, priorStatus);
+        return request;
     }
 
     protected void setKitDates(KitRequest kitRequest, PepperKit pepperKit) {
