@@ -92,7 +92,7 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 onChange={e => updateWorkingForm({
                   ...workingForm, assignToExistingEnrollees: e.target.checked
                 })}
-              /> Auto-assign to existing participants <InfoPopup placement="right" content={<div>
+              /> Auto-assign to existing participants based on eligibility <InfoPopup placement="right" content={<div>
               If there are already-enrolled participants when this survey is first published, they will be assigned it
               </div>}/>
             </label>
