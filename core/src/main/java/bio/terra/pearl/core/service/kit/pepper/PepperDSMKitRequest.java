@@ -28,6 +28,9 @@ public class PepperDSMKitRequest {
         @JsonProperty("juniperParticipantID")
         private String juniperParticipantId;
         private boolean skipAddressValidation;
+        private String returnTrackingId;
+        private boolean returnOnly;
+        private String kitLabel;
 
         public static JuniperKitRequestBuilder builderWithAddress(PepperKitAddress address) {
             return JuniperKitRequest.builder()

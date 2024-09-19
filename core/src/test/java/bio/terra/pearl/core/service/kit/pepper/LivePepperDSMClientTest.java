@@ -83,7 +83,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, false);
 
         // Assert
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, act);
@@ -109,7 +109,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         PepperApiException pepperApiException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address));
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, false));
 
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
@@ -137,7 +137,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address)
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, false)
         );
         assertThat(pepperException.getMessage(), containsString(kitId));
         assertThat(pepperException.getMessage(), containsString(errorMessage));
@@ -155,7 +155,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, false);
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class, act);
@@ -180,7 +180,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, false);
 
         assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
         verifyRequestForPath("/shipKit");

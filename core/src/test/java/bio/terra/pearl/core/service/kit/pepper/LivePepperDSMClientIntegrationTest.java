@@ -62,7 +62,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
-        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
+        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address, false);
         assertThat(sendKitResponse.getCurrentStatus(), equalTo("Kit without label"));
     }
 
@@ -84,7 +84,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
 
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, () -> {
-            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
+            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address, false);
         });
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getMessage(), equalTo("UNKNOWN_KIT_TYPE"));
