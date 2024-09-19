@@ -30,6 +30,8 @@ export * from './i18nUtils'
 export * from './waitForImages'
 export * from './useTaskIdParam'
 
+export * from './util/mixpanelUtils'
+
 export * from './test-utils/asMockedFn'
 export * from './test-utils/router-testing-utils'
 
