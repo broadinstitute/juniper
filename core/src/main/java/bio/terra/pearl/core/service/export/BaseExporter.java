@@ -29,7 +29,11 @@ public abstract class BaseExporter {
         this.columnEmptyValueMap = makeEmptyValueMap();
     }
 
-    public abstract void export(OutputStream os);
+    public void export(OutputStream os) {
+        export(os, true);
+    };
+
+    public abstract void export(OutputStream os, boolean includeSubHeaders);
 
     protected List<String> getColumnKeys() {
         List<String> columnKeys = new ArrayList<>();

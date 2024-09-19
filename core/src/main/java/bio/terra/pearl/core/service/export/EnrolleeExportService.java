@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -87,7 +88,7 @@ public class EnrolleeExportService {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId, enrolleeExportData);
         List<Map<String, String>> enrolleeMaps = generateExportMaps(enrolleeExportData, moduleFormatters);
         BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
-        exporter.export(os);
+        exporter.export(os, exportOptions.isIncludeSubHeaders());
     }
 
     public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptions exportOptions) {
@@ -137,14 +138,20 @@ public class EnrolleeExportService {
      * e.g. the columns needed to represent the survey questions.
      */
     public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
-        List<ModuleFormatter> moduleFormatters = new ArrayList<>();
-        moduleFormatters.add(new EnrolleeFormatter(exportOptions));
-        moduleFormatters.add(new ParticipantUserFormatter(exportOptions));
-        moduleFormatters.add(new ProfileFormatter(exportOptions));
-        moduleFormatters.add(new KitRequestFormatter());
-        moduleFormatters.add(new EnrolleeRelationFormatter());
-        moduleFormatters.add(new FamilyFormatter());
-        moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId, enrolleeExportData));
+        List<ModuleFormatter> allSimpleFormatters = List.of(
+                new EnrolleeFormatter(exportOptions),
+                new ParticipantUserFormatter(exportOptions),
+                new ProfileFormatter(exportOptions),
+                new KitRequestFormatter(),
+                new EnrolleeRelationFormatter(),
+                new FamilyFormatter());
+
+        List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
+                moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())
+        ).collect(Collectors.toList());
+        if (!exportOptions.getExcludeModules().contains("surveys")) {
+            moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId, enrolleeExportData));
+        }
         return moduleFormatters;
     }
 
@@ -231,7 +238,7 @@ public class EnrolleeExportService {
         } else if (fileFormat.equals(ExportFileFormat.EXCEL)) {
             return new ExcelExporter(moduleFormatters, enrolleeMaps);
         }
-        return new TsvExporter(moduleFormatters, enrolleeMaps);
+        return new TsvExporter(moduleFormatters, enrolleeMaps, fileFormat);
     }
 
 

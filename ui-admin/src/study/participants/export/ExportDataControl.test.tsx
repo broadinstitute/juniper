@@ -11,7 +11,7 @@ test('renders the file types', async () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     <ExportDataControl studyEnvContext={mockStudyEnvContext()} show={true} setShow={() => {}}/>)
   render(RoutedComponent)
-  expect(screen.getByText('Tab-delimted (.tsv)')).toBeInTheDocument()
+  expect(screen.getByText('Tab-delimited (.tsv)')).toBeInTheDocument()
   expect(screen.getByText('Excel (.xlsx)')).toBeInTheDocument()
 })
 

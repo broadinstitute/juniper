@@ -1,8 +1,12 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SuperBuilder
@@ -14,6 +18,9 @@ public final class ExportOptions {
     private final EnrolleeSearchExpression filter;
     private final ExportFileFormat fileFormat;
     private final Integer limit;
+    private final boolean includeSubHeaders;
+    @Builder.Default
+    private List<String> excludeModules = new ArrayList<>();
 
     public ExportOptions() {
         this.splitOptionsIntoColumns = false;
@@ -22,5 +29,7 @@ public final class ExportOptions {
         this.filter = null;
         this.fileFormat = ExportFileFormat.TSV;
         this.limit = null;
+        this.includeSubHeaders = false;
+        this.excludeModules = new ArrayList<>();
     }
 }
