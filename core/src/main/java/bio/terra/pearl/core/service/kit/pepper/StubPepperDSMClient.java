@@ -38,7 +38,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, Boolean returnOnly) {
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
         if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
             throw new  PepperApiException(

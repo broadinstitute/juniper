@@ -36,9 +36,9 @@ public class PepperDSMClientWrapper implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, Boolean returnOnly) throws PepperApiException, PepperParseException {
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException {
         return getPepperDSMClient(studyEnvironmentConfig)
-                .sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address, returnOnly);
+                .sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
     }
 
     @Override

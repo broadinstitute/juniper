@@ -91,9 +91,13 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             throw new IllegalArgumentException("No profile for enrollee: " + enrollee.getShortcode());
         }
 
+        /*
+            For IN_PERSON kits, we'll first create a record in the database. Once the kit has been collected, we'll
+            update the record with the collected status and send the kit request to Pepper as "returnOnly".
+         */
         return switch (kitRequestCreationDto.distributionMethod) {
             case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
-            case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto, false);
+            case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
@@ -138,7 +142,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress, true);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
@@ -156,14 +160,14 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    private KitRequestDto createNewPepperKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto, Boolean returnOnly) {
+    private KitRequestDto createNewPepperKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
         KitRequest kitRequest = assemble(operator, enrollee, pepperKitAddress, kitRequestCreationDto);
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress, false);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
+import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -48,11 +49,11 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, Boolean returnOnly)
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
     throws PepperApiException, PepperParseException {
         String kitRequestBody;
 
-        if (returnOnly) {
+        if (kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
             kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest);
         } else {
             kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
