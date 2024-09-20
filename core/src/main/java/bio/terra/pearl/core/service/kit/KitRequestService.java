@@ -114,19 +114,17 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
                 .kitLabel(kitRequestCreationDto.kitLabel)
-                .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
+                .skipAddressValidation(true) // skip address validation for in-person kits, as they aren't shipped
                 .build();
         dao.createWithIdSpecified(inPersonKitRequest);
         return new KitRequestDto(inPersonKitRequest, inPersonKitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
     private KitRequestDto createNewPepperReturnOnlyKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequest kitRequest) {
-        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
-        PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null);
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
@@ -139,7 +137,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // pepper request was already successful
             log.error("Unable to serialize return-only kit response status from Pepper: kit id {}", kitRequest.getId());
         }
-//        kitRequest = dao.createWithIdSpecified(kitRequest);
         log.info("Return-only kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
