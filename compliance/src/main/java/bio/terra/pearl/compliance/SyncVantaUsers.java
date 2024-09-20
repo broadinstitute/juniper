@@ -42,10 +42,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.WritableResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
+import reactor.util.retry.RetryBackoffSpec;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -60,6 +64,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Run this as a main() or as a cloud function to set
@@ -177,24 +182,18 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         }
     }
 
-    private WebClient.ResponseSpec add429StatusHander(WebClient.ResponseSpec spec) {
-        return spec.onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, res -> {
+    private Function<ClientResponse, Mono<? extends Throwable>> get429StatusHander() {
+        return res -> {
             List<String> header = res.headers().header("Retry-After");
             int delayInSeconds;
             if (!header.isEmpty()) {
                 delayInSeconds = Integer.parseInt(header.get(0));
             } else {
-                delayInSeconds = 70;
+                delayInSeconds = 61;
             }
             log.info("Vanta rate limit exceeded; waiting for {}s", delayInSeconds);
-            try {
-                Thread.sleep(Duration.ofSeconds(delayInSeconds));
-            } catch (InterruptedException e) {
-                log.error("Interrupted while sleeping in response to rate limit", e);
-                Thread.currentThread().interrupt();
-            }
             return res.bodyToMono(String.class).map(msg -> new RateLimitException(msg, delayInSeconds));
-        });
+        };
     }
 
     /**
@@ -208,25 +207,17 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         AtomicInteger cursorCount = new AtomicInteger(0);
 
         while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
-            log.debug("Getting cursor number {}", cursorCount);
+            log.info("Getting cursor number {}", cursorCount);
 
-            add429StatusHander(wc.get().uri(uriBuilder -> {
-                if (cursorCount.get() > 0) {
-                    uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
-                }
-                uriBuilder.queryParam("pageSize", 100);
-                return uriBuilder.build();
-            }).retrieve());
-            VantaResultsResponse<T> response = add429StatusHander(wc.get().uri(uriBuilder -> {
+            VantaResultsResponse<T> response = (wc.get().uri(uriBuilder -> {
                         if (cursorCount.get() > 0) {
                             uriBuilder.queryParam("pageCursor", results.get().getPageInfo().getEndCursor());
                         }
                         uriBuilder.queryParam("pageSize", 100);
                         return uriBuilder.build();
-                    }).retrieve())
+                    }).retrieve()).onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, get429StatusHander())
                     .bodyToMono(type)
-                    .retryWhen(Retry.withThrowable(throwableFlux -> throwableFlux.filter(RateLimitException.class::isInstance).map(t ->
-                            Retry.fixedDelay(5, ((RateLimitException)t).getRetryAfterDelayDuration())))).block();
+                    .retryWhen(getRetry()).block();
             cursorCount.incrementAndGet();
             results.set(response.getResults());
 
@@ -246,7 +237,10 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
             h.setBearerAuth(accessToken);
             h.setContentType(MediaType.APPLICATION_JSON);
         }).baseUrl(url);
+    }
 
+    private RetryBackoffSpec getRetry() {
+        return Retry.fixedDelay(5, Duration.ofSeconds(61)).filter(e -> e instanceof RateLimitException);
     }
 
     private WebClient getWebClientForIntegration(String accessToken, String integrationId, String resourceKind) {
@@ -373,18 +367,17 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     private void setInScope(String accessTokeen, Collection<VantaObject> vantaObjects, boolean isInScope, String integrationId, String resourceKind) {
         log.debug("Updating {} {} objects to scope={}", vantaObjects.size(), integrationId, isInScope);
         UpdateVantaMetadata updateMetadata = new UpdateVantaMetadata();
-        updateMetadata.setInScope(isInScope);
-        vantaObjects.forEach(vantaObject -> updateMetadata.addResourceId(vantaObject.getResourceId()));
+
+        for (VantaObject vantaObject : vantaObjects) {
+            updateMetadata.add(vantaObject.getResourceId(), isInScope);
+        }
         try {
-            String updateResult = add429StatusHander(getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
-                    .patch().bodyValue(updateMetadata).retrieve()).onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res ->
-                            res.bodyToMono(String.class).map(VantaUpdateException::new)
-                    ).bodyToMono(String.class)
-                    .retryWhen(Retry.withThrowable(throwableFlux -> throwableFlux.filter(RateLimitException.class::isInstance).map(t ->
-                            Retry.fixedDelay(5, ((RateLimitException)t).getRetryAfterDelayDuration())))).block();
-            log.debug("Updated {} {} objects to {} with response {}", updateMetadata.getResourceIds().size(), integrationId, isInScope, updateResult);
+            String updateResult = getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
+                    .patch().bodyValue(updateMetadata).retrieve().onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, get429StatusHander())
+                    .bodyToMono(String.class).retryWhen(getRetry()).block();
+            log.info("Updated {} {} objects to {} with response {}", updateMetadata.size(), integrationId, isInScope, updateResult);
         } catch (VantaUpdateException e) {
-            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.getResourceIds().size(), e.getMessage());
+            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.size(), e.getMessage());
         }
     }
 
