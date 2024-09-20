@@ -207,7 +207,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         AtomicInteger cursorCount = new AtomicInteger(0);
 
         while (cursorCount.get() == 0 || results.get().getPageInfo().isHasNextPage()) {
-            log.info("Getting cursor number {}", cursorCount);
+            log.info("Getting {} cursor number {}", type.getType().getTypeName(), cursorCount);
 
             VantaResultsResponse<T> response = (wc.get().uri(uriBuilder -> {
                         if (cursorCount.get() > 0) {
