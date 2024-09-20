@@ -9,4 +9,4 @@ spec:
     - www.juniper-cmi.dev
     - sandbox.demo.juniper-cmi.dev
     - irb.demo.juniper-cmi.dev
-    - live.demo.juniper-cmi.dev
+    - demo.juniper-cmi.dev

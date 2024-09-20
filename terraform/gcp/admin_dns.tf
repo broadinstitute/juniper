@@ -61,7 +61,7 @@ resource "google_dns_record_set" "live_portal_juniper_admin" {
   for_each = var.portals
   managed_zone = google_dns_managed_zone.juniper_admin_dns_zone.name
 
-  name = "live.${each.value}.${google_dns_managed_zone.juniper_admin_dns_zone.dns_name}"
+  name = "${each.value}.${google_dns_managed_zone.juniper_admin_dns_zone.dns_name}"
 
   rrdatas      = [google_dns_record_set.a_juniper_admin.name]
   ttl          = var.dns_ttl
