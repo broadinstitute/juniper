@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.datarepo;
+package bio.terra.pearl.core.model.export.datarepo;
 
 public enum JobType {
     CREATE_DATASET,

@@ -1,8 +1,7 @@
 package bio.terra.pearl.core.dao.datarepo;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.model.datarepo.DataRepoJob;
-import bio.terra.pearl.core.model.datarepo.Dataset;
+import bio.terra.pearl.core.model.export.datarepo.DataRepoJob;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
