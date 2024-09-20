@@ -8,17 +8,50 @@ metadata:
     # If the class annotation is not specified it defaults to "gce".
     kubernetes.io/ingress.class: "gce"
 spec:
+
+  rules:
+    - host: "sandbox.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "irb.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "live.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-service
+                port:
+                  number: 80
   defaultBackend:
     service:
       name: admin-service
       port:
         number: 80
-#    - http:
-#        paths:
-#          - path: /*
-#            pathType: ImplementationSpecific
-#            backend:
-#              service:
-#                name: admin-service
-#                port:
-#                  number: 80
