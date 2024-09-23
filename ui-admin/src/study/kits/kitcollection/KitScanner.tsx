@@ -12,6 +12,7 @@ import { BarcodeScanner } from './BarcodeScanner'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCamera,
   faCircle,
   faCircleCheck,
   faCircleExclamation,
@@ -179,8 +180,10 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
       <div className="mb-3">
-        Click to open the camera and scan the enrollee&apos;s QR code
-        <InfoPopup content={'The enrollee can find their unique QR code by going to their profile'}/>
+        Click the button below to open the camera and scan the enrollee&apos;s unique QR code.
+        <InfoPopup content={'The enrollee can find their unique QR code by going to the kits page on their profile.' +
+            'If you are unable to use your camera or scan the barcode, you may click the pencil icon to manually' +
+            'enter the participant code (shortcode) directly under their QR code.'}/>
       </div>
       <Button className="mb-2" disabled={!selectedScanMode} variant={'primary'} onClick={() => {
         setEnrollee(undefined)
@@ -188,7 +191,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         setIsEnrolleeIdentityConfirmed(false)
         setKitLabel(undefined)
       }}>
-        Click to scan enrollee code
+        <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan enrollee code
       </Button>
       { showEnrolleeCodeScanner &&
         <BarcodeScanner
@@ -226,9 +229,9 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       title={'Step 3'}
       status={isEnrolleeIdentityConfirmed && enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
-      <div className="mb-3">Confirm the enrollee&apos;s identity</div>
+      <div className="mb-3">Confirm the enrollee&apos;s identity using their full name and date of birth.</div>
       <TextInput
-        label={'Enrollee Name'}
+        label={'Full Name'}
         className="mb-2" disabled={true}
         value={enrollee ? `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : ''}>
       </TextInput>
@@ -247,11 +250,11 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       title={'Step 4'}
       status={kitLabel ? 'COMPLETE' : 'INCOMPLETE'}
     >
-      <div className="mb-3">Click to open the camera and scan the kit label</div>
+      <div className="mb-3">Click to open the camera and scan the label on the kit.</div>
       <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
         tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
         onClick={() => setShowKitScanner(!showKitScanner)}>
-            Click to scan kit label
+        <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit label
       </Button>
       { showKitScanner &&
         <BarcodeScanner
@@ -277,12 +280,12 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           title={'Step 5'}
           status={returnTrackingNumber ? 'COMPLETE' : 'INCOMPLETE'}
         >
-          <div className="mb-3">Place the kit in the provided return packaging, and
-        click to open the camera and scan the kit return label</div>
+          <div className="mb-3">Place the kit in the provided return packaging. Afterwards,
+        click to open the camera and scan the return label on the return packaging.</div>
           <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
             tooltip={!kitLabel ? 'You must complete the prior steps first' : ''}
             onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
-        Click to scan kit return label
+            <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit return label
           </Button>
           { showKitScanner &&
           <BarcodeScanner
