@@ -91,12 +91,20 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             throw new IllegalArgumentException("No profile for enrollee: " + enrollee.getShortcode());
         }
 
+        /*
+            For IN_PERSON kits, we'll first create a record in the database. Once the kit has been collected, we'll
+            update the record with the collected status and send the kit request to Pepper as "returnOnly".
+         */
         return switch (kitRequestCreationDto.distributionMethod) {
             case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
             case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
+    /*
+        This only creates the kit request in Juniper, it does not send the request to Pepper.
+        Once the kit is collected by staff later on, the kit request will be sent to Pepper as "returnOnly".
+     */
     private KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
         KitRequest inPersonKitRequest = KitRequest.builder().kitType(kitTypeDao.findByName(kitRequestCreationDto.kitType).get())
                 .id(daoUtils.generateUUID())
@@ -106,10 +114,31 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
                 .kitLabel(kitRequestCreationDto.kitLabel)
-                .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
+                .skipAddressValidation(true) // skip address validation for in-person kits, as they aren't shipped
                 .build();
         dao.createWithIdSpecified(inPersonKitRequest);
         return new KitRequestDto(inPersonKitRequest, inPersonKitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
+    }
+
+    private KitRequestDto createNewPepperReturnOnlyKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequest kitRequest) {
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        // send kit request to DSM
+        try {
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null);
+            // write out the PepperKitStatus as a string for storage
+            String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
+            kitRequest.setExternalKit(pepperRequestJson);
+        } catch (PepperParseException e) {
+            // response was successful, but we got unexpected format back from pepper
+            // we want to log the error, but still continue on to saving the kit
+            log.error("Unable to parse return-only kit response status from Pepper: kit id {}", kitRequest.getId());
+        } catch (JsonProcessingException e) {
+            // serialization failures shouldn't ever happen in the objectMapper.writeValueAsString, but don't abort the operation, since the
+            // pepper request was already successful
+            log.error("Unable to serialize return-only kit response status from Pepper: kit id {}", kitRequest.getId());
+        }
+        log.info("Return-only kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
     private KitRequestDto createNewPepperKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
@@ -379,13 +408,16 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         notifyKitStatusChange(kitRequest, priorStatus);
     }
 
-    public KitRequest collectKit(AdminUser operator, KitRequest kitRequest, KitRequestStatus status) {
+    public KitRequest collectKit(AdminUser operator, String studyShortcode, KitRequest kitRequest) {
         if(kitRequest.getDistributionMethod() != DistributionMethod.IN_PERSON) {
-            throw new IllegalArgumentException("You cannot collect a kit that has not been assigned.");
+            throw new IllegalArgumentException("You can only collect kits that were distributed in person.");
         }
-
+        KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
+                .formatted(kitRequest.getId())));
+        kitRequest.setKitType(kitType);
+        createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
         KitRequestStatus priorStatus = kitRequest.getStatus();
-        kitRequest.setStatus(status);
+        kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);
         kitRequest.setCollectingAdminUserId(operator.getId());
         KitRequest request = dao.update(kitRequest);
         notifyKitStatusChange(kitRequest, priorStatus);
