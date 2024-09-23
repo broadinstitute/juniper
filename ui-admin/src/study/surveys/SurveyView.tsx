@@ -21,7 +21,7 @@ export type SaveableFormProps = {
   content: string
   answerMappings?: AnswerMapping[]
   required?: boolean
-  assignToAllNewEnrollees?: boolean
+  autoAssign?: boolean
   assignToExistingEnrollees?: boolean
   rule?: string
   allowAdminEdit?: boolean

@@ -266,6 +266,8 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
+  includeSubheaders?: boolean,
+  excludeModules?: string[],
   filter?: string,
   limit?: number
 }
@@ -1075,11 +1077,7 @@ export default {
     Promise<Response> {
     const exportOptionsParams = exportOptions as Record<string, unknown>
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
-    const searchParams = new URLSearchParams()
-    for (const prop in exportOptionsParams) {
-      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
-    }
-    url += searchParams.toString()
+    url += queryString.stringify(exportOptionsParams)
     return fetch(url, this.getGetInit())
   },
 

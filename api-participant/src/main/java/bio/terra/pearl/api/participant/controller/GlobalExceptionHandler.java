@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -38,7 +39,8 @@ public class GlobalExceptionHandler {
     NoHandlerFoundException.class,
     ValidationException.class,
     BadRequestException.class,
-    HttpMessageNotReadableException.class
+    HttpMessageNotReadableException.class,
+    MissingServletRequestParameterException.class
   })
   public ResponseEntity<ErrorReport> badRequestExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.BAD_REQUEST, request);
@@ -58,7 +60,11 @@ public class GlobalExceptionHandler {
     return buildErrorReport(ex, HttpStatus.FORBIDDEN, request);
   }
 
-  @ExceptionHandler({NotFoundException.class, HttpRequestMethodNotSupportedException.class})
+  @ExceptionHandler({
+    NotFoundException.class,
+    HttpRequestMethodNotSupportedException.class,
+    bio.terra.pearl.core.service.exception.NotFoundException.class,
+  })
   public ResponseEntity<ErrorReport> notFoundExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.NOT_FOUND, request);
   }

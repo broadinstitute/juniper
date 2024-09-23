@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -28,23 +29,29 @@ public class ExcelExporter extends BaseExporter {
         sheet.trackAllColumnsForAutoSizing();
     }
 
-    public void export(OutputStream os) {
+    @Override
+    public void export(OutputStream os, boolean includeSubHeaders) {
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
-        List<String> subHeaderRowValues = getSubHeaderRow();
-
         writeRowToSheet(headerRowValues, 0);
-        writeRowToSheet(subHeaderRowValues, 1);
+        int dataStartRow = 1;
 
-        IntStream.range(0, enrolleeMaps.size()).forEach(i -> {
+        if (includeSubHeaders) {
+            List<String> subHeaderRowValues = getSubHeaderRow();
+            writeRowToSheet(subHeaderRowValues, 1);
+            dataStartRow = 2;
+        }
+
+        for (int i = 0; i < enrolleeMaps.size(); i++) {
             Map<String, String> valueMap = enrolleeMaps.get(i);
             List<String> rowValues = getRowValues(valueMap, columnKeys);
-            writeRowToSheet(rowValues, i + 2);
-        });
+            writeRowToSheet(rowValues, i + dataStartRow);
+        }
+
         try {
             writeAndCloseSheet(os);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing excel file", e);
+            throw new IOInternalException("Error writing excel file", e);
         }
     }
 

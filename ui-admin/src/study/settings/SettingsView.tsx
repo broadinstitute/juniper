@@ -75,7 +75,6 @@ export function LoadedSettingsView(
     }, { setIsLoading: setIsLoadingPortalConfig })
   }
 
-
   const updateStudyConfig = (field: keyof StudyEnvironmentConfig, val: unknown) => {
     setStudyConfig(old => {
       return { ...old, [field]: val }
@@ -92,7 +91,6 @@ export function LoadedSettingsView(
       portalContext.reloadPortal(portalContext.portal.shortcode)
     }, { setIsLoading: setIsLoadingStudyConfig })
   }
-
 
   if (isLoadingStudyConfig || isLoadingPortalConfig) {
     return <LoadingSpinner/>
@@ -114,13 +112,13 @@ export function LoadedSettingsView(
               <li style={navListItemStyle}>
                 <CollapsableMenu header={`Portal Settings`} headerClass="text-black" content={
                   <ul className="list-unstyled">
-                    <li>
+                    <li className={'mb-2'}>
                       <NavLink end to="." className={getLinkCssClasses}>General</NavLink>
                     </li>
-                    <li>
+                    <li className={'mb-2'}>
                       <NavLink to="website" className={getLinkCssClasses}>Website</NavLink>
                     </li>
-                    <li>
+                    <li className={'mb-2'}>
                       <NavLink to="languages" className={getLinkCssClasses}>Languages</NavLink>
                     </li>
                   </ul>
@@ -130,12 +128,12 @@ export function LoadedSettingsView(
                 <CollapsableMenu header={`${studyEnvContext.study.name} Study Settings`} headerClass="text-black"
                   content={
                     <ul className="list-unstyled">
-                      <li>
+                      <li className={'mb-2'}>
                         <NavLink to={`enrollment`} className={getLinkCssClasses}>Study
                           Enrollment</NavLink>
                       </li>
                       <RequireUserPermission superuser>
-                        <li>
+                        <li className={'mb-2'}>
                           <NavLink to={`kits`} className={getLinkCssClasses}>Kits</NavLink>
                         </li>
                       </RequireUserPermission>

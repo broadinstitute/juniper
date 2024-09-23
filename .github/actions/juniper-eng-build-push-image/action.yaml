@@ -1,0 +1,68 @@
+name: 'build and push image'
+description: 'build and push docker images to Artifact Registry'
+inputs:
+  version-tag:
+    required: true
+    description: version tag to append to docker images published by this workflow
+  image-repo:
+    required: true
+    description: URL for container image repo to publish to
+  image-name:
+    required: true
+    description: name of the application image to publish
+  gradle-build-args:
+    required: true
+    description: args to pass to the gradlew build command
+  publish-service-account:
+    required: false
+    description: email for the GCP service account used to publish app images
+    default: 'github-actions@broad-juniper-eng-infra.iam.gserviceaccount.com'
+outputs:
+  published-image:
+    description: The full url and tag of the published image
+    value: ${{ steps.image-name.outputs.name }}
+runs:
+  using: composite
+  steps:
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+        cache: 'gradle'
+    - name: Construct Docker Image Name and Tag
+      id: image-name
+      shell: bash
+      run: |
+        IMAGE_NAME="${{ inputs.image-repo }}/${{inputs.image-name }}:${{ inputs.version-tag }}"
+        echo "name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+    - name: Auth to Google
+      uses: google-github-actions/auth@v1
+      with:
+        # this value will always be the same so specifying directly
+        workload_identity_provider: projects/77554683012/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider
+        service_account: ${{ inputs.publish-service-account }}
+
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Explicitly Auth Docker For GCR
+      shell: bash
+      run: gcloud auth configure-docker ${{ inputs.image-repo }} --quiet
+
+    - name: Build Image With Jib
+      shell: bash
+      run: |
+        ./gradlew --build-cache ${{ inputs.gradle-build-args }} \
+        --image=${{ steps.image-name.outputs.name }} \
+        -Djib.console=plain
+
+    - name: Run Trivy Vulnerability Scan
+      uses: broadinstitute/dsp-appsec-trivy-action@v1
+      with:
+        image: ${{ steps.image-name.outputs.name }}
+
+    - name: Push Image
+      shell: bash
+      run: docker push ${{ steps.image-name.outputs.name }}
+

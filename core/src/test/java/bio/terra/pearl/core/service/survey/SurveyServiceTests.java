@@ -68,7 +68,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     public void testFindNoContent(TestInfo info) {
         Survey survey = surveyFactory.builderWithDependencies(getTestName(info)).build();
         survey.setSurveyType(SurveyType.OUTREACH);
-        survey.setAssignToAllNewEnrollees(true);
+        survey.setAutoAssign(true);
         UUID portalId = surveyService.create(survey).getPortalId();
 
         Survey fetchedSurvey = surveyService.findByStableId(survey.getStableId(), portalId).get(0);

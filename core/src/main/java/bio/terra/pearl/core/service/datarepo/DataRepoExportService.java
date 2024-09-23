@@ -227,7 +227,7 @@ public class DataRepoExportService {
             List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId, List.of());
             List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(List.of(), moduleFormatters);
 
-            TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);
+            TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps, ExportFileFormat.TSV);
 
             tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, choice, isOtherDescription, moduleRepeatNum) -> tdrColumns.add(new TdrColumn(
                     DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getColumnKey(itemExportInfo, choice, isOtherDescription, moduleRepeatNum)),
