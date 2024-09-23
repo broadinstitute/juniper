@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -426,6 +427,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     @Override
     public SurveyResponse fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
         SurveyResponse response = new SurveyResponse();
+        boolean specifiedComplete = false;
         for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, 1);
             if (!enrolleeMap.containsKey(columnName)) {
@@ -434,12 +436,18 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             }
             String stringVal = enrolleeMap.get(columnName);
 
-            if (!StringUtils.isBlank(stringVal)) {
+            // track whether the complete field was explicitly set
+            if (itemFormatter.getBaseColumnKey().equals("complete") && stringVal != null) {
+                specifiedComplete = true;
+            }
+
+            if (stringVal != null && !stringVal.isEmpty()) {
                 itemFormatter.importValueToBean(response, stringVal);
             }
         }
-        if (!response.getAnswers().isEmpty() && ) {
-            
+        // default to complete if not specified otherwise and there are answers
+        if (!specifiedComplete && !response.getAnswers().isEmpty()) {
+            response.setComplete(true);
         }
 
         return (response.getAnswers().isEmpty() ? null : response);
