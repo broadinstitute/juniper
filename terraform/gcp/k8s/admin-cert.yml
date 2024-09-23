@@ -4,7 +4,6 @@ metadata:
   name: admin-cert
 spec:
   domains:
-    # all juniper-cmi.dev subdomains
     - juniper-cmi.dev
     - www.juniper-cmi.dev
 

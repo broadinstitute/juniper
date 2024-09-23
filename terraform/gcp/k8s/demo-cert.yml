@@ -4,7 +4,6 @@ metadata:
   name: demo-cert
 spec:
   domains:
-    # all juniper-cmi.dev subdomains
     - sandbox.demo.juniper-cmi.dev
     - irb.demo.juniper-cmi.dev
     - demo.juniper-cmi.dev
