@@ -32,8 +32,7 @@ describe('KitInstructions', () => {
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
-    expect(screen.getByLabelText('assign-qr')).toBeInTheDocument()
-    expect(screen.queryByLabelText('return-qr')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
 
   it('renders in-person kit information', async () => {
@@ -58,7 +57,7 @@ describe('KitInstructions', () => {
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
     expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
-    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
 
   it('renders collected kit notice', async () => {
@@ -82,8 +81,8 @@ describe('KitInstructions', () => {
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
-    expect(screen.queryByDisplayValue('assigned-barcode')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
+    expect(screen.queryByDisplayValue('assigned-label')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
     expect(screen.getByText('A member of the study team has received your sample collection kit.',
       { exact: false })).toBeInTheDocument()
   })
@@ -106,7 +105,6 @@ describe('KitInstructions', () => {
 
     expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
     expect(screen.getByText('Consent Required')).toBeInTheDocument()
-    expect(screen.queryByLabelText('assign-qr')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('return-qr')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
   })
 })
