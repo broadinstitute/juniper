@@ -4,7 +4,7 @@ import { useActiveUser } from 'providers/ActiveUserProvider'
 import { Enrollee, KitRequest } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
-import { ShortcodeQR } from './ShortcodeQR'
+import { EnrolleeShortcodeQR } from './EnrolleeShortcodeQR'
 
 //TODO: JN-1294, implement i18n for this entire component
 export default function KitInstructions() {
@@ -88,7 +88,7 @@ const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
           To receive a sample collection kit, a member of the study team will scan your unique participation code
           below to associate a sample kit with your account.
       </div>
-      <ShortcodeQR shortcode={enrollee.shortcode}/>
+      <EnrolleeShortcodeQR shortcode={enrollee.shortcode}/>
       <div className="pb-3">
           Once you have received a kit, please refresh this page to view your kit information and
           receive further instructions.
@@ -149,7 +149,7 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
           After you have completed the sample collection kit, please return it to a member of the study team
           and allow them to scan your participation code below.
       </div>
-      <ShortcodeQR shortcode={enrollee.shortcode}/>
+      <EnrolleeShortcodeQR shortcode={enrollee.shortcode}/>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
           Return to Dashboard

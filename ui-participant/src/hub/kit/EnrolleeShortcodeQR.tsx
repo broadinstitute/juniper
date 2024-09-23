@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
-export const ShortcodeQR = ({ shortcode }: { shortcode: string }) => {
+export const EnrolleeShortcodeQR = ({ shortcode }: { shortcode: string }) => {
   return (
     <div className="d-flex flex-column align-items-center pb-5">
       <QRCode value={shortcode} size={300}
