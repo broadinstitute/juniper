@@ -1,10 +1,10 @@
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: admin-cert
+  name: demo-cert
 spec:
   domains:
     # all juniper-cmi.dev subdomains
-    - juniper-cmi.dev
-    - www.juniper-cmi.dev
-
+    - sandbox.demo.juniper-cmi.dev
+    - irb.demo.juniper-cmi.dev
+    - demo.juniper-cmi.dev

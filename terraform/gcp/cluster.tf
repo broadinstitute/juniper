@@ -16,7 +16,6 @@ resource "google_compute_subnetwork" "juniper_subnetwork" {
   ipv6_access_type = "EXTERNAL" # Change to "EXTERNAL" if creating an external loadbalancer
 
   network = google_compute_network.juniper_network.id
-
 }
 
 resource "google_container_cluster" "juniper_cluster" {
@@ -31,8 +30,6 @@ resource "google_container_cluster" "juniper_cluster" {
 
   ip_allocation_policy {
     stack_type                    = "IPV4_IPV6"
-#     services_secondary_range_name = google_compute_subnetwork.juniper_subnetwork.secondary_ip_range[0].range_name
-#     cluster_secondary_range_name  = google_compute_subnetwork.juniper_subnetwork.secondary_ip_range[1].range_name
   }
 
   # Set `deletion_protection` to `true` will ensure that one cannot
