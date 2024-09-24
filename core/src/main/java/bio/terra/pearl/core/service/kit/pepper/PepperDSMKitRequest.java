@@ -28,6 +28,9 @@ public class PepperDSMKitRequest {
         @JsonProperty("juniperParticipantID")
         private String juniperParticipantId;
         private boolean skipAddressValidation;
+        private String returnTrackingId;
+        private boolean returnOnly; // returnOnly=true signals to DSM that they do not need to ship this kit
+        private String kitLabel; // the barcode on the kit
 
         public static JuniperKitRequestBuilder builderWithAddress(PepperKitAddress address) {
             return JuniperKitRequest.builder()

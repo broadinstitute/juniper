@@ -7,20 +7,20 @@ import { dateToDefaultString, Enrollee } from '@juniper/ui-core'
 import { TextInput } from 'components/forms/TextInput'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
-import { useUser } from 'user/UserProvider'
 import { BarcodeScanner } from './BarcodeScanner'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCamera,
   faCircle,
   faCircleCheck,
   faCircleExclamation,
   faCircleQuestion,
   faSearch
 } from '@fortawesome/free-solid-svg-icons'
-import { Checkbox } from 'components/forms/Checkbox'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { Checkbox } from 'components/forms/Checkbox'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
@@ -40,19 +40,16 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [returnTrackingNumber, setReturnTrackingNumber] = useState<string>()
   const [returnTrackingNumberError, setReturnTrackingNumberError] = useState<string>()
 
-  const [enableManualOverride, setEnableManualOverride] = useState(false)
+  const [enableManualShortcodeOverride, setEnableManualShortcodeOverride] = useState(false)
+  const [enableManualKitLabelOverride, setEnableManualKitLabelOverride] = useState(false)
+  const [enableManualReturnLabelOverride, setEnableManualReturnLabelOverride] = useState(false)
   const [enrolleeShortcodeOverride, setEnrolleeShortcodeOverride] = useState<string>()
-
-  const { user } = useUser()
 
   const isSubmitDisabled = () => {
     if (!kitLabel || !enrollee || !selectedScanMode) {
       return true
     }
-    if (selectedScanMode.value === 'COLLECT' && !returnTrackingNumber) {
-      return true
-    }
-    return false
+    return selectedScanMode.value === 'COLLECT' && !returnTrackingNumber
   }
 
   const assignKit = async () => {
@@ -74,7 +71,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
     }, {
       setIsError: error => {
         if (error) {
-          setEnrolleeCodeError('Error assigning kit')
+          Store.addNotification(failureNotification('Error assigning kit'))
         }
       }
     })
@@ -100,7 +97,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
     }, {
       setIsError: error => {
         if (error) {
-          setEnrolleeCodeError('Error collecting kit')
+          Store.addNotification(failureNotification('Error collecting kit'))
         }
       }
     })
@@ -131,29 +128,13 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
     })
   }
 
-  //TODO: JN-1295, while under development, we'll only allow superusers to access this page
-  if (!user?.superuser) {
-    return <div className="m-2">
-      <div className="alert alert-danger" role="alert">
-          You do not have permission to access this page.
-      </div>
-    </div>
-  }
-
   return <div className='m-2' style={{ maxWidth: '450px' }}>
     {renderPageHeader('Scan a kit')}
 
-    <div className={'text-muted mb-1'}>
+    <div className={'text-muted mb-2'}>
       To assign or collect an in-person kit, follow the steps below. Please ensure
       that all information is correct before submitting.
     </div>
-
-    { user.superuser && <Checkbox
-      label={'Enable manual override mode'}
-      checked={enableManualOverride} onChange={e => {
-        setEnableManualOverride(e)
-      }}/>
-    }
 
     <KitCollectionStepWrapper
       title={'Step 1'}
@@ -179,8 +160,11 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       status={enrolleeCodeError ? 'ERROR' : enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
       <div className="mb-3">
-        Click to open the camera and scan the enrollee&apos;s QR code
-        <InfoPopup content={'The enrollee can find their unique QR code by going to their profile'}/>
+        Click the button below to open the camera and scan the enrollee&apos;s unique QR code.
+        <InfoPopup content={
+          <>The enrollee can find their unique QR code by going to the kits page on their profile.
+          If you are unable to use your camera or scan the barcode for any reason, you may override
+          manually and enter the participant code (shortcode) found directly under their QR code.</>}/>
       </div>
       <Button className="mb-2" disabled={!selectedScanMode} variant={'primary'} onClick={() => {
         setEnrollee(undefined)
@@ -188,8 +172,14 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         setIsEnrolleeIdentityConfirmed(false)
         setKitLabel(undefined)
       }}>
-        Click to scan enrollee code
+        <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan enrollee code
       </Button>
+      <Checkbox
+        disabled={!selectedScanMode}
+        label={'Enable manual shortcode override'}
+        checked={enableManualShortcodeOverride} onChange={e => {
+          setEnableManualShortcodeOverride(e)
+        }}/>
       { showEnrolleeCodeScanner &&
         <BarcodeScanner
           expectedFormats={['qr_code']}
@@ -204,7 +194,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
             setShowEnrolleeCodeScanner(false)
           }}/>
       }
-      { enableManualOverride && <div className="d-flex align-items-center">
+      { enableManualShortcodeOverride && <div className="d-flex align-items-center">
         <TextInput
           disabled={false}
           value={enrolleeShortcodeOverride}
@@ -226,9 +216,9 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       title={'Step 3'}
       status={isEnrolleeIdentityConfirmed && enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
-      <div className="mb-3">Confirm the enrollee&apos;s identity</div>
+      <div className="mb-3">Confirm the enrollee&apos;s identity using their full name and date of birth.</div>
       <TextInput
-        label={'Enrollee Name'}
+        label={'Full Name'}
         className="mb-2" disabled={true}
         value={enrollee ? `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : ''}>
       </TextInput>
@@ -247,12 +237,18 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       title={'Step 4'}
       status={kitLabel ? 'COMPLETE' : 'INCOMPLETE'}
     >
-      <div className="mb-3">Click to open the camera and scan the kit label</div>
+      <div className="mb-3">Click to open the camera and scan the label on the kit.</div>
       <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
         tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
         onClick={() => setShowKitScanner(!showKitScanner)}>
-            Click to scan kit label
+        <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit label
       </Button>
+      <Checkbox
+        disabled={!isEnrolleeIdentityConfirmed}
+        label={'Enable manual kit label override'}
+        checked={enableManualKitLabelOverride} onChange={e => {
+          setEnableManualKitLabelOverride(e)
+        }}/>
       { showKitScanner &&
         <BarcodeScanner
           expectedFormats={['code_128']}
@@ -264,12 +260,13 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       }
       <TextInput
         className="my-2"
-        disabled={false}
+        disabled={!enableManualKitLabelOverride}
+        placeholder={'Scan kit label'}
         value={kitLabel}
         onChange={e => setKitLabel(e)}>
       </TextInput>
       { kitCodeError &&
-            <div className="text-danger">{kitCodeError}</div>
+          <div className="text-danger">{kitCodeError}</div>
       }
     </KitCollectionStepWrapper>
     { selectedScanMode?.value === 'COLLECT' &&
@@ -277,13 +274,19 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           title={'Step 5'}
           status={returnTrackingNumber ? 'COMPLETE' : 'INCOMPLETE'}
         >
-          <div className="mb-3">Place the kit in the provided return packaging, and
-        click to open the camera and scan the kit return label</div>
+          <div className="mb-3">Place the kit in the provided return packaging. Afterwards,
+        click to open the camera and scan the return label on the return packaging.</div>
           <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
             tooltip={!kitLabel ? 'You must complete the prior steps first' : ''}
             onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
-        Click to scan kit return label
+            <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit return label
           </Button>
+          <Checkbox
+            disabled={!isEnrolleeIdentityConfirmed}
+            label={'Enable manual return label override'}
+            checked={enableManualReturnLabelOverride} onChange={e => {
+              setEnableManualReturnLabelOverride(e)
+            }}/>
           { showKitScanner &&
           <BarcodeScanner
             expectedFormats={['code_128']}
@@ -295,7 +298,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           }
           <TextInput
             className="my-2"
-            disabled={false}
+            disabled={!enableManualReturnLabelOverride}
+            placeholder={'Scan return label'}
             value={returnTrackingNumber}
             onChange={e => setReturnTrackingNumber(e)}>
           </TextInput>
@@ -312,6 +316,9 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setKitLabel(undefined)
           setEnrolleeCodeError(undefined)
           setEnrolleeShortcodeOverride(undefined)
+          setEnableManualKitLabelOverride(false)
+          setEnableManualShortcodeOverride(false)
+          setEnableManualReturnLabelOverride(false)
           setSelectedScanMode(undefined)
           setReturnTrackingNumber(undefined)
           setReturnTrackingNumberError(undefined)

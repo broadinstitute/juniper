@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -40,7 +41,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     @Override
     public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
-        if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
+        if (kitRequest.getDistributionMethod().equals(DistributionMethod.MAILED) && (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX))) {
             throw new  PepperApiException(
                     PEPPER_ADDRESS_VALIDATION_MSG,
                     PepperErrorResponse.builder()

@@ -64,18 +64,17 @@ public class SurveyResponseExtService {
       UUID taskId) {
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(user.getId(), enrolleeShortcode);
-    PortalWithPortalUser portalWithPortalUser =
-        authUtilService.authParticipantToPortal(
-            enrollee.getParticipantUserId(), portalShortcode, envName);
+    PortalWithPortalUser portalWithOperatorUser =
+        authUtilService.authParticipantToPortal(user.getId(), portalShortcode, envName);
     HubResponse result =
         surveyResponseService.updateResponse(
             response,
             new ResponsibleEntity(user),
             null,
-            portalWithPortalUser.ppUser(),
+            portalWithOperatorUser.ppUser(),
             enrollee,
             taskId,
-            portalWithPortalUser.portal().getId());
+            portalWithOperatorUser.portal().getId());
     return result;
   }
 }
