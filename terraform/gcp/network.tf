@@ -25,7 +25,7 @@ resource "google_compute_subnetwork" "juniper_subnetwork" {
   }
 }
 
-
+# google service peering needed for cloud sql access
 resource "google_compute_global_address" "private_ip_address" {
   provider = google-beta
 
