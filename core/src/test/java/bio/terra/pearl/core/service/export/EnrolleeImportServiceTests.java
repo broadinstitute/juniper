@@ -508,6 +508,63 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.getGivenName(), equalTo("Jeff"));
     }
 
+    @Test
+    @Transactional
+    public void testSurveyResponseImportDefaultComplete(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .answerMappings(List.of(
+                        AnswerMapping.builder()
+                                .targetType(AnswerMappingTargetType.PROFILE)
+                                .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                                .targetField("givenName")
+                                .questionStableId("importFirstName")
+                                .build()
+                ))
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+        Map<String, String> enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username,
+                "importTest1.lastUpdatedAt", "2023-08-21 05:17AM",
+                "importTest1.importFirstName", "Jeff",
+                "importTest1.importFavColors", "[\"red\", \"blue\"]");
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        // confirm a task got created for the enrollee, and the task is complete
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).isComplete(), equalTo(true));
+
+        // now an enrollee with unspecified complete, but no answers for the survey
+        enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username + "2",
+                "importTest1.lastUpdatedAt", "",
+                "importTest1.importFirstName", "",
+                "importTest1.importFavColors", "");
+        enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        // confirm a task got created for the enrollee, and the task is NOT complete
+        tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.NEW));
+        responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(0));
+    }
+
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
                                    ParticipantUser userExpected, Enrollee enrolleeExpected, Profile profileExpected) {
 
