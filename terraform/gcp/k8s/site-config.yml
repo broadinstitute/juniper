@@ -1,0 +1,158 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: d2p-site-configmap
+data:
+  site.conf: >
+    ServerTokens ProductOnly
+
+    TraceEnable off
+
+    ServerSignature off
+
+
+    LogFormat "%h %l %u \"%{OIDC_CLAIM_email}i\" \"%{X-App-ID}i\"
+    [%{%FT%T}t.%{msec_frac}t%{%z}t] %D %X \"%r\" %>s %b \"%{Referer}i\"
+    \"%{Origin}i\" \"%{User-Agent}i\"" combined
+
+    LogFormat "%{X-Forwarded-For}i %l %u \"%{OIDC_CLAIM_email}i\"
+    \"%{X-App-ID}i\" [%{%FT%T}t.%{msec_frac}t%{%z}t] %D %X \"%r\" %>s %b
+    \"%{Referer}i\" \"%{Origin}i\" \"%{User-Agent}i\"" proxy
+
+    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+
+    CustomLog "/dev/stdout" combined env=!forwarded
+
+    CustomLog "/dev/stdout" proxy env=forwarded
+
+
+    LogLevel info ssl:warn
+
+
+    Header unset X-Frame-Options
+
+    Header always set X-Frame-Options SAMEORIGIN
+
+    Header unset X-XSS-Protection
+
+    Header always set X-XSS-Protection "1; mode=block"
+
+    Header unset X-Content-Type-Options
+
+    Header always set X-Content-Type-Options: nosniff
+
+    Header unset Strict-Transport-Security
+
+    Header always set Strict-Transport-Security "max-age=31536000;
+    includeSubDomains"
+
+    Header unset Referrer-Policy
+
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+
+    # Timeout only after 10 minutes 50 seconds
+
+    ProxyTimeout 650
+
+
+    <VirtualHost _default_:80>
+      RewriteEngine On
+      RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+      RewriteRule ^(.*)$ http://%1$1 [R=301,L]
+
+      DocumentRoot /app
+
+      <Directory "/app">
+        # disable mod_rewrite
+        RewriteEngine off
+
+        AllowOverride All
+        Options -Indexes
+
+        Order allow,deny
+        Allow from all
+      </Directory>
+
+      ErrorLog /dev/stdout
+      CustomLog "/dev/stdout" combined
+    
+      # routing rules for where to send traffic w/ no logged-in user
+    
+      # rfc7662 oauth2 introspection path
+      <Location /introspect/>
+        RewriteEngine off
+        Require all granted
+        AuthType None
+      </Location>
+    
+      # regex matcher for everything that isn't the oauth2 introspection path
+      <LocationMatch "^(?!/introspect/)(/)(.*)">
+    
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+        RewriteRule ^(.*)$ $1 [R=204,L]
+    
+        <Limit OPTIONS>
+            Require all granted
+        </Limit>
+    
+        AuthType None
+        Require all granted
+    
+        ProxyPassMatch http://localhost:8080/$2
+        ProxyPassReverse http://localhost:8080/
+      </LocationMatch>
+    
+      # routing rules for where to send traffic for a logged-in user
+      <Location /api>
+        Header unset Access-Control-Allow-Origin
+        Header always set Access-Control-Allow-Origin "*"
+        Header unset Access-Control-Allow-Headers
+        Header always set Access-Control-Allow-Headers "authorization,content-type,accept,origin,x-app-id"
+        Header unset Access-Control-Allow-Methods
+        Header always set Access-Control-Allow-Methods "GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD"
+        Header unset Access-Control-Max-Age
+        Header always set Access-Control-Max-Age 1728000
+    
+        RewriteEngine On
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+        RewriteRule ^(.*)$ $1 [R=204,L]
+    
+        <Limit OPTIONS>
+            Require all granted
+        </Limit>
+    
+        AuthType oauth2
+        <RequireAll>
+          # ID-444 Added this for security compliance
+          # Evaluates to true if the request contains email_verified=true, or if it is not present.
+          # Note: we need to reference %{REMOTE_USER} to ensure that this expression is evaluated _after_ the authentication has happened
+          # %{REMOTE_USER} != %{REMOTE_USER} will never evaluate to true but will ensure that the expression is evaluated at the correct time
+          Require expr "%{REMOTE_USER} != %{REMOTE_USER} || %{HTTP:OAUTH2_CLAIM_email_verified} == 'true' || -z %{HTTP:OAUTH2_CLAIM_email_verified}"
+          <RequireAll>
+            Require valid-user
+          </RequireAll>
+        </RequireAll>
+    
+        RequestHeader set oidc_claim_email "expr=%{HTTP:OAUTH2_CLAIM_email}"
+        RequestHeader set oidc_claim_user_id "expr=%{HTTP:OAUTH2_CLAIM_sub}"
+        RequestHeader set oidc_access_token "expr=%{HTTP:OAUTH2_CLAIM_access_token}"
+        RequestHeader set oidc_claim_expires_in "expr=%{HTTP:OAUTH2_CLAIM_exp}"
+    
+        ProxyPass http://localhost:8080/api
+        ProxyPassReverse http://localhost:8080/api
+    
+        AddOutputFilterByType DEFLATE application/json text/plain text/html application/javascript application/x-javascript
+      </Location>
+      # Begin additional unauthenticated routes
+      <Location /api/public>
+        RewriteEngine off
+        Require all granted
+        AuthType None
+    
+        ProxyPass http://localhost:8080/api/public
+        ProxyPassReverse http://localhost:8080/api/public
+      </Location>
+      # End additional routes
+
+    </VirtualHost>

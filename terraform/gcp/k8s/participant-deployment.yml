@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin-deployment
+  name: participant-deployment
   labels:
-    app: admin
+    app: participant
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: admin
+      app: participant
   template:
     metadata:
       labels:
-        app: admin
+        app: participant
     spec:
       serviceAccountName: juniper-app-ksa
       containers:
@@ -52,9 +52,9 @@ spec:
               # application's requirements.
               cpu: "1"
 
-        - name: admin
+        - name: participant
           imagePullPolicy: Always
-          image: us-central1-docker.pkg.dev/broad-juniper-eng-infra/juniper/juniper-admin:secret-test
+          image: us-central1-docker.pkg.dev/broad-juniper-eng-infra/juniper/juniper-participant:secret-test
           livenessProbe:
             failureThreshold: 30
             httpGet:
@@ -98,14 +98,12 @@ spec:
               value: "juniper-cmi.dev"
             - name: PARTICIPANT_UI_HOSTNAME
               value: "juniper-cmi.dev"
-            - name: B2C_CLIENT_ID
-              value: 705c09dc-5cca-43d3-ae06-07de78bad29a
-            - name: B2C_POLICY_NAME
-              value: B2C_1A_ddp_admin_signup_signin_dev
-            - name: B2C_TENANT_NAME
-              value: ddpdevb2c
             - name: TDR_ADDRESS
               value: https://jade.datarepo-dev.broadinstitute.org
+            - name: B2C_CONFIG_FILE
+              value: /etc/app/portalB2CConfig.yaml
+            - name: SERVER_PORT
+              value: '8080'
             - name: TDR_EXPORT_ENABLED
               value: 'true'
             - name: TDR_EXPORT_STORAGE_ACCOUNT_NAME
@@ -132,15 +130,13 @@ spec:
               value: tdr-storage-account-key
           resources:
             requests:
-              # The proxy's memory use scales linearly with the number of active
-              # connections. Fewer open connections will use less memory. Adjust
-              # this value based on your application's requirements.
               memory: "2Gi"
-              # The proxy's CPU use scales linearly with the amount of IO between
-              # the database and the application. Adjust this value based on your
-              # application's requirements.
               cpu: "500m"
-
+          volumeMounts:
+            - mountPath: /etc/app/portalB2CConfig.yaml
+              name: portal-b2c-configmap-mount
+              readOnly: true
+              subPath: portalB2CConfig.yaml
         - image: us.gcr.io/broad-dsp-gcr-public/httpd-terra-proxy:v0.1.18
           imagePullPolicy: IfNotPresent
           name: oidc-proxy
@@ -193,3 +189,7 @@ spec:
             defaultMode: 420
             name: d2p-site-configmap
           name: d2p-site-configmap-mount
+        - configMap:
+            defaultMode: 420
+            name: portal-b2c-configmap
+          name: portal-b2c-configmap-mount
