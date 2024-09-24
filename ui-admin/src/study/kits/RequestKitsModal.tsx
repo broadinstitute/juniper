@@ -27,7 +27,7 @@ export default function RequestKitsModal({
   const handleSubmit = async () => {
     doApiLoad(async () => {
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
-        enrolleeShortcodes, { kitType, skipAddressValidation })
+        enrolleeShortcodes, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
       if (response.exceptions.length) {
         const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')

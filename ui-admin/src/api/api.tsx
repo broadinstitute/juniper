@@ -929,7 +929,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitLabel: string }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitLabel?: string }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
@@ -963,7 +963,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitOptions: { kitType: string, skipAddressValidation: boolean }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean }
   ): Promise<KitRequestListResponse> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {

@@ -5,12 +5,14 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import java.util.ArrayList;
@@ -27,14 +29,17 @@ public class KitExtService {
   private final KitRequestService kitRequestService;
   private final StudyEnvironmentService studyEnvironmentService;
   private final StudyService studyService;
+  private final EnrolleeService enrolleeService;
 
   public KitExtService(
       KitRequestService kitRequestService,
       StudyEnvironmentService studyEnvironmentService,
-      StudyService studyService) {
+      StudyService studyService,
+      EnrolleeService enrolleeService) {
     this.kitRequestService = kitRequestService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.studyService = studyService;
+    this.enrolleeService = enrolleeService;
   }
 
   @Getter
@@ -82,15 +87,20 @@ public class KitExtService {
     KitRequestListResponse response = new KitRequestListResponse();
     for (String enrolleeShortcode : enrolleeShortcodes) {
       try {
-        KitRequestDto kitDto =
-            requestKit(
-                PortalEnrolleeAuthContext.of(
-                    authContext.getOperator(),
-                    authContext.getPortalShortcode(),
-                    authContext.getStudyShortcode(),
-                    authContext.getEnvironmentName(),
-                    enrolleeShortcode),
-                kitRequestCreationDto);
+        Enrollee enrollee =
+            enrolleeService
+                .findByShortcodeAndStudyEnvId(
+                    enrolleeShortcode, authContext.getStudyEnvironment().getId())
+                .get();
+        PortalEnrolleeAuthContext enrolleeAuthContext =
+            PortalEnrolleeAuthContext.of(
+                authContext.getOperator(),
+                authContext.getPortalShortcode(),
+                authContext.getStudyShortcode(),
+                authContext.getEnvironmentName(),
+                enrolleeShortcode);
+        enrolleeAuthContext.setEnrollee(enrollee);
+        KitRequestDto kitDto = requestKit(enrolleeAuthContext, kitRequestCreationDto);
         response.addKitRequest(kitDto);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
