@@ -3,15 +3,14 @@ package bio.terra.pearl.core.service.datarepo;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
-import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
-import bio.terra.pearl.core.dao.datarepo.DatasetDao;
+import bio.terra.pearl.core.dao.export.datarepo.DataRepoJobDao;
+import bio.terra.pearl.core.dao.export.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.datarepo.*;
 import bio.terra.pearl.core.model.export.datarepo.*;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -20,10 +19,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetDeletionException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
-import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.ExportOptions;
-import bio.terra.pearl.core.service.export.TsvExporter;
+import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -158,7 +154,7 @@ public class DataRepoExportService {
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
-        ExportOptions exportOptions = ExportOptions
+        ExportOptionsParsed exportOptions = ExportOptionsParsed
                 .builder()
                 .onlyIncludeMostRecent(false)
                 .fileFormat(ExportFileFormat.TSV)

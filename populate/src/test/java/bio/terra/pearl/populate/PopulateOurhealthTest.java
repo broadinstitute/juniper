@@ -16,6 +16,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsParsed;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -113,7 +114,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) {
         // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
-        ExportOptions options = ExportOptions
+        ExportOptionsParsed options = ExportOptionsParsed
                 .builder()
                 .splitOptionsIntoColumns(true)
                 .stableIdsForOptions(true)

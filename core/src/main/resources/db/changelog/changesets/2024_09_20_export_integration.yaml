@@ -23,7 +23,7 @@ databaseChangeLog:
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
               - column: { name: export_integration_id, type: uuid, constraints: { nullable: false , foreignKeyName: fk_export_job_to_config_id, references: export_integration(id) } }
-              - column: { name: creating_admin_user_id, type: uuid, { foreignKeyName: fk_export_job_to_admin_user_id, references: admin_user(id) } }
+              - column: { name: creating_admin_user_id, type: uuid, constraints: { foreignKeyName: fk_export_job_to_admin_user_id, references: admin_user(id) } }
               - column: { name: status, type: text }
               - column: { name: started_at, type: datetime }
               - column: { name: completed_at, type: datetime }

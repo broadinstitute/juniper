@@ -136,7 +136,22 @@
             {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
             {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
           ]
-      }]
+      }],
+      "exportIntegrationPopDtos": [
+        {
+          "destinationType": "AIRTABLE",
+          "enabled": true,
+          "exportOptionsObj": {
+            "fileFormat": "CSV",
+            "excludeModules": ["surveys"],
+            "filter": "{enrollee.subject} = true and {enrollee.consented} = true",
+            "includeSubheaders": false,
+            "onlyIncludeMostRecent": true,
+            "splitOptionsIntoColumns": false,
+            "stableIdsForOptions": true
+          }
+        }
+      ]
     },
     {
       "environmentName": "irb",

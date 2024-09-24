@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.dataimport;
+package bio.terra.pearl.core.service.export.dataimport;
 
 import bio.terra.pearl.core.dao.dataimport.ImportDao;
 import bio.terra.pearl.core.model.dataimport.Import;

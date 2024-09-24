@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.dao.datarepo;
+package bio.terra.pearl.core.dao.export.datarepo;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.export.datarepo.DataRepoJob;

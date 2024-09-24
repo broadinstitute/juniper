@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.dto;
 
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.populate.dto.export.ExportIntegrationPopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
@@ -25,6 +26,8 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<TriggerPopDto> triggerDtos = new ArrayList<>();
     @Builder.Default
     private List<PreEnrollmentResponsePopDto> preEnrollmentResponseDtos = new ArrayList<>();
+    @Builder.Default
+    private List<ExportIntegrationPopDto> exportIntegrationPopDtos = new ArrayList<>();
     @Builder.Default
     private List<String> kitTypeNames = new ArrayList<>();
     @Builder.Default

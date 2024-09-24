@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
-import bio.terra.pearl.core.dao.datarepo.DatasetDao;
+import bio.terra.pearl.core.dao.export.datarepo.DatasetDao;
 import bio.terra.pearl.core.model.export.datarepo.Dataset;
 import bio.terra.pearl.core.model.export.datarepo.DatasetStatus;
 import bio.terra.pearl.core.service.CrudService;

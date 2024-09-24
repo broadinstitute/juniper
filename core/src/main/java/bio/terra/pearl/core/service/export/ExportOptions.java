@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -11,11 +12,11 @@ import java.util.List;
 
 @SuperBuilder
 @Getter
-public final class ExportOptions {
+public class ExportOptions {
     private final boolean splitOptionsIntoColumns;
     private final boolean stableIdsForOptions;
     private final boolean onlyIncludeMostRecent;
-    private final EnrolleeSearchExpression filter;
+    private final String filter;
     private final ExportFileFormat fileFormat;
     private final Integer limit;
     private final boolean includeSubHeaders;

@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsParsed;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class ExportController implements ExportApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
-    ExportOptions exportOptions =
+    ExportOptionsParsed exportOptions =
         optionsFromParams(
             searchExpression,
             fileFormat,
@@ -114,8 +115,8 @@ public class ExportController implements ExportApi {
     return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
   }
 
-  private ExportOptions optionsFromParams(
-      String searchExpression,
+  private ExportOptionsParsed optionsFromParams(
+      String filter,
       String fileFormat,
       Integer limit,
       Boolean splitOptionsIntoColumns,
@@ -123,18 +124,17 @@ public class ExportController implements ExportApi {
       Boolean includeOnlyMostRecent,
       Boolean includeSubHeaders,
       List<String> excludeModules) {
-    EnrolleeSearchExpression filter =
-        Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
-            ? enrolleeSearchExpressionParser.parseRule(searchExpression)
-            : null;
+    EnrolleeSearchExpression searchExp =
+        !StringUtils.isBlank(filter) ? enrolleeSearchExpressionParser.parseRule(filter) : null;
 
-    ExportOptions exportOptions =
-        ExportOptions.builder()
+    ExportOptionsParsed exportOptions =
+        ExportOptionsParsed.builder()
             .splitOptionsIntoColumns(
                 splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
             .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
             .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
             .filter(filter)
+            .searchExpression(searchExp)
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)

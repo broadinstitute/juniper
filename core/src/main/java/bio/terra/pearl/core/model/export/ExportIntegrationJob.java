@@ -6,9 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
+import java.util.UUID;
+
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 public class ExportIntegrationJob extends BaseEntity {
+    private UUID exportIntegrationId;
+    private UUID creatingAdminUserId;
+    private String status;
+    private Instant startedAt;
+    private Instant completedAt;
+    private String result;
 }
