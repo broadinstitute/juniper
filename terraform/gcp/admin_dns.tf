@@ -30,10 +30,6 @@ resource "google_dns_record_set" "www_juniper_admin" {
   type         = "CNAME"
 }
 
-locals {
-  environments = ["sandbox", "irb", "live"]
-}
-
 # create sandbox, irb, live subdomains for the demo project
 resource "google_dns_record_set" "sandbox_portal_juniper_admin" {
   for_each = var.portals
