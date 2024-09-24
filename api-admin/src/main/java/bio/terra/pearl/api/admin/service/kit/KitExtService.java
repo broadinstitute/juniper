@@ -96,16 +96,13 @@ public class KitExtService {
                     () ->
                         new NotFoundException(
                             "Enrollee not found for enrolleeShortcode: " + enrolleeShortcode));
-        PortalEnrolleeAuthContext enrolleeAuthContext =
-            PortalEnrolleeAuthContext.of(
+        KitRequestDto createdKit =
+            kitRequestService.requestKit(
                 authContext.getOperator(),
-                authContext.getPortalShortcode(),
                 authContext.getStudyShortcode(),
-                authContext.getEnvironmentName(),
-                enrolleeShortcode);
-        enrolleeAuthContext.setEnrollee(enrollee);
-        KitRequestDto kitDto = requestKit(enrolleeAuthContext, kitRequestCreationDto);
-        response.addKitRequest(kitDto);
+                enrollee,
+                kitRequestCreationDto);
+        response.addKitRequest(createdKit);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
         // this, a structured response might be useful here
