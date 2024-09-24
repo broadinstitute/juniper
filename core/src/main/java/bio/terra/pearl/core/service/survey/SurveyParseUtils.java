@@ -174,6 +174,8 @@ public class SurveyParseUtils {
                 } else {
                     if (textNode.has("en")) {
                         text = textNode.get("en").asText();
+                    } else if (textNode.has("default")) {
+                        text = textNode.get("default").asText();
                     } else {
                         text = textNode.get("value").asText();
                     }

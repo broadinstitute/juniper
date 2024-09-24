@@ -6,7 +6,16 @@ env:
     name: ${sm://${DB_NAME_SECRET_ID}}
     password: ${sm://${DB_PASSWORD_SECRET_ID}}
     user: ${sm://${DB_USER_SECRET_ID}}
-
+  email:
+    sendgridApiKey: ${sm://${SENDGRID_API_KEY_SECRET_ID}}
+  dsm:
+    secret: ${sm://${DSM_JWT_SIGNING_SECRET_SECRET_ID}}
+  tdr:
+    serviceAccountCreds: ${sm://${TDR_SA_CREDS_SECRET_ID}}
+    storageAccountKey: ${sm://${TDR_EXPORT_STORAGE_ACCOUNT_KEY_SECRET_ID}}
+  addrValidation:
+    smartyAuthId: ${sm://${SMARTY_AUTH_ID_SECRET_ID}}
+    smartyAuthToken: ${sm://${SMARTY_AUTH_TOKEN_SECRET_ID}}
 spring:
   cloud:
     gcp:

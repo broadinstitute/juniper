@@ -5,7 +5,6 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.kit.KitRequest;
-import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
@@ -113,7 +112,7 @@ public class KitExtService {
     kitRequest.setReturnTrackingNumber(kitCollectionDto.returnTrackingNumber());
 
     return kitRequestService.collectKit(
-        authContext.getOperator(), kitRequest, KitRequestStatus.COLLECTED_BY_STAFF);
+        authContext.getOperator(), authContext.getStudyShortcode(), kitRequest);
   }
 
   @EnforcePortalEnrolleePermission(permission = "BASE")

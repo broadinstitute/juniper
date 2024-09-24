@@ -27,3 +27,8 @@ resource "google_project_service" "enable_cloud_logging" {
   project = var.project
   service = "logging.googleapis.com"
 }
+
+resource "google_project_service" "enable_recommender" {
+  project = var.project
+  service = "recommender.googleapis.com"
+}

@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -33,8 +34,11 @@ import static java.lang.Boolean.parseBoolean;
 @Slf4j
 public class AnswerProcessingService {
     private final ProfileService profileService;
-    public AnswerProcessingService(ProfileService profileService) {
+    private final PortalParticipantUserService portalParticipantUserService;
+
+    public AnswerProcessingService(ProfileService profileService, PortalParticipantUserService portalParticipantUserService) {
         this.profileService = profileService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     /** takes a response and a list of mappings and saves any appropriate updates to the data model
@@ -45,14 +49,14 @@ public class AnswerProcessingService {
             Enrollee enrollee,
             List<Answer> answers,
             List<AnswerMapping> mappings,
-            PortalParticipantUser ppUser,
+            PortalParticipantUser operatorPpUser,
             ResponsibleEntity operator,
             DataAuditInfo auditInfo) {
         if (mappings.isEmpty()) {
             return;
         }
         processProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
-        processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
+        processProxyProfileAnswerMappings(enrollee, answers, mappings, operatorPpUser, auditInfo);
     }
 
     /**
@@ -91,15 +95,17 @@ public class AnswerProcessingService {
             DataAuditInfo auditInfo) {
 
         // if the ppUser is the same as the enrollee, we're not in a proxy environment
-        if (operator.getProfileId().equals(enrollee.getProfileId())) {
+        if (operator.getParticipantUserId().equals(enrollee.getParticipantUserId())) {
             return;
         }
 
         List<AnswerMapping> proxyProfileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROXY_PROFILE)).toList();
+
         if (proxyProfileMappings.isEmpty() || !hasTargetedChanges(proxyProfileMappings, answers, AnswerMappingTargetType.PROXY_PROFILE)) {
             return;
         }
+
         // grab the operator (which is the proxy) profile to update it
         Profile profile = profileService.loadWithMailingAddress(operator.getProfileId()).get();
         mapValuesToType(
