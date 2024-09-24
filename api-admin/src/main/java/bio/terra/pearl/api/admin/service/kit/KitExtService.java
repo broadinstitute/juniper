@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
@@ -91,7 +92,10 @@ public class KitExtService {
             enrolleeService
                 .findByShortcodeAndStudyEnvId(
                     enrolleeShortcode, authContext.getStudyEnvironment().getId())
-                .get();
+                .orElseThrow(
+                    () ->
+                        new NotFoundException(
+                            "Enrollee not found for enrolleeShortcode: " + enrolleeShortcode));
         PortalEnrolleeAuthContext enrolleeAuthContext =
             PortalEnrolleeAuthContext.of(
                 authContext.getOperator(),
