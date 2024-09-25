@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -106,7 +107,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsParsed());
         List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
                         .builder()
-                        .filter(null) // no filter means proxies will be included
+                        .filterString(null) // no filter means proxies will be included
                         .onlyIncludeMostRecent(true)
                         .fileFormat(ExportFileFormat.TSV)
                         .limit(null)
@@ -131,7 +132,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 studyEnv.getId(),
                 ExportOptionsParsed
                         .builder()
-                        .searchExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
+                        .filterExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                         .build());
         List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportDataNoProxies);
         List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(exportDataNoProxies, exportModuleInfoNoProxies);

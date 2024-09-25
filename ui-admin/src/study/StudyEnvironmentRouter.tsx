@@ -51,6 +51,7 @@ import FamilyRouter from './families/FamilyRouter'
 import { KitScanner } from './kits/kitcollection/KitScanner'
 import { LoadedSettingsView } from 'study/settings/SettingsView'
 import ExportIntegrationList from './export/integrations/ExportIntegrationList'
+import ExportIntegration from './export/integrations/ExportIntegration'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -129,6 +130,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalContext={portalContext}/>}
           />
           <Route path="export/integrations" element={<ExportIntegrationList studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/integrations/:id" element={<ExportIntegration studyEnvContext={studyEnvContext}/>}/>
 
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>

@@ -268,7 +268,7 @@ export type ExportOptions = {
   onlyIncludeMostRecent?: boolean,
   includeSubheaders?: boolean,
   excludeModules?: string[],
-  filter?: string,
+  filterString?: string,
   limit?: number
 }
 
@@ -370,6 +370,7 @@ export type ExportIntegration = {
     createdAt: number,
     lastUpdatedAt: number,
     destinationType: string,
+    enabled: boolean,
     exportOptions: Record<string, string>,
     destinationProps: Record<string, string>
 }
@@ -1105,6 +1106,12 @@ export default {
 
   async fetchExportIntegrations(studyEnvParams: StudyEnvParams): Promise<ExportIntegration[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { renderPageHeader } from 'util/pageUtils'
 import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom'
 
 
 /** show the mailing list in table */
@@ -42,6 +43,11 @@ export default function ExportIntegrationList({ studyEnvContext }:
     header: 'Enabled',
     accessorKey: 'enabled',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : '-'
+  }, {
+    header: '',
+    enableSorting: false,
+    id: 'actions',
+    cell: info => <Link to={info.row.original.id}>View/Edit</Link>
   }]
 
   const table = useReactTable({

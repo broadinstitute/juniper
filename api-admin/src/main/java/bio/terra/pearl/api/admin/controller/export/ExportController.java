@@ -7,7 +7,7 @@ import bio.terra.pearl.api.admin.service.export.EnrolleeExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.ExportOptionsParsed;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
@@ -133,8 +133,8 @@ public class ExportController implements ExportApi {
                 splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
             .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
             .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
-            .filter(filter)
-            .searchExpression(searchExp)
+            .filterString(filter)
+            .filterExpression(searchExp)
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)

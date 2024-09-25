@@ -17,5 +17,5 @@ public class ExportIntegration extends BaseEntity {
     private boolean enabled = true;
     private ExportDestinationType destinationType;
     private String destinationProps;
-    private String exportOptions;
+    private ExportOptions exportOptions;
 }

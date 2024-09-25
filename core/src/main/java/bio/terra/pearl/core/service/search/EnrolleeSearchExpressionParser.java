@@ -6,6 +6,8 @@ import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.*;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsParsed;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.*;
@@ -19,6 +21,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -250,5 +253,11 @@ public class EnrolleeSearchExpressionParser {
             return variable.substring(variable.indexOf(".") + 1).split("\\.");
         }
         throw new IllegalArgumentException("No field in variable");
+    }
+
+    public ExportOptionsParsed parseExportOptions(ExportOptions exportOptions) {
+        ExportOptionsParsed exportOptionsParsed = new ExportOptionsParsed();
+        BeanUtils.copyProperties(exportOptions, exportOptionsParsed);
+        exportOptionsParsed.setFilterExpression(parseRule(exportOptions.getFilterString()));
     }
 }

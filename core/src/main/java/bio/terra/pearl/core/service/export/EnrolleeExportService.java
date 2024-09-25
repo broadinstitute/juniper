@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -94,7 +95,7 @@ public class EnrolleeExportService {
     public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptionsParsed exportOptions) {
         return loadEnrolleesForExport(
                 studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId),
-                loadEnrollees(studyEnvironmentId, exportOptions.getSearchExpression(), exportOptions.getLimit()));
+                loadEnrollees(studyEnvironmentId, exportOptions.getFilterExpression(), exportOptions.getLimit()));
     }
 
     private List<Enrollee> loadEnrollees(UUID studyEnvironmentId, EnrolleeSearchExpression filter, Integer limit) {

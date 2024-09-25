@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export.integration;
 
 import bio.terra.pearl.core.dao.export.ExportIntegrationDao;
+import bio.terra.pearl.core.model.export.ExportDestinationType;
 import bio.terra.pearl.core.model.export.ExportIntegration;
 import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,13 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
                                     ExportIntegrationJobService exportIntegrationJobService) {
         super(dao);
         this.exportIntegrationJobService = exportIntegrationJobService;
+    }
+
+    public Object run(ExportIntegration integration) {
+        if (ExportDestinationType.AIRTABLE.equals(integration.getDestinationType())) {
+
+        }
+        return null;
     }
 
     public List<ExportIntegration> findByStudyEnvironmentId(UUID studyEnvId) {

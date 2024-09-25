@@ -57,7 +57,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       stableIdsForOptions: !humanReadable,
       includeSubheaders,
       excludeModules,
-      filter: buildFilter({ includeProxiesAsRows, includeUnconsented }),
+      filterString: buildFilter({ includeProxiesAsRows, includeUnconsented }),
       fileFormat: fileFormat.value
     }
   }

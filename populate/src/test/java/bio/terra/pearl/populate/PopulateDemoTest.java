@@ -16,7 +16,6 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.ExportOptionsParsed;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
@@ -193,7 +192,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
-                .searchExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
+                .filterExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                 .limit(null)
                 .build();
 

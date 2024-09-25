@@ -1241,10 +1241,26 @@ paths:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}/run:
+    get:
+      summary: runs the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: run
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration result
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
