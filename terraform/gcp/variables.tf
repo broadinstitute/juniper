@@ -52,3 +52,8 @@ variable "infra_region" {
   type = string
   description = "Infra region"
 }
+
+variable "authorized_networks" {
+  type = set(string)
+  description = "Authorized networks that can access the cluster"
+}

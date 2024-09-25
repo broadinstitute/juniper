@@ -32,3 +32,8 @@ resource "google_project_service" "enable_recommender" {
   project = var.project
   service = "recommender.googleapis.com"
 }
+
+resource "google_project_service" "enable_service_networking" {
+  service = "servicenetworking.googleapis.com"
+  project = var.project
+}

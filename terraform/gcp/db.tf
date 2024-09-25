@@ -6,12 +6,28 @@ resource "google_sql_database_instance" "d2p" {
   deletion_protection = false
   settings {
     tier = var.db_tier
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = google_compute_network.juniper_network.self_link
+      enable_private_path_for_google_cloud_services = true
+    }
 
     database_flags {
       name  = "cloudsql.iam_authentication"
       value = "on"
     }
+
+    backup_configuration {
+      enabled = true
+      start_time = "04:00"
+    }
   }
+
+  depends_on = [
+    google_project_service.enable_sql,
+    google_project_service.enable_sql_admin,
+    google_service_networking_connection.private_vpc_connection
+  ]
 }
 
 resource "google_sql_database" "database" {
