@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from 'util/LoadingSpinner'
-import Api from 'api/api'
-import { failureNotification, successNotification } from 'util/notifications'
+import LoadingSpinner from '../../../util/LoadingSpinner'
+import Api from '../../../api/api'
+import { failureNotification, successNotification } from '../../../util/notifications'
 import { Store } from 'react-notifications-component'
 
 const CreateDatasetModal = ({ studyEnvContext, show, setShow, loadDatasets }: {studyEnvContext: StudyEnvContextT,

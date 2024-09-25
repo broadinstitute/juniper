@@ -365,6 +365,15 @@ export type WithdrawnEnrollee = {
   userData: string
 }
 
+export type ExportIntegration = {
+    id: string,
+    createdAt: number,
+    lastUpdatedAt: number,
+    destinationType: string,
+    exportOptions: Record<string, string>,
+    destinationProps: Record<string, string>
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -1092,6 +1101,12 @@ export default {
     }
     url += searchParams.toString()
     return fetch(url, this.getGetInit())
+  },
+
+  async fetchExportIntegrations(studyEnvParams: StudyEnvParams): Promise<ExportIntegration[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async findTrigger(portalShortcode: string, studyShortcode: string, envName: string, id: string):

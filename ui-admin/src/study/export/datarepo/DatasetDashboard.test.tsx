@@ -2,8 +2,8 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import DatasetDashboard from './DatasetDashboard'
-import { DatasetDetails, DatasetJobHistory } from 'api/api'
-import { mockDatasetDetails, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { DatasetDetails, DatasetJobHistory } from '../../../api/api'
+import { mockDatasetDetails, mockStudyEnvContext } from '../../../test-utils/mocking-utils'
 import { useParams } from 'react-router-dom'
 import { setupRouterTest } from '@juniper/ui-core'
 

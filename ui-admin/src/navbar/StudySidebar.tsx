@@ -6,7 +6,7 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath,
-  studyEnvDatasetListViewPath,
+  studyEnvDatasetListViewPath, studyEnvExportIntegrationPath,
   studyEnvFormsPath,
   studyEnvImportPath,
   studyEnvMailingListPath,
@@ -70,6 +70,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
         </li>
+        { portalId && userHasPermission(user.user, portalId, 'export_integration') && <li className="mb-2">
+          <NavLink to={studyEnvExportIntegrationPath(portalShortcode, study.shortcode, 'live')}
+            className={sidebarNavLinkClasses} style={navStyleFunc}>Export Integrations</NavLink>
+        </li>
+        }
         { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
           <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>

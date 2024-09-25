@@ -2,9 +2,9 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import Api, { ExportData } from 'api/api'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import Api, { ExportData } from '../../api/api'
+import LoadingSpinner from '../../util/LoadingSpinner'
 import {
   CellContext,
   ColumnDef,
@@ -14,19 +14,19 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout } from '../../util/tableUtils'
 import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
-import { useLoadingEffect } from 'api/api-utils'
-import { Button } from 'components/forms/Button'
+import { useLoadingEffect } from '../../api/api-utils'
+import { Button } from '../../components/forms/Button'
 import {
   renderPageHeader,
   renderTruncatedText
-} from 'util/pageUtils'
-import { failureNotification } from 'util/notifications'
+} from '../../util/pageUtils'
+import { failureNotification } from '../../util/notifications'
 import { Store } from 'react-notifications-component'
-import { buildFilter } from 'util/exportUtils'
+import { buildFilter } from '../../util/exportUtils'
 
 const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [data, setData] = useState<ExportData | null>(null)

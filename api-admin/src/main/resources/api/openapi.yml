@@ -1200,6 +1200,54 @@ paths:
           content: { text/plain: { schema: { type: string, format: binary } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations:
+    get:
+      summary: gets all the active exportIntegrations for the environment
+      tags: [ exportIntegration ]
+      operationId: findByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrations
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: create a new exportIntegration for the environment
+      tags: [ exportIntegration ]
+      operationId: create
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}:
+    get:
+      summary: gets the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: get
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
     post:
       summary: Adds a list of contacts to the mailing list for the environment

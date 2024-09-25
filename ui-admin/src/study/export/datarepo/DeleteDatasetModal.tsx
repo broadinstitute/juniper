@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { StudyEnvContextT, studyEnvDatasetListViewPath } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, studyEnvDatasetListViewPath } from '../../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from 'util/LoadingSpinner'
+import LoadingSpinner from '../../../util/LoadingSpinner'
 import { useNavigate } from 'react-router-dom'
-import Api from 'api/api'
-import { failureNotification, successNotification } from 'util/notifications'
+import Api from '../../../api/api'
+import { failureNotification, successNotification } from '../../../util/notifications'
 import { Store } from 'react-notifications-component'
 
 const DeleteDatasetModal = ({ studyEnvContext, datasetName, show, setShow, loadDatasets }: {

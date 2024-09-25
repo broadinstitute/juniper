@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockStudyEnvContext } from '../../test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import ExportDataControl from './ExportDataControl'
 import { userEvent } from '@testing-library/user-event'
