@@ -1,4 +1,9 @@
-import { FormContent, HtmlElement, Question, TemplatedQuestion } from '@juniper/ui-core'
+import {
+  FormContent,
+  HtmlElement,
+  Question,
+  TemplatedQuestion
+} from '@juniper/ui-core'
 
 /** Returns a validated FormContent object, or throws an error if invalid. */
 export const validateFormJson = (rawFormContent: unknown): FormContent => {
@@ -110,6 +115,14 @@ export const getAllElements = (formContent: FormContent): (Question | HtmlElemen
         throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
       } else {
         return element.elements
+      }
+    } else if ('type' in element && element.type === 'paneldynamic') {
+      if (!('templateElements' in element)) {
+        throw new Error(
+          `Error parsing form. Please ensure that all paneldynamic elements have a 'templateElements' property.`
+        )
+      } else {
+        return element.templateElements.concat(element) // paneldynamic is itself a question
       }
     } else {
       return element
