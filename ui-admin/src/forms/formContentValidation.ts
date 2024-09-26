@@ -106,22 +106,22 @@ export const getAllElements = (formContent: FormContent): (Question | HtmlElemen
     if (!('elements' in page)) {
       throw new Error(`Error parsing form. Please ensure that all pages have an 'elements' property.`)
     }
-    return page.elements.flatMap(_getAllElements)
+    return page.elements.flatMap(getAllQuestions)
   }) || []
 }
 
-function _getAllElements(element: FormElement): (Question | HtmlElement)[] {
+function getAllQuestions(element: FormElement): (Question | HtmlElement)[] {
   if ('type' in element && element.type === 'panel') {
     if (!('elements' in element)) {
       throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
     }
-    return element.elements?.flatMap(_getAllElements) || []
+    return element.elements?.flatMap(getAllQuestions) || []
   } else if ('type' in element && element.type === 'paneldynamic') {
     if (!('templateElements' in element)) {
       throw new Error(
         `Error parsing form. Please ensure that all panel dynamic elements have a 'templateElements' property.`)
     }
-    return (element.templateElements?.flatMap(_getAllElements) || []).concat(element)
+    return (element.templateElements?.flatMap(getAllQuestions) || []).concat(element)
   }
   return [element]
 }
