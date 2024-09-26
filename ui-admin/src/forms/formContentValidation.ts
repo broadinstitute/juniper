@@ -1,5 +1,6 @@
 import {
   FormContent,
+  FormElement,
   HtmlElement,
   Question,
   TemplatedQuestion
@@ -101,33 +102,26 @@ export const getAllElements = (formContent: FormContent): (Question | HtmlElemen
     throw new Error(`Error parsing form. Please ensure that the form has a 'pages' property.`)
   }
 
-  const pageElements = formContent.pages.flatMap(page => {
+  return formContent.pages?.flatMap(page => {
     if (!('elements' in page)) {
       throw new Error(`Error parsing form. Please ensure that all pages have an 'elements' property.`)
-    } else {
-      return page.elements
     }
-  })
+    return page.elements.flatMap(_getAllElements)
+  }) || []
+}
 
-  const flattenedElements = pageElements.flatMap(element => {
-    if ('type' in element && element.type === 'panel') {
-      if (!('elements' in element)) {
-        throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
-      } else {
-        return element.elements
-      }
-    } else if ('type' in element && element.type === 'paneldynamic') {
-      if (!('templateElements' in element)) {
-        throw new Error(
-          `Error parsing form. Please ensure that all paneldynamic elements have a 'templateElements' property.`
-        )
-      } else {
-        return element.templateElements.concat(element) // paneldynamic is itself a question
-      }
-    } else {
-      return element
+function _getAllElements(element: FormElement): (Question | HtmlElement)[] {
+  if ('type' in element && element.type === 'panel') {
+    if (!('elements' in element)) {
+      throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
     }
-  })
-
-  return flattenedElements
+    return element.elements?.flatMap(_getAllElements) || []
+  } else if ('type' in element && element.type === 'paneldynamic') {
+    if (!('templateElements' in element)) {
+      throw new Error(
+        `Error parsing form. Please ensure that all panel dynamic elements have a 'templateElements' property.`)
+    }
+    return (element.templateElements?.flatMap(_getAllElements) || []).concat(element)
+  }
+  return [element]
 }
