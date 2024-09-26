@@ -1,6 +1,7 @@
 project = "broad-juniper-dev"
+project_number = 663573365422
 region = "us-central1"
-db_tier = "db-f1-micro"
+db_tier = "db-g1-small"
 dns_ttl = 300
 admin_url = "juniper-cmi.dev"
 environment = "dev"

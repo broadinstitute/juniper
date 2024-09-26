@@ -1,4 +1,6 @@
 
+
+
 resource "google_secret_manager_secret" "tdr_sa_creds" {
   secret_id = "tdr-sa-creds"
   replication {
@@ -11,6 +13,7 @@ resource "google_secret_manager_secret" "tdr_storage_account_key" {
   replication {
     auto {}
   }
+
 }
 
 resource "google_secret_manager_secret" "dsm_secret" {
