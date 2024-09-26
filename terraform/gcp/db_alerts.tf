@@ -86,7 +86,7 @@ resource "google_monitoring_alert_policy" "read_write_ops_alert_policy" {
           per_series_aligner = "ALIGN_MEAN"
         }
         filter = "resource.type = \"cloudsql_database\" AND metric.type = \"${conditions.value.metric_type}\""
-        threshold_value = 50
+        threshold_value = 1000
         trigger {
           count = "1"
         }
