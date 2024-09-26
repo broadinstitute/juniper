@@ -29,8 +29,3 @@ resource "time_sleep" "enable_all_services_with_timeout" {
     google_project_service.enable_all_services
   ]
 }
-
-resource "google_project_service" "enable_service_networking" {
-  service = "servicenetworking.googleapis.com"
-  project = var.project
-}
