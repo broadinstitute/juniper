@@ -10,6 +10,41 @@ metadata:
 spec:
 
   rules:
+    # need:
+    # - sandbox.demo.juniper-cmi.dev
+    # - irb.demo.juniper-cmi.dev
+    # - demo.juniper-cmi.dev
+    # and for the other services (cmi, hearthive, atcp, ourhealth)
+    - host: "sandbox.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "irb.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
     - host: "juniper-cmi.dev"
       http:
         paths:

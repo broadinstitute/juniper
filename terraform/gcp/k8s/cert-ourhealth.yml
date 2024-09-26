@@ -1,9 +1,0 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: ourhealth-cert
-spec:
-  domains:
-    - sandbox.ourhealth.juniper-cmi.dev
-    - irb.ourhealth.juniper-cmi.dev
-    - ourhealth.juniper-cmi.dev
