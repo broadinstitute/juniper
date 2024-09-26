@@ -10,36 +10,6 @@ metadata:
 spec:
 
   rules:
-    - host: "sandbox.demo.juniper-cmi.dev"
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
-    - host: "irb.demo.juniper-cmi.dev"
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
-    - host: "demo.juniper-cmi.dev"
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
     - host: "juniper-cmi.dev"
       http:
         paths:
@@ -52,6 +22,6 @@ spec:
                   number: 80
   defaultBackend:
     service:
-      name: admin-service
+      name: participant-service
       port:
         number: 80

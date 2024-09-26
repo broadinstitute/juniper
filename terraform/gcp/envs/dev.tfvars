@@ -6,7 +6,7 @@ dns_ttl = 300
 admin_url = "juniper-cmi.dev"
 environment = "dev"
 # note: automatically creates DNS records for these portals under the admin domain
-portals = ["demo"]
+portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi"]
 infra_project = "broad-juniper-eng-infra"
 infra_region = "us-central1"
 

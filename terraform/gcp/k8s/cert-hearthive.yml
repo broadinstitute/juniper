@@ -1,0 +1,9 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: hearthive-cert
+spec:
+  domains:
+    - sandbox.hearthive.juniper-cmi.dev
+    - irb.hearthive.juniper-cmi.dev
+    - hearthive.juniper-cmi.dev

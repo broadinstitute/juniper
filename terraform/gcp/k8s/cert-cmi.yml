@@ -1,0 +1,9 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: cmi-cert
+spec:
+  domains:
+    - sandbox.cmi.juniper-cmi.dev
+    - irb.cmi.juniper-cmi.dev
+    - cmi.juniper-cmi.dev

@@ -1,0 +1,9 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: atcp-cert
+spec:
+  domains:
+    - sandbox.atcp.juniper-cmi.dev
+    - irb.atcp.juniper-cmi.dev
+    - atcp.juniper-cmi.dev
