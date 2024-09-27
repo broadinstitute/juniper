@@ -1,5 +1,4 @@
 import React, {
-  lazy,
   useCallback,
   useState
 } from 'react'
@@ -13,14 +12,13 @@ import {
 import { OnChangeFormContent } from './formEditorTypes'
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
+import { LazyJsonEditor } from 'util/json/LazyJsonEditor'
 
 type FormContentJsonEditorProps = {
   initialValue: FormContent
   readOnly?: boolean
   onChange: OnChangeFormContent
 }
-
-const LazyJsonEditor = lazy(() => import('util/json/JsonEditor'))
 
 export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   const { initialValue, readOnly = false, onChange } = props

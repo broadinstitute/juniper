@@ -1,7 +1,16 @@
 import React from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
-import { okaidia } from '@uiw/codemirror-theme-okaidia'
+import { githubLight } from '@uiw/codemirror-theme-github'
+
+export type JsonEditorProps = {
+  value: string,
+  setValue: (newJson: string) => void,
+  className?: string,
+  height?: string,
+  width?: string,
+  readOnly?: boolean
+}
 
 export const JsonEditor = (
   {
@@ -11,20 +20,13 @@ export const JsonEditor = (
     height,
     width,
     readOnly = false
-  }:
-    {
-      value: string,
-      setValue: (newJson: string) => void,
-      className?: string,
-      height?: string,
-      width?: string,
-      readOnly?: boolean
-    }) => {
+  }: JsonEditorProps
+) => {
   return <CodeMirror
     value={value}
     className={className}
     extensions={[json()]}
-    theme={okaidia}
+    theme={githubLight}
     height={height}
     width={width}
     readOnly={readOnly}
