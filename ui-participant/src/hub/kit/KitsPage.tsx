@@ -92,34 +92,40 @@ const ParticipantKits = () => {
       important insights. Below you will find the status of all kits that have been provided to you.
     </div>
     { isInPersonKitEnabled &&
-        <>
-          <h3 className="pb-2">Provide a sample in-person</h3>
-          <div className="pb-2">
-            This study is currently offering the option to complete a sample collection kit in-person.
-            Click below for more information about this process.
-          </div>
-          <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
-            <Link to={'/hub/kits/in-person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-              Complete a kit in-person
-            </Link>
-          </div>
-        </>}
+      <>
+        <h3>Provide a sample in-person</h3>
+        <div className="pb-2">
+          This study is currently offering the option to complete a sample collection kit in-person.
+          Click below for more information about this process.
+        </div>
+        <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+          <Link to={'/hub/kits/in-person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+            Complete a kit in-person
+          </Link>
+        </div>
+      </>}
     <h3 className="pb-3">Your kits ({participantKitRequests.length})</h3>
     <div className="d-flex flex-column">
-      {participantKitRequests.map((kit, index) => {
-        return <div key={index}
-          className="d-flex align-items-center justify-content-between mb-3 border rounded-3 p-3">
-          <div>
-            <div className="fw-bold">{kit.kitType.displayName} Kit</div>
-            <div className="fst-italic text-muted">
-              {instantToDateString(kit.createdAt / 1000000)}
+      {participantKitRequests.length === 0 ? (
+        <div className="text-center text-muted fst-italic my-4">
+          You have no sample collection kits at this time.
+        </div>
+      ) : (
+        participantKitRequests.map((kit, index) => (
+          <div key={index}
+            className="d-flex align-items-center justify-content-between mb-3 border rounded-3 p-3">
+            <div>
+              <div className="fw-bold">{kit.kitType.displayName} Kit</div>
+              <div className="fst-italic text-muted">
+                {instantToDateString(kit.createdAt / 1000000)}
+              </div>
+            </div>
+            <div style={{ width: '60%' }}>
+              {getKitStatusBar(kit)}
             </div>
           </div>
-          <div style={{ width: '60%' }}>
-            {getKitStatusBar(kit)}
-          </div>
-        </div>
-      })}
+        ))
+      )}
     </div>
   </div>
 }
