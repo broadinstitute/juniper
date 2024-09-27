@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { Enrollee, KitRequest } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCircleExclamation,
-  faRefresh
-} from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { EnrolleeShortcodeQR } from './EnrolleeShortcodeQR'
 
 //TODO: JN-1294, implement i18n for this entire component
@@ -39,12 +36,12 @@ const BaseKitInstructions = () => {
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
     <h1 className="pb-3">Sample Kit Instructions</h1>
     <div className="pb-3">
-            If you are completing a sample collection kit in-person, please follow the instructions provided
-            by a member of the study team. Any additional information that you may need, such as your unique
-            participant identifier, will be provided below.
+      If you are completing a sample collection kit in-person, please follow the instructions provided
+        by a member of the study team. Any additional information that you may need, such as your unique
+        participant identifier, will be provided below.
     </div>
     <div className="pb-3">
-            If you have any questions, please ask a member of the study team.
+      If you have any questions, please ask a member of the study team.
     </div>
   </div>
 }
