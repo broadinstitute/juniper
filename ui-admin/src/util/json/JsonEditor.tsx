@@ -2,6 +2,7 @@ import React from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { githubLight } from '@uiw/codemirror-theme-github'
+import './JsonEditor.css'
 
 export type JsonEditorProps = {
   value: string,
