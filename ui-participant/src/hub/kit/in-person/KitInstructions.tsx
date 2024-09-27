@@ -3,8 +3,13 @@ import { Link } from 'react-router-dom'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { Enrollee, KitRequest } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleExclamation, faRefresh } from '@fortawesome/free-solid-svg-icons'
+import {
+  faChevronDown, faChevronUp,
+  faCircleExclamation,
+  faRefresh
+} from '@fortawesome/free-solid-svg-icons'
 import { EnrolleeShortcodeQR } from './EnrolleeShortcodeQR'
+import classNames from 'classnames'
 
 //TODO: JN-1294, implement i18n for this entire component
 export default function KitInstructions() {
@@ -22,7 +27,7 @@ export default function KitInstructions() {
             {activeEnrollee ?
               <KitContent enrollee={activeEnrollee}/> :
               <div className="text-danger">
-                No enrollee found. Please contact a member of the study team for assistance.
+                      No enrollee found. Please contact a member of the study team for assistance.
               </div>
             }
           </div>
@@ -36,12 +41,12 @@ const BaseKitInstructions = () => {
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
     <h1 className="pb-3">Sample Kit Instructions</h1>
     <div className="pb-3">
-      If you are completing a sample collection kit in-person, please follow the instructions provided
-        by a member of the study team. Any additional information that you may need, such as your unique
-        participant identifier, will be provided below.
+            If you are completing a sample collection kit in-person, please follow the instructions provided
+            by a member of the study team. Any additional information that you may need, such as your unique
+            participant identifier, will be provided below.
     </div>
     <div className="pb-3">
-      If you have any questions, please ask a member of the study team.
+            If you have any questions, please ask a member of the study team.
     </div>
   </div>
 }
@@ -155,6 +160,36 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
           Return to Dashboard
         </Link>
       </div>
+    </div>
+  )
+}
+
+type CollapsibleSectionProps = {
+    targetSelector: string
+    sectionLabel: string
+}
+
+/**
+ * Button that toggles a collapsible section
+ */
+const CollapsibleSectionButton = (props: CollapsibleSectionProps) => {
+  const { targetSelector, sectionLabel } = props
+  return (
+    <div className="pb-1">
+      <button
+        aria-controls={targetSelector}
+        aria-expanded="false"
+        type={'button'}
+        className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
+        data-bs-target={targetSelector}
+        data-bs-toggle="collapse"
+      >
+        <span className={'form-label fw-semibold mb-0'}>{sectionLabel}</span>
+        <span className="text-center px-2">
+          <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+          <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+        </span>
+      </button>
     </div>
   )
 }
