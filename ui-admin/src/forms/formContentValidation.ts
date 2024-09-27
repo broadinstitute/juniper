@@ -1,4 +1,10 @@
-import { FormContent, HtmlElement, Question, TemplatedQuestion } from '@juniper/ui-core'
+import {
+  FormContent,
+  FormElement,
+  HtmlElement,
+  Question,
+  TemplatedQuestion
+} from '@juniper/ui-core'
 
 /** Returns a validated FormContent object, or throws an error if invalid. */
 export const validateFormJson = (rawFormContent: unknown): FormContent => {
@@ -96,25 +102,26 @@ export const getAllElements = (formContent: FormContent): (Question | HtmlElemen
     throw new Error(`Error parsing form. Please ensure that the form has a 'pages' property.`)
   }
 
-  const pageElements = formContent.pages.flatMap(page => {
+  return formContent.pages?.flatMap(page => {
     if (!('elements' in page)) {
       throw new Error(`Error parsing form. Please ensure that all pages have an 'elements' property.`)
-    } else {
-      return page.elements
     }
-  })
+    return page.elements.flatMap(getAllQuestions)
+  }) || []
+}
 
-  const flattenedElements = pageElements.flatMap(element => {
-    if ('type' in element && element.type === 'panel') {
-      if (!('elements' in element)) {
-        throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
-      } else {
-        return element.elements
-      }
-    } else {
-      return element
+function getAllQuestions(element: FormElement): (Question | HtmlElement)[] {
+  if ('type' in element && element.type === 'panel') {
+    if (!('elements' in element)) {
+      throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
     }
-  })
-
-  return flattenedElements
+    return element.elements?.flatMap(getAllQuestions) || []
+  } else if ('type' in element && element.type === 'paneldynamic') {
+    if (!('templateElements' in element)) {
+      throw new Error(
+        `Error parsing form. Please ensure that all panel dynamic elements have a 'templateElements' property.`)
+    }
+    return (element.templateElements?.flatMap(getAllQuestions) || []).concat(element)
+  }
+  return [element]
 }
