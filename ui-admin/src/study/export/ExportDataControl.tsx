@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from '../../util/LoadingSpinner'
-import Api, { ExportOptions } from '../../api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
+import Api, { ExportOptions } from 'api/api'
 import { currentIsoDate } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
-import { saveBlobAsDownload } from '../../util/downloadUtils'
-import { doApiLoad } from '../../api/api-utils'
-import { buildFilter } from '../../util/exportUtils'
-import { Button } from '../../components/forms/Button'
+import { saveBlobAsDownload } from 'util/downloadUtils'
+import { doApiLoad } from 'api/api-utils'
+import { buildFilter } from 'util/exportUtils'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
-import { useReactMultiSelect } from '../../util/react-select-utils'
+import { useReactMultiSelect } from 'util/react-select-utils'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimited (.tsv)',
@@ -33,40 +33,24 @@ const MODULE_EXCLUDE_OPTIONS: Record<string, string> = { surveys: 'Surveys' }
 /** form for configuring and downloading enrollee data */
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
-  const [humanReadable, setHumanReadable] = useState(true)
-  const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
-  const [fileFormat, setFileFormat] = useState(FILE_FORMATS[0])
-  const [includeProxiesAsRows, setIncludeProxiesAsRows] = useState(false)
-  const [includeUnconsented, setIncludeUnconsented] = useState(false)
-  const [includeSubheaders, setIncludeSubheaders] = useState(true)
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
-  const [excludeModules, setExcludeModules] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
-
-  const { selectInputId, selectedOptions, options, onChange } = useReactMultiSelect<string>(
-    Object.keys(MODULE_EXCLUDE_OPTIONS),
-    key => ({ label: MODULE_EXCLUDE_OPTIONS[key], value: key }),
-    setExcludeModules,
-    excludeModules
-  )
-
-  const optionsFromState = (): ExportOptions => {
-    return {
-      onlyIncludeMostRecent,
-      splitOptionsIntoColumns: !humanReadable,
-      stableIdsForOptions: !humanReadable,
-      includeSubheaders,
-      excludeModules,
-      filterString: buildFilter({ includeProxiesAsRows, includeUnconsented }),
-      fileFormat: fileFormat.value
-    }
-  }
+  const [exportOptions, setExportOptions] = useState<ExportOptions>({
+    splitOptionsIntoColumns: false,
+    stableIdsForOptions: false,
+    fileFormat: 'TSV',
+    includeSubheaders: true,
+    onlyIncludeMostRecent: true,
+    filterString: undefined,
+    excludeModules: []
+  })
 
   const doExport = () => {
     doApiLoad(async () => {
       const response = await Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, optionsFromState())
-      const fileName = `${currentIsoDate()}-enrollees.${fileFormat.fileSuffix}`
+        studyEnvContext.currentEnv.environmentName, exportOptions)
+      const fileSuffix = FILE_FORMATS.find(format =>
+        exportOptions.fileFormat === format.value)?.fileSuffix
+      const fileName = `${currentIsoDate()}-enrollees.${fileSuffix}`
       const blob = await response.blob()
       saveBlobAsDownload(blob, fileName)
     }, { setIsLoading })
@@ -75,22 +59,11 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const doDictionaryExport = () => {
     doApiLoad(async () => {
       const response = await Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, optionsFromState())
+        studyEnvContext.currentEnv.environmentName, exportOptions)
       const fileName = `${currentIsoDate()}-DataDictionary.xlsx`
       const blob = await response.blob()
       saveBlobAsDownload(blob, fileName)
     }, { setIsLoading })
-  }
-
-  const humanReadableChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHumanReadable(e.target.value === 'true')
-  }
-  const includeRecentChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOnlyIncludeMostRecent(e.target.value === 'true')
-  }
-
-  const inlcudeSubheadersChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIncludeSubheaders(e.target.value === 'true')
   }
 
   return <Modal show={show} onHide={() => setShow(false)}>
@@ -100,94 +73,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <form onSubmit={e => e.preventDefault()}>
-        <div className="py-2">
-          <p className="fw-bold mb-1">
-            Data format
-          </p>
-          <label className="form-control border-0">
-            <input type="radio" name="humanReadable" value="true" checked={humanReadable}
-              onChange={humanReadableChanged} className="me-1"/> Human-readable
-          </label>
-          <label className="form-control border-0">
-            <input type="radio" name="humanReadable" value="false" checked={!humanReadable}
-              onChange={humanReadableChanged} className="me-1"/> Analysis-friendly
-          </label>
-        </div>
-        <div className="py-2">
-          <span className="fw-bold">File format</span><br/>
-          {FILE_FORMATS.map(format => <label className="form-control border-0" key={format.value}>
-            <input type="radio" name="fileFormat" value="TSV" checked={fileFormat.value === format.value}
-              onChange={() => setFileFormat(format)}
-              className="me-1"/>
-            {format.label}
-          </label>)}
-        </div>
-        <div className="py-2">
-          <Button variant="secondary" onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}>
-            <FontAwesomeIcon icon={showAdvancedOptions ? faChevronDown : faChevronUp}/> Advanced Options
-          </Button>
-        </div>
-        { showAdvancedOptions && <div className="px-3">
-          <div className="py-2">
-            <p className="fw-bold mb-1">
-              Completions included of a survey (for recurring surveys)
-            </p>
-            <label className="form-control border-0">
-              <input type="radio" name="onlyIncludeMostRecent" value="true" checked={onlyIncludeMostRecent}
-                onChange={includeRecentChanged} className="me-1" disabled={true}/>
-              Only include most recent
-            </label>
-            <label className="form-control border-0">
-              <input type="radio" name="onlyIncludeMostRecent" value="false" checked={!onlyIncludeMostRecent}
-                onChange={includeRecentChanged} className="me-1" disabled={true}/>
-              Include all completions
-            </label>
-          </div>
-          <div className="py-2">
-            <p className="fw-bold mb-1">
-              Include subheaders for columns
-            </p>
-            <label className="me-3">
-              <input type="radio" name="includeSubheaders" value="true" checked={includeSubheaders}
-                onChange={inlcudeSubheadersChanged} className="me-1"/> Yes
-            </label>
-            <label>
-              <input type="radio" name="includeSubheaders" value="false" checked={!includeSubheaders}
-                onChange={inlcudeSubheadersChanged} className="me-1"/> No
-            </label>
-          </div>
-          <div className="py-2">
-            <p className="fw-bold mb-1">
-              Filter Options
-            </p>
-            <label className="form-control border-0">
-              <input type="checkbox" name="includeUnconsented" checked={includeUnconsented}
-                onChange={() => setIncludeUnconsented(!includeUnconsented)} className="me-1"/>
-              Include enrollees who have not consented
-            </label>
-            <label className="form-control border-0">
-              <input type="checkbox" name="includeProxiesAsRows" checked={includeProxiesAsRows}
-                onChange={() => setIncludeProxiesAsRows(!includeProxiesAsRows)} className="me-1"/>
-              Include proxies as rows
-            </label>
-            <label className="form-control border-0" htmlFor={selectInputId}>
-              Exclude data from the following modules:
-            </label>
-            <Select options={options}
-              isMulti={true} value={selectedOptions}
-              inputId={selectInputId}
-              onChange={onChange}/>
-          </div>
-        </div> }
-        <hr/>
-
-        <div>
-          For more information about download formats,
-          see the <Link to="https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123" target="_blank">
-          help page</Link>.
-        </div>
-      </form>
+      <ExportDataForm exportOptions={exportOptions} setExportOptions={setExportOptions}/>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
@@ -197,6 +83,137 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
+}
+
+export function ExportDataForm({ exportOptions, setExportOptions }:
+  { exportOptions: ExportOptions, setExportOptions: (opts: ExportOptions) => void }) {
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
+
+
+  const { selectInputId, selectedOptions, options, onChange } = useReactMultiSelect<string>(
+    Object.keys(MODULE_EXCLUDE_OPTIONS),
+    key => ({ label: MODULE_EXCLUDE_OPTIONS[key], value: key }),
+    (excludeModules: string[]) => setExportOptions({ ...exportOptions, excludeModules }),
+    exportOptions.excludeModules
+  )
+
+  const includeUnconsented =
+    !exportOptions.filterString?.includes('{enrollee.consented} = true')
+
+  const includeProxiesAsRows =
+    !exportOptions.filterString?.includes('{enrollee.subject} = true')
+
+
+  return <form onSubmit={e => e.preventDefault()}>
+    <div className="py-2">
+      <p className="fw-bold mb-1">
+        Data format
+      </p>
+      <label className="form-control border-0">
+        <input type="radio" name="humanReadable" value="true" checked={!exportOptions.stableIdsForOptions}
+          onChange={e => {
+            setExportOptions({
+              ...exportOptions,
+              splitOptionsIntoColumns: e.target.value !== 'true',
+              stableIdsForOptions: e.target.value !== 'true'
+            })
+          }} className="me-1"/> Human-readable
+      </label>
+      <label className="form-control border-0">
+        <input type="radio" name="humanReadable" value="false" checked={exportOptions.stableIdsForOptions}
+          onChange={e => {
+            setExportOptions({
+              ...exportOptions,
+              splitOptionsIntoColumns: e.target.value !== 'true',
+              stableIdsForOptions: e.target.value !== 'true'
+            })
+          }} className="me-1"/> Analysis-friendly
+      </label>
+    </div>
+    <div className="py-2">
+      <span className="fw-bold">File format</span><br/>
+      {FILE_FORMATS.map(format => <label className="form-control border-0" key={format.value}>
+        <input type="radio" name="fileFormat" value="TSV" checked={exportOptions.fileFormat === format.value}
+          onChange={() => setExportOptions({ ...exportOptions, fileFormat: format.value })}
+          className="me-1"/>
+        {format.label}
+      </label>)}
+    </div>
+    <div className="py-2">
+      <Button variant="secondary" onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}>
+        <FontAwesomeIcon icon={showAdvancedOptions ? faChevronDown : faChevronUp}/> Advanced Options
+      </Button>
+    </div>
+    { showAdvancedOptions && <div className="px-3">
+      <div className="py-2">
+        <p className="fw-bold mb-1">
+          Completions included of a survey (for recurring surveys)
+        </p>
+        <label className="form-control border-0">
+          <input type="radio" name="onlyIncludeMostRecent" value="true" checked={exportOptions.onlyIncludeMostRecent}
+            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeMostRecent: true })}
+            className="me-1" disabled={true}/>
+          Only include most recent
+        </label>
+        <label className="form-control border-0">
+          <input type="radio" name="onlyIncludeMostRecent" value="false" checked={!exportOptions.onlyIncludeMostRecent}
+            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeMostRecent: false })}
+            className="me-1" disabled={true}/>
+          Include all completions
+        </label>
+      </div>
+      <div className="py-2">
+        <p className="fw-bold mb-1">
+          Include subheaders for columns
+        </p>
+        <label className="me-3">
+          <input type="radio" name="includeSubheaders" value="true" checked={exportOptions.includeSubheaders}
+            onChange={() => setExportOptions({ ...exportOptions, includeSubheaders: true })} className="me-1"/> Yes
+        </label>
+        <label>
+          <input type="radio" name="includeSubheaders" value="false" checked={!exportOptions.includeSubheaders}
+            onChange={() => setExportOptions({ ...exportOptions, includeSubheaders: false })} className="me-1"/> No
+        </label>
+      </div>
+      <div className="py-2">
+        <p className="fw-bold mb-1">
+          Filter Options
+        </p>
+        <label className="form-control border-0">
+          <input type="checkbox" name="includeUnconsented" checked={includeUnconsented}
+            onChange={e => setExportOptions({
+              ...exportOptions,
+              filterString: buildFilter({ includeProxiesAsRows, includeUnconsented: e.target.checked })
+            })}
+            className="me-1"/>
+          Include enrollees who have not consented
+        </label>
+        <label className="form-control border-0">
+          <input type="checkbox" name="includeProxiesAsRows" checked={includeProxiesAsRows}
+            onChange={e => setExportOptions({
+              ...exportOptions,
+              filterString: buildFilter({ includeUnconsented, includeProxiesAsRows: e.target.checked })
+            })}
+            className="me-1"/>
+          Include proxies as rows
+        </label>
+        <label className="form-control border-0" htmlFor={selectInputId}>
+          Exclude data from the following modules:
+        </label>
+        <Select options={options}
+          isMulti={true} value={selectedOptions}
+          inputId={selectInputId}
+          onChange={onChange}/>
+      </div>
+    </div> }
+    <hr/>
+
+    <div>
+      For more information about download formats,
+      see the <Link to="https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123" target="_blank">
+      help page</Link>.
+    </div>
+  </form>
 }
 
 export default ExportDataControl

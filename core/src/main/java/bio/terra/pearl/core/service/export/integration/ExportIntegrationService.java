@@ -1,27 +1,57 @@
 package bio.terra.pearl.core.service.export.integration;
 
 import bio.terra.pearl.core.dao.export.ExportIntegrationDao;
+import bio.terra.pearl.core.dao.export.ExportOptionsDao;
 import bio.terra.pearl.core.model.export.ExportDestinationType;
 import bio.terra.pearl.core.model.export.ExportIntegration;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ExportIntegrationService extends CrudService<ExportIntegration, ExportIntegrationDao> {
     private final ExportIntegrationJobService exportIntegrationJobService;
+    private final ExportOptionsDao exportOptionsDao;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    private final AirtableExporter airtableExporter;
 
     public ExportIntegrationService(ExportIntegrationDao dao,
-                                    ExportIntegrationJobService exportIntegrationJobService) {
+                                    ExportIntegrationJobService exportIntegrationJobService,
+                                    ExportOptionsDao exportOptionsDao,
+                                    EnrolleeSearchExpressionParser enrolleeSearchExpressionParser,
+                                    AirtableExporter airtableExporter) {
         super(dao);
         this.exportIntegrationJobService = exportIntegrationJobService;
+        this.exportOptionsDao = exportOptionsDao;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
+        this.airtableExporter = airtableExporter;
+    }
+
+    public ExportIntegration create(ExportIntegration integration) {
+        ExportOptions newOptions = integration.getExportOptions() != null ? integration.getExportOptions() : new ExportOptions();
+        newOptions = exportOptionsDao.create(newOptions);
+        integration.setExportOptionsId(newOptions.getId());
+        ExportIntegration newIntegration = super.create(integration);
+        newIntegration.setExportOptions(newOptions);
+        return newIntegration;
     }
 
     public Object run(ExportIntegration integration) {
-        if (ExportDestinationType.AIRTABLE.equals(integration.getDestinationType())) {
+        if (integration.getExportOptions() == null) {
+            throw new IllegalArgumentException("Export options must be set to run an export integration");
+        }
 
+        ExportOptionsWithExpression parsedOpts = enrolleeSearchExpressionParser.parseExportOptions(integration.getExportOptions());
+
+        if (ExportDestinationType.AIRTABLE.equals(integration.getDestinationType())) {
+            airtableExporter.export(integration, parsedOpts);
         }
         return null;
     }
@@ -30,9 +60,20 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
         return dao.findByStudyEnvironmentId(studyEnvId);
     }
 
+    public Optional<ExportIntegration> findWithOptions(UUID id) {
+        Optional<ExportIntegration> integrationOpt = dao.find(id);
+        integrationOpt.ifPresent(integration -> {
+            integration.setExportOptions(exportOptionsDao.find(integration.getExportOptionsId()).orElse(null));
+        });
+        return integrationOpt;
+    }
+
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        List<UUID> integrationIds = dao.findByStudyEnvironmentId(studyEnvId).stream().map(ExportIntegration::getId).toList();
+        List<ExportIntegration> integrations = dao.findByStudyEnvironmentId(studyEnvId);
+        List<UUID> integrationIds = integrations.stream().map(ExportIntegration::getId).toList();
         exportIntegrationJobService.deleteByExportIntegrationIds(integrationIds);
         dao.deleteByStudyEnvironmentId(studyEnvId);
+        exportOptionsDao.deleteAll(integrations.stream().map(ExportIntegration::getExportOptionsId).toList());
+
     }
 }

@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 @SuperBuilder
 @Getter @Setter
+@NoArgsConstructor
 public class ExportOptions extends BaseEntity {
     @Builder.Default
     private boolean splitOptionsIntoColumns = false;
@@ -23,9 +25,9 @@ public class ExportOptions extends BaseEntity {
     @Builder.Default
     private ExportFileFormat fileFormat = ExportFileFormat.TSV;
 
-    private Integer limit;
+    private Integer rowLimit;
     @Builder.Default
-    private boolean includeSubHeaders = false;
+    private boolean includeSubHeaders = true;
     @Builder.Default
     private List<String> excludeModules = new ArrayList<>();
 }

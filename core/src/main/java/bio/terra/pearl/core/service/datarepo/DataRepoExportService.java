@@ -155,11 +155,11 @@ public class DataRepoExportService {
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
-        ExportOptionsParsed exportOptions = ExportOptionsParsed
+        ExportOptionsWithExpression exportOptions = ExportOptionsWithExpression
                 .builder()
                 .onlyIncludeMostRecent(false)
                 .fileFormat(ExportFileFormat.TSV)
-                .limit(null)
+                .rowLimit(null)
                 .build();
 
         //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
@@ -212,7 +212,7 @@ public class DataRepoExportService {
                 .builder()
                 .onlyIncludeMostRecent(false)
                 .fileFormat(ExportFileFormat.TSV)
-                .limit(null)
+                .rowLimit(null)
                 .build();
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data

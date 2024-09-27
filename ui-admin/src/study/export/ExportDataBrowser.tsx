@@ -80,7 +80,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName, {
-        fileFormat: 'JSON', limit: 10, filterString: buildFilter()
+        fileFormat: 'JSON', rowLimit: 10, filterString: buildFilter()
       })
     const result = await response.json()
     if (!response.ok) {

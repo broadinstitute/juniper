@@ -269,7 +269,7 @@ export type ExportOptions = {
   includeSubheaders?: boolean,
   excludeModules?: string[],
   filterString?: string,
-  limit?: number
+  rowLimit?: number
 }
 
 export type ExportData = {
@@ -367,12 +367,13 @@ export type WithdrawnEnrollee = {
 
 export type ExportIntegration = {
     id: string,
+  name: string,
     createdAt: number,
     lastUpdatedAt: number,
     destinationType: string,
     enabled: boolean,
-    exportOptions: Record<string, string>,
-    destinationProps: Record<string, string>
+    exportOptions: ExportOptions,
+    destinationUrl: string
 }
 
 let bearerToken: string | null = null
@@ -1113,6 +1114,15 @@ export default {
   async fetchExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<ExportIntegration> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async runExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<object> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}/run`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 

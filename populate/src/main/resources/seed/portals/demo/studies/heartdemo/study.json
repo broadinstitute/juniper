@@ -137,19 +137,36 @@
             {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
           ]
       }],
-      "exportIntegrationPopDtos": [
+      "exportIntegrations": [
         {
+          "name": "Airtable participant table",
           "destinationType": "AIRTABLE",
           "enabled": true,
-          "exportOptionsObj": {
+          "exportOptions": {
             "fileFormat": "CSV",
             "excludeModules": ["surveys"],
-            "filter": "{enrollee.subject} = true and {enrollee.consented} = true",
-            "includeSubheaders": false,
+            "filterString": "{enrollee.subject} = true and {enrollee.consented} = true",
+            "includeSubHeaders": false,
             "onlyIncludeMostRecent": true,
             "splitOptionsIntoColumns": false,
             "stableIdsForOptions": true
-          }
+          },
+          "destinationUrl": "v0/appuvwHZz05qaMzh4/tblzvXokWgOkA0IiE/sync/fc4ZyPiQ"
+        },
+        {
+          "name": "Airtable answer data",
+          "destinationType": "AIRTABLE",
+          "enabled": true,
+          "exportOptions": {
+            "fileFormat": "CSV",
+            "excludeModules": ["profile"],
+            "filterString": "{enrollee.subject} = true and {enrollee.consented} = true",
+            "includeSubHeaders": false,
+            "onlyIncludeMostRecent": true,
+            "splitOptionsIntoColumns": false,
+            "stableIdsForOptions": true
+          },
+          "destinationUrl": "not-yet-implemented"
         }
       ]
     },

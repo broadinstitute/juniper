@@ -6,9 +6,9 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.export.EnrolleeExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.model.export.ExportOptions;
-import bio.terra.pearl.core.service.export.ExportOptionsParsed;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,7 +63,7 @@ public class ExportController implements ExportApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
-    ExportOptionsParsed exportOptions =
+    ExportOptionsWithExpression exportOptions =
         optionsFromParams(
             searchExpression,
             fileFormat,
@@ -115,7 +115,7 @@ public class ExportController implements ExportApi {
     return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
   }
 
-  private ExportOptionsParsed optionsFromParams(
+  private ExportOptionsWithExpression optionsFromParams(
       String filter,
       String fileFormat,
       Integer limit,
@@ -127,8 +127,8 @@ public class ExportController implements ExportApi {
     EnrolleeSearchExpression searchExp =
         !StringUtils.isBlank(filter) ? enrolleeSearchExpressionParser.parseRule(filter) : null;
 
-    ExportOptionsParsed exportOptions =
-        ExportOptionsParsed.builder()
+    ExportOptionsWithExpression exportOptions =
+        ExportOptionsWithExpression.builder()
             .splitOptionsIntoColumns(
                 splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
             .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
@@ -137,7 +137,7 @@ public class ExportController implements ExportApi {
             .filterExpression(searchExp)
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
-            .limit(limit)
+            .rowLimit(limit)
             .includeSubHeaders(includeSubHeaders)
             .excludeModules(excludeModules != null ? excludeModules : List.of())
             .build();

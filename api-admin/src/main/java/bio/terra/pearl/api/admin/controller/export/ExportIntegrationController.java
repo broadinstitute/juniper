@@ -59,14 +59,14 @@ public class ExportIntegrationController implements ExportIntegrationApi {
 
   @Override
   public ResponseEntity<Object> run(
-          String portalShortcode, String studyShortcode, String envName, UUID id) {
+      String portalShortcode, String studyShortcode, String envName, UUID id) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     ExportIntegration integration =
-            exportIntegrationExtService.run(
-                    PortalStudyEnvAuthContext.of(
-                            operator, portalShortcode, studyShortcode, environmentName),
-                    id);
+        exportIntegrationExtService.run(
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            id);
     return ResponseEntity.ok(integration);
   }
 

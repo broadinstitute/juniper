@@ -82,7 +82,7 @@ public class EnrolleeExportService {
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
      * */
-    public void export(ExportOptionsParsed exportOptions, UUID studyEnvironmentId, OutputStream os) {
+    public void export(ExportOptionsWithExpression exportOptions, UUID studyEnvironmentId, OutputStream os) {
 
         List<EnrolleeExportData> enrolleeExportData = loadEnrolleeExportData(studyEnvironmentId, exportOptions);
 
@@ -92,10 +92,10 @@ public class EnrolleeExportService {
         exporter.export(os, exportOptions.isIncludeSubHeaders());
     }
 
-    public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptionsParsed exportOptions) {
+    public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptionsWithExpression exportOptions) {
         return loadEnrolleesForExport(
                 studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId),
-                loadEnrollees(studyEnvironmentId, exportOptions.getFilterExpression(), exportOptions.getLimit()));
+                loadEnrollees(studyEnvironmentId, exportOptions.getFilterExpression(), exportOptions.getRowLimit()));
     }
 
     private List<Enrollee> loadEnrollees(UUID studyEnvironmentId, EnrolleeSearchExpression filter, Integer limit) {

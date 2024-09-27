@@ -59,7 +59,7 @@ public class EnrolleeImportService {
             .stableIdsForOptions(true)
             .onlyIncludeMostRecent(true)
             .fileFormat(ExportFileFormat.TSV)
-            .limit(null)
+            .rowLimit(null)
             .build();
 
     ExportOptions IMPORT_OPTIONS_CSV = ExportOptions
@@ -67,7 +67,7 @@ public class EnrolleeImportService {
             .stableIdsForOptions(true)
             .onlyIncludeMostRecent(true)
             .fileFormat(ExportFileFormat.CSV)
-            .limit(null)
+            .rowLimit(null)
             .build();
 
     private final RegistrationService registrationService;

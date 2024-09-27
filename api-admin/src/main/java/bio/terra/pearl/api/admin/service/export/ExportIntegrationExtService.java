@@ -27,7 +27,7 @@ public class ExportIntegrationExtService {
   public ExportIntegration find(PortalStudyEnvAuthContext authContext, UUID id) {
     ExportIntegration integration =
         exportIntegrationService
-            .find(id)
+            .findWithOptions(id)
             .orElseThrow(() -> new NotFoundException("Export Integration not found"));
     if (!integration.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
       throw new NotFoundException("Export Integration not found");
@@ -38,9 +38,9 @@ public class ExportIntegrationExtService {
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public ExportIntegration run(PortalStudyEnvAuthContext authContext, UUID id) {
     ExportIntegration integration =
-            exportIntegrationService
-                    .find(id)
-                    .orElseThrow(() -> new NotFoundException("Export Integration not found"));
+        exportIntegrationService
+            .findWithOptions(id)
+            .orElseThrow(() -> new NotFoundException("Export Integration not found"));
     if (!integration.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
       throw new NotFoundException("Export Integration not found");
     }

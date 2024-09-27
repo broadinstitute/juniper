@@ -13,9 +13,11 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 public class ExportIntegration extends BaseEntity {
+    private String name;
     private UUID studyEnvironmentId;
     private boolean enabled = true;
     private ExportDestinationType destinationType;
-    private String destinationProps;
+    private String destinationUrl;
+    private UUID exportOptionsId;
     private ExportOptions exportOptions;
 }

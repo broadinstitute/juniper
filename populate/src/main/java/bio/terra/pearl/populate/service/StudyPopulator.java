@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.export.ExportIntegration;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
@@ -21,7 +22,6 @@ import bio.terra.pearl.core.service.publishing.StudyPublishingService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import bio.terra.pearl.populate.dto.export.ExportIntegrationPopDto;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
@@ -128,7 +128,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             familyPopulator.populate(context.newFrom(familyFile), overwrite);
         }
 
-        for (ExportIntegrationPopDto exportIntegration : studyPopEnv.getExportIntegrationPopDtos()) {
+        for (ExportIntegration exportIntegration : studyPopEnv.getExportIntegrations()) {
             exportIntegrationPopulator.populateFromDto(exportIntegration, context, overwrite);
         }
     }

@@ -7,7 +7,7 @@ import bio.terra.pearl.core.dao.participant.*;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.export.ExportOptions;
-import bio.terra.pearl.core.service.export.ExportOptionsParsed;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.*;
@@ -255,9 +255,12 @@ public class EnrolleeSearchExpressionParser {
         throw new IllegalArgumentException("No field in variable");
     }
 
-    public ExportOptionsParsed parseExportOptions(ExportOptions exportOptions) {
-        ExportOptionsParsed exportOptionsParsed = new ExportOptionsParsed();
-        BeanUtils.copyProperties(exportOptions, exportOptionsParsed);
-        exportOptionsParsed.setFilterExpression(parseRule(exportOptions.getFilterString()));
+    public ExportOptionsWithExpression parseExportOptions(ExportOptions exportOptions) {
+        ExportOptionsWithExpression exportOptionsWithExpression = new ExportOptionsWithExpression();
+        BeanUtils.copyProperties(exportOptions, exportOptionsWithExpression);
+        if (!StringUtils.isBlank(exportOptions.getFilterString())) {
+            exportOptionsWithExpression.setFilterExpression(parseRule(exportOptions.getFilterString()));
+        }
+        return exportOptionsWithExpression;
     }
 }

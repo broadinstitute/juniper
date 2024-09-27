@@ -1249,7 +1249,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}/run:
-    get:
+    post:
       summary: runs the exportIntegration by id
       tags: [ exportIntegration ]
       operationId: run

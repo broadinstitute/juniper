@@ -27,11 +27,11 @@ export default function ExportIntegrationList({ studyEnvContext }:
   const [integrations, setIntegrations] = useState<ExportIntegration[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const columns: ColumnDef<ExportIntegration>[] = [{
-    header: 'Destination',
-    accessorKey: 'destinationType'
-  }, {
     header: 'Name',
     accessorKey: 'name'
+  }, {
+    header: 'Destination',
+    accessorKey: 'destinationType'
   }, {
     header: 'Created',
     accessorKey: 'createdAt',
