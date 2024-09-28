@@ -34,6 +34,7 @@ const getKitStatusBar = (kit: KitRequest) => {
 
 
 const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
+  console.log(kit)
   return (
     <div className="progress-stacked border-top border-bottom border-start" style={{ height: '50px' }}>
       <ProgressBar width="33%" complete={true}>
