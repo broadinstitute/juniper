@@ -22,9 +22,9 @@ export const sidebarNavLinkClasses = 'text-white p-1 rounded w-100 d-block sideb
 
 /** renders the left navbar of admin tool */
 const AdminSidebar = ({ config }: { config: Config }) => {
-  const HIDE_SIDEBAR_KEY = 'adminSidebar.hide'
+  const SHOW_SIDEBAR_KEY = 'adminSidebar.show'
 
-  const [open, setOpen] = useState(!(localStorage.getItem(HIDE_SIDEBAR_KEY) === 'true'))
+  const [open, setOpen] = useState((localStorage.getItem(SHOW_SIDEBAR_KEY) || 'true') === 'true')
   const { user } = useUser()
   const params = useParams()
 
@@ -46,48 +46,40 @@ const AdminSidebar = ({ config }: { config: Config }) => {
 
   return <div style={{ backgroundColor: color, minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
     className="p-2 pt-3">
-
-    {!open && <Button variant="secondary" className="m-1 text-light" tooltipPlacement={'right'}
-      onClick={() => {
-        setOpen(!open)
-        localStorage.setItem(HIDE_SIDEBAR_KEY, (!open).toString())
-      }}
-      tooltip={open ? 'Hide sidebar' : 'Show sidebar'}>
-      <FontAwesomeIcon icon={faArrowRightFromBracket}
-        className={classNames(open ? 'fa-rotate-180' : '')}/>
-    </Button> }
-    {open && <>
+    <>
       <div className="d-flex justify-content-between align-items-center">
-        <Link to="/" className="text-white fs-4 px-2 rounded-1 sidebar-nav-link flex-grow-1">Juniper</Link>
+        { open && <Link to="/" className="text-white fs-4 px-2 rounded-1 sidebar-nav-link flex-grow-1">Juniper</Link> }
         <Button variant="secondary" className="m-1 text-light" tooltipPlacement={'right'}
           onClick={() => {
             setOpen(!open)
-            localStorage.setItem(HIDE_SIDEBAR_KEY, (!open).toString())
+            localStorage.setItem(SHOW_SIDEBAR_KEY, (!open).toString())
           }}
           tooltip={open ? 'Hide sidebar' : 'Show sidebar'}>
           <FontAwesomeIcon icon={faArrowRightFromBracket}
             className={classNames(open ? 'fa-rotate-180' : '')}/>
         </Button>
       </div>
-      { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
-        portalShortcode={portalShortcode!}/> }
+      { open && <>
+        { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
+          portalShortcode={portalShortcode!}/> }
 
-      {user?.superuser && <CollapsableMenu header={'Superuser functions'} content={
-        <ul className="list-unstyled">
-          <li className="mb-2">
-            <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/logEvents" className={sidebarNavLinkClasses}>Log Events</NavLink>
-          </li>
-        </ul>}/>}
-    </>}
+        {user?.superuser && <CollapsableMenu header={'Superuser functions'} content={
+          <ul className="list-unstyled">
+            <li className="mb-2">
+              <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>
+            </li>
+            <li className="mb-2">
+              <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
+            </li>
+            <li className="mb-2">
+              <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
+            </li>
+            <li className="mb-2">
+              <NavLink to="/logEvents" className={sidebarNavLinkClasses}>Log Events</NavLink>
+            </li>
+          </ul>}/>}
+      </>}
+    </>
   </div>
 }
 
