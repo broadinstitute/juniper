@@ -104,7 +104,7 @@ const ParticipantKits = () => {
           </Link>
         </div>
       </>}
-    <h3 className="pb-3">Your kits ({participantKitRequests.length})</h3>
+    <h3>Your kits ({participantKitRequests.length})</h3>
     <div className="d-flex flex-column">
       {participantKitRequests.length === 0 ? (
         <div className="text-center text-muted fst-italic my-4">
