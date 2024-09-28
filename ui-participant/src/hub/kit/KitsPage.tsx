@@ -8,7 +8,7 @@ import { instantToDateString } from '../../util/timeUtils'
 
 export default function KitsPage() {
   return <div
-    className="hub-dashboard-background flex-grow-1 px-2"
+    className="hub-dashboard-background flex-grow-1 mb-2"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
@@ -86,7 +86,7 @@ const ParticipantKits = () => {
 
   const isInPersonKitEnabled = true //TODO make this a studyenv setting
 
-  return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
+  return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
     <h1 className="pb-3">Sample collection kits</h1>
     <div className="pb-4">
       Sample collection kits are a valuable part of the study process and can help provide researchers with

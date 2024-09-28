@@ -12,11 +12,11 @@ export default function KitInstructions() {
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
 
   return <div
-    className="hub-dashboard-background flex-grow-1 px-2"
+    className="hub-dashboard-background flex-grow-1"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
-        <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
+        <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
           <h1 className="pb-2">Sample kit instructions</h1>
           <div className="pb-3">
             If you are completing a sample collection kit in-person, please follow the instructions provided
