@@ -1,12 +1,14 @@
-import { KitRequest } from '@juniper/ui-core'
+import { Enrollee, KitRequest, KitRequestStatus } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBoxesPacking, faCircleCheck, faTruckFast } from '@fortawesome/free-solid-svg-icons'
-import { mockAssignedKitRequest, mockKitRequest } from '../../test-utils/test-participant-factory'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { instantToDateString } from '../../util/timeUtils'
+import { instantToDateString } from 'util/timeUtils'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 
 export default function KitsPage() {
+  const { enrollees, ppUser } = useActiveUser()
+
   return <div
     className="hub-dashboard-background flex-grow-1 mb-2"
     style={{ background: 'var(--dashboard-background-color)' }}>
@@ -14,7 +16,7 @@ export default function KitsPage() {
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
         <div className="card-body">
           <div className="align-items-center">
-            <ParticipantKits/>
+            <EnrolleeKitRequests enrollee={enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)!}/>
           </div>
         </div>
       </div>
@@ -32,19 +34,55 @@ const getKitStatusBar = (kit: KitRequest) => {
   }
 }
 
+const getStepFromStatus = (status: KitRequestStatus): string => {
+  switch (status) {
+    case 'NEW':
+    case 'CREATED':
+    case 'QUEUED':
+      return 'PREPARING'
+    case 'SENT':
+      return 'SHIPPED'
+    case 'COLLECTED_BY_STAFF':
+      return 'COLLECTED'
+    case 'RECEIVED':
+      return 'RETURNED'
+    default:
+      return 'UNKNOWN'
+  }
+}
+
+const getStepCompletion = (kit: KitRequest, step: string) => {
+  const statusOrder = ['PREPARING', 'SHIPPED', 'COLLECTED', 'RETURNED']
+  const currentStep = getStepFromStatus(kit.status)
+  const currentStatusIndex = statusOrder.indexOf(currentStep)
+  const stepIndex = statusOrder.indexOf(step)
+  return stepIndex <= currentStatusIndex
+}
 
 const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
-  console.log(kit)
   return (
     <div className="progress-stacked border-top border-bottom border-start" style={{ height: '50px' }}>
-      <ProgressBar width="33%" complete={true}>
+      <ProgressBar width="33%" complete={getStepCompletion(kit, 'PREPARING')}>
         <FontAwesomeIcon icon={faBoxesPacking} className={'fa-xl'} /> Preparing
       </ProgressBar>
-      <ProgressBar width="34%" complete={true}>
+      <ProgressBar width="34%" complete={getStepCompletion(kit, 'SHIPPED')}>
         <FontAwesomeIcon icon={faTruckFast} className={'fa-xl'} /> Shipped
       </ProgressBar>
-      <ProgressBar width="33%" complete={false}>
+      <ProgressBar width="33%" complete={getStepCompletion(kit, 'RETURNED')}>
         <FontAwesomeIcon icon={faCircleCheck} className={'fa-xl'} /> Returned
+      </ProgressBar>
+    </div>
+  )
+}
+
+const InPersonKitStatusBar = ({ kit }: { kit: KitRequest }) => {
+  return (
+    <div className="progress-stacked" style={{ height: '50px' }}>
+      <ProgressBar width="50%" complete={getStepCompletion(kit, 'PREPARING')}>
+        <FontAwesomeIcon icon={faBoxesPacking} className={'fa-xl'} /> Created
+      </ProgressBar>
+      <ProgressBar width="50%" complete={getStepCompletion(kit, 'COLLECTED')}>
+        <FontAwesomeIcon icon={faCircleCheck} className={'fa-xl'} /> Collected
       </ProgressBar>
     </div>
   )
@@ -63,28 +101,13 @@ const ProgressBar = ({ children, width, complete }: {
   )
 }
 
-const InPersonKitStatusBar = ({ kit }: { kit: KitRequest }) => {
-  return <div className="progress-stacked" style={{ height: '50px' }}>
-    <div className="progress" role="progressbar" style={{ width: '50%', height: '50px' }}>
-      <div className="progress-bar border-end" style={{ background: 'var(--brand-color)' }}>
-        <FontAwesomeIcon icon={faBoxesPacking} className={'fa-xl'}/> Created
-      </div>
-    </div>
-    <div className="progress" role="progressbar" style={{ width: '50%', height: '50px' }}>
-      <div className="progress-bar border-end" style={{ background: 'var(--brand-color)' }}>
-        <FontAwesomeIcon icon={faCircleCheck} className={'fa-xl'}/> Collected
-      </div>
-    </div>
-  </div>
-}
+const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
+  const enrolleeKitRequests = enrollee.kitRequests
+  const visibleKitRequests = enrolleeKitRequests.filter(kit =>
+    kit.status !== 'DEACTIVATED' && kit.status !== 'ERRORED').sort((a, b) => b.createdAt - a.createdAt)
 
-const ParticipantKits = () => {
-  const mockKit1 = mockKitRequest('CREATED', 'SALIVA')
-  const mockKit2 = mockKitRequest('CREATED', 'BLOOD')
-  const mockInPersonKit1 = mockAssignedKitRequest('CREATED', 'SALIVA')
-  const participantKitRequests = [mockKit1, mockKit2, mockInPersonKit1]
-
-  const isInPersonKitEnabled = true //TODO make this a studyenv setting
+  //TODO make this a studyenv setting
+  const isInPersonKitEnabled = true
 
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
     <h1 className="pb-3">Sample collection kits</h1>
@@ -105,20 +128,20 @@ const ParticipantKits = () => {
           </Link>
         </div>
       </>}
-    <h3>Your kits ({participantKitRequests.length})</h3>
+    <h3>Your kits ({visibleKitRequests.length})</h3>
     <div className="d-flex flex-column">
-      {participantKitRequests.length === 0 ? (
+      {visibleKitRequests.length === 0 ? (
         <div className="text-center text-muted fst-italic my-4">
           You have no sample collection kits at this time.
         </div>
       ) : (
-        participantKitRequests.map((kit, index) => (
+        visibleKitRequests.map((kit, index) => (
           <div key={index}
             className="d-flex align-items-center justify-content-between mb-3 border rounded-3 p-3">
             <div>
               <div className="fw-bold">{kit.kitType.displayName} Kit</div>
               <div className="fst-italic text-muted">
-                {instantToDateString(kit.createdAt / 1000000)}
+                {instantToDateString(kit.createdAt)}
               </div>
             </div>
             <div style={{ width: '60%' }}>
