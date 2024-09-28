@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { useUser } from '../user/UserProvider'
 import { Link, NavLink, useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { Study } from '@juniper/ui-core'
 import { studyShortcodeFromPath } from '../study/StudyRouter'
 import { useNavContext } from './NavContextProvider'
 import { StudySidebar } from './StudySidebar'
 import CollapsableMenu from './CollapsableMenu'
 import { Config } from '../api/api'
+import { Button } from '../components/forms/Button'
+import classNames from 'classnames'
 
 const ZONE_COLORS: { [index: string]: string } = {
   'dev': 'rgb(70 143 124)', // dark green
@@ -20,7 +22,9 @@ export const sidebarNavLinkClasses = 'text-white p-1 rounded w-100 d-block sideb
 
 /** renders the left navbar of admin tool */
 const AdminSidebar = ({ config }: { config: Config }) => {
-  const [open, setOpen] = useState(true)
+  const HIDE_SIDEBAR_KEY = 'adminSidebar.hide'
+
+  const [open, setOpen] = useState(!(localStorage.getItem(HIDE_SIDEBAR_KEY) === 'true'))
   const { user } = useUser()
   const params = useParams()
 
@@ -43,15 +47,27 @@ const AdminSidebar = ({ config }: { config: Config }) => {
   return <div style={{ backgroundColor: color, minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
     className="p-2 pt-3">
 
-    {!open &&  <button onClick={() => setOpen(!open)} title="toggle sidebar" className="btn btn-link text-white">
-      <FontAwesomeIcon icon={faArrowRight}/>
-    </button>}
+    {!open && <Button variant="secondary" className="m-1 text-light" tooltipPlacement={'right'}
+      onClick={() => {
+        setOpen(!open)
+        localStorage.setItem(HIDE_SIDEBAR_KEY, (!open).toString())
+      }}
+      tooltip={open ? 'Hide sidebar' : 'Show sidebar'}>
+      <FontAwesomeIcon icon={faArrowRightFromBracket}
+        className={classNames(open ? 'fa-rotate-180' : '')}/>
+    </Button> }
     {open && <>
       <div className="d-flex justify-content-between align-items-center">
         <Link to="/" className="text-white fs-4 px-2 rounded-1 sidebar-nav-link flex-grow-1">Juniper</Link>
-        <button onClick={() => setOpen(!open)} title="toggle sidebar" className="btn btn-link text-white">
-          <FontAwesomeIcon icon={faArrowLeft}/>
-        </button>
+        <Button variant="secondary" className="m-1 text-light" tooltipPlacement={'right'}
+          onClick={() => {
+            setOpen(!open)
+            localStorage.setItem(HIDE_SIDEBAR_KEY, (!open).toString())
+          }}
+          tooltip={open ? 'Hide sidebar' : 'Show sidebar'}>
+          <FontAwesomeIcon icon={faArrowRightFromBracket}
+            className={classNames(open ? 'fa-rotate-180' : '')}/>
+        </Button>
       </div>
       { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
         portalShortcode={portalShortcode!}/> }
