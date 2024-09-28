@@ -132,7 +132,7 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
     <div className="d-flex flex-column">
       {visibleKitRequests.length === 0 ? (
         <div className="text-center text-muted fst-italic my-4">
-          You have no sample collection kits at this time.
+          You do not have any sample collection kits at this time.
         </div>
       ) : (
         visibleKitRequests.map((kit, index) => (
