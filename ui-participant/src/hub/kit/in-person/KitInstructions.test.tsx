@@ -29,9 +29,9 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.getByText('Provide a sample in-person')).toBeInTheDocument()
     expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
 
@@ -53,7 +53,7 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
     expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
@@ -78,7 +78,7 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
     expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
     expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
     expect(screen.queryByDisplayValue('assigned-label')).not.toBeInTheDocument()
@@ -103,7 +103,7 @@ describe('KitInstructions', () => {
       <KitInstructions/>)
     render(RoutedComponent)
 
-    expect(screen.getByText('Sample Kit Instructions')).toBeInTheDocument()
+    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
     expect(screen.getByText('Consent Required')).toBeInTheDocument()
     expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
   })
