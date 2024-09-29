@@ -10,7 +10,7 @@ export default function KitsPage() {
   const { enrollees, ppUser } = useActiveUser()
 
   return <div
-    className="hub-dashboard-background flex-grow-1 mb-2"
+    className="hub-dashboard-background flex-grow-1 pb-2"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
