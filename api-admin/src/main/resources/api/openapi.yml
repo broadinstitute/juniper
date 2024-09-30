@@ -1173,7 +1173,7 @@ paths:
         - { name: excludeModules, in: query, required: false, schema: { type: array, items: { type: string } } }
         - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
-        - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: rowLimit, in: query, required: false, schema: { type: integer } }
       responses:
         '200':
           description: export data

@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { useReactMultiSelect } from 'util/react-select-utils'
+import InfoPopup from '../../components/forms/InfoPopup'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimited (.tsv)',
@@ -41,7 +42,7 @@ const DEFAULT_EXPORT_OPTS: ExportOptions = {
 const MODULE_EXCLUDE_OPTIONS: Record<string, string> = { surveys: 'Surveys' }
 
 /** form for configuring and downloading enrollee data */
-const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
+const ExportDataModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [exportOptions, setExportOptions] = useState<ExportOptions>(DEFAULT_EXPORT_OPTS)
@@ -68,14 +69,14 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
     }, { setIsLoading })
   }
 
-  return <Modal show={show} onHide={() => setShow(false)}>
+  return <Modal show={show} onHide={() => setShow(false)} size="lg">
     <Modal.Header closeButton>
       <Modal.Title>
         Download
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <ExportDataForm exportOptions={exportOptions} setExportOptions={setExportOptions}/>
+      <ExportOptionsForm exportOptions={exportOptions} setExportOptions={setExportOptions}/>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
@@ -87,7 +88,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   </Modal>
 }
 
-export function ExportDataForm({ exportOptions, setExportOptions }:
+export function ExportOptionsForm({ exportOptions, setExportOptions }:
   { exportOptions: ExportOptions, setExportOptions: (opts: ExportOptions) => void }) {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
 
@@ -199,6 +200,17 @@ export function ExportDataForm({ exportOptions, setExportOptions }:
             className="me-1"/>
           Include proxies as rows
         </label>
+        <label className="form-control border-0">
+          Limit number of enrollees to <input type="number" name="rowLimit"
+            onChange={e => setExportOptions({
+              ...exportOptions,
+              rowLimit: e.target.value ? parseInt(e.target.value) : undefined
+            })}
+            className="me-1"/> <InfoPopup content={<span>
+                If left blank, all enrollees will be included.
+              If a limit is specified, the most recent X enrollees will be included.
+          </span>}/>
+        </label>
         <label className="form-control border-0" htmlFor={selectInputId}>
           Exclude data from the following modules:
         </label>
@@ -218,4 +230,4 @@ export function ExportDataForm({ exportOptions, setExportOptions }:
   </form>
 }
 
-export default ExportDataControl
+export default ExportDataModal

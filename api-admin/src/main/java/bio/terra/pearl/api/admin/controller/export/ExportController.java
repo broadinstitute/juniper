@@ -59,7 +59,7 @@ public class ExportController implements ExportApi {
       List<String> excludeModules,
       String searchExpression,
       String fileFormat,
-      Integer limit) {
+      Integer rowLimit) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
@@ -67,7 +67,7 @@ public class ExportController implements ExportApi {
         optionsFromParams(
             searchExpression,
             fileFormat,
-            limit,
+            rowLimit,
             splitOptionsIntoColumns,
             stableIdsForOptions,
             includeOnlyMostRecent,

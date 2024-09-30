@@ -15,7 +15,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
-import ExportDataControl from './ExportDataControl'
+import ExportDataModal from './ExportDataModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from '../../api/api-utils'
@@ -106,7 +106,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
         </Button>
       </div>
     </div>
-    <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
+    <ExportDataModal studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
     <LoadingSpinner isLoading={isLoading}/>
     {!isLoading && basicTableLayout(table)}
   </div>

@@ -13,7 +13,7 @@ import { instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
-import { ExportDataForm } from '../ExportDataControl'
+import { ExportOptionsForm } from '../ExportDataModal'
 import { TextInput } from 'components/forms/TextInput'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
@@ -94,7 +94,7 @@ export const ExportIntegrationForm = ({ integration, setIntegration }: {
       </Button>
     </div>
     { (showOptions && integration?.exportOptions) && <div>
-      <ExportDataForm exportOptions={integration?.exportOptions}
+      <ExportOptionsForm exportOptions={integration?.exportOptions}
         setExportOptions={opts => setIntegration({
           ...integration,
           exportOptions: opts
