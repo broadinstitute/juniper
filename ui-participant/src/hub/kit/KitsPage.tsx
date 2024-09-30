@@ -5,6 +5,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { instantToDateString } from 'util/timeUtils'
 import { useActiveUser } from 'providers/ActiveUserProvider'
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 
 export default function KitsPage() {
   const { enrollees, ppUser } = useActiveUser()
@@ -62,15 +63,12 @@ const getStepCompletion = (kit: KitRequest, step: string) => {
 const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
   return (
     <div className="progress-stacked border-top border-bottom border-start" style={{ height: '50px' }}>
-      <ProgressBar width="33%" complete={getStepCompletion(kit, 'PREPARING')}>
-        <FontAwesomeIcon icon={faBoxesPacking} className={'fa-xl'} /> Preparing
-      </ProgressBar>
-      <ProgressBar width="34%" complete={getStepCompletion(kit, 'SHIPPED')}>
-        <FontAwesomeIcon icon={faTruckFast} className={'fa-xl'} /> Shipped
-      </ProgressBar>
-      <ProgressBar width="33%" complete={getStepCompletion(kit, 'RETURNED')}>
-        <FontAwesomeIcon icon={faCircleCheck} className={'fa-xl'} /> Returned
-      </ProgressBar>
+      <ProgressBar
+        width="33%" complete={getStepCompletion(kit, 'PREPARING')} icon={faBoxesPacking} label={'Preparing'}/>
+      <ProgressBar
+        width="34%" complete={getStepCompletion(kit, 'SHIPPED')} icon={faTruckFast} label={'Shipped'}/>
+      <ProgressBar
+        width="33%" complete={getStepCompletion(kit, 'RETURNED')} icon={faCircleCheck} label={'Returned'}/>
     </div>
   )
 }
@@ -78,24 +76,26 @@ const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
 const InPersonKitStatusBar = ({ kit }: { kit: KitRequest }) => {
   return (
     <div className="progress-stacked" style={{ height: '50px' }}>
-      <ProgressBar width="50%" complete={getStepCompletion(kit, 'PREPARING')}>
-        <FontAwesomeIcon icon={faBoxesPacking} className={'fa-xl'} /> Created
-      </ProgressBar>
-      <ProgressBar width="50%" complete={getStepCompletion(kit, 'COLLECTED')}>
-        <FontAwesomeIcon icon={faCircleCheck} className={'fa-xl'} /> Collected
-      </ProgressBar>
+      <ProgressBar
+        width="50%" complete={getStepCompletion(kit, 'PREPARING')} icon={faBoxesPacking} label={'Created'}/>
+      <ProgressBar
+        width="50%" complete={getStepCompletion(kit, 'COLLECTED')} icon={faCircleCheck} label={'Collected'}/>
     </div>
   )
 }
 
-const ProgressBar = ({ children, width, complete }: {
-  children: React.ReactNode, width: string, complete: boolean
+const ProgressBar = ({ icon, label, width, complete }: {
+  icon: IconDefinition, label: string, width: string, complete: boolean
 }) => {
   return (
     <div className="progress" role="progressbar" style={{ width, height: '50px' }}>
       <div className={`progress-bar border-end ${complete ? '' : 'bg-dark-subtle'}`}
+        data-testid={`${label.toLowerCase()}-${complete}`}
         style={{ background: 'var(--brand-color)' }}>
-        {children}
+        <div className="d-flex flex-column align-items-center justify-content-center h-100">
+          <FontAwesomeIcon icon={icon} className={'fa-xl'}/>
+          {label}
+        </div>
       </div>
     </div>
   )
@@ -123,7 +123,7 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
           Click below for more information about this process.
         </div>
         <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
-          <Link to={'/hub/kits/in-person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+          <Link to={'/hub/kits/in_person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
             Complete a kit in-person
           </Link>
         </div>
