@@ -154,6 +154,13 @@ export type FormPanel = BaseElement & {
   elements: (HtmlElement | Question)[]
 }
 
+export type FormPanelDynamic = BaseElement & {
+  name: string
+  title: string
+  type: 'paneldynamic'
+  templateElements: (HtmlElement | Question)[]
+}
+
 export type HtmlElement = {
   name: string
   type: 'html'
@@ -237,6 +244,7 @@ export type Question =
   | TemplatedQuestion
   | TextQuestion
   | HtmlQuestion
+  | FormPanelDynamic
 
 export type InteractiveQuestion = Exclude<Question, HtmlQuestion>
 

@@ -256,7 +256,7 @@ public class SurveyTaskDispatcher {
                                    List<ParticipantTask> allTasks) {
         return !allTasks.stream()
                 .filter(existingTask ->
-                        List.of(TaskType.SURVEY, TaskType.CONSENT, TaskType.OUTREACH).contains(existingTask.getTaskType()) &&
+                        existingTask.getTaskType().equals(task.getTaskType()) &&
                         existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
                         !isRecurrenceWindowOpen(studySurvey, existingTask))
                 .toList().isEmpty();
