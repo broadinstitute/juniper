@@ -318,6 +318,7 @@ export type KitRequestListResponse = {
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
   addrValidationConfig: Record<string, string>
+  airtable: Record<string, string>
 }
 
 export type ParticipantTaskUpdateDto = {

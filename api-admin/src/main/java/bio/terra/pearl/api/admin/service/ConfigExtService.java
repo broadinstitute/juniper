@@ -4,10 +4,12 @@ import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.export.integration.AirtableExporter;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,16 +20,21 @@ public class ConfigExtService {
   private Map<String, String> configMap;
   private final LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
   private final AddressValidationConfig addressValidationConfig;
+  private final AirtableExporter.AirtableConfig airtableConfig;
 
   public ConfigExtService(
       B2CConfiguration b2CConfiguration,
       ApplicationRoutingPaths applicationRoutingPaths,
       LivePepperDSMClient.PepperDSMConfig pepperDSMConfig,
-      AddressValidationConfig addressValidationConfig) {
+      AddressValidationConfig addressValidationConfig,
+      Environment environment,
+      AirtableExporter.AirtableConfig airtableConfig) {
     this.b2CConfiguration = b2CConfiguration;
     this.pepperDSMConfig = pepperDSMConfig;
     this.applicationRoutingPaths = applicationRoutingPaths;
     this.addressValidationConfig = addressValidationConfig;
+    this.airtableConfig = airtableConfig;
+
     configMap = buildConfigMap();
   }
 
@@ -64,7 +71,7 @@ public class ConfigExtService {
     if (!user.isSuperuser()) {
       throw new PermissionDeniedException("You do not have permission to view this config");
     }
-    var configMap =
+    Map<String, Map<String, String>> internalConfigMap =
         Map.of(
             "pepperDsmConfig",
             Map.of(
@@ -78,8 +85,10 @@ public class ConfigExtService {
             Map.of(
                 "addrValidationServiceClass", addressValidationConfig.getAddressValidationClass(),
                 "smartyAuthId", addressValidationConfig.getAuthId(),
-                "smartyAuthToken", maskSecret(addressValidationConfig.getAuthToken())));
-    return configMap;
+                "smartyAuthToken", maskSecret(addressValidationConfig.getAuthToken())),
+            "airtable",
+            Map.of("authToken", maskSecret(airtableConfig.getAuthToken())));
+    return internalConfigMap;
   }
 
   public static String maskSecret(String secret) {
