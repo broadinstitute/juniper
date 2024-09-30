@@ -8,6 +8,10 @@ resource "google_container_cluster" "juniper_cluster" {
   network    = google_compute_network.juniper_network.id
   subnetwork = google_compute_subnetwork.juniper_subnetwork.id
 
+  binary_authorization {
+    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+  }
+
   ip_allocation_policy {
     stack_type                    = "IPV4_IPV6"
   }
@@ -32,17 +36,18 @@ resource "google_container_cluster" "juniper_cluster" {
     }
   }
 
+  database_encryption {
+    key_name = google_kms_crypto_key.juniper_cluster_crypto_key.id
+    state    = "ENCRYPTED"
+  }
+
   # Set `deletion_protection` to `true` will ensure that one cannot
   # accidentally delete this instance by use of Terraform.
   deletion_protection = false
 
   depends_on = [
-    google_project_service.enable_gke,
-    google_project_service.enable_dns,
-    google_project_service.enable_secret_manager,
-    google_project_service.enable_cloud_logging,
-    google_project_service.enable_sql,
-    google_project_service.enable_sql_admin
+    time_sleep.enable_all_services_with_timeout,
+    google_kms_key_ring_iam_binding.cluster-key-ring
   ]
 }
 

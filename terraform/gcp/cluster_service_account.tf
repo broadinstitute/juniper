@@ -38,3 +38,14 @@ resource "google_artifact_registry_repository_iam_binding" "cluster-artifact-reg
   location = var.infra_region
   provider = google.infra
 }
+
+# As far as I can tell, the GKE service account that manages the cluster cannot be changed, but
+# it needs to be able to access the KMS key to encrypt and decrypt the database.
+resource "google_kms_key_ring_iam_binding" "cluster-key-ring" {
+  key_ring_id = google_kms_key_ring.juniper_cluster_keyring.id
+  members = [
+    "serviceAccount:service-${var.project_number}@container-engine-robot.iam.gserviceaccount.com"
+  ]
+  role        = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+}
+

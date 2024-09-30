@@ -24,8 +24,7 @@ resource "google_sql_database_instance" "d2p" {
   }
 
   depends_on = [
-    google_project_service.enable_sql,
-    google_project_service.enable_sql_admin,
+    time_sleep.enable_all_services_with_timeout,
     google_service_networking_connection.private_vpc_connection
   ]
 }

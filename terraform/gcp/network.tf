@@ -3,6 +3,10 @@ resource "google_compute_network" "juniper_network" {
 
   auto_create_subnetworks  = false
   enable_ula_internal_ipv6 = true
+
+  depends_on = [
+    time_sleep.enable_all_services_with_timeout
+  ]
 }
 
 resource "google_compute_subnetwork" "juniper_subnetwork" {
@@ -43,4 +47,23 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.juniper_network.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
+
+# creating a router and cloud nat is required for juniper to have internet access
+resource "google_compute_router" "juniper-router" {
+  project = var.project
+  name    = "juniper-router"
+  network = google_compute_network.juniper_network.id
+  region  = var.region
+}
+
+module "cloud-nat" {
+  source                             = "terraform-google-modules/cloud-nat/google"
+  version                            = "~> 5.0"
+  project_id                         = var.project
+  region                             = var.region
+  router                             = google_compute_router.juniper-router.name
+  name                               = "juniper-nat-config"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
