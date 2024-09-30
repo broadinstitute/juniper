@@ -350,6 +350,9 @@ export function useSurveyJSModel(
       pageNumber = refreshData.currentPageNo
     }
     newSurveyModel.currentPageNo = pageNumber
+
+    // if you add any new variables that are objects (e.g. {profile.givenName}), make sure you add
+    // them to the list of non-survey object variables in SurveyParseUtils
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
