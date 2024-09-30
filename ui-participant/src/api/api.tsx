@@ -74,6 +74,7 @@ export type RegistrationResponse = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
+  referencedAnswers: Answer[]
 }
 
 export type TaskWithSurvey = {

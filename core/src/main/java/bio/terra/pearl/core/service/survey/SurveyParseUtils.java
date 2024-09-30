@@ -131,6 +131,26 @@ public class SurveyParseUtils {
         return definition;
     }
 
+    private static Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
+
+    public static Map<String, List<String>> findReferencedSurveyQuestions(Survey survey) {
+        return surveyQuestionRegexPattern.matcher(survey.getContent()).results().map(result -> {
+            String cleaned = result.group().substring(1, result.group().length() - 1).trim();
+
+            int periodIndex = cleaned.indexOf('.');
+
+            String surveyStableId = cleaned.substring(0, periodIndex);
+            String questionStableId = cleaned.substring(periodIndex + 1);
+
+            return Map.entry(surveyStableId, questionStableId);
+        }).filter(
+                entry -> !List.of("profile", "proxyProfile").contains(entry.getKey())
+        ).reduce(new HashMap<>(), (acc, entry) -> {
+            acc.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(entry.getValue());
+            return acc;
+        }, (a, b) -> a);
+    }
+
     /** confirm the question definition meets our (currently very permissive) requirements */
     public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition, List<SurveyQuestionDefinition> allDefsInSurvey) {
         /** we don't care about the stableIds for html questions, since those aren't answered and aren't included in data exports */

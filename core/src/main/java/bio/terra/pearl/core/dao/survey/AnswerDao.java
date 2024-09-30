@@ -76,4 +76,20 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
                         .orElse(null)
         );
     }
+
+    public List<Answer> findAllForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, List<String> questionStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                   SELECT DISTINCT ON (question_stable_id) * FROM answer
+                                   WHERE enrollee_id = :enrolleeId
+                                   AND survey_stable_id = :surveyStableId
+                                   AND question_stable_id IN (<questionStableIds>)
+                                   ORDER BY question_stable_id, last_updated_at DESC
+                                """)
+                        .bind("enrolleeId", enrolleeID)
+                        .bind("surveyStableId", surveyStableId)
+                        .bindList("questionStableIds", questionStableId)
+                        .mapTo(clazz)
+                        .list());
+    }
 }

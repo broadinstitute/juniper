@@ -308,6 +308,7 @@ export function useSurveyJSModel(
   envName: EnvironmentName,
   profile?: Profile,
   proxyProfile?: Profile,
+  referencedAnswers: Answer[] = [],
   opts: UseSurveyJsModelOpts = {}
 ) {
   const {
@@ -353,6 +354,11 @@ export function useSurveyJSModel(
     newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
     newSurveyModel.setVariable('portalEnvironmentName', envName)
+    console.log(referencedAnswers)
+    referencedAnswers.forEach(answer => {
+      newSurveyModel.setVariable(`${answer.surveyStableId}.${answer.questionStableId}`,
+        answer.stringValue ?? answer.numberValue ?? answer.booleanValue ?? answer.objectValue)
+    })
     Object.keys(extraVariables).forEach(key => {
       newSurveyModel.setVariable(key, extraVariables[key])
     })
