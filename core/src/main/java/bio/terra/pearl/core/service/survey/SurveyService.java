@@ -107,7 +107,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         SurveyParseUtils.findPotentialReferencedSurveyQuestions(survey).forEach((potentialSurveyStableId, potentialQuestionIds) -> {
             potentialQuestionIds.forEach(potentialQuestionId -> {
                 Optional<SurveyQuestionDefinition> questionDef = surveyQuestionDefinitionDao.findByStableId(potentialSurveyStableId, potentialQuestionId);
-
+                
                 if (questionDef.isPresent()) {
                     ReferencedQuestion referencedQuestion = new ReferencedQuestion();
                     referencedQuestion.setSurveyId(survey.getId());

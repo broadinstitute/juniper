@@ -147,7 +147,8 @@ public class SurveyParseUtils {
         Stream<MatchResult> matchedObjectVariables = surveyQuestionRegexPattern.matcher(survey.getContent()).results();
 
         Stream<Map.Entry<String, String>> potentialSurveyQuestions = matchedObjectVariables
-                .map(match -> splitVariableIntoStableIds(match.group()))
+                .map(MatchResult::group)
+                .map(SurveyParseUtils::splitVariableIntoStableIds)
                 .filter(entry -> !nonSurveyObjectVariables.contains(entry.getKey()));
 
 
@@ -156,10 +157,13 @@ public class SurveyParseUtils {
     }
 
     private static Map.Entry<String, String> splitVariableIntoStableIds(String reference) {
-        List<String> split = Arrays.asList(reference.split("\\."));
+        // remove surrounding {} and whitespace
+        String cleaned = reference.substring(1, reference.length() - 1).trim();
+
+        List<String> split = new ArrayList<>(Arrays.asList(cleaned.split("\\.")));
 
         String surveyStableId = split.removeFirst();
-        String questionStableId = StringUtils.joinWith(".", split);
+        String questionStableId = StringUtils.join(split, ".");
 
         return Map.entry(surveyStableId, questionStableId);
     }
