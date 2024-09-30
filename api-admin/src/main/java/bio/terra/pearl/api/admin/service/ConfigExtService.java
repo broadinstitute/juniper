@@ -9,7 +9,6 @@ import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +26,6 @@ public class ConfigExtService {
       ApplicationRoutingPaths applicationRoutingPaths,
       LivePepperDSMClient.PepperDSMConfig pepperDSMConfig,
       AddressValidationConfig addressValidationConfig,
-      Environment environment,
       AirtableExporter.AirtableConfig airtableConfig) {
     this.b2CConfiguration = b2CConfiguration;
     this.pepperDSMConfig = pepperDSMConfig;

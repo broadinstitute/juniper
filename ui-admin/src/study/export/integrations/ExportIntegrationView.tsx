@@ -14,17 +14,21 @@ import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import { ExportDataForm } from '../ExportDataControl'
-import { TextInput } from '../../../components/forms/TextInput'
+import { TextInput } from 'components/forms/TextInput'
 import { Store } from 'react-notifications-component'
-import { successNotification } from '../../../util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
 
 
-export default function ExportIntegration({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
+export default function ExportIntegrationView({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const [integration, setIntegration] = useState<ExportIntegration>()
   const id = useParams().id
   const navigate = useNavigate()
 
   const { isLoading } = useLoadingEffect(async () => {
+    if (!id) {
+      Store.addNotification(failureNotification('Error: no integration id provided'))
+      return
+    }
     const response = await Api.fetchExportIntegration(paramsFromContext(studyEnvContext), id)
     setIntegration(response)
   }, [id])

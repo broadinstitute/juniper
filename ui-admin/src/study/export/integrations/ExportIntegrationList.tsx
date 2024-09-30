@@ -21,7 +21,7 @@ import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import { Button } from '../../../components/forms/Button'
 import Modal from 'react-bootstrap/Modal'
-import { ExportIntegrationForm } from './ExportIntegration'
+import { ExportIntegrationForm } from './ExportIntegrationView'
 import { buildFilter } from '../../../util/exportUtils'
 
 const DEFAULT_EXPORT_INTEGRATION: ExportIntegration = {
