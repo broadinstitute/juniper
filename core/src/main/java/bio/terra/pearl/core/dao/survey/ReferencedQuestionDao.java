@@ -24,4 +24,7 @@ public class ReferencedQuestionDao extends BaseJdbiDao<ReferencedQuestion> {
     }
 
 
+    public void deleteBySurveyId(UUID surveyId) {
+        deleteByProperty("survey_id", surveyId);
+    }
 }

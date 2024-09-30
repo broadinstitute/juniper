@@ -67,6 +67,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     public void delete(UUID surveyId, Set<CascadeProperty> cascades) {
         answerMappingDao.deleteBySurveyId(surveyId);
         surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
+        referencedQuestionDao.deleteBySurveyId(surveyId);
         eventDao.deleteBySurveyId(surveyId);
         Survey survey = dao.find(surveyId).orElseThrow(() -> new NotFoundException("Survey not found"));
         List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
@@ -107,7 +108,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         SurveyParseUtils.findPotentialReferencedSurveyQuestions(survey).forEach((potentialSurveyStableId, potentialQuestionIds) -> {
             potentialQuestionIds.forEach(potentialQuestionId -> {
                 Optional<SurveyQuestionDefinition> questionDef = surveyQuestionDefinitionDao.findByStableId(potentialSurveyStableId, potentialQuestionId);
-                
+
                 if (questionDef.isPresent()) {
                     ReferencedQuestion referencedQuestion = new ReferencedQuestion();
                     referencedQuestion.setSurveyId(survey.getId());
