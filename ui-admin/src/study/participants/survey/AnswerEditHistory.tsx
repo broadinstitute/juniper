@@ -30,7 +30,9 @@ export const AnswerEditHistory = ({ question, answer, editHistory, supportedLang
       aria-expanded="false"
     >
       <div className="d-flex align-items-center">
-        <pre className="fw-bold my-0">{getDisplayValue(answer, question)}</pre>
+        <pre className="fw-bold my-0 text-break text-start" style={{ whiteSpace: 'pre-wrap' }}>
+          {getDisplayValue(answer, question)}
+        </pre>
         { editHistory.length > 0 ?
           <FontAwesomeIcon icon={faHistory} className="fa-sm ms-2 text-muted"/> :
           <FontAwesomeIcon icon={faChevronDown} className="fa-sm ms-2 text-muted"/>}
