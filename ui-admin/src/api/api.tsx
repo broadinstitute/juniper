@@ -376,6 +376,17 @@ export type ExportIntegration = {
     destinationUrl: string
 }
 
+export type ExportIntegrationJob = {
+  id: string,
+  status: string,
+  exportIntegrationId: string,
+  startedAt: number,
+  completedAt?: number,
+  result: string,
+  creatingAdminUserId?: string,
+  systemProcess?: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -1117,12 +1128,29 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async runExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<object> {
+  async createExportIntegration(studyEnvParams: StudyEnvParams, integration: ExportIntegration):
+    Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(integration)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async runExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<ExportIntegrationJob> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}/run`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchExportIntegrationJobs(studyEnvParams: StudyEnvParams): Promise<ExportIntegrationJob[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrationJobs`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

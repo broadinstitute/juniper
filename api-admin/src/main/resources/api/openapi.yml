@@ -1264,6 +1264,21 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrationJobs:
+    get:
+      summary: gets all the exportIntegrationJobs for the environment
+      tags: [ exportIntegration ]
+      operationId: findJobsByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrationJobs
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
     post:
       summary: Adds a list of contacts to the mailing list for the environment

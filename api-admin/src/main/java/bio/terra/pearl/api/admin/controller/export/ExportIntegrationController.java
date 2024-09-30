@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.service.export.ExportIntegrationExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.export.ExportIntegration;
+import bio.terra.pearl.core.model.export.ExportIntegrationJob;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -62,12 +63,12 @@ public class ExportIntegrationController implements ExportIntegrationApi {
       String portalShortcode, String studyShortcode, String envName, UUID id) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    ExportIntegration integration =
+    ExportIntegrationJob job =
         exportIntegrationExtService.run(
             PortalStudyEnvAuthContext.of(
                 operator, portalShortcode, studyShortcode, environmentName),
             id);
-    return ResponseEntity.ok(integration);
+    return ResponseEntity.ok(job);
   }
 
   @Override
@@ -82,5 +83,17 @@ public class ExportIntegrationController implements ExportIntegrationApi {
                 adminUser, portalShortcode, studyShortcode, environmentName),
             integration);
     return ResponseEntity.ok(newIntegration);
+  }
+
+  @Override
+  public ResponseEntity<Object> findJobsByStudy(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<ExportIntegrationJob> integrations =
+        exportIntegrationExtService.listJobs(
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName));
+    return ResponseEntity.ok(integrations);
   }
 }

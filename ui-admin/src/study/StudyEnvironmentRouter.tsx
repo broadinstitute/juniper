@@ -52,6 +52,7 @@ import { KitScanner } from './kits/kitcollection/KitScanner'
 import { LoadedSettingsView } from 'study/settings/SettingsView'
 import ExportIntegrationList from './export/integrations/ExportIntegrationList'
 import ExportIntegration from './export/integrations/ExportIntegration'
+import ExportIntegrationJobList from './export/integrations/ExportIntegrationJobList'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -131,6 +132,8 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           />
           <Route path="export/integrations" element={<ExportIntegrationList studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/integrations/:id" element={<ExportIntegration studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/integrations/jobs"
+            element={<ExportIntegrationJobList studyEnvContext={studyEnvContext}/>}/>
 
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
@@ -221,9 +224,19 @@ export const studyEnvDataBrowserPath = (portalShortcode: string, studyShortcode:
 }
 
 /** path to the export integration configs */
-export const studyEnvExportIntegrationPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
-  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/export/integrations`
+export const studyEnvExportIntegrationsPath = (studyEnvParams: StudyEnvParams) => {
+  return `${baseStudyEnvPath(studyEnvParams)}/export/integrations`
 }
+
+/** path to the export integration configs */
+export const studyEnvExportIntegrationPath = (studyEnvParams: StudyEnvParams, id: string) => {
+  return `${studyEnvExportIntegrationsPath(studyEnvParams)}/${id}`
+}
+
+export const studyEnvExportIntegrationJobsPath = (studyEnvParams: StudyEnvParams) => {
+  return `${studyEnvExportIntegrationsPath(studyEnvParams)}/jobs`
+}
+
 
 /** helper function for metrics route */
 export const studyEnvMetricsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {

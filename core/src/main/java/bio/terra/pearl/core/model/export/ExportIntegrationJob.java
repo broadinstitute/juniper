@@ -16,8 +16,17 @@ import java.util.UUID;
 public class ExportIntegrationJob extends BaseEntity {
     private UUID exportIntegrationId;
     private UUID creatingAdminUserId;
-    private String status;
+    private String systemProcess;
+    private ExportIntegrationJob.Status status;
     private Instant startedAt;
     private Instant completedAt;
     private String result;
+
+    public enum Status {
+        NEW,
+        GENERATING,
+        SENDING,
+        COMPLETE,
+        FAILED
+    }
 }

@@ -24,6 +24,19 @@ public class ExportIntegrationJobDao extends BaseMutableJdbiDao<ExportIntegratio
         return findAllByProperty("export_integration_id", integrationId);
     }
 
+    public List<ExportIntegrationJob> findByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                            select %s from %s eij join export_integration
+                             on eij.export_integration_id = export_integration.id 
+                              where export_integration.study_environment_id = :studyEnvironmentId
+                              """.formatted(prefixedGetQueryColumns("eij"), tableName))
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     public void deleteByExportIntegrationId(UUID integrationId) {
         deleteByProperty("export_integration_id", integrationId);
     }

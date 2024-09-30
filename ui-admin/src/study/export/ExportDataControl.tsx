@@ -28,21 +28,23 @@ const FILE_FORMATS = [{
   fileSuffix: 'xlsx'
 }]
 
+const DEFAULT_EXPORT_OPTS: ExportOptions = {
+  splitOptionsIntoColumns: false,
+  stableIdsForOptions: false,
+  fileFormat: 'TSV',
+  includeSubheaders: true,
+  onlyIncludeMostRecent: true,
+  filterString: undefined,
+  excludeModules: []
+}
+
 const MODULE_EXCLUDE_OPTIONS: Record<string, string> = { surveys: 'Surveys' }
 
 /** form for configuring and downloading enrollee data */
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [exportOptions, setExportOptions] = useState<ExportOptions>({
-    splitOptionsIntoColumns: false,
-    stableIdsForOptions: false,
-    fileFormat: 'TSV',
-    includeSubheaders: true,
-    onlyIncludeMostRecent: true,
-    filterString: undefined,
-    excludeModules: []
-  })
+  const [exportOptions, setExportOptions] = useState<ExportOptions>(DEFAULT_EXPORT_OPTS)
 
   const doExport = () => {
     doApiLoad(async () => {

@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.export;
 
 import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.api.admin.service.auth.*;

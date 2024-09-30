@@ -2,16 +2,19 @@ package bio.terra.pearl.core.service.export.integration;
 
 import bio.terra.pearl.core.dao.export.ExportIntegrationDao;
 import bio.terra.pearl.core.dao.export.ExportOptionsDao;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.export.ExportDestinationType;
 import bio.terra.pearl.core.model.export.ExportIntegration;
+import bio.terra.pearl.core.model.export.ExportIntegrationJob;
 import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,7 +23,8 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
     private final ExportIntegrationJobService exportIntegrationJobService;
     private final ExportOptionsDao exportOptionsDao;
     private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
-    private final AirtableExporter airtableExporter;
+    private final Map<ExportDestinationType, ExternalExporter> externalExporters;
+
 
     public ExportIntegrationService(ExportIntegrationDao dao,
                                     ExportIntegrationJobService exportIntegrationJobService,
@@ -31,7 +35,7 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
         this.exportIntegrationJobService = exportIntegrationJobService;
         this.exportOptionsDao = exportOptionsDao;
         this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
-        this.airtableExporter = airtableExporter;
+        this.externalExporters = Map.of(ExportDestinationType.AIRTABLE, airtableExporter);
     }
 
     public ExportIntegration create(ExportIntegration integration) {
@@ -43,18 +47,29 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
         return newIntegration;
     }
 
-    public Object run(ExportIntegration integration) {
+    public ExportIntegrationJob doExport(ExportIntegration integration, ResponsibleEntity operator) {
+        ExternalExporter exporter = externalExporters.get(integration.getDestinationType());
+        return doExport(exporter, integration, operator);
+    }
+
+    protected ExportIntegrationJob doExport(ExternalExporter exporter, ExportIntegration integration, ResponsibleEntity operator) {
         if (integration.getExportOptions() == null) {
             throw new IllegalArgumentException("Export options must be set to run an export integration");
         }
-
         ExportOptionsWithExpression parsedOpts = enrolleeSearchExpressionParser.parseExportOptions(integration.getExportOptions());
-
-        if (ExportDestinationType.AIRTABLE.equals(integration.getDestinationType())) {
-            airtableExporter.export(integration, parsedOpts);
-        }
-        return null;
+        ExportIntegrationJob job = ExportIntegrationJob.builder()
+                .exportIntegrationId(integration.getId())
+                .status(ExportIntegrationJob.Status.GENERATING)
+                .creatingAdminUserId(operator.getAdminUser() != null ? operator.getAdminUser().getId() : null)
+                .systemProcess(operator.getSystemProcess())
+                .startedAt(Instant.now())
+                .build();
+        job = exportIntegrationJobService.create(job);
+        exporter.export(integration, parsedOpts, job);
+        return job;
     }
+
+
 
     public List<ExportIntegration> findByStudyEnvironmentId(UUID studyEnvId) {
         return dao.findByStudyEnvironmentId(studyEnvId);

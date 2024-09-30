@@ -14,6 +14,10 @@ public class ExportIntegrationJobService extends CrudService<ExportIntegrationJo
         super(dao);
     }
 
+    public List<ExportIntegrationJob> findByStudyEnvironment(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironmentId(studyEnvironmentId);
+    }
+
     public void deleteByExportIntegrationId(UUID integrationId) {
         dao.deleteByExportIntegrationId(integrationId);
     }

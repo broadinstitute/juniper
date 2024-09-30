@@ -1,9 +1,8 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.export;
 
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.api.admin.service.export.EnrolleeExportExtService;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
