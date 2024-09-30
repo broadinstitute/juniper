@@ -3,14 +3,15 @@ package bio.terra.pearl.core.model.survey;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.Versioned;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @SuperBuilder
 public class Survey extends BaseEntity implements Versioned, PortalAttached {
@@ -32,6 +33,8 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private String footer;
     @Builder.Default
     private List<AnswerMapping> triggers = new ArrayList<>();
+    @Builder.Default
+    private List<ReferencedQuestion> referencedQuestions = new ArrayList<>();
 
     @Builder.Default
     private boolean recur = false;

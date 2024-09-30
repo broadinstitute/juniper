@@ -12,8 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SurveyParseUtils {
     public static final String SURVEY_JS_CHECKBOX_TYPE = "checkbox";
@@ -131,24 +134,34 @@ public class SurveyParseUtils {
         return definition;
     }
 
-    private static Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
+    // looks for all variables in survey content of form {surveyStableId.questionStableId}
+    // this may pick up some false positives, so we need to filter out using the nonSurveyObjectVariables list
+    private static final Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
+    private static final List<String> nonSurveyObjectVariables = List.of("profile", "proxyProfile");
 
-    public static Map<String, List<String>> findReferencedSurveyQuestions(Survey survey) {
-        return surveyQuestionRegexPattern.matcher(survey.getContent()).results().map(result -> {
-            String cleaned = result.group().substring(1, result.group().length() - 1).trim();
+    // returns a map of all questions outside the survey referenced by the survey content.
+    // for example, if the survey content contains {medicalHistory.familyHistory}, etc., this will return:
+    //    medicalHistory -> ['familyHistory', 'diagnosis']
+    //    demographics -> ['age']
+    public static Map<String, List<String>> findPotentialReferencedSurveyQuestions(Survey survey) {
+        Stream<MatchResult> matchedObjectVariables = surveyQuestionRegexPattern.matcher(survey.getContent()).results();
 
-            int periodIndex = cleaned.indexOf('.');
+        Stream<Map.Entry<String, String>> potentialSurveyQuestions = matchedObjectVariables
+                .map(match -> splitVariableIntoStableIds(match.group()))
+                .filter(entry -> !nonSurveyObjectVariables.contains(entry.getKey()));
 
-            String surveyStableId = cleaned.substring(0, periodIndex);
-            String questionStableId = cleaned.substring(periodIndex + 1);
 
-            return Map.entry(surveyStableId, questionStableId);
-        }).filter(
-                entry -> !List.of("profile", "proxyProfile").contains(entry.getKey())
-        ).reduce(new HashMap<>(), (acc, entry) -> {
-            acc.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(entry.getValue());
-            return acc;
-        }, (a, b) -> a);
+        return potentialSurveyQuestions.collect(
+                Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+    }
+
+    private static Map.Entry<String, String> splitVariableIntoStableIds(String reference) {
+        List<String> split = Arrays.asList(reference.split("\\."));
+
+        String surveyStableId = split.removeFirst();
+        String questionStableId = StringUtils.joinWith(".", split);
+
+        return Map.entry(surveyStableId, questionStableId);
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */

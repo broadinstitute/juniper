@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: "referenced_questions"
+      author: connorlbark
+      changes:
+        - createTable:
+            tableName: referenced_question
+            columns:
+              - column:
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column:
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: survey_id, type: uuid, constraints: { foreignKeyName: fk_referenced_questions_survey, references: survey(id) } }
+              - column:
+                  { name: referenced_survey_stable_id, type: text }
+              - column:
+                  { name: referenced_question_stable_id, type: text }

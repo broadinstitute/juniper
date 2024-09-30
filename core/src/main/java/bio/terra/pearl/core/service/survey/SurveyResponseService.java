@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.dao.survey.ReferencedQuestionDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
@@ -34,13 +35,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private final ParticipantDataChangeService participantDataChangeService;
     private final EventService eventService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
+    private final ReferencedQuestionDao referencedQuestionDao;
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
                                  SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 ParticipantDataChangeService participantDataChangeService, EventService eventService) {
+                                 ParticipantDataChangeService participantDataChangeService, EventService eventService, ReferencedQuestionDao referencedQuestionDao) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
@@ -49,6 +51,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         this.answerProcessingService = answerProcessingService;
         this.participantDataChangeService = participantDataChangeService;
         this.eventService = eventService;
+        this.referencedQuestionDao = referencedQuestionDao;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -108,18 +111,18 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .stream().findFirst().orElseThrow(() -> new NotFoundException("no active survey found"));
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
-                configSurvey, lastResponse, getRelevantAnswers(enrollee, form)
+                configSurvey, lastResponse, getReferencedAnswers(enrollee, form)
         );
     }
 
-    private List<Answer> getRelevantAnswers(Enrollee enrollee, Survey survey) {
-        Map<String, List<String>> relevantAnswers = SurveyParseUtils.findReferencedSurveyQuestions(survey);
-
+    private List<Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
         List<Answer> answers = new ArrayList<>();
 
-        for (Map.Entry<String, List<String>> entry : relevantAnswers.entrySet()) {
-            List<Answer> answerList = answerService.findAllForEnrolleeByQuestion(enrollee.getId(), entry.getKey(), entry.getValue());
-            answers.addAll(answerList);
+        List<ReferencedQuestion> referencedQuestions = referencedQuestionDao.findBySurveyId(survey.getId());
+
+        for (ReferencedQuestion referencedQuestion : referencedQuestions) {
+            Answer answer = answerService.findForEnrolleeByQuestion(enrollee.getId(), referencedQuestion.getReferencedSurveyStableId(), referencedQuestion.getReferencedQuestionStableId());
+            answers.add(answer);
         }
 
         return answers;

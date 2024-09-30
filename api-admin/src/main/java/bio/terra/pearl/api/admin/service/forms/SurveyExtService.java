@@ -54,6 +54,7 @@ public class SurveyExtService {
   public Survey get(PortalAuthContext authContext, String stableId, int version) {
     Survey survey = authUtilService.authSurveyToPortal(authContext.getPortal(), stableId, version);
     surveyService.attachAnswerMappings(survey);
+    surveyService.attachReferencedQuestions(survey);
     return survey;
   }
 

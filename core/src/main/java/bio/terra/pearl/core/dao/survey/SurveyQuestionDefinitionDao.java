@@ -6,6 +6,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -29,5 +30,9 @@ public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefin
 
     public void deleteBySurveyId(UUID surveyId) {
         deleteByProperty("survey_id", surveyId);
+    }
+
+    public Optional<SurveyQuestionDefinition> findByStableId(String surveyStableId, String questionStableId) {
+        return findByTwoProperties("survey_stable_id", surveyStableId, "question_stable_id", questionStableId);
     }
 }
