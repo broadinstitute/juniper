@@ -288,13 +288,13 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
               setEnableManualReturnLabelOverride(e)
             }}/>
           { showReturnTrackingNumberScanner &&
-          <BarcodeScanner
-            expectedFormats={['code_128']}
-            onError={error => setReturnTrackingNumberError(error)}
-            onSuccess={result => {
-              setReturnTrackingNumber(result.rawValue)
-              setShowReturnTrackingNumberScanner(false)
-            }}/>
+            <BarcodeScanner
+              expectedFormats={['code_128']}
+              onError={error => setReturnTrackingNumberError(error)}
+              onSuccess={result => {
+                setReturnTrackingNumber(result.rawValue)
+                setShowReturnTrackingNumberScanner(false)
+              }}/>
           }
           <TextInput
             className="my-2"
