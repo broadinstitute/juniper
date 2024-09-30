@@ -66,7 +66,15 @@ public class StudyService extends CrudService<Study, StudyDao> {
     }
 
     public List<Study> findWithPreregContent(String portalShortcode, EnvironmentName envName) {
-        return dao.findWithPreregContent(portalShortcode, envName);
+        List<Study> studies = dao.findWithPreregContent(portalShortcode, envName);
+        studies.forEach(this::attachStudyEnvironmentKitTypes);
+
+        return studies;
+    }
+
+    public void attachStudyEnvironmentKitTypes(Study study) {
+        study.getStudyEnvironments().forEach(studyEnv ->
+                studyEnv.setKitTypes(studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId())));
     }
 
     @Transactional

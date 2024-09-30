@@ -40,6 +40,7 @@ import {
 import { useApiContext } from './ApiProvider'
 import { MailingListModal } from './landing/MailingListModal'
 import _uniqueId from 'lodash/uniqueId'
+import { StudyEnvironment } from 'src/types/study'
 
 const topLevelNavLinkClasses = 'nav-link fs-5 ms-lg-3'
 const groupedNavLinkClasses = 'nav-link fs-5'
@@ -100,6 +101,9 @@ export function ParticipantNavbar(props: NavbarProps) {
   const dropdownId = uniqueId('navDropdown')
   const Api = useApiContext()
 
+  const studyEnv = portal.portalStudies.find(pStudy =>
+    pStudy.study.studyEnvironments.find(studyEnv =>
+      studyEnv.environmentName === portalEnv.environmentName))?.study.studyEnvironments[0]
 
   return <nav {...navProps} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
@@ -171,6 +175,7 @@ export function ParticipantNavbar(props: NavbarProps) {
               </Link>
             </li>
             <AccountOptionsDropdown
+              studyEnv={studyEnv}
               proxyRelations={proxyRelations}
               user={user}
               doChangePassword={doChangePassword}
@@ -343,12 +348,14 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
  */
 export const AccountOptionsDropdown = (
   {
+    studyEnv,
     user,
     proxyRelations,
     doChangePassword,
     doLogout
 
   }:{
+    studyEnv?: StudyEnvironment,
     user?: ParticipantUser,
     proxyRelations: EnrolleeRelation[],
     doChangePassword: () => void,
@@ -398,11 +405,13 @@ export const AccountOptionsDropdown = (
               {i18n('manageProfiles')}
             </button>
           </NavLink>}
-          <NavLink to="/hub/kits">
-            <button className="dropdown-item" aria-label="sample kits">
-              Sample Kits
-            </button>
-          </NavLink>
+          { studyEnv && studyEnv.kitTypes.length > 0 &&
+              <NavLink to="/hub/kits">
+                <button className="dropdown-item" aria-label="sample kits">
+                  Sample Kits
+                </button>
+              </NavLink>
+          }
           <button className="dropdown-item" aria-label="change password" onClick={() => {
             doChangePassword()
           }}>
