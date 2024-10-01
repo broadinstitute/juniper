@@ -133,8 +133,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(survey2, studyEnvBundle.getStudyEnv().getId(), true);
 
         assertEquals(1, survey2.getReferencedQuestions().size());
-        assertEquals("survey1", survey2.getReferencedQuestions().getFirst().getReferencedSurveyStableId());
-        assertEquals("diagnosis", survey2.getReferencedQuestions().getFirst().getReferencedQuestionStableId());
+        assertEquals("survey1.diagnosis", survey2.getReferencedQuestions().getFirst());
 
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
 

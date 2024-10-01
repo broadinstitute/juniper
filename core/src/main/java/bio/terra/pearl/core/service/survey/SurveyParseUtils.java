@@ -134,38 +134,49 @@ public class SurveyParseUtils {
         return definition;
     }
 
+
+    public record QuestionReference(String surveyStableId, String questionStableId) {
+        public static QuestionReference fromString(String reference) {
+            List<String> split = new ArrayList<>(Arrays.asList(reference.split("\\.")));
+
+            String surveyStableId = split.removeFirst();
+            String questionStableId = StringUtils.join(split, ".");
+
+            return new QuestionReference(surveyStableId, questionStableId);
+        }
+
+        public String toString() {
+            return surveyStableId + "." + questionStableId;
+        }
+    }
+
     // looks for all variables in survey content of form {surveyStableId.questionStableId}
     // this may pick up some false positives, so we need to filter out using the nonSurveyObjectVariables list
     private static final Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
     private static final List<String> nonSurveyObjectVariables = List.of("profile", "proxyProfile");
 
-    // returns a map of all questions outside the survey referenced by the survey content.
-    // for example, if the survey content contains {medicalHistory.familyHistory}, etc., this will return:
-    //    medicalHistory -> ['familyHistory', 'diagnosis']
-    //    demographics -> ['age']
-    public static Map<String, List<String>> findPotentialReferencedSurveyQuestions(Survey survey) {
+    // returns a list of all potential question references in the survey content. these will need to be checked
+    // against question defs in the database to ensure they are valid.
+    public static List<QuestionReference> findReferencedSurveyQuestions(Survey survey) {
         Stream<MatchResult> matchedObjectVariables = surveyQuestionRegexPattern.matcher(survey.getContent()).results();
 
-        Stream<Map.Entry<String, String>> potentialSurveyQuestions = matchedObjectVariables
+        return matchedObjectVariables
                 .map(MatchResult::group)
-                .map(SurveyParseUtils::splitVariableIntoStableIds)
-                .filter(entry -> !nonSurveyObjectVariables.contains(entry.getKey()));
-
-
-        return potentialSurveyQuestions.collect(
-                Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+                .map(s -> s.substring(1, s.length() - 1).trim()) // remove the curly braces
+                .map(QuestionReference::fromString)
+                .filter(qr -> !nonSurveyObjectVariables.contains(qr.surveyStableId))
+                // there are questions that are objects, e.g., matrix questions, so we want
+                // to make sure we're not including those in the list of references
+                .filter(qr -> hasQuestion(qr.surveyStableId, survey))
+                .collect(Collectors.toList());
     }
 
-    private static Map.Entry<String, String> splitVariableIntoStableIds(String reference) {
-        // remove surrounding {} and whitespace
-        String cleaned = reference.substring(1, reference.length() - 1).trim();
-
-        List<String> split = new ArrayList<>(Arrays.asList(cleaned.split("\\.")));
-
-        String surveyStableId = split.removeFirst();
-        String questionStableId = StringUtils.join(split, ".");
-
-        return Map.entry(surveyStableId, questionStableId);
+    private static boolean hasQuestion(String stableId, Survey survey) {
+        return getAllQuestions(survey.getContent())
+                .stream()
+                .map(SurveyParseUtils::getQuestionStableId)
+                .filter(Objects::nonNull)
+                .anyMatch(q -> q.equals(stableId));
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */

@@ -2,13 +2,11 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
-import bio.terra.pearl.core.dao.survey.ReferencedQuestionDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.dao.workflow.EventDao;
 import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.ReferencedQuestion;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -32,18 +30,14 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
     private final LanguageTextDao languageTextDao;
     private final EventDao eventDao;
-    private final SurveyDao surveyDao;
-    private final ReferencedQuestionDao referencedQuestionDao;
 
-    public SurveyService(ObjectMapper objectMapper, SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao, ReferencedQuestionDao referencedQuestionDao) {
+    public SurveyService(ObjectMapper objectMapper, SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao) {
         super(surveyDao);
         this.objectMapper = objectMapper;
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.languageTextDao = languageTextDao;
         this.eventDao = eventDao;
-        this.surveyDao = surveyDao;
-        this.referencedQuestionDao = referencedQuestionDao;
     }
 
     public List<Survey> findByStableIdNoContent(String stableId) {
@@ -67,7 +61,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     public void delete(UUID surveyId, Set<CascadeProperty> cascades) {
         answerMappingDao.deleteBySurveyId(surveyId);
         surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
-        referencedQuestionDao.deleteBySurveyId(surveyId);
         eventDao.deleteBySurveyId(surveyId);
         Survey survey = dao.find(surveyId).orElseThrow(() -> new NotFoundException("Survey not found"));
         List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
@@ -82,6 +75,8 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         survey.setCreatedAt(now);
         survey.setLastUpdatedAt(now);
         survey.setStableId(survey.getStableId().trim());
+        survey.setReferencedQuestions(SurveyParseUtils.findReferencedSurveyQuestions(survey).stream().map(Object::toString).toList());
+
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
             answerMapping.setId(null);
@@ -89,9 +84,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
-
-        // create referenced questions
-        savedSurvey.setReferencedQuestions(parseAndCreateReferencedQuestions(savedSurvey));
 
         List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
         languageTextDao.bulkCreate(texts);
@@ -102,28 +94,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
 
         return savedSurvey;
     }
-
-    private List<ReferencedQuestion> parseAndCreateReferencedQuestions(Survey survey) {
-        // loop through potential referenced questions - if we can find the question in the db, create a ReferencedQuestion
-        SurveyParseUtils.findPotentialReferencedSurveyQuestions(survey).forEach((potentialSurveyStableId, potentialQuestionIds) -> {
-            potentialQuestionIds.forEach(potentialQuestionId -> {
-                Optional<SurveyQuestionDefinition> questionDef = surveyQuestionDefinitionDao.findByStableId(potentialSurveyStableId, potentialQuestionId);
-
-                if (questionDef.isPresent()) {
-                    ReferencedQuestion referencedQuestion = new ReferencedQuestion();
-                    referencedQuestion.setSurveyId(survey.getId());
-
-                    referencedQuestion.setReferencedSurveyStableId(potentialSurveyStableId);
-                    referencedQuestion.setReferencedQuestionStableId(potentialQuestionId);
-
-                    referencedQuestionDao.create(referencedQuestion);
-                }
-            });
-        });
-
-        return referencedQuestionDao.findBySurveyId(survey.getId());
-    }
-
 
     public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -241,10 +211,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
 
     public void attachAnswerMappings(Survey survey) {
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
-    }
-
-    public void attachReferencedQuestions(Survey survey) {
-        survey.setReferencedQuestions(referencedQuestionDao.findBySurveyId(survey.getId()));
     }
 
 }

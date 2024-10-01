@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.dao.survey.ReferencedQuestionDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
@@ -35,14 +34,13 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private final ParticipantDataChangeService participantDataChangeService;
     private final EventService eventService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
-    private final ReferencedQuestionDao referencedQuestionDao;
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
                                  SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 ParticipantDataChangeService participantDataChangeService, EventService eventService, ReferencedQuestionDao referencedQuestionDao) {
+                                 ParticipantDataChangeService participantDataChangeService, EventService eventService) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
@@ -51,7 +49,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         this.answerProcessingService = answerProcessingService;
         this.participantDataChangeService = participantDataChangeService;
         this.eventService = eventService;
-        this.referencedQuestionDao = referencedQuestionDao;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -118,11 +115,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private List<Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
         List<Answer> answers = new ArrayList<>();
 
-        List<ReferencedQuestion> referencedQuestions = referencedQuestionDao.findBySurveyId(survey.getId());
+        List<SurveyParseUtils.QuestionReference> referencedQuestions = survey.getReferencedQuestions().stream().map(SurveyParseUtils.QuestionReference::fromString).toList();
 
-        for (ReferencedQuestion referencedQuestion : referencedQuestions) {
-            Answer answer = answerService.findForEnrolleeByQuestion(enrollee.getId(), referencedQuestion.getReferencedSurveyStableId(), referencedQuestion.getReferencedQuestionStableId());
-            answers.add(answer);
+        for (SurveyParseUtils.QuestionReference referencedQuestion : referencedQuestions) {
+            answerService
+                    .findForEnrolleeByQuestion(enrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
+                    .ifPresent(answers::add);
         }
 
         return answers;

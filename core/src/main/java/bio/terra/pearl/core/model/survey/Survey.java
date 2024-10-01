@@ -34,7 +34,7 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     @Builder.Default
     private List<AnswerMapping> triggers = new ArrayList<>();
     @Builder.Default
-    private List<ReferencedQuestion> referencedQuestions = new ArrayList<>();
+    private List<String> referencedQuestions = new ArrayList<>();
 
     @Builder.Default
     private boolean recur = false;

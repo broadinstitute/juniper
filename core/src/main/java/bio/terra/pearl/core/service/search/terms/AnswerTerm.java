@@ -34,10 +34,11 @@ public class AnswerTerm implements SearchTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        Answer answer = answerDao.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
-        if (Objects.isNull(answer)) {
+        Optional<Answer> answerOpt = answerDao.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
+        if (answerOpt.isEmpty()) {
             return new SearchValue();
         }
+        Answer answer = answerOpt.get();
         // answerType *shouldn't* be null, but we'll handle it just in case by assuming it's a string
         if (Objects.isNull(answer.getAnswerType())) {
             return new SearchValue(answer.getStringValue());
