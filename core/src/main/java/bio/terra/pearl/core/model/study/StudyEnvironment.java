@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.export.ExportIntegration;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
@@ -33,4 +34,7 @@ public class StudyEnvironment extends BaseEntity {
     private List<Trigger> triggers = new ArrayList<>();
     @Builder.Default
     private List<KitType> kitTypes = new ArrayList<>();
+    @Builder.Default
+    private List<ExportIntegration> exportIntegrations = new ArrayList<>();
+
 }

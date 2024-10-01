@@ -5,7 +5,7 @@ import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;
-import bio.terra.pearl.core.model.datarepo.TdrTable;
+import bio.terra.pearl.core.model.export.datarepo.TdrTable;
 import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;

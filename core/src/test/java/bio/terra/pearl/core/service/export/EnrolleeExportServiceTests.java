@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -82,7 +83,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
 
-        ExportOptions opts = ExportOptions.builder().limit(2).build();
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder().rowLimit(2).build();
 
         List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), opts);
         List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(opts, studyEnv.getId(), exportData);
@@ -103,13 +104,13 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         EnrolleeFactory.EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
 
-        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
                         .builder()
-                        .filter(null) // no filter means proxies will be included
+                        .filterString(null) // no filter means proxies will be included
                         .onlyIncludeMostRecent(true)
                         .fileFormat(ExportFileFormat.TSV)
-                        .limit(null)
+                        .rowLimit(null)
                         .build(),
                 studyEnv.getId(),
                 exportData);
@@ -129,9 +130,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         List<EnrolleeExportData> exportDataNoProxies = enrolleeExportService.loadEnrolleeExportData(
                 studyEnv.getId(),
-                ExportOptions
+                ExportOptionsWithExpression
                         .builder()
-                        .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
+                        .filterExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                         .build());
         List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportDataNoProxies);
         List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(exportDataNoProxies, exportModuleInfoNoProxies);
@@ -155,7 +156,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         enrolleeFactory.buildProxyAndGovernedEnrollee(testName, portalEnv, studyEnv);
 
-        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
 
@@ -171,7 +172,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .acceptingProxyEnrollment(true)
                 .build());
 
-        exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
 
@@ -215,7 +216,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 getAuditInfo(testInfo)
         );
 
-        List<EnrolleeExportData> data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptions());
+        List<EnrolleeExportData> data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptionsWithExpression());
         List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId, data);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(data, exportModuleInfo);
 
@@ -232,7 +233,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .enableFamilyLinkage(true)
                 .build());
 
-        data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptions());
+        data = enrolleeExportService.loadEnrolleeExportData(studyEnvId, new ExportOptionsWithExpression());
         exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId, data);
         exportMaps = enrolleeExportService.generateExportMaps(data, exportModuleInfo);
 
@@ -495,7 +496,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         );
 
 
-        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
 
@@ -538,7 +539,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
 
@@ -597,7 +598,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 )
         );
 
-        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptions());
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
 
@@ -618,7 +619,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
 
-        ExportOptions opts = ExportOptions.builder()
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder()
                 .fileFormat(ExportFileFormat.CSV)
                 .includeSubHeaders(false).build();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -629,7 +630,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(export, not(containsString(",Created at")));
 
         // now check it includes subheaders if asked
-        opts = ExportOptions.builder()
+        opts = ExportOptionsWithExpression.builder()
                 .includeSubHeaders(true)
                 .fileFormat(ExportFileFormat.CSV).build();
         baos = new ByteArrayOutputStream();

@@ -43,12 +43,12 @@ public class TriggerController implements TriggerApi {
   @Override
   public ResponseEntity<Object> findByStudy(
       String portalShortcode, String studyShortcode, String envName) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     List<Trigger> configs =
         triggerExtService.findForStudy(
             PortalStudyEnvAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, environmentName));
+                operator, portalShortcode, studyShortcode, environmentName));
     return ResponseEntity.ok(configs);
   }
 

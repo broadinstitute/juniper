@@ -43,5 +43,10 @@
     "name": "publish",
     "displayName": "Publish changes to portal content and configs",
     "description": "Allows publishing updates to IRB and Live environments"
+  },
+  {
+    "name": "export_integration",
+    "displayName": "Export integrations",
+    "description": "Configure automated data exports to external systems"
   }
 ]

@@ -1173,7 +1173,7 @@ paths:
         - { name: excludeModules, in: query, required: false, schema: { type: array, items: { type: string } } }
         - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
-        - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: rowLimit, in: query, required: false, schema: { type: integer } }
       responses:
         '200':
           description: export data
@@ -1198,6 +1198,85 @@ paths:
         '200':
           description: export data
           content: { text/plain: { schema: { type: string, format: binary } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations:
+    get:
+      summary: gets all the active exportIntegrations for the environment
+      tags: [ exportIntegration ]
+      operationId: findByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrations
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: create a new exportIntegration for the environment
+      tags: [ exportIntegration ]
+      operationId: create
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}:
+    get:
+      summary: gets the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: get
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}/run:
+    post:
+      summary: runs the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: run
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration result
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrationJobs:
+    get:
+      summary: gets all the exportIntegrationJobs for the environment
+      tags: [ exportIntegration ]
+      operationId: findJobsByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrationJobs
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:

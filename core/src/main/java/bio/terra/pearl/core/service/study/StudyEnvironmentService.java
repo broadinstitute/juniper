@@ -11,10 +11,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.dataimport.ImportService;
+import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
 import bio.terra.pearl.core.service.datarepo.DatasetService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.export.integration.ExportIntegrationService;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
@@ -46,6 +47,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final WithdrawnEnrolleeDao withdrawnEnrolleeDao;
     private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     private final ImportService importService;
+    private final ExportIntegrationService exportIntegrationService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -58,7 +60,11 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
-                                   ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService, ParticipantDataChangeService participantDataChangeService) {
+                                   ImportService importService, FamilyService familyService,
+                                   FamilyEnrolleeService familyEnrolleeService,
+                                   EnrolleeRelationService enrolleeRelationService,
+                                   ParticipantDataChangeService participantDataChangeService,
+                                   ExportIntegrationService exportIntegrationService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -74,6 +80,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.familyEnrolleeService = familyEnrolleeService;
         this.enrolleeRelationService = enrolleeRelationService;
         this.participantDataChangeService = participantDataChangeService;
+        this.exportIntegrationService = exportIntegrationService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -132,6 +139,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         importService.deleteByStudyEnvId(studyEnvironmentId);
+        exportIntegrationService.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

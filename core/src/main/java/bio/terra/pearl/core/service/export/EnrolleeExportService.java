@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -81,7 +82,7 @@ public class EnrolleeExportService {
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
      * */
-    public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
+    public void export(ExportOptionsWithExpression exportOptions, UUID studyEnvironmentId, OutputStream os) {
 
         List<EnrolleeExportData> enrolleeExportData = loadEnrolleeExportData(studyEnvironmentId, exportOptions);
 
@@ -91,10 +92,10 @@ public class EnrolleeExportService {
         exporter.export(os, exportOptions.isIncludeSubHeaders());
     }
 
-    public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptions exportOptions) {
+    public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptionsWithExpression exportOptions) {
         return loadEnrolleesForExport(
                 studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId),
-                loadEnrollees(studyEnvironmentId, exportOptions.getFilter(), exportOptions.getLimit()));
+                loadEnrollees(studyEnvironmentId, exportOptions.getFilterExpression(), exportOptions.getRowLimit()));
     }
 
     private List<Enrollee> loadEnrollees(UUID studyEnvironmentId, EnrolleeSearchExpression filter, Integer limit) {
