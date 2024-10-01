@@ -75,7 +75,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         survey.setCreatedAt(now);
         survey.setLastUpdatedAt(now);
         survey.setStableId(survey.getStableId().trim());
-        survey.setReferencedQuestions(SurveyParseUtils.findReferencedSurveyQuestions(survey).stream().map(Object::toString).toList());
+        survey.setReferencedQuestions(SurveyParseUtils.parseReferencedSurveyQuestions(survey).stream().map(Object::toString).toList());
 
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {

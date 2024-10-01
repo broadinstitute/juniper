@@ -157,8 +157,9 @@ public class SurveyParseUtils {
 
     // returns a list of all potential question references in the survey content. these will need to be checked
     // against question defs in the database to ensure they are valid.
-    public static List<QuestionReference> findReferencedSurveyQuestions(Survey survey) {
+    public static List<QuestionReference> parseReferencedSurveyQuestions(Survey survey) {
         Stream<MatchResult> matchedObjectVariables = surveyQuestionRegexPattern.matcher(survey.getContent()).results();
+        List<String> questionNames = parseQuestionNames(survey.getContent());
 
         return matchedObjectVariables
                 .map(MatchResult::group)
@@ -167,16 +168,40 @@ public class SurveyParseUtils {
                 .filter(qr -> !nonSurveyObjectVariables.contains(qr.surveyStableId))
                 // there are questions that are objects, e.g., matrix questions, so we want
                 // to make sure we're not including those in the list of references
-                .filter(qr -> hasQuestion(qr.surveyStableId, survey))
+                .filter(qr -> !questionNames.contains(qr.surveyStableId))
                 .collect(Collectors.toList());
     }
 
-    private static boolean hasQuestion(String stableId, Survey survey) {
-        return getAllQuestions(survey.getContent())
-                .stream()
-                .map(SurveyParseUtils::getQuestionStableId)
-                .filter(Objects::nonNull)
-                .anyMatch(q -> q.equals(stableId));
+
+    public static List<String> parseQuestionNames(String content) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode surveyContent;
+
+        try {
+            surveyContent = objectMapper.readTree(content);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Malformed survey content json");
+        }
+
+        JsonNode pages = surveyContent.get("pages");
+        if (pages == null) {
+            // surveys should probably always have pages, but we want to not have this fail if the content is empty,
+            // perhaps because it is a placeholder in-development survey
+            pages = objectMapper.createArrayNode();
+        }
+
+        //For each page in the survey, iterate through the JsonNode tree and unroll any panels
+        List<String> questionNames = new ArrayList<>();
+        for (JsonNode page : pages) {
+            for (JsonNode question : SurveyParseUtils.getAllQuestions(page)) {
+                if (question.has("name")) {
+                    questionNames.add(question.get("name").asText());
+                }
+            }
+
+        }
+
+        return questionNames;
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */

@@ -150,7 +150,6 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertEquals(answer.getSurveyStableId(), "survey1");
         assertEquals(answer.getQuestionStableId(), "diagnosis");
         assertEquals(answer.getStringValue(), "cancer");
-
     }
 
     @Test
