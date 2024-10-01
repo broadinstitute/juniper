@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

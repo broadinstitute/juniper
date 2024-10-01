@@ -29,7 +29,7 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
     const response = await Api.exportEnrollees(
       selectedPortal.shortcode,
       selectedStudy.study.shortcode,
-      'live', { fileFormat: 'JSON', limit: 0 })
+      'live', { fileFormat: 'JSON', rowLimit: 0 })
     const result = await response.json()
     setParticipantFields(result)
   }, [selectedStudy], 'Failed to load cohort criteria options')

@@ -6,7 +6,7 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath,
-  studyEnvDatasetListViewPath,
+  studyEnvDatasetListViewPath, studyEnvExportIntegrationsPath,
   studyEnvFormsPath,
   studyEnvImportPath,
   studyEnvMailingListPath,
@@ -34,6 +34,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
   }
   const navStyleFunc = ({ isActive }: { isActive: boolean }) => {
     return isActive ? { background: 'rgba(255, 255, 255, 0.3)' } : {}
+  }
+
+  const studyParams = {
+    portalShortcode,
+    studyShortcode: study.shortcode
   }
 
   return <div className="pt-3">
@@ -70,6 +75,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
         </li>
+        { portalId && userHasPermission(user.user, portalId, 'export_integration') && <li className="mb-2">
+          <NavLink to={studyEnvExportIntegrationsPath({ ...studyParams, envName: 'live' })}
+            className={sidebarNavLinkClasses} style={navStyleFunc}>Export Integrations</NavLink>
+        </li>
+        }
         { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
           <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>

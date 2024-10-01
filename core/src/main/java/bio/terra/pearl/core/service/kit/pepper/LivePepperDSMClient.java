@@ -59,7 +59,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
             kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
         }
 
-        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", kitRequestBody);        PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", kitRequestBody);
+        PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
                     kitRequest.getId(), response.getKits().length), Arrays.toString(response.getKits()), response);

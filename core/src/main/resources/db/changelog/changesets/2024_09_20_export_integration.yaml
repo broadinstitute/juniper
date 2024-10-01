@@ -1,0 +1,50 @@
+
+databaseChangeLog:
+  - changeSet:
+      id: "export_integration"
+      author: dbush
+      changes:
+
+        - createTable:
+            tableName: export_options
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: split_options_into_columns, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: stable_ids_for_options, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: only_include_most_recent, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: filter_string, type: text }
+              - column: { name: file_format, type: text, constraints: { nullable: false } }
+              - column: { name: row_limit, type: int }
+              - column: { name: include_sub_headers, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+        - sql:
+            sql: "ALTER TABLE export_options ADD COLUMN exclude_modules text[];"
+
+        - createTable:
+            tableName: export_integration
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: name, type: text, constraints: { nullable: false } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: study_environment_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_export_int_study_environment_id, references: study_environment(id) } }
+              - column: { name: destination_url, type: text }
+              - column: { name: destination_type, type: text }
+              - column: { name: export_options_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_export_int_export_options_id, references: export_options(id) } }
+              - column: { name: enabled, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: export_integration_job
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: export_integration_id, type: uuid, constraints: { nullable: false , foreignKeyName: fk_export_job_to_config_id, references: export_integration(id) } }
+              - column: { name: creating_admin_user_id, type: uuid, constraints: { foreignKeyName: fk_export_job_to_admin_user_id, references: admin_user(id) } }
+              - column: { name: system_process, type: text }
+              - column: { name: started_at, type: datetime }
+              - column: { name: completed_at, type: datetime }
+              - column: { name: status, type: text }
+              - column: { name: result, type: text }
+

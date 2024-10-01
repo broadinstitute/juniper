@@ -18,45 +18,49 @@ function AdminNavbar() {
   }
   return <>
     <nav className="Navbar navbar navbar-expand-lg navbar-light">
-      <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
+      <ul className="navbar-nav">
+        {breadCrumbs.map((crumb, index) => <li key={index}
+          className="ms-2 d-flex align-items-center">
+          {crumb} {(index < breadCrumbs.length - 1) &&
+            <FontAwesomeIcon icon={faChevronRight} className="fa-xs text-muted"/>}
+        </li>)}
+      </ul>
+      <button className="navbar-toggler mx-2" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
         aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>
       <div className="collapse navbar-collapse z-1" id="navbarSupportedContent">
-        <ul className="navbar-nav ms-lg-3">
-          { breadCrumbs.map((crumb, index) => <li key={index}
-            className="ms-2 d-flex align-items-center" >
-            {crumb} {(index < breadCrumbs.length -1) &&
-              <FontAwesomeIcon icon={faChevronRight} className="fa-xs text-muted"/>}
-          </li>)}
-        </ul>
         <ul className="navbar-nav ms-auto" style={{
           position: 'sticky',
           right: 10
         }}>
           <li className="nav-item dropdown">
-            <a className="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon={faQuestionCircle} className="fa-2x nav-icon" title="help menu"/>
+            <a className="d-flex nav-link dropdown-toggle align-items-center"
+              href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <FontAwesomeIcon icon={faQuestionCircle} className="d-none d-lg-inline fa-2x nav-icon" title="help menu"/>
+              <span className="d-lg-none ms-2">Help</span>
             </a>
             <div className="dropdown-menu dropdown-menu-end p-3">
               <ul className="list-unstyled">
                 <li>
                   <Link className="dropdown-item" to="https://broad-juniper.zendesk.com" target="_blank">
-                      Help pages
+                    Help pages
                   </Link>
                 </li>
                 <li className="pt-2">
                   <a className="dropdown-item" onClick={() => setShowContactModal(!showContactModal)}>
-                      Contact support
+                    Contact support
                   </a>
                 </li>
               </ul>
             </div>
           </li>
           {currentUser.user && <li className="nav-item dropdown">
-            <a className="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon={faUserCircle} className="fa-2x nav-icon" title="user menu"/>
+            <a className="d-flex nav-link dropdown-toggle align-items-center"
+              href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <FontAwesomeIcon icon={faUserCircle} className="d-none d-lg-inline fa-2x nav-icon" title="user menu"/>
+              <span className="d-lg-none ms-2">{currentUser.user.username}</span>
             </a>
             <div className="dropdown-menu dropdown-menu-end p-3">
               <h3 className="h6">{currentUser.user.username}</h3>

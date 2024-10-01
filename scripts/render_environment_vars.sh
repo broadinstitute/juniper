@@ -21,6 +21,7 @@ ADMIN_API_ENV_VARS=(
   "TDR_EXPORT_STORAGE_ACCOUNT_KEY:vault:vault read -field=storage_account_key secret/dsp/ddp/d2p/dev/tdr-export-storage-account"
   "TDR_EXPORT_STORAGE_CONTAINER_NAME:static:juniper-dataset-ingest"
   "DEPLOYMENT_ZONE:static:local"
+  "AIRTABLE_AUTH_TOKEN:vault:vault read -field=authToken secret/dsp/ddp/d2p/dev/airtable"
 )
 
 PARTICIPANT_API_ENV_VARS=(

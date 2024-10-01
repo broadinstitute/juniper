@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.export.formatters.item;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.export.BaseExporter;
 import bio.terra.pearl.core.service.export.DataValueExportType;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;

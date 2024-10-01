@@ -6,6 +6,8 @@ import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.*;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.*;
@@ -19,6 +21,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -250,5 +253,14 @@ public class EnrolleeSearchExpressionParser {
             return variable.substring(variable.indexOf(".") + 1).split("\\.");
         }
         throw new IllegalArgumentException("No field in variable");
+    }
+
+    public ExportOptionsWithExpression parseExportOptions(ExportOptions exportOptions) {
+        ExportOptionsWithExpression exportOptionsWithExpression = new ExportOptionsWithExpression();
+        BeanUtils.copyProperties(exportOptions, exportOptionsWithExpression);
+        if (!StringUtils.isBlank(exportOptions.getFilterString())) {
+            exportOptionsWithExpression.setFilterExpression(parseRule(exportOptions.getFilterString()));
+        }
+        return exportOptionsWithExpression;
     }
 }

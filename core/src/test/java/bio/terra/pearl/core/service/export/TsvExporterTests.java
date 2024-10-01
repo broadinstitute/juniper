@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;

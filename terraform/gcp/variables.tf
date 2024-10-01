@@ -4,6 +4,11 @@ variable "project" {
   description = "GCP project"
 }
 
+variable "project_number" {
+  type = number
+  description = "GCP project number"
+}
+
 variable "region" {
   type = string
   default = "us-central1"
@@ -12,6 +17,7 @@ variable "region" {
 
 variable "db_tier" {
   type = string
+  # for production, use machine type from https://cloud.google.com/sql/docs/postgres/instance-settings
   default = "db-f1-micro"
   description = "Database tier"
 }
@@ -26,7 +32,6 @@ variable "admin_url" {
   type = string
   description = "Admin URL"
 }
-
 
 variable "environment" {
   type = string

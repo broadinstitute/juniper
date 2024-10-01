@@ -2,7 +2,7 @@ import {
   KitType,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType,
+  ParticipantTaskType, PortalParticipantUser,
   Survey
 } from 'api/api'
 import {
@@ -22,6 +22,15 @@ export const mockParticipantUser: () => ParticipantUser = () => {
     shortcode: 'ACC_fakeShortcode',
     token: 'fakeToken',
     lastLogin: 0
+  }
+}
+
+export const mockPortalParticipantUser = (): PortalParticipantUser => {
+  return {
+    profile: mockProfile(),
+    profileId: 'profile1',
+    id: 'ppUser1',
+    participantUserId: 'user1'
   }
 }
 

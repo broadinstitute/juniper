@@ -1,5 +1,9 @@
 resource "google_compute_global_address" "admin_ip_address" {
   name = "admin-ip"
+
+  depends_on = [
+    time_sleep.enable_all_services_with_timeout
+  ]
 }
 
 resource "google_dns_managed_zone" "juniper_admin_dns_zone" {
@@ -12,6 +16,10 @@ resource "google_dns_managed_zone" "juniper_admin_dns_zone" {
   }
   name       = "juniper-admin-dns-zone"
   visibility = "public"
+
+  depends_on = [
+    time_sleep.enable_all_services_with_timeout
+  ]
 }
 
 resource "google_dns_record_set" "a_juniper_admin" {

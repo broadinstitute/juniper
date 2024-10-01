@@ -8,6 +8,7 @@ import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.export.integration.AirtableExporter;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ConfigExtServiceTests {
   @MockBean private B2CConfiguration b2CConfiguration;
   @MockBean private LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
   @MockBean private AddressValidationConfig addressValidationConfig;
+  @MockBean private AirtableExporter.AirtableConfig airtableConfig;
 
   @Test
   public void testConfigMap() {
@@ -38,7 +40,11 @@ public class ConfigExtServiceTests {
     when(b2CConfiguration.policyName()).thenReturn("policy123");
     ConfigExtService configExtService =
         new ConfigExtService(
-            b2CConfiguration, applicationRoutingPaths, pepperDSMConfig, addressValidationConfig);
+            b2CConfiguration,
+            applicationRoutingPaths,
+            pepperDSMConfig,
+            addressValidationConfig,
+            airtableConfig);
     Map<String, String> configMap = configExtService.getConfigMap();
     Assertions.assertEquals("something.org", configMap.get("participantUiHostname"));
   }
@@ -48,7 +54,11 @@ public class ConfigExtServiceTests {
     AdminUser user = AdminUser.builder().superuser(false).build();
     ConfigExtService configExtService =
         new ConfigExtService(
-            b2CConfiguration, applicationRoutingPaths, pepperDSMConfig, addressValidationConfig);
+            b2CConfiguration,
+            applicationRoutingPaths,
+            pepperDSMConfig,
+            addressValidationConfig,
+            airtableConfig);
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> {
@@ -74,7 +84,11 @@ public class ConfigExtServiceTests {
     AddressValidationConfig testAddrConfig = new AddressValidationConfig(mockEnvironment);
     ConfigExtService configExtService =
         new ConfigExtService(
-            b2CConfiguration, applicationRoutingPaths, testPepperConfig, testAddrConfig);
+            b2CConfiguration,
+            applicationRoutingPaths,
+            testPepperConfig,
+            testAddrConfig,
+            airtableConfig);
     Map<String, ?> dsmConfigMap =
         (Map<String, ?>) configExtService.getInternalConfigMap(user).get("pepperDsmConfig");
     Map<String, ?> addressValidationConfigMap =

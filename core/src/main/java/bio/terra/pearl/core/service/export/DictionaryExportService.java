@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;

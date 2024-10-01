@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.export.ExportIntegration;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
@@ -48,6 +49,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private final PortalEnvironmentService portalEnvironmentService;
     private final KitTypeDao kitTypeDao;
     private final StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao;
+    private final ExportIntegrationPopulator exportIntegrationPopulator;
 
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator, FamilyPopulator familyPopulator,
@@ -56,7 +58,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
                           PortalDiffService portalDiffService, StudyPublishingService studyPublishingService,
                           PortalEnvironmentService portalEnvironmentService, KitTypeDao kitTypeDao,
-                          StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao) {
+                          StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao,
+                          ExportIntegrationPopulator exportIntegrationPopulator) {
         this.studyService = studyService;
         this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
@@ -70,6 +73,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.portalEnvironmentService = portalEnvironmentService;
         this.kitTypeDao = kitTypeDao;
         this.studyEnvironmentKitTypeDao = studyEnvironmentKitTypeDao;
+        this.exportIntegrationPopulator = exportIntegrationPopulator;
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
@@ -122,6 +126,10 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
 
         for (String familyFile : studyPopEnv.getFamilyFiles()) {
             familyPopulator.populate(context.newFrom(familyFile), overwrite);
+        }
+
+        for (ExportIntegration exportIntegration : studyPopEnv.getExportIntegrations()) {
+            exportIntegrationPopulator.populateFromDto(exportIntegration, context, overwrite);
         }
     }
 
