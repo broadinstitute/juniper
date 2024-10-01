@@ -36,7 +36,7 @@ export default function HubRouter() {
         element={<ParticipantProfile/>}/>
       <Route path="kits"
         element={<KitsPage/>}/>
-      <Route path="kits/in_person"
+      <Route path="kits/in-person"
         element={<KitInstructions/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>

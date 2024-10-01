@@ -122,7 +122,7 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
           This study is currently offering the option to complete a sample collection kit in-person.
         </div>
         <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
-          <Link to={'/hub/kits/in_person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+          <Link to={'/hub/kits/in-person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
             Complete a kit in-person
           </Link>
         </div>
