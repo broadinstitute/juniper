@@ -75,7 +75,7 @@ export default function HubPage() {
     <>
       <DocumentTitle title={i18n('navbarDashboard')}/>
       <div
-        className="hub-dashboard-background flex-grow-1 mb-2"
+        className="hub-dashboard-background flex-grow-1 pb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && hasSubjectEnrollee && noActivitiesAlert && <HubMessageAlert

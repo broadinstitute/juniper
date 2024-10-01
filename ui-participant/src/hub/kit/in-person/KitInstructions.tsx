@@ -12,36 +12,28 @@ export default function KitInstructions() {
   const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
 
   return <div
-    className="hub-dashboard-background flex-grow-1 px-2"
+    className="hub-dashboard-background flex-grow-1"
     style={{ background: 'var(--dashboard-background-color)' }}>
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
-        <div className="card-body">
-          <div className="align-items-center">
-            <BaseKitInstructions/>
-            {activeEnrollee ?
-              <KitContent enrollee={activeEnrollee}/> :
-              <div className="text-danger">
-                No enrollee found. Please contact a member of the study team for assistance.
-              </div>
-            }
+        <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
+          <h1 className="pb-2">Sample kit instructions</h1>
+          <div className="pb-3">
+            If you are completing a sample collection kit in-person, please follow the instructions provided
+            by a member of the study team. Any additional information that you may need, such as your unique
+            participant identifier, will be provided below.
           </div>
+          <div className="pb-4">
+            If you have any questions, please ask a member of the study team.
+          </div>
+          {activeEnrollee ?
+            <KitContent enrollee={activeEnrollee}/> :
+            <div className="text-danger">
+              No enrollee found. Please contact a member of the study team for assistance.
+            </div>
+          }
         </div>
       </div>
-    </div>
-  </div>
-}
-
-const BaseKitInstructions = () => {
-  return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
-    <h1 className="pb-3">Sample Kit Instructions</h1>
-    <div className="pb-3">
-      If you are completing a sample collection kit in-person, please follow the instructions provided
-        by a member of the study team. Any additional information that you may need, such as your unique
-        participant identifier, will be provided below.
-    </div>
-    <div className="pb-3">
-      If you have any questions, please ask a member of the study team.
     </div>
   </div>
 }
@@ -53,37 +45,42 @@ const KitContent = ({ enrollee }: { enrollee: Enrollee }) => {
   const activeKit = enrollee.kitRequests.filter(kit => kit.distributionMethod === 'IN_PERSON')
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
 
-  if (!enrollee.consented) { return <UnconsentedKitView/> }
-  if (!activeKit) { return <NoActiveKitView enrollee={enrollee}/> }
-  if (activeKit.status === 'COLLECTED_BY_STAFF') { return <CollectedKitView/> }
+  if (!enrollee.consented) {
+    return <UnconsentedKitView/>
+  }
+  if (!activeKit) {
+    return <NoActiveKitView enrollee={enrollee}/>
+  }
+  if (activeKit.status === 'COLLECTED_BY_STAFF') {
+    return <CollectedKitView/>
+  }
 
   return <DistributedKitView enrollee={enrollee} activeKit={activeKit}/>
 }
 
 const UnconsentedKitView = () => {
-  return (
-    <div className="mb-3 rounded round-3 py-4 px-md-5 bg-white shadow-sm">
-      <h2 className="d-flex align-items-center mb-3">
-        <FontAwesomeIcon className="text-danger me-2" icon={faCircleExclamation}/> Consent Required
-      </h2>
-      <div className="pb-3">
+  return (<>
+    <h2 className="d-flex align-items-center mb-3">
+      <FontAwesomeIcon className="text-danger me-2" icon={faCircleExclamation}/> Consent Required
+    </h2>
+    <div className="pb-3">
         Before completing a sample collection kit, you must read and sign the study consent form.
-      </div>
-      <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
-        <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-          Start Consent
-        </Link>
-      </div>
     </div>
+    <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+      <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+          Start Consent
+      </Link>
+    </div>
+  </>
   )
 }
 
 const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
   return (
-    <div className="mb-3 rounded round-3 py-4 px-md-5 bg-white shadow-sm">
-      <h2 className="d-flex align-items-center mb-3">
-        Your sample collection kit
-      </h2>
+    <>
+      <h3 className="d-flex align-items-center mb-2">
+        Provide a sample in-person
+      </h3>
       <div>
           To receive a sample collection kit, a member of the study team will scan your unique participation code
           below to associate a sample kit with your account.
@@ -99,14 +96,14 @@ const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
           <FontAwesomeIcon icon={faRefresh}/> Refresh
         </button>
       </div>
-    </div>
+    </>
   )
 }
 
 const CollectedKitView = () => {
   return (
-    <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm">
-      <h2 className="d-flex align-items-center mb-3">
+    <>
+      <h2 className="d-flex align-items-center mb-2">
         Your sample collection kit
       </h2>
       <div className="mb-3">
@@ -122,14 +119,14 @@ const CollectedKitView = () => {
           Return to Dashboard
         </Link>
       </div>
-    </div>
+    </>
   )
 }
 
 const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activeKit: KitRequest }) => {
   return (
-    <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-md-5">
-      <h2 className="d-flex align-items-center mb-3">
+    <>
+      <h2 className="d-flex align-items-center mb-2">
         Your sample collection kit
       </h2>
       <div className="mb-3">
@@ -155,6 +152,6 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
           Return to Dashboard
         </Link>
       </div>
-    </div>
+    </>
   )
 }

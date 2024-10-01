@@ -7,7 +7,8 @@ import SurveyView from './survey/SurveyView'
 import { ParticipantProfile } from 'participant/ParticipantProfile'
 import PrintSurveyView from './survey/PrintSurveyView'
 import ManageProfiles from '../participant/ManageProfiles'
-const KitInstructions = lazy(() => import('./kit/KitInstructions'))
+import KitsPage from './kit/KitsPage'
+const KitInstructions = lazy(() => import('./kit/in-person/KitInstructions'))
 
 /** Handles url pathing for hub routes (a.k.a participant is signed in) */
 export default function HubRouter() {
@@ -34,6 +35,8 @@ export default function HubRouter() {
       <Route path="profile/:ppUserId?"
         element={<ParticipantProfile/>}/>
       <Route path="kits"
+        element={<KitsPage/>}/>
+      <Route path="kits/in-person"
         element={<KitInstructions/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>
