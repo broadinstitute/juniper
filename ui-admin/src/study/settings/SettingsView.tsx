@@ -28,7 +28,6 @@ import { doApiLoad } from 'api/api-utils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useUser } from 'user/UserProvider'
 
 
 /** shows a url-routable settings page for both the portal and the selected study */
@@ -41,8 +40,6 @@ export function LoadedSettingsView(
       studyEnvContext: StudyEnvContextT,
       portalContext: LoadedPortalContextT
     }) {
-  const { user } = useUser()
-
   const portal = portalContext.portal
   const portalEnv = portalContext.portal.portalEnvironments
     .find(env =>
