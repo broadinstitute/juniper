@@ -103,11 +103,11 @@ spec:
             - name: PARTICIPANT_UI_HOSTNAME
               value: {{ .Values.adminUrl }}
             - name: B2C_CLIENT_ID
-              value: {{ .Values.b2c.adminClientId }}
+              value: {{ .Values.b2c.admin.clientId }}
             - name: B2C_POLICY_NAME
-              value: {{ .Values.b2c.adminPolicyName }}
+              value: {{ .Values.b2c.admin.policyName }}
             - name: B2C_TENANT_NAME
-              value: {{ .Values.b2c.adminTenantName }}
+              value: {{ .Values.b2c.admin.tenantName }}
             - name: TDR_ADDRESS
               value: https://jade.datarepo-dev.broadinstitute.org
             - name: TDR_EXPORT_ENABLED
@@ -159,7 +159,7 @@ spec:
             - name: REMOTE_USER_CLAIM
               value: sub
             - name: B2C_APPLICATION_ID
-              value: {{ .Values.b2c.adminClientId }}
+              value: {{ .Values.b2c.admin.clientId }}
           volumeMounts:
             - mountPath: /etc/httpd/conf.d/site.conf
               name: d2p-site-configmap-mount

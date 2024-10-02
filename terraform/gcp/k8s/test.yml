@@ -1,0 +1,906 @@
+---
+# Source: juniper/templates/juniper-ksa-user.yml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: juniper-app-ksa
+  annotations:
+    iam.gke.io/gcp-service-account: juniper-app-gsa@broad-juniper-dev.iam.gserviceaccount.com
+---
+# Source: juniper/templates/b2c-config.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-b2c-configmap
+data:
+  portalB2CConfig.yaml: |
+    b2c:
+      
+      atcp:
+          tenantName: does-not-exist
+          policyName: does-not-exist
+          clientId: does-not-exist
+          changePasswordPolicyName: does-not-exist
+      
+      cmi:
+          tenantName: junipercmidemo
+          policyName: B2C_1A_ddp_participant_signup_signin_cmi-dev
+          clientId: 0cdfdafd-75fb-4e36-b6a2-c00e79c86bb0
+          changePasswordPolicyName: B2C_1A_ddp_participant_change_password_cmi-dev
+      
+      demo:
+          tenantName: juniperdemodev
+          policyName: B2C_1A_ddp_participant_signup_signin_demo-dev
+          clientId: 37d95cc4-7c71-465e-9fc2-66be9a54c202
+          changePasswordPolicyName: B2C_1A_ddp_participant_change_password_demo-dev
+      
+      gvasc:
+          tenantName: gvascdev
+          policyName: B2C_1A_ddp_participant_signup_signin_gvasc-dev
+          clientId: 441d57d2-5f17-473b-8b19-a2ed523c09bf
+          changePasswordPolicyName: B2C_1A_ddp_participant_change_password_gvasc-dev
+      
+      hearthive:
+          tenantName: hearthivedev
+          policyName: B2C_1A_ddp_participant_signup_signin_hearthive-dev
+          clientId: 8c778931-b7f6-4503-b30e-e975ab8ea615
+          changePasswordPolicyName: B2C_1A_ddp_participant_change_password_hearthive-dev
+      
+      ourhealth:
+          tenantName: ourhealthdev
+          policyName: B2C_1A_DDP_participant_signup_signin_ourhealth-dev
+          clientId: 206a23da-f303-4a9b-ad86-f51d1be51777
+          changePasswordPolicyName: B2C_1A_DDP_participant_change_password_ourhealth-dev
+      
+      portalName:
+          tenantName: 
+          policyName: 
+          clientId: 
+          changePasswordPolicyName: 
+      
+      rgp:
+          tenantName: juniperrgpdemo
+          policyName: B2C_1A_ddp_participant_signup_signin_rgp-dev
+          clientId: 42445bb9-7ab2-48e9-b7a7-c5f84258e87b
+          changePasswordPolicyName: B2C_1A_ddp_participant_change_password_rgp-dev
+      
+      template:
+          tenantName: does-not-exist
+          policyName: does-not-exist
+          clientId: does-not-exist
+          changePasswordPolicyName: does-not-exist
+---
+# Source: juniper/templates/oauth2-config.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: d2p-oauth2-configmap
+data:
+  oauth2.conf: >
+    OAuth2Cache shm max_val_size=16384
+
+    OAuth2TokenVerify metadata
+    https://ddpdevb2c.b2clogin.com/ddpdevb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_admin_signup_signin_dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    
+    OAuth2TokenVerify metadata
+    https://does-not-exist.b2clogin.com/does-not-exist.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=does-not-exist
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://junipercmidemo.b2clogin.com/junipercmidemo.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_participant_signup_signin_cmi-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://juniperdemodev.b2clogin.com/juniperdemodev.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_participant_signup_signin_demo-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://gvascdev.b2clogin.com/gvascdev.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_participant_signup_signin_gvasc-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://hearthivedev.b2clogin.com/hearthivedev.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_participant_signup_signin_hearthive-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://ourhealthdev.b2clogin.com/ourhealthdev.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_DDP_participant_signup_signin_ourhealth-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://.b2clogin.com/.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://juniperrgpdemo.b2clogin.com/juniperrgpdemo.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_ddp_participant_signup_signin_rgp-dev
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+    OAuth2TokenVerify metadata
+    https://does-not-exist.b2clogin.com/does-not-exist.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=does-not-exist
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    
+
+    OAuth2TokenVerify metadata
+    https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    OAuth2TokenVerify metadata
+    https://accounts.google.com/.well-known/openid-configuration
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    OAuth2TokenVerify introspect https://127.0.0.1/introspect/
+    introspect.ssl_verify=false&verify.exp=required&verify.iat=skip
+---
+# Source: juniper/templates/site-config.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: d2p-site-configmap
+data:
+  site.conf: >
+    ServerTokens ProductOnly
+
+    TraceEnable off
+
+    ServerSignature off
+
+
+    LogFormat "%h %l %u \"%{OIDC_CLAIM_email}i\" \"%{X-App-ID}i\"
+    [%{%FT%T}t.%{msec_frac}t%{%z}t] %D %X \"%r\" %>s %b \"%{Referer}i\"
+    \"%{Origin}i\" \"%{User-Agent}i\"" combined
+
+    LogFormat "%{X-Forwarded-For}i %l %u \"%{OIDC_CLAIM_email}i\"
+    \"%{X-App-ID}i\" [%{%FT%T}t.%{msec_frac}t%{%z}t] %D %X \"%r\" %>s %b
+    \"%{Referer}i\" \"%{Origin}i\" \"%{User-Agent}i\"" proxy
+
+    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+
+    CustomLog "/dev/stdout" combined env=!forwarded
+
+    CustomLog "/dev/stdout" proxy env=forwarded
+
+
+    LogLevel info ssl:warn
+
+
+    Header unset X-Frame-Options
+
+    Header always set X-Frame-Options SAMEORIGIN
+
+    Header unset X-XSS-Protection
+
+    Header always set X-XSS-Protection "1; mode=block"
+
+    Header unset X-Content-Type-Options
+
+    Header always set X-Content-Type-Options: nosniff
+
+    Header unset Strict-Transport-Security
+
+    Header always set Strict-Transport-Security "max-age=31536000;
+    includeSubDomains"
+
+    Header unset Referrer-Policy
+
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+
+    # Timeout only after 10 minutes 50 seconds
+
+    ProxyTimeout 650
+
+
+    <VirtualHost _default_:80>
+      RewriteEngine On
+      RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+      RewriteRule ^(.*)$ http://%1$1 [R=301,L]
+
+      DocumentRoot /app
+
+      <Directory "/app">
+        # disable mod_rewrite
+        RewriteEngine off
+
+        AllowOverride All
+        Options -Indexes
+
+        Order allow,deny
+        Allow from all
+      </Directory>
+
+      ErrorLog /dev/stdout
+      CustomLog "/dev/stdout" combined
+    
+      # routing rules for where to send traffic w/ no logged-in user
+    
+      # rfc7662 oauth2 introspection path
+      <Location /introspect/>
+        RewriteEngine off
+        Require all granted
+        AuthType None
+      </Location>
+    
+      # regex matcher for everything that isn't the oauth2 introspection path
+      <LocationMatch "^(?!/introspect/)(/)(.*)">
+    
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+        RewriteRule ^(.*)$ $1 [R=204,L]
+    
+        <Limit OPTIONS>
+            Require all granted
+        </Limit>
+    
+        AuthType None
+        Require all granted
+    
+        ProxyPassMatch http://localhost:8080/$2
+        ProxyPassReverse http://localhost:8080/
+      </LocationMatch>
+    
+      # routing rules for where to send traffic for a logged-in user
+      <Location /api>
+        Header unset Access-Control-Allow-Origin
+        Header always set Access-Control-Allow-Origin "*"
+        Header unset Access-Control-Allow-Headers
+        Header always set Access-Control-Allow-Headers "authorization,content-type,accept,origin,x-app-id"
+        Header unset Access-Control-Allow-Methods
+        Header always set Access-Control-Allow-Methods "GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD"
+        Header unset Access-Control-Max-Age
+        Header always set Access-Control-Max-Age 1728000
+    
+        RewriteEngine On
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+        RewriteRule ^(.*)$ $1 [R=204,L]
+    
+        <Limit OPTIONS>
+            Require all granted
+        </Limit>
+    
+        AuthType oauth2
+        <RequireAll>
+          # ID-444 Added this for security compliance
+          # Evaluates to true if the request contains email_verified=true, or if it is not present.
+          # Note: we need to reference %{REMOTE_USER} to ensure that this expression is evaluated _after_ the authentication has happened
+          # %{REMOTE_USER} != %{REMOTE_USER} will never evaluate to true but will ensure that the expression is evaluated at the correct time
+          Require expr "%{REMOTE_USER} != %{REMOTE_USER} || %{HTTP:OAUTH2_CLAIM_email_verified} == 'true' || -z %{HTTP:OAUTH2_CLAIM_email_verified}"
+          <RequireAll>
+            Require valid-user
+          </RequireAll>
+        </RequireAll>
+    
+        RequestHeader set oidc_claim_email "expr=%{HTTP:OAUTH2_CLAIM_email}"
+        RequestHeader set oidc_claim_user_id "expr=%{HTTP:OAUTH2_CLAIM_sub}"
+        RequestHeader set oidc_access_token "expr=%{HTTP:OAUTH2_CLAIM_access_token}"
+        RequestHeader set oidc_claim_expires_in "expr=%{HTTP:OAUTH2_CLAIM_exp}"
+    
+        ProxyPass http://localhost:8080/api
+        ProxyPassReverse http://localhost:8080/api
+    
+        AddOutputFilterByType DEFLATE application/json text/plain text/html application/javascript application/x-javascript
+      </Location>
+      # Begin additional unauthenticated routes
+      <Location /api/public>
+        RewriteEngine off
+        Require all granted
+        AuthType None
+    
+        ProxyPass http://localhost:8080/api/public
+        ProxyPassReverse http://localhost:8080/api/public
+      </Location>
+      # End additional routes
+
+    </VirtualHost>
+---
+# Source: juniper/templates/admin-service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+spec:
+  type: ClusterIP
+  selector:
+    app: admin
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# Source: juniper/templates/participant-service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: participant-service
+spec:
+  type: ClusterIP
+  selector:
+    app: participant
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# Source: juniper/templates/admin-deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-deployment
+  labels:
+    app: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      serviceAccountName: juniper-app-ksa
+      containers:
+        - name: cloud-sql-proxy
+          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
+          # Make sure to update on a regular schedule!
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
+          args:
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            - "--private-ip"
+
+            # Enable structured logging with LogEntry format:
+            - "--structured-logs"
+
+            # Replace DB_PORT with the port the proxy should listen on
+            - "--port=5432"
+            - "broad-juniper-dev:us-central1:d2p"
+
+          securityContext:
+            # The default Cloud SQL Auth Proxy image runs as the
+            # "nonroot" user and group (uid: 65532) by default.
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          # You should use resource requests/limits as a best practice to prevent
+          # pods from consuming too many resources and affecting the execution of
+          # other pods. You should adjust the following values based on what your
+          # application needs. For details, see
+          # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+          resources:
+            requests:
+              # The proxy's memory use scales linearly with the number of active
+              # connections. Fewer open connections will use less memory. Adjust
+              # this value based on your application's requirements.
+              memory: "2Gi"
+              # The proxy's CPU use scales linearly with the amount of IO between
+              # the database and the application. Adjust this value based on your
+              # application's requirements.
+              cpu: "1"
+
+        - name: admin
+          imagePullPolicy: Always
+          image: "us-central1-docker.pkg.dev/broad-juniper-eng-infra/juniper/juniper-admin:1.4.0"
+          livenessProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /version
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: gcp
+            - name: DB_NAME_SECRET_ID
+              value: "d2p-db-name"
+            - name: DB_PASSWORD_SECRET_ID
+              value: "d2p-db-password"
+            - name: DB_USER_SECRET_ID
+              value: "d2p-db-user"
+            - name: GCP_PROJECT_ID
+              value: broad-juniper-dev
+            - name: DATABASE_NAME
+              value: "d2p"
+            - name: DEPLOYMENT_ZONE
+              value: dev
+            - name: ADMIN_API_HOSTNAME
+              value: juniper-cmi.dev
+            - name: ADMIN_UI_HOSTNAME
+              value: juniper-cmi.dev
+            - name: PARTICIPANT_API_HOSTNAME
+              value: juniper-cmi.dev
+            - name: PARTICIPANT_UI_HOSTNAME
+              value: juniper-cmi.dev
+            - name: B2C_CLIENT_ID
+              value: 705c09dc-5cca-43d3-ae06-07de78bad29a
+            - name: B2C_POLICY_NAME
+              value: B2C_1A_ddp_admin_signup_signin_dev
+            - name: B2C_TENANT_NAME
+              value: ddpdevb2c
+            - name: TDR_ADDRESS
+              value: https://jade.datarepo-dev.broadinstitute.org
+            - name: TDR_EXPORT_ENABLED
+              value: 'true'
+            - name: TDR_EXPORT_STORAGE_ACCOUNT_NAME
+              value: juniperdevtdr
+            - name: TDR_EXPORT_STORAGE_CONTAINER_NAME
+              value: juniper-dataset-ingest
+            - name: ADDRESS_VALIDATION_SERVICE_CLASS
+              value: SmartyUSAddressValidationService
+            - name: SMARTY_AUTH_ID_SECRET_ID
+              value: smarty-auth-id
+            - name: SMARTY_AUTH_TOKEN_SECRET_ID
+              value: smarty-auth-token
+            - name: SENDGRID_API_KEY_SECRET_ID
+              value: sendgrid-api-key
+            - name: DSM_JWT_ISSUER
+              value: admin-d2p.ddp-dev.envs.broadinstitute.org
+            - name: DSM_JWT_SIGNING_SECRET_SECRET_ID
+              value: dsm-secret
+            - name: DSM_ADDRESS
+              value: https://dsm-dev.datadonationplatform.org/dsm
+            - name: TDR_SA_CREDS_SECRET_ID
+              value: tdr-sa-creds
+            - name: TDR_EXPORT_STORAGE_ACCOUNT_KEY_SECRET_ID
+              value: tdr-storage-account-key
+          resources:
+            requests:
+              # The proxy's memory use scales linearly with the number of active
+              # connections. Fewer open connections will use less memory. Adjust
+              # this value based on your application's requirements.
+              memory: "2Gi"
+              # The proxy's CPU use scales linearly with the amount of IO between
+              # the database and the application. Adjust this value based on your
+              # application's requirements.
+              cpu: "500m"
+          volumeMounts:
+            - mountPath: /etc/app/portalB2CConfig.yaml
+              name: portal-b2c-configmap-mount
+              readOnly: true
+              subPath: portalB2CConfig.yaml
+        - image: us.gcr.io/broad-dsp-gcr-public/httpd-terra-proxy:v0.1.18
+          imagePullPolicy: IfNotPresent
+          name: oidc-proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: REMOTE_USER_CLAIM
+              value: sub
+            - name: B2C_APPLICATION_ID
+              value: 705c09dc-5cca-43d3-ae06-07de78bad29a
+          volumeMounts:
+            - mountPath: /etc/httpd/conf.d/site.conf
+              name: d2p-site-configmap-mount
+              readOnly: true
+              subPath: site.conf
+            - mountPath: /etc/httpd/conf.d/oauth2.conf
+              name: d2p-oauth2-configmap-mount
+              readOnly: true
+              subPath: oauth2.conf
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /version
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          startupProbe:
+            failureThreshold: 1110
+            httpGet:
+              path: /version
+              port: 80
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: d2p-oauth2-configmap
+          name: d2p-oauth2-configmap-mount
+        - configMap:
+            defaultMode: 420
+            name: d2p-site-configmap
+          name: d2p-site-configmap-mount
+        - configMap:
+            defaultMode: 420
+            name: portal-b2c-configmap
+          name: portal-b2c-configmap-mount
+---
+# Source: juniper/templates/participant-deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: participant-deployment
+  labels:
+    app: participant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: participant
+  template:
+    metadata:
+      labels:
+        app: participant
+    spec:
+      serviceAccountName: juniper-app-ksa
+      containers:
+        - name: cloud-sql-proxy
+          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
+          # Make sure to update on a regular schedule!
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
+          args:
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            - "--private-ip"
+
+            # Enable structured logging with LogEntry format:
+            - "--structured-logs"
+
+            # Replace DB_PORT with the port the proxy should listen on
+            - "--port=5432"
+            - "broad-juniper-dev:us-central1:d2p"
+
+          securityContext:
+            # The default Cloud SQL Auth Proxy image runs as the
+            # "nonroot" user and group (uid: 65532) by default.
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          # You should use resource requests/limits as a best practice to prevent
+          # pods from consuming too many resources and affecting the execution of
+          # other pods. You should adjust the following values based on what your
+          # application needs. For details, see
+          # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+          resources:
+            requests:
+              # The proxy's memory use scales linearly with the number of active
+              # connections. Fewer open connections will use less memory. Adjust
+              # this value based on your application's requirements.
+              memory: "2Gi"
+              # The proxy's CPU use scales linearly with the amount of IO between
+              # the database and the application. Adjust this value based on your
+              # application's requirements.
+              cpu: "1"
+
+        - name: participant
+          imagePullPolicy: Always
+          image: "us-central1-docker.pkg.dev/broad-juniper-eng-infra/juniper/juniper-participant:1.4.0"
+          livenessProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /version
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: gcp
+            - name: DB_NAME_SECRET_ID
+              value: "d2p-db-name"
+            - name: DB_PASSWORD_SECRET_ID
+              value: "d2p-db-password"
+            - name: DB_USER_SECRET_ID
+              value: "d2p-db-user"
+            - name: GCP_PROJECT_ID
+              value: broad-juniper-dev
+            - name: DATABASE_NAME
+              value: "d2p"
+            - name: DEPLOYMENT_ZONE
+              value: dev
+            - name: ADMIN_API_HOSTNAME
+              value: juniper-cmi.dev
+            - name: ADMIN_UI_HOSTNAME
+              value: juniper-cmi.dev
+            - name: PARTICIPANT_API_HOSTNAME
+              value: juniper-cmi.dev
+            - name: PARTICIPANT_UI_HOSTNAME
+              value: juniper-cmi.dev
+            - name: TDR_ADDRESS
+              value: https://jade.datarepo-dev.broadinstitute.org
+            - name: B2C_CONFIG_FILE
+              value: /etc/app/portalB2CConfig.yaml
+            - name: SERVER_PORT
+              value: '8080'
+            - name: TDR_EXPORT_ENABLED
+              value: 'true'
+            - name: TDR_EXPORT_STORAGE_ACCOUNT_NAME
+              value: juniperdevtdr
+            - name: TDR_EXPORT_STORAGE_CONTAINER_NAME
+              value: juniper-dataset-ingest
+            - name: ADDRESS_VALIDATION_SERVICE_CLASS
+              value: SmartyUSAddressValidationService
+            - name: SMARTY_AUTH_ID_SECRET_ID
+              value: smarty-auth-id
+            - name: SMARTY_AUTH_TOKEN_SECRET_ID
+              value: smarty-auth-token
+            - name: SENDGRID_API_KEY_SECRET_ID
+              value: sendgrid-api-key
+            - name: DSM_JWT_ISSUER
+              value: admin-d2p.ddp-dev.envs.broadinstitute.org
+            - name: DSM_JWT_SIGNING_SECRET_SECRET_ID
+              value: dsm-secret
+            - name: DSM_ADDRESS
+              value: https://dsm-dev.datadonationplatform.org/dsm
+            - name: TDR_SA_CREDS_SECRET_ID
+              value: tdr-sa-creds
+            - name: TDR_EXPORT_STORAGE_ACCOUNT_KEY_SECRET_ID
+              value: tdr-storage-account-key
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+          volumeMounts:
+            - mountPath: /etc/app/portalB2CConfig.yaml
+              name: portal-b2c-configmap-mount
+              readOnly: true
+              subPath: portalB2CConfig.yaml
+        - image: us.gcr.io/broad-dsp-gcr-public/httpd-terra-proxy:v0.1.18
+          imagePullPolicy: IfNotPresent
+          name: oidc-proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: REMOTE_USER_CLAIM
+              value: sub
+            - name: B2C_APPLICATION_ID
+              value: 705c09dc-5cca-43d3-ae06-07de78bad29a
+          volumeMounts:
+            - mountPath: /etc/httpd/conf.d/site.conf
+              name: d2p-site-configmap-mount
+              readOnly: true
+              subPath: site.conf
+            - mountPath: /etc/httpd/conf.d/oauth2.conf
+              name: d2p-oauth2-configmap-mount
+              readOnly: true
+              subPath: oauth2.conf
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /version
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          startupProbe:
+            failureThreshold: 1110
+            httpGet:
+              path: /version
+              port: 80
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: d2p-oauth2-configmap
+          name: d2p-oauth2-configmap-mount
+        - configMap:
+            defaultMode: 420
+            name: d2p-site-configmap
+          name: d2p-site-configmap-mount
+        - configMap:
+            defaultMode: 420
+            name: portal-b2c-configmap
+          name: portal-b2c-configmap-mount
+---
+# Source: juniper/templates/ingress.yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: juniper-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: admin-ip
+    networking.gke.io/managed-certificates: "demo-admin-subdomain-cert,demo-public-url-cert,atcp-admin-subdomain-cert,cmi-admin-subdomain-cert"
+    # If the class annotation is not specified it defaults to "gce".
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - host: demo.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: sandbox.demo.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: irb.demo.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    
+    - host: atcp.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: sandbox.atcp.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: irb.atcp.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    
+    - host: cmi.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: sandbox.cmi.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: irb.cmi.juniper-cmi.dev
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    
+    - host: "juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-service
+                port:
+                  number: 80
+  defaultBackend:
+    service:
+      name: participant-service
+      port:
+        number: 80
+---
+# Source: juniper/templates/admin-cert.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: admin-cert
+spec:
+  domains:
+    - juniper-cmi.dev
+    - www.juniper-cmi.dev
+---
+# Source: juniper/templates/portal-certs.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: demo-admin-subdomain-cert
+spec:
+  domains:
+      - demo.juniper-cmi.dev
+      - sandbox.demo.juniper-cmi.dev
+      - irb.demo.juniper-cmi.dev
+---
+# Source: juniper/templates/portal-certs.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: demo-public-url-cert
+spec:
+  domains:
+      - juniper-demostudy.org
+      - sandbox.juniper-demostudy.org
+      - irb.juniper-demostudy.org
+---
+# Source: juniper/templates/portal-certs.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: atcp-admin-subdomain-cert
+spec:
+  domains:
+      - atcp.juniper-cmi.dev
+      - sandbox.atcp.juniper-cmi.dev
+      - irb.atcp.juniper-cmi.dev
+---
+# Source: juniper/templates/portal-certs.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: cmi-admin-subdomain-cert
+spec:
+  domains:
+      - cmi.juniper-cmi.dev
+      - sandbox.cmi.juniper-cmi.dev
+      - irb.cmi.juniper-cmi.dev

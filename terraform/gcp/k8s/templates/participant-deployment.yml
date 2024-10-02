@@ -151,7 +151,7 @@ spec:
             - name: REMOTE_USER_CLAIM
               value: sub
             - name: B2C_APPLICATION_ID
-              value: {{.Values.b2c.adminClientId}}
+              value: {{.Values.b2c.admin.clientId}}
           volumeMounts:
             - mountPath: /etc/httpd/conf.d/site.conf
               name: d2p-site-configmap-mount

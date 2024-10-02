@@ -5,4 +5,10 @@ metadata:
 data:
   portalB2CConfig.yaml: |
     b2c:
-      {{.Values.b2c.portals | toYaml | nindent 6}}
+      {{range $key, $value := .Values.b2c.portals}}
+      {{$key}}:
+          tenantName: {{$value.tenantName}}
+          policyName: {{$value.policyName}}
+          clientId: {{$value.clientId}}
+          changePasswordPolicyName: {{$value.changePasswordPolicyName}}
+      {{end}}

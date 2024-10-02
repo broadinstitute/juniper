@@ -7,6 +7,10 @@ portals:
   - name: atcp
   - name: cmi
 b2c:
+  admin:
+    clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a
+    tenantName: ddpdevb2c
+    policyName: B2C_1A_ddp_admin_signup_signin_dev
   portals:
     atcp:
       changePasswordPolicyName: does-not-exist

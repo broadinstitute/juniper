@@ -6,10 +6,13 @@ gcpProject: ""
 gcpRegion: ""
 appVersion: 1.4.0
 b2c:
-  adminClientId: ""
-  adminPolicyName: ""
-  adminTenantName: ""
+  admin:
+    clientId: ""
+    policyName: ""
+    tenantName: ""
   portals:
-    - name: ""
+    portalName:
       tenantName: ""
       policyName: ""
+      clientId: ""
+      changePasswordPolicyName: ""
