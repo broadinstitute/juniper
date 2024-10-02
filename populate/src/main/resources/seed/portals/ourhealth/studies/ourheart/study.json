@@ -28,7 +28,8 @@
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
@@ -102,7 +103,8 @@
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
+        "initialized": false,
+        "enableInPersonKits": true
       }
     },
     {
@@ -113,7 +115,8 @@
         "password": "broad_institute",
         "initialized": false,
         "useDevDsmRealm": false,
-        "useStubDsm": false
+        "useStubDsm": false,
+        "enableInPersonKits": true
       }
     }
   ]

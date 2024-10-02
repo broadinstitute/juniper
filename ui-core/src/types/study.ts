@@ -37,6 +37,7 @@ export type StudyEnvironmentConfig = {
   password: string
   useStubDsm: boolean
   useDevDsmRealm: boolean
+  enableInPersonKits: boolean
 }
 
 export type StudyEnvironmentSurvey = {
