@@ -29,7 +29,6 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useUser } from 'user/UserProvider'
-import { RequireUserPermission } from 'util/RequireUserPermission'
 
 
 /** shows a url-routable settings page for both the portal and the selected study */
@@ -132,11 +131,9 @@ export function LoadedSettingsView(
                         <NavLink to={`enrollment`} className={getLinkCssClasses}>Study
                           Enrollment</NavLink>
                       </li>
-                      <RequireUserPermission superuser>
-                        <li className={'mb-2'}>
-                          <NavLink to={`kits`} className={getLinkCssClasses}>Kits</NavLink>
-                        </li>
-                      </RequireUserPermission>
+                      <li className={'mb-2'}>
+                        <NavLink to={`kits`} className={getLinkCssClasses}>Kits</NavLink>
+                      </li>
                     </ul>}
                 />
               </li>
@@ -196,21 +193,20 @@ export function LoadedSettingsView(
                     />
                   </SettingsPage>}
                 />
-                {user?.superuser &&
-                    <Route path="kits" element={
-                      <SettingsPage
-                        title='Kit Settings'
-                        saveStudyConfig={saveStudyConfig}
-                        canSaveStudyConfig={hasStudyConfigChanged}
-                      >
-                        <KitSettings
-                          studyEnvContext={studyEnvContext}
-                          portalContext={portalContext}
-                          config={studyConfig}
-                          updateConfig={updateStudyConfig}
-                        />
-                      </SettingsPage>}
-                    />}
+                <Route path="kits" element={
+                  <SettingsPage
+                    title='Kit Settings'
+                    saveStudyConfig={saveStudyConfig}
+                    canSaveStudyConfig={hasStudyConfigChanged}
+                  >
+                    <KitSettings
+                      studyEnvContext={studyEnvContext}
+                      portalContext={portalContext}
+                      config={studyConfig}
+                      updateConfig={updateStudyConfig}
+                    />
+                  </SettingsPage>}
+                />
 
                 <Route index element={<div>unknown settings route</div>}/>
               </Routes>

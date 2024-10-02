@@ -71,53 +71,65 @@ export const KitSettings = (
 
   const isLoading = isLoadingKitTypes || isUpdatingKitTypes
 
-  return <RequireUserPermission superuser>
-    <InfoCard>
-      <InfoCardHeader>
-        <InfoCardTitle title={`Kit types`}/>
-      </InfoCardHeader>
-      <div className="p-2">
-        <div style={{ width: 300 }} className="mb-2">
-          <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
-            isClearable={false}
-            isDisabled={studyEnv.environmentName !== 'sandbox'}
-            onChange={selected => setSelectedKitTypes(selected as {
-                                  value: string,
-                                  label: string
-                                }[])}
-          />
+  return <>
+    <RequireUserPermission superuser>
+      <InfoCard>
+        <InfoCardHeader>
+          <InfoCardTitle title={`Kit types`}/>
+        </InfoCardHeader>
+        <div className="p-2">
+          <div style={{ width: 300 }} className="mb-2">
+            <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
+              isClearable={false}
+              isDisabled={studyEnv.environmentName !== 'sandbox'}
+              onChange={selected => setSelectedKitTypes(selected as {
+                    value: string,
+                    label: string
+                  }[])}
+            />
+          </div>
+          <Button onClick={saveKitTypes}
+            variant="primary"
+            disabled={isLoadingKitTypes || studyEnv.environmentName !== 'sandbox'}
+            className={'mb-2'}
+            tooltip={'Only possible in the sandbox environment'}>
+            {isLoading && <LoadingSpinner/>}
+            {!isLoading && 'Save kit types'}
+          </Button>
         </div>
-        <Button onClick={saveKitTypes}
-          variant="primary"
-          disabled={isLoadingKitTypes || studyEnv.environmentName !== 'sandbox'}
-          className={'mb-2'}
-          tooltip={'Only possible in the sandbox environment'}>
-          {isLoading && <LoadingSpinner/>}
-          {!isLoading && 'Save kit types'}
-        </Button>
+
+      </InfoCard>
+
+      <div>
+        <label className="form-label">
+        Use mock kit requests <InfoPopup content={
+          `If checked, kit requests will be mocked for this environment, `
+          + `and not sent to any external services.`
+          }/>
+          <input type="checkbox" checked={config.useStubDsm}
+            onChange={e => updateConfig('useStubDsm', e.target.checked)}/>
+        </label>
       </div>
-
-    </InfoCard>
-
-    <div>
-      <label className="form-label">
-                    use mock kit requests <InfoPopup content={
-              `If checked, kit requests will be mocked for this environment, `
-              + `and not sent to any external services.`
-        }/>
-        <input type="checkbox" checked={config.useStubDsm}
-          onChange={e => updateConfig('useStubDsm', e.target.checked)}/>
-      </label>
-    </div>
-    <div>
-      <label className="form-label">
-                use kit request development realm
-        <InfoPopup content={
-                `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
+      <div>
+        <label className="form-label">
+        Use kit request development realm
+          <InfoPopup content={
+          `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
                will not be shipped. To actually mail kits, this and the above field should be unchecked.`}/>
-        <input type="checkbox" checked={config.useDevDsmRealm}
-          onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
+          <input type="checkbox" checked={config.useDevDsmRealm}
+            onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
+        </label>
+      </div>
+    </RequireUserPermission>
+    <div>
+      <label className="form-label">
+        Enable in-person kits <InfoPopup content={
+          `If checked, in-person kit requests will be enabled for this study environment.
+          Participants will see information about completing in-person kits on the participant dashboard.`
+        }/>
+        <input type="checkbox" checked={config.enableInPersonKits}
+          onChange={e => updateConfig('enableInPersonKits', e.target.checked)}/>
       </label>
     </div>
-  </RequireUserPermission>
+  </>
 }

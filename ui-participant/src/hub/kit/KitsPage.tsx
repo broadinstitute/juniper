@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { instantToDateString } from 'util/timeUtils'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { usePortalEnv } from '../../providers/PortalProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 export default function KitsPage() {
   const { enrollees, ppUser } = useActiveUser()
