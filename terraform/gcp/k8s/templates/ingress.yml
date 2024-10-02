@@ -1,21 +1,26 @@
+{{- define "managed-certs" -}}
+{{- range $idx, $val := $.Values.portals -}}
+{{- if $idx }}
+{{- print ","  -}}
+{{- end -}}
+{{- $val.name -}}-admin-subdomain-cert{{if $val.customDomain}},{{- $val.name -}}-public-url-cert{{end}}
+{{- end -}}
+{{- end -}}
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: juniper-ingress
   annotations:
     kubernetes.io/ingress.global-static-ip-name: admin-ip
-    networking.gke.io/managed-certificates: "admin-cert,demo-cert"
+    networking.gke.io/managed-certificates: "{{ template "managed-certs" . }}"
     # If the class annotation is not specified it defaults to "gce".
     kubernetes.io/ingress.class: "gce"
 spec:
-
   rules:
-    # need:
-    # - sandbox.demo.juniper-cmi.dev
-    # - irb.demo.juniper-cmi.dev
-    # - demo.juniper-cmi.dev
-    # and for the other services (cmi, hearthive, atcp, ourhealth)
-    - host: "sandbox.demo.juniper-cmi.dev"
+    {{- $adminUrl := .Values.adminUrl -}}
+    {{ range .Values.portals }}
+    - host: {{.name}}.{{$adminUrl}}
       http:
         paths:
           - path: /*
@@ -25,7 +30,7 @@ spec:
                 name: participant-service
                 port:
                   number: 80
-    - host: "irb.demo.juniper-cmi.dev"
+    - host: sandbox.{{.name}}.{{$adminUrl}}
       http:
         paths:
           - path: /*
@@ -35,7 +40,7 @@ spec:
                 name: participant-service
                 port:
                   number: 80
-    - host: "demo.juniper-cmi.dev"
+    - host: irb.{{.name}}.{{$adminUrl}}
       http:
         paths:
           - path: /*
@@ -45,6 +50,7 @@ spec:
                 name: participant-service
                 port:
                   number: 80
+    {{ end }}
     - host: "juniper-cmi.dev"
       http:
         paths:
