@@ -20,7 +20,7 @@ describe('Kit Settings', () => {
 
     expect(screen.queryByText('Enable in-person kits')).toBeInTheDocument()
     expect(screen.queryByText('Use kit request development realm')).not.toBeInTheDocument()
-    expect(screen.queryByText('Kit types')).not.toBeInTheDocument()
+    expect(screen.queryByText('Use mock kit requests')).not.toBeInTheDocument()
     expect(screen.queryByText('Kit types')).not.toBeInTheDocument()
   })
 
@@ -38,7 +38,7 @@ describe('Kit Settings', () => {
 
     expect(screen.queryByText('Enable in-person kits')).toBeInTheDocument()
     expect(screen.queryByText('Use kit request development realm')).toBeInTheDocument()
-    expect(screen.queryByText('Kit types')).toBeInTheDocument()
+    expect(screen.queryByText('Use mock kit requests')).toBeInTheDocument()
     expect(screen.queryByText('Kit types')).toBeInTheDocument()
   })
 })
