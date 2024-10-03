@@ -33,7 +33,7 @@
     "name": "prototype_tester",
     "displayName": "Prototype access",
     "description": "Use features being prototyped",
-    "permissionNames": ["team_roles_edit"]
+    "permissionNames": []
   },
   {
     "name": "power_user",
