@@ -4,10 +4,18 @@ import { asMockedFn, KitRequest, KitRequestStatus, setupRouterTest } from '@juni
 import KitsPage from './KitsPage'
 import { mockEnrollee, mockPortalParticipantUser, mockProfile } from 'test-utils/test-participant-factory'
 import { useActiveUser } from 'providers/ActiveUserProvider'
+import { usePortalEnv } from '../../providers/PortalProvider'
+import { mockUsePortalEnv } from '../../test-utils/test-portal-factory'
+
+jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
 jest.mock('providers/ActiveUserProvider', () => ({
   useActiveUser: jest.fn()
 }))
+
+beforeEach(() => {
+  asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+})
 
 const mockActiveUserWithKits = (kitRequests: KitRequest[]) => {
   return {
