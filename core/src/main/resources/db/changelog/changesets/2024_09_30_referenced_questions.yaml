@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: "referenced_questions"
+      author: connorlbark
+      changes:
+        - sql:
+            sql: ALTER TABLE survey ADD COLUMN referenced_questions text[];
