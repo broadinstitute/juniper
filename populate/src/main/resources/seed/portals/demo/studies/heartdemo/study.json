@@ -38,7 +38,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
@@ -179,7 +180,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
@@ -228,7 +230,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
