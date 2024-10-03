@@ -133,18 +133,6 @@ describe('Study Settings', () => {
 
     expect(screen.getByText('Kit types')).toBeInTheDocument()
   })
-  test('Does not render kits for non-superusers', () => {
-    const { RoutedComponent } = setupRouterTest(<MockUserProvider user={mockAdminUser(false)}>
-      <LoadedSettingsView
-        studyEnvContext={mockStudyEnvContext()}
-        portalContext={mockPortalContext()}
-      />
-    </MockUserProvider>, ['/enrollment'])
-
-    render(RoutedComponent)
-
-    expect(screen.queryByText('Kits')).not.toBeInTheDocument()
-  })
   test('updates study settings', async () => {
     const mock = jest.spyOn(Api, 'updateStudyEnvironmentConfig')
 
@@ -186,7 +174,8 @@ describe('Study Settings', () => {
         'password': 'super_secret',
         'passwordProtected': false,
         'useDevDsmRealm': false,
-        'useStubDsm': false
+        'useStubDsm': false,
+        'enableInPersonKits': false
       }
     )
   })

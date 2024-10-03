@@ -479,8 +479,15 @@ public class ActivityImporter {
      */
     public static Map<String, String> getVariableTranslationsTxt(String templateText, Collection<TemplateVariable> templateVariables) {
         Map<String, String> textMap = new HashMap<>();
+
+        List<TemplateVariable> templateVariableCopy = new ArrayList<>(templateVariables);
+
+        // sort variable names by length to ensure that situations like, e.g., $diagnosis_center and $diagnosis_center_country
+        // are handled in the correct order
+        templateVariableCopy.sort(Comparator.comparingInt(var -> -1 * var.getName().length()));
+
         // for each variable, get the translations and replace the variable name with the translation text in the appropriate language
-        for (TemplateVariable var : templateVariables) {
+        for (TemplateVariable var : templateVariableCopy) {
             for (Translation translation : var.getTranslations()) {
                 String languageText = textMap.getOrDefault(translation.getLanguageCode(), StringUtils.trim(templateText));
                 languageText = languageText.replace("$" + var.getName(), translation.getText());
