@@ -18,39 +18,6 @@ metadata:
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-    {{- $adminUrl := .Values.adminUrl -}}
-    {{ range .Values.portals }}
-    - host: {{.name}}.{{$adminUrl}}
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
-    - host: sandbox.{{.name}}.{{$adminUrl}}
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
-    - host: irb.{{.name}}.{{$adminUrl}}
-      http:
-        paths:
-          - path: /*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: participant-service
-                port:
-                  number: 80
-    {{ end }}
     - host: "juniper-cmi.dev"
       http:
         paths:

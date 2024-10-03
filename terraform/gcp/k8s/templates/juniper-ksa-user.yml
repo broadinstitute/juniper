@@ -3,7 +3,7 @@ kind: ServiceAccount
 metadata:
   name: juniper-app-ksa
   annotations:
-    iam.gke.io/gcp-service-account: juniper-app-gsa@broad-juniper-dev.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: juniper-app-gsa@{{.Values.gcpProject}}.iam.gserviceaccount.com
 
 
 

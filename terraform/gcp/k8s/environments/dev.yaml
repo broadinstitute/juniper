@@ -1,11 +1,15 @@
 gcpProject: broad-juniper-dev
 gcpRegion: us-central1
 adminUrl: juniper-cmi.dev
+# "portals" adds certificates for each portal - both for the juniper-cmi.dev subdomains and the custom domain
 portals:
   - name: demo
-    customDomain: juniper-demostudy.org
-  - name: atcp
+  # customDomain: juniper-demostudy.org <-- add once we purchase this domain
+  - name: hearthive
+  - name: ourhealth
   - name: cmi
+  - name: rgp
+  - name: atcp
 b2c:
   admin:
     clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a
