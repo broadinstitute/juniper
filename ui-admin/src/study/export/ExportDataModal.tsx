@@ -33,7 +33,7 @@ const DEFAULT_EXPORT_OPTS: ExportOptions = {
   splitOptionsIntoColumns: false,
   stableIdsForOptions: false,
   fileFormat: 'TSV',
-  includeSubheaders: true,
+  includeSubHeaders: true,
   onlyIncludeMostRecent: true,
   filterString: undefined,
   excludeModules: []
@@ -170,12 +170,12 @@ export function ExportOptionsForm({ exportOptions, setExportOptions }:
           Include subheaders for columns
         </p>
         <label className="me-3">
-          <input type="radio" name="includeSubheaders" value="true" checked={exportOptions.includeSubheaders}
-            onChange={() => setExportOptions({ ...exportOptions, includeSubheaders: true })} className="me-1"/> Yes
+          <input type="radio" name="includeSubheaders" value="true" checked={exportOptions.includeSubHeaders}
+            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: true })} className="me-1"/> Yes
         </label>
         <label>
-          <input type="radio" name="includeSubheaders" value="false" checked={!exportOptions.includeSubheaders}
-            onChange={() => setExportOptions({ ...exportOptions, includeSubheaders: false })} className="me-1"/> No
+          <input type="radio" name="includeSubheaders" value="false" checked={!exportOptions.includeSubHeaders}
+            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: false })} className="me-1"/> No
         </label>
       </div>
       <div className="py-2">
