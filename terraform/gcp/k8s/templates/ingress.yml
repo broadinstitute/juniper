@@ -1,4 +1,4 @@
-{{- define "managed-certs" -}}
+{{- define "customer-certs" -}}
 {{- range $idx, $val := $.Values.portals -}}
 {{- if $idx }}
 {{- print ","  -}}
@@ -13,7 +13,7 @@ metadata:
   name: juniper-ingress
   annotations:
     kubernetes.io/ingress.global-static-ip-name: admin-ip
-    networking.gke.io/managed-certificates: "{{ template "managed-certs" . }}"
+    networking.gke.io/managed-certificates: "admin-cert,{{ template "customer-certs" . }}"
     # If the class annotation is not specified it defaults to "gce".
     kubernetes.io/ingress.class: "gce"
 spec:
