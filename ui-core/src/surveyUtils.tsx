@@ -62,7 +62,6 @@ const applyDefaultSurveyConfig = (surveyModel: SurveyModel): void => {
   surveyModel.showTitle = false
   surveyModel.widthMode = 'static'
 
-  surveyModel.showProgressBar = 'bottom'
   surveyModel.applyTheme(DefaultLight)
 }
 
