@@ -29,9 +29,9 @@ public class AirtableExporter extends ExternalExporter {
         this.config = config;
     }
 
-    protected void send(ExportIntegration integration, ByteArrayOutputStream baos,
+    protected void send(ExportIntegration integration, ByteArrayOutputStream outputStream,
                        Consumer<String> handleComplete, Consumer<Exception> handleError) {
-        var postRequest = buildAuthedPostRequest(buildPath(integration), baos);
+        var postRequest = buildAuthedPostRequest(buildPath(integration), outputStream);
         postRequest.retrieve()
                 .toBodilessEntity()
                 .subscribe(

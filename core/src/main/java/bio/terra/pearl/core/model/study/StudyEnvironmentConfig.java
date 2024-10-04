@@ -41,4 +41,11 @@ public class StudyEnvironmentConfig extends BaseEntity {
      */
     @Builder.Default
     private boolean useDevDsmRealm = true;
+
+    /**
+     * if true, the study staff will be able to scan in-person kits into the system,
+     * and participants will see information about in-person kits on their dashboard
+     */
+    @Builder.Default
+    private boolean enableInPersonKits = false;
 }

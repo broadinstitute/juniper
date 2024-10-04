@@ -3,9 +3,11 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -42,6 +44,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     private PortalFactory portalFactory;
     @Autowired
     private LanguageTextDao languageTextDao;
+    @Autowired
+    private StudyEnvironmentFactory studyEnvironmentFactory;
 
     @Mock
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -501,6 +505,36 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         assertThat(proficiency.getParentStableId(), equalTo("oh_oh_languages"));
         assertThat(proficiency.getChoices(), equalTo("""
                 [{"stableId":"native","text":"Native"},{"stableId":"fluent","text":"Fluent"},{"stableId":"proficient","text":"Proficient"},{"stableId":"basic","text":"Basic"}]"""));
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyReferencesAnswers(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"Testing {another_survey.something_else}\"}]}]}"));
+
+
+        Assertions.assertEquals(1, survey.getReferencedQuestions().size());
+        Assertions.assertEquals("another_survey.something_else", survey.getReferencedQuestions().getFirst());
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyReferencesAnswerFiltersObjectQuestions(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"testing\",\"title\":\"Testing {some_complex_question.data}\"},{\"type\":\"text\",\"name\":\"some_complex_question\",\"title\":\"Testing\"}]}]}"));
+
+
+        Assertions.assertEquals(0, survey.getReferencedQuestions().size());
+
     }
 
 }

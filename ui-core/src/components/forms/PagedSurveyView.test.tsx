@@ -1,17 +1,32 @@
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { ApiContextT, ApiProvider, emptyApi } from 'src/participant/ApiProvider'
+import {
+  ApiContextT,
+  ApiProvider,
+  emptyApi
+} from 'src/participant/ApiProvider'
 import { useAutosaveEffect } from 'src/autoSaveUtils'
 import { setupRouterTest } from 'src/test-utils/router-testing-utils'
 import { MockI18nProvider } from 'src/participant/i18n-testing-utils'
 import { PagedSurveyView } from 'src/components/forms/PagedSurveyView'
 import React from 'react'
 import {
-  generateThreePageSurvey, mockConfiguredSurvey, mockEnrollee, mockHubResponse, mockProfile,
+  generateSurvey,
+  generateThreePageSurvey,
+  mockConfiguredSurvey,
+  mockEnrollee,
+  mockHubResponse,
+  mockProfile,
   mockSurveyWithHiddenQuestion,
   mockSurveyWithHiddenQuestionClearOnHidden
 } from 'src/test-utils/mocking-utils'
-import { Survey } from 'src/types/forms'
+import {
+  Answer,
+  Survey
+} from 'src/types/forms'
 import { Profile } from 'src/types/user'
 
 jest.mock('src/autoSaveUtils', () => {
@@ -40,6 +55,29 @@ describe('PagedSurveyView', () => {
         resumeData: '{"user1":{"currentPageNo":1}}'
       })
     }))
+  })
+
+  it('passes down referenced answers as variables', async () => {
+    setupSurveyTest({
+      ...generateSurvey(),
+      content: `{
+      "pages":[
+        {"elements":[
+          {"type":"html","html":"You are on page1"},
+          {"type":"text","name":"test","title":"test {otherSurvey.question1}"}
+        ]},
+        {"elements":[{"type":"text","name":"otherPage","title":"otherpage"}]}
+      ]
+      }`
+    },
+    undefined,
+    [{
+      surveyStableId: 'otherSurvey',
+      questionStableId: 'question1',
+      stringValue: 'my custom response'
+    }])
+
+    expect(screen.getByText('test my custom response')).toBeInTheDocument()
   })
   //
   it('autosaves question and page progress', async () => {
@@ -215,7 +253,7 @@ describe('PagedSurveyView', () => {
 /**
  *
  */
-const setupSurveyTest = (survey: Survey, profile?: Profile) => {
+const setupSurveyTest = (survey: Survey, profile?: Profile, referencedAnswers?: Answer[]) => {
   const mockUpdateSurveyResponse = jest.fn().mockResolvedValue(mockHubResponse())
 
   const mockApi: ApiContextT = {
@@ -247,7 +285,7 @@ const setupSurveyTest = (survey: Survey, profile?: Profile) => {
       <MockI18nProvider>
         <PagedSurveyView enrollee={enrollee} form={configuredSurvey.survey} response={mockHubResponse().response}
           studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
-          updateResponseMap={jest.fn()}
+          updateResponseMap={jest.fn()} referencedAnswers={referencedAnswers || []}
           selectedLanguage={'en'} updateProfile={jest.fn()} setAutosaveStatus={jest.fn()}
           taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
       </MockI18nProvider>

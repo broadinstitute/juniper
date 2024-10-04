@@ -4,7 +4,7 @@ import Api, { InternalConfig } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 
 
-/** shows basic config for address validation service */
+/** shows basic config for airtable */
 export default function AirtableIntegrationDashboard() {
   const [config, setConfig] = useState<InternalConfig>()
 

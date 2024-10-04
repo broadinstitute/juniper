@@ -36,7 +36,7 @@ const DEFAULT_EXPORT_INTEGRATION: ExportIntegration = {
     splitOptionsIntoColumns: false,
     stableIdsForOptions: false,
     fileFormat: 'CSV',
-    includeSubheaders: false,
+    includeSubHeaders: false,
     onlyIncludeMostRecent: true,
     filterString: buildFilter({ includeProxiesAsRows: false, includeUnconsented: false }),
     excludeModules: ['surveys']

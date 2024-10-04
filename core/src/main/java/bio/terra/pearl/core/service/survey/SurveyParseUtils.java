@@ -12,8 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SurveyParseUtils {
     public static final String SURVEY_JS_CHECKBOX_TYPE = "checkbox";
@@ -129,6 +132,76 @@ public class SurveyParseUtils {
         }
 
         return definition;
+    }
+
+
+    public record QuestionReference(String surveyStableId, String questionStableId) {
+        public static QuestionReference fromString(String reference) {
+            List<String> split = new ArrayList<>(Arrays.asList(reference.split("\\.")));
+
+            String surveyStableId = split.removeFirst();
+            String questionStableId = StringUtils.join(split, ".");
+
+            return new QuestionReference(surveyStableId, questionStableId);
+        }
+
+        public String toString() {
+            return surveyStableId + "." + questionStableId;
+        }
+    }
+
+    // looks for all variables in survey content of form {surveyStableId.questionStableId}
+    // this may pick up some false positives, so we need to filter out using the nonSurveyObjectVariables list
+    private static final Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
+    private static final List<String> nonSurveyObjectVariables = List.of("profile", "proxyProfile");
+
+    // returns a list of all potential question references in the survey content. these will need to be checked
+    // against question defs in the database to ensure they are valid.
+    public static List<QuestionReference> parseReferencedSurveyQuestions(Survey survey) {
+        Stream<MatchResult> matchedObjectVariables = surveyQuestionRegexPattern.matcher(survey.getContent()).results();
+        List<String> questionNames = parseQuestionNames(survey.getContent());
+
+        return matchedObjectVariables
+                .map(MatchResult::group)
+                .map(s -> s.substring(1, s.length() - 1).trim()) // remove the curly braces
+                .map(QuestionReference::fromString)
+                .filter(qr -> !nonSurveyObjectVariables.contains(qr.surveyStableId))
+                // there are questions that are objects, e.g., matrix questions, so we want
+                // to make sure we're not including those in the list of references
+                .filter(qr -> !questionNames.contains(qr.surveyStableId))
+                .collect(Collectors.toList());
+    }
+
+
+    public static List<String> parseQuestionNames(String content) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode surveyContent;
+
+        try {
+            surveyContent = objectMapper.readTree(content);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Malformed survey content json");
+        }
+
+        JsonNode pages = surveyContent.get("pages");
+        if (pages == null) {
+            // surveys should probably always have pages, but we want to not have this fail if the content is empty,
+            // perhaps because it is a placeholder in-development survey
+            pages = objectMapper.createArrayNode();
+        }
+
+        //For each page in the survey, iterate through the JsonNode tree and unroll any panels
+        List<String> questionNames = new ArrayList<>();
+        for (JsonNode page : pages) {
+            for (JsonNode question : SurveyParseUtils.getAllQuestions(page)) {
+                if (question.has("name")) {
+                    questionNames.add(question.get("name").asText());
+                }
+            }
+
+        }
+
+        return questionNames;
     }
 
     /** confirm the question definition meets our (currently very permissive) requirements */

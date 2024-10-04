@@ -21,7 +21,7 @@
               {
                 "name": "maSurveyHeader",
                 "type": "html",
-                "html": "<p>You, {profile.givenName} {profile.familyName}, say you live in Massachusetts</p>"
+                "html": "<p>You, {hd_hd_basicInfo.hd_hd_basic_firstName} {hd_hd_basicInfo.hd_hd_basic_lastName}, say you live in Massachusetts</p>"
               }
             ]
           },

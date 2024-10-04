@@ -31,7 +31,8 @@ import {
 import queryString from 'query-string'
 import {
   AdminUser,
-  AdminUserParams, Role
+  AdminUserParams,
+  Role
 } from './adminUser'
 
 export type {
@@ -266,7 +267,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
-  includeSubheaders?: boolean,
+  includeSubHeaders?: boolean,
   excludeModules?: string[],
   filterString?: string,
   rowLimit?: number
@@ -1111,7 +1112,9 @@ export default {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
     const searchParams = new URLSearchParams()
     for (const prop in exportOptionsParams) {
-      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+      if (exportOptionsParams[prop] !== undefined) {
+        searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+      }
     }
     url += searchParams.toString()
     return fetch(url, this.getGetInit())

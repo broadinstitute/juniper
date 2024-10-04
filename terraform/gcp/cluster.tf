@@ -13,7 +13,7 @@ resource "google_container_cluster" "juniper_cluster" {
   }
 
   ip_allocation_policy {
-    stack_type                    = "IPV4_IPV6"
+    stack_type = "IPV4_IPV6"
   }
 
   cluster_autoscaling {
@@ -36,9 +36,19 @@ resource "google_container_cluster" "juniper_cluster" {
     }
   }
 
+  master_auth {
+    client_certificate_config {
+      issue_client_certificate = false
+    }
+  }
+
   database_encryption {
     key_name = google_kms_crypto_key.juniper_cluster_crypto_key.id
     state    = "ENCRYPTED"
+  }
+
+  release_channel {
+    channel = "REGULAR"
   }
 
   # Set `deletion_protection` to `true` will ensure that one cannot
