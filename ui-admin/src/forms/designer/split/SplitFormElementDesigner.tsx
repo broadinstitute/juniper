@@ -5,7 +5,10 @@ import {
   Question,
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
-import React, { memo, useState } from 'react'
+import React, {
+  memo,
+  useState
+} from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { isEqual } from 'lodash'
 import { FormElementEditor } from './FormElementEditor'
@@ -38,6 +41,7 @@ export const SplitFormElementDesigner = memo(({
   }
   const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
 
+  surveyModel.progressBarType = 'off'
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
   surveyModel.locale = currentLanguage.languageCode

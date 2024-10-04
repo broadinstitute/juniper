@@ -33,8 +33,8 @@
     "react-plotly.js": "^2.6.0",
     "react-querybuilder": "^6.5.4",
     "react-router-dom": "^6.4.0",
-    "survey-react-ui": "^1.9.75",
-    "surveyjs-widgets": "1.9.75",
+    "survey-react-ui": "1.12.4",
+    "surveyjs-widgets": "1.12.4",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {

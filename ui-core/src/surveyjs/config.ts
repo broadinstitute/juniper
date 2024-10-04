@@ -1,7 +1,8 @@
-import { Question, Serializer, StylesManager } from 'survey-core'
+import {
+  Question,
+  Serializer
+} from 'survey-core'
 
-
-StylesManager.applyTheme('modern')
 
 Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
 

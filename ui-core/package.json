@@ -31,9 +31,9 @@
     "react": "^18.2.0",
     "react-markdown": "^8.0.3",
     "react-router-dom": "^6.4.0",
-    "survey-core": "1.9.75",
-    "survey-react-ui": "1.9.75",
-    "surveyjs-widgets": "1.9.75"
+    "survey-core": "1.12.4",
+    "survey-react-ui": "1.12.4",
+    "surveyjs-widgets": "1.12.4"
   },
   "main": "./build/es/index.js",
   "types": "./build-types/index.d.ts",
