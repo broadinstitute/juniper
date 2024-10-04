@@ -51,9 +51,6 @@ resource "google_container_cluster" "juniper_cluster" {
     channel = "REGULAR"
   }
 
-  # all traffic is sent using VPC, even if on the same node
-  enable_intranode_visibility = true
-
   # Set `deletion_protection` to `true` will ensure that one cannot
   # accidentally delete this instance by use of Terraform.
   deletion_protection = false

@@ -18,10 +18,6 @@ resource "google_sql_database_instance" "d2p" {
       value = "on"
     }
     database_flags {
-      name  = "log_statements"
-      value = "on"
-    }
-    database_flags {
       name  = "log_checkpoints"
       value = "on"
     }
@@ -47,10 +43,10 @@ resource "google_sql_database_instance" "d2p" {
     }
     database_flags {
       name  = "log_min_messages"
-      value = "error"
+      value = "warning"
     }
     database_flags {
-      name  = "enable_pgaudit"
+      name  = "cloudsql.enable_pgaudit"
       value = "on"
     }
     database_flags {
