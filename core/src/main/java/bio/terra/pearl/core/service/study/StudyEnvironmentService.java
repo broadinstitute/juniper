@@ -91,6 +91,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         return dao.findByStudy(studyShortcode, environmentName);
     }
 
+    public List<StudyEnvironment> findAllByPortalAndEnvironment(UUID portalId, EnvironmentName environmentName) {
+        return dao.findAllByPortalAndEnvironment(portalId, environmentName);
+    }
+
     public StudyEnvironment verifyStudy(String studyShortcode, EnvironmentName environmentName) {
         return findByStudy(studyShortcode, environmentName).orElseThrow(() ->
                 new NotFoundException("Study not found for environment %s: %s"

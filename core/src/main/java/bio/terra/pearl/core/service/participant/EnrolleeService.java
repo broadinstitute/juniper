@@ -70,7 +70,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            SecureRandom secureRandom,
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
-                           PortalParticipantUserService portalParticipantUserService,
+                           @Lazy PortalParticipantUserService portalParticipantUserService,
                            FamilyService familyService, ShortcodeService shortcodeService, FamilyEnrolleeService familyEnrolleeService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
