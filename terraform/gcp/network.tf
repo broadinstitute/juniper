@@ -19,7 +19,7 @@ resource "google_compute_subnetwork" "juniper_subnetwork" {
   ipv6_access_type = "INTERNAL"
 
   private_ip_google_access = true
-  private_ipv6_google_access = true
+  private_ipv6_google_access = "ENABLE_GOOGLE_ACCESS"
 
   network = google_compute_network.juniper_network.id
 
