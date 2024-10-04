@@ -46,6 +46,7 @@ describe('PagedSurveyView', () => {
     expect(screen.getByText('You are on page3')).toBeInTheDocument()
     await userEvent.click(screen.getByText('Complete'))
     expect(submitSpy).toHaveBeenCalledTimes(1)
+    // todo fix
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
@@ -94,6 +95,8 @@ describe('PagedSurveyView', () => {
     triggerAutosave()
     // should only have been called once, despite multiple intervals passing, since it only is called on diffs
     expect(submitSpy).toHaveBeenCalledTimes(1)
+
+    // todo fix
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
@@ -118,6 +121,7 @@ describe('PagedSurveyView', () => {
     await userEvent.click(screen.getByText('Next'))
     triggerAutosave()
 
+    // todo fix
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
