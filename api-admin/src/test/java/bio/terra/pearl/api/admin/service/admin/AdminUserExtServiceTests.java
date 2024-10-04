@@ -65,6 +65,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testCreateNewAdminAndPortalUser(TestInfo info) {
     Portal portal = portalFactory.buildPersisted(getTestName(info));
+    roleFactory.buildPersistedCreatePermissions("study_admin", List.of("admin_user_edit"));
     AdminUserBundle operatorBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
             getTestName(info), portal, List.of("study_admin"));
@@ -88,6 +89,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
     /** add a user already in another portal to a new portal */
     Portal portal = portalFactory.buildPersisted(getTestName(info));
     Portal portal2 = portalFactory.buildPersisted(getTestName(info));
+    roleFactory.buildPersistedCreatePermissions("study_admin", List.of("admin_user_edit"));
     AdminUserBundle operatorBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
             getTestName(info), portal, List.of("study_admin"));
@@ -113,6 +115,8 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testGetAttachesRolesAndPermissions(TestInfo info) {
     Portal portal = portalFactory.buildPersisted(getTestName(info));
+    roleFactory.buildPersistedCreatePermissions("study_admin", List.of("admin_user_edit"));
+    roleFactory.buildPersisted("prototype_tester");
     AdminUserBundle adminUserBundle =
         portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal));
     portalAdminUserRoleService.setRoles(
@@ -139,6 +143,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   public void testSetRolesLimitedByOperator(TestInfo info) {
     Portal portal = portalFactory.buildPersisted(getTestName(info));
     Role role1 = roleFactory.buildPersisted(getTestName(info));
+    roleFactory.buildPersistedCreatePermissions("study_admin", List.of("admin_user_edit"));
 
     AdminUserBundle operatorBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
@@ -181,6 +186,7 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   public void testSetRolesAllowsExistingOperator(TestInfo info) {
     Portal portal = portalFactory.buildPersisted(getTestName(info));
     Role role1 = roleFactory.buildPersisted(getTestName(info));
+    roleFactory.buildPersistedCreatePermissions("study_admin", List.of("admin_user_edit"));
 
     AdminUserBundle operatorBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
@@ -188,12 +194,12 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
 
     AdminUserBundle userBundle =
         portalAdminUserFactory.buildPersistedWithRoles(
-            getTestName(info), portal, List.of("publisher"));
+            getTestName(info), portal, List.of(role1.getName()));
 
     adminUserExtService.setPortalUserRoles(
         PortalAuthContext.of(operatorBundle.user(), portal.getShortcode()),
         userBundle.user().getId(),
-        List.of("study_admin", "publisher"));
+        List.of("study_admin", role1.getName()));
 
     assertThat(
         portalAdminUserFactory.userHasRole(
