@@ -69,10 +69,8 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testAuthToPortalParticipantUserAllowsIfProxy(TestInfo info) {
 
-    EnrolleeBundle proxyBundle =
-        enrolleeFactory.buildWithPortalUser(getTestName(info));
-    EnrolleeBundle targetBundle =
-        enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
     enrolleeRelationService.create(
         EnrolleeRelation.builder()

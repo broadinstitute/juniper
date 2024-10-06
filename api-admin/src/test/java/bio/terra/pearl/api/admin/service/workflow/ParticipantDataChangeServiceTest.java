@@ -17,8 +17,7 @@ public class ParticipantDataChangeServiceTest extends BaseSpringBootTest {
 
   @Test
   public void testFindAllRecordsForEnrollee(TestInfo info) {
-    EnrolleeBundle enrolleeBundle =
-        enrolleeFactory.buildWithPortalUser(info.getDisplayName());
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(info.getDisplayName());
 
     Assertions.assertEquals(
         0,
