@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "in_person_kits_env_config"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: { name: enable_in_person_kits, type: boolean, defaultValueBoolean: false, constraints: { nullable: false} }

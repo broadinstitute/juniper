@@ -34,6 +34,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
   return {
     id: 'studyEnv1',
     environmentName: 'sandbox',
+    kitTypes: [],
     studyEnvironmentConfig: {
       acceptingEnrollment: true,
       enableFamilyLinkage: false,
@@ -42,7 +43,8 @@ export const mockStudyEnv = (): StudyEnvironment => {
       passwordProtected: false,
       password: 'password',
       useDevDsmRealm: true,
-      useStubDsm: true
+      useStubDsm: true,
+      enableInPersonKits: true
     },
     configuredSurveys: [],
     triggers: []
@@ -88,6 +90,7 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
   return {
     language: 'en',
     navbarItems: [],
+    pages: [],
     landingPage: mockHtmlPage(),
     navLogoCleanFileName: 'navLogo.png',
     navLogoVersion: 1

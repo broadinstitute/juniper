@@ -17,8 +17,8 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
-import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.EventService;
+import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,8 +109,22 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 .stream().findFirst().orElseThrow(() -> new NotFoundException("no active survey found"));
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
-                configSurvey, lastResponse
+                configSurvey, lastResponse, getReferencedAnswers(enrollee, form)
         );
+    }
+
+    private List<Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
+        List<Answer> answers = new ArrayList<>();
+
+        List<SurveyParseUtils.QuestionReference> referencedQuestions = survey.getReferencedQuestions().stream().map(SurveyParseUtils.QuestionReference::fromString).toList();
+
+        for (SurveyParseUtils.QuestionReference referencedQuestion : referencedQuestions) {
+            answerService
+                    .findForEnrolleeByQuestion(enrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
+                    .ifPresent(answers::add);
+        }
+
+        return answers;
     }
 
     /**

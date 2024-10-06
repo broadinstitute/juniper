@@ -116,6 +116,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         updateResponseMap={() => { /* no-op */ }}
         proxyProfile={proxyProfile}
         response={formAndResponses.surveyResponse}
+        referencedAnswers={formAndResponses.referencedAnswers}
         selectedLanguage={selectedLanguage}
         setAutosaveStatus={() => { /* no-op */ }}
         adminUserId={null}

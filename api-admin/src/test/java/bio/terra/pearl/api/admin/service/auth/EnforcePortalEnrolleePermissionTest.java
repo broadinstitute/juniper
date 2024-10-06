@@ -211,7 +211,9 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
     AdminUser operator = operatorBundle.user();
     UUID portalAdminUserId = operatorBundle.portalAdminUsers().get(0).getId();
 
-    Role role = roleFactory.buildPersisted(getTestName(info), List.of("participant_data_view"));
+    Role role =
+        roleFactory.buildPersistedCreatePermissions(
+            getTestName(info), List.of("participant_data_view"));
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     portalAdminUserRoleService.create(
         PortalAdminUserRole.builder()

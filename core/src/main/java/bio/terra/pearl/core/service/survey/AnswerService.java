@@ -35,7 +35,7 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
         return dao.findByEnrolleeAndSurvey(enrolleeID, surveyStableId);
     }
 
-    public Answer findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
+    public Optional<Answer> findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
         return dao.findForEnrolleeByQuestion(enrolleeID, surveyStableId, questionStableId);
     }
 

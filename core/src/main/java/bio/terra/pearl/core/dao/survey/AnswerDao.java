@@ -65,7 +65,7 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
     /**
      * Returns the most recent answer for a given enrollee, survey, and question.
      */
-    public Answer findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
+    public Optional<Answer> findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName +
                                 " where enrollee_id = :enrolleeId " +
@@ -77,7 +77,6 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
                         .bind("questionStableId", questionStableId)
                         .mapTo(clazz)
                         .findFirst()
-                        .orElse(null)
         );
     }
 }

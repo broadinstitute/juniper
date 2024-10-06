@@ -100,9 +100,9 @@ public class ExportIntegrationServiceTests extends BaseSpringBootTest {
             super(exportIntegrationJobService, enrolleeExportService);
         }
         @Override
-        public void send(ExportIntegration integration, ByteArrayOutputStream baos, Consumer<String> handleComplete, Consumer<Exception> handleError) {
+        public void send(ExportIntegration integration, ByteArrayOutputStream outputStream, Consumer<String> handleComplete, Consumer<Exception> handleError) {
             // confirm the output stream can be stringified, otherwise do nothing
-            baos.toString();
+            outputStream.toString();
             handleComplete.accept("mock done");
         }
     }
@@ -112,7 +112,7 @@ public class ExportIntegrationServiceTests extends BaseSpringBootTest {
             super(exportIntegrationJobService, enrolleeExportService);
         }
         @Override
-        public void send(ExportIntegration integration, ByteArrayOutputStream baos, Consumer<String> handleComplete, Consumer<Exception> handleError) {
+        public void send(ExportIntegration integration, ByteArrayOutputStream outputStream, Consumer<String> handleComplete, Consumer<Exception> handleError) {
             handleError.accept(new RuntimeException("mock error"));
         }
     }

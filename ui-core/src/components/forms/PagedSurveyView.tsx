@@ -1,4 +1,8 @@
-import { Survey, SurveyResponse } from 'src/types/forms'
+import {
+  Answer,
+  Survey,
+  SurveyResponse
+} from 'src/types/forms'
 import { useApiContext } from '../../participant/ApiProvider'
 import {
   getDataWithCalculatedValues,
@@ -16,7 +20,10 @@ import { useI18n } from '../../participant/I18nProvider'
 import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
 import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
-import { Enrollee, Profile } from 'src/types/user'
+import {
+  Enrollee,
+  Profile
+} from 'src/types/user'
 import classNames from 'classnames'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -26,10 +33,18 @@ export type AutosaveStatus = 'SAVING' | 'SAVED' | 'ERROR'
 /** handles paging the form */
 export function PagedSurveyView({
   updateResponseMap,
-  studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage, justification,
+  studyEnvParams,
+  form,
+  response,
+  referencedAnswers = [],
+  updateEnrollee,
+  updateProfile,
+  taskId,
+  selectedLanguage,
+  justification,
   setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
 }: {
-    studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse,
+  studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse, referencedAnswers?: Answer[],
     updateResponseMap: (stableId: string, response: SurveyResponse) => void
     onSuccess: () => void, onFailure: () => void,
     selectedLanguage: string,
@@ -86,7 +101,7 @@ export function PagedSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
-    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile, proxyProfile
+    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile, proxyProfile, referencedAnswers
   )
 
   surveyModel.locale = selectedLanguage

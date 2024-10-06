@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.export.integration;
+    package bio.terra.pearl.core.service.export.integration;
 
 import bio.terra.pearl.core.model.export.ExportIntegration;
 import bio.terra.pearl.core.model.export.ExportIntegrationJob;
@@ -17,7 +17,7 @@ public abstract class ExternalExporter {
 
     private final EnrolleeExportService enrolleeExportService;
 
-    protected abstract void send(ExportIntegration integration, ByteArrayOutputStream baos, Consumer<String> handleComplete, Consumer<Exception> handleError);
+    protected abstract void send(ExportIntegration integration, ByteArrayOutputStream outputStream, Consumer<String> handleComplete, Consumer<Exception> handleError);
 
     public ExternalExporter(ExportIntegrationJobService exportIntegrationJobService, EnrolleeExportService enrolleeExportService) {
         this.exportIntegrationJobService = exportIntegrationJobService;
@@ -36,12 +36,12 @@ public abstract class ExternalExporter {
             job.setStatus(ExportIntegrationJob.Status.GENERATING);
             job = exportIntegrationJobService.update(job);
 
-            ByteArrayOutputStream baos = createExportStream(integration, parsedOpts);
+            ByteArrayOutputStream outputStream = createExportStream(integration, parsedOpts);
 
             job.setStatus(ExportIntegrationJob.Status.SENDING);
             final ExportIntegrationJob updatedJob = exportIntegrationJobService.update(job);
 
-            send(integration, baos,
+            send(integration, outputStream,
                     (String msg) -> handleComplete(updatedJob, integration, msg),
                     (Exception e) -> handleError(updatedJob, integration, e));
         } catch (Exception e) {

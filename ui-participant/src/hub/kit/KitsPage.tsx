@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { instantToDateString } from 'util/timeUtils'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 export default function KitsPage() {
   const { enrollees, ppUser } = useActiveUser()
@@ -106,8 +107,11 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
   const visibleKitRequests = enrolleeKitRequests.filter(kit =>
     kit.status !== 'DEACTIVATED' && kit.status !== 'ERRORED').sort((a, b) => b.createdAt - a.createdAt)
 
-  //TODO make this a studyenv setting
-  const isInPersonKitEnabled = true
+  const { portal, portalEnv } = usePortalEnv()
+  const currentStudyEnv = portal.portalStudies.find(pStudy =>
+    pStudy.study.studyEnvironments.find(studyEnv =>
+      studyEnv.environmentName === portalEnv.environmentName))?.study.studyEnvironments[0]
+  const isInPersonKitEnabled = currentStudyEnv?.studyEnvironmentConfig.enableInPersonKits
 
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
     <h1 className="pb-3">Sample collection kits</h1>
