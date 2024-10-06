@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
@@ -164,7 +165,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     public void testUpdateResponse(TestInfo testInfo) {
         // create a survey and an enrollee with one task to complete that survey
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
         Survey survey = surveyFactory.buildPersisted(testName);
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 
@@ -214,7 +215,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     public void testCompletedSurveyResponseCannotBeUpdatedToIncomplete(TestInfo testInfo) {
         // create a survey and an enrollee with one survey task
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
         Survey survey = surveyFactory.buildPersisted(testName);
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 

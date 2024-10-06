@@ -1,18 +1,15 @@
-package bio.terra.pearl.core.service.workflow.merge;
+package bio.terra.pearl.core.service.participant.merge;
 
 import bio.terra.pearl.core.dao.dataimport.MergeDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -31,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ParticipantMergeService {
+public class ParticipantMergePlanService {
     private final PortalParticipantUserService portalParticipantUserService;
     private final ParticipantTaskService participantTaskService;
     private final ParticipantDataChangeService participantDataChangeService;
@@ -45,7 +42,7 @@ public class ParticipantMergeService {
     private final NotificationService notificationService;
     private final MergeDao mergeDao;
 
-    public ParticipantMergeService(PortalParticipantUserService portalParticipantUserService,
+    public ParticipantMergePlanService(PortalParticipantUserService portalParticipantUserService,
                                    ParticipantTaskService participantTaskService,
                                    ParticipantDataChangeService participantDataChangeService,
                                    ProfileService profileService,
@@ -72,14 +69,14 @@ public class ParticipantMergeService {
     }
 
     @Transactional
-    public ParticipantUserMerge planMerge(ParticipantUser participantUser, ParticipantUser mergeTarget, Portal portal, DataAuditInfo auditInfo) {
+    public ParticipantUserMerge planMerge(ParticipantUser participantUser, ParticipantUser mergeTarget, Portal portal) {
         if (!participantUser.getEnvironmentName().equals(mergeTarget.getEnvironmentName())) {
             throw new IllegalArgumentException("ParticipantUsers must be in the same environment to merge");
         }
 
         ParticipantUserMerge mergePlan = ParticipantUserMerge.builder()
-            .users(new MergeAction<>(new MergePair<>(participantUser, mergeTarget), MergeAction.Action.DELETE_SOURCE))
-            .build();
+                .users(new MergeAction<>(new MergePair<>(participantUser, mergeTarget), MergeAction.Action.DELETE_SOURCE))
+                .build();
 
         PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUser.getId(), portal.getShortcode())
                 .orElseThrow(() -> new IllegalArgumentException("ParticipantUser not found in portal"));
@@ -88,16 +85,16 @@ public class ParticipantMergeService {
 
         mergePlan.setPpUsers(new MergeAction(new MergePair<>(ppUser, ppMergeTarget), MergeAction.Action.DELETE_SOURCE));
 
-        List<MergeAction<Enrollee, EnrolleeMerge>> enrollees = planMergePortalParticipantUsers(mergePlan, portal, auditInfo);
+        List<MergeAction<Enrollee, EnrolleeMerge>> enrollees = planMergePortalParticipantUsers(mergePlan, portal);
 
         mergePlan.setEnrollees(enrollees);
         return mergePlan;
     }
 
-    protected List<MergeAction<Enrollee, EnrolleeMerge>> planMergePortalParticipantUsers(ParticipantUserMerge merge, Portal portal, DataAuditInfo auditInfo) {
-        List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(merge.getPpUsers().getPair().getSource());
-        List<Enrollee> targetEnrollees = enrolleeService.findByPortalParticipantUser(merge.getPpUsers().getPair().getTarget());
-        List<StudyEnvironment> studyEnvironments = studyEnvironmentService.findAllByPortalAndEnvironment(portal.getId(), merge.getUsers().getPair().getTarget().getEnvironmentName());
+    protected List<MergeAction<Enrollee, EnrolleeMerge>> planMergePortalParticipantUsers(ParticipantUserMerge merge, Portal portal) {
+        List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(merge.getPpUsers().getSource());
+        List<Enrollee> targetEnrollees = enrolleeService.findByPortalParticipantUser(merge.getPpUsers().getTarget());
+        List<StudyEnvironment> studyEnvironments = studyEnvironmentService.findAllByPortalAndEnvironment(portal.getId(), merge.getUsers().getTarget().getEnvironmentName());
         List<MergePair<Enrollee>> enrolleePairs = studyEnvironments.stream()
                 .map(studyEnv -> {
                     Enrollee enrollee = enrollees.stream()
@@ -128,11 +125,10 @@ public class ParticipantMergeService {
 
     protected EnrolleeMerge planMergeEnrollees(Enrollee source, Enrollee target) {
         EnrolleeMerge enrolleeMerge = EnrolleeMerge.builder()
-            .enrollees(new MergePair<>(source, target))
-            .build();
+                .build();
 
         List<ParticipantTask> sourceTasks = participantTaskService.findByEnrolleeId(source.getId());
-        List<ParticipantTask> targetTasks = participantTaskService.findByEnrolleeId(source.getId());
+        List<ParticipantTask> targetTasks = participantTaskService.findByEnrolleeId(target.getId());
         List<SurveyResponse> sourceResponses = surveyResponseService.findByEnrolleeId(source.getId());
         List<SurveyResponse> targetResponses = surveyResponseService.findByEnrolleeId(target.getId());
 
@@ -145,13 +141,20 @@ public class ParticipantMergeService {
                 targetTasks.remove(targetTask);
             }
             MergeAction.Action action = MergeAction.Action.MOVE_SOURCE;
-            if (task.getSurveyResponseId() == null && task.getKitRequestId() == null) {
+            if (!hasMergeData(task)) {
                 action = MergeAction.Action.DELETE_SOURCE;
             } else if (task.getSurveyResponseId() != null) {
                 MergePair<SurveyResponse> surveyResponsePair = new MergePair<>(
                         sourceResponses.stream().filter(r -> r.getId().equals(task.getSurveyResponseId())).findFirst().get(), null);
-                if (targetTask != null && targetTask.getSurveyResponseId() != null) {
-                    surveyResponsePair.setTarget(targetResponses.stream().filter(r -> r.getId().equals(targetTask.getSurveyResponseId())).findFirst().get());
+                if (targetTask != null) {
+                    if (!hasMergeData(targetTask)) {
+                        action = MergeAction.Action.DELETE_TARGET;
+                    } else {
+                        action = MergeAction.Action.MERGE;
+                        if (targetTask.getSurveyResponseId() != null) {
+                            surveyResponsePair.setTarget(targetResponses.stream().filter(r -> r.getId().equals(targetTask.getSurveyResponseId())).findFirst().get());
+                        }
+                    }
                 }
                 enrolleeMerge.getSurveyResponses().add(new MergeAction<>(surveyResponsePair, MergeAction.Action.MOVE_SOURCE));
             }
@@ -177,87 +180,7 @@ public class ParticipantMergeService {
         return enrolleeMerge;
     }
 
-
-
-    protected ParticipantUserMerge applyMerge(ParticipantUserMerge merge, DataAuditInfo auditInfo) {
-        for (MergeAction<Enrollee, EnrolleeMerge> enrolleeMerge : merge.getEnrollees()) {
-            applyMergeEnrollee(enrolleeMerge, auditInfo);
-        }
-        return merge;
-    }
-
-    protected void applyMergeEnrollee(MergeAction<Enrollee, EnrolleeMerge> enrolleeMerge, DataAuditInfo auditInfo) {
-        if (enrolleeMerge.getAction().equals(MergeAction.Action.NO_ACTION)) {
-            // nothing to do
-            return;
-        }
-
-        if (enrolleeMerge.getAction().equals(MergeAction.Action.DELETE_SOURCE)) {
-            // delete the source enrollee
-            Enrollee source = enrolleeMerge.getPair().getSource();
-            withdrawnEnrolleeService.withdrawEnrollee(source, auditInfo);
-            enrolleeService.delete(source.getId(), CascadeProperty.EMPTY_SET);
-            return;
-        }
-
-        if (enrollee != null && targetEnrollee == null) {
-            // move the enrollee to the target user
-            enrollee.setParticipantUserId(mergeTarget.getId());
-            enrollee.setProfileId(ppMergeTarget.getProfileId());
-            enrolleeService.update(enrollee);
-            return;
-        }
-
-        // merge the data from enrollee into targetEnrollee
-        // delete the enrollee
-        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
-        for (ParticipantTask task : tasks) {
-            if (task.getSurveyResponseId() != null || task.getKitRequestId() != null) {
-              // this is a task that has data -- move it to the target
-              task.setEnrolleeId(targetEnrollee.getId());
-              task.setPortalParticipantUserId(ppMergeTarget.getId());
-              participantTaskService.update(task, auditInfo);
-            }
-        }
-
-        // copy across the survey responses
-        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
-        for (SurveyResponse response : responses) {
-            response.setEnrolleeId(targetEnrollee.getId());
-            if (response.getCreatingParticipantUserId() != null) {
-                response.setCreatingParticipantUserId(mergeTarget.getId());
-            }
-            surveyResponseService.update(response);
-        }
-
-        List<Answer> answers = answerService.findByEnrollee(enrollee.getId());
-        for (Answer answer : answers) {
-            answer.setEnrolleeId(targetEnrollee.getId());
-            if (answer.getCreatingParticipantUserId() != null) {
-                answer.setCreatingParticipantUserId(mergeTarget.getId());
-            }
-            answerService.update(answer);
-        }
-
-        List<KitRequest> kitRequests = kitRequestService.findByEnrolleeRaw(enrollee);
-        for (KitRequest kitRequest : kitRequests) {
-            kitRequest.setEnrolleeId(targetEnrollee.getId());
-            kitRequestService.update(kitRequest);
-        }
-
-        List<ParticipantDataChange> participantDataChanges = participantDataChangeService.findByEnrollee(enrollee.getId());
-        for (ParticipantDataChange participantDataChange : participantDataChanges) {
-            participantDataChange.setEnrolleeId(targetEnrollee.getId());
-            if (participantDataChange.getPortalParticipantUserId() != null) {
-                participantDataChange.setPortalParticipantUserId(ppMergeTarget.getId());
-            }
-            if (participantDataChange.getResponsibleUserId() != null) {
-                participantDataChange.setResponsibleUserId(mergeTarget.getId());
-            }
-            mergeDao.updateParticipantDataChange(participantDataChange);
-        }
-
-        mergeDao.reassignEnrolleeNotifications(enrollee.getId(), targetEnrollee.getId());
-        mergeDao.reassignEnrolleeEvents(enrollee.getId(), targetEnrollee.getId());
+    private boolean hasMergeData(ParticipantTask task) {
+        return task.getSurveyResponseId() != null || task.getKitRequestId() != null || task.getParticipantNoteId() != null;
     }
 }

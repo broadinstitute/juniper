@@ -59,7 +59,7 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                  select %s from %s a
-                                 join study on study_id = study.id"
+                                 join study on study_id = study.id
                                  join portal_study on study.id = portal_study.study_id
                                  where portal_study.portal_id = :portalId and environment_name = :environmentName
                                  """.formatted(prefixedGetQueryColumns("a"), tableName))

@@ -34,7 +34,7 @@ public class MergeDao {
         // reassign all events from source to target
         jdbi.withHandle(handle ->
                 handle.createUpdate("""
-                        update % set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
+                        update notification set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
                         """)
                         .bind("sourceEnrolleeId", sourceEnrolleeId)
                         .bind("targetEnrolleeId", targetEnrolleeId)
@@ -46,14 +46,15 @@ public class MergeDao {
         // reassign all events from source to target
         jdbi.withHandle(handle ->
                 handle.createUpdate("""
-                        update % set responsible_user_id = :responsibleUserId,
+                        update participant_data_change set responsible_user_id = :responsibleUserId,
                         enrollee_id = :enrolleeId,
-                        portal_participant_user_id = :portalParticipantUserId,
+                        portal_participant_user_id = :portalParticipantUserId
                         where id = :id;
                         """)
                         .bind("enrolleeId", change.getEnrolleeId())
                         .bind("responsibleUserId", change.getResponsibleUserId())
                         .bind("portalParticipantUserId", change.getPortalParticipantUserId())
+                        .bind("id", change.getId())
                         .execute()
         );
     }

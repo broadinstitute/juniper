@@ -1,7 +1,9 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -27,12 +29,12 @@ public class ParticipantTaskServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testUpdateTasksForSurvey(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+        StudyEnvironmentBundle bundle =
                 studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
-        EnrolleeFactory.EnrolleeBundle enrollee1 =
+        EnrolleeBundle enrollee1 =
                 enrolleeFactory.buildWithPortalUser(
                         getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle enrollee2 =
+        EnrolleeBundle enrollee2 =
                 enrolleeFactory.buildWithPortalUser(
                         getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 

@@ -9,6 +9,7 @@ import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -59,7 +60,7 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void populatesNewEnrolleeType(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.live);
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
     populateExtService.populateEnrollee(

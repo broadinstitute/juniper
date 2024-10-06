@@ -3,12 +3,8 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.workflow.ParticipantProcessor;
-import bio.terra.pearl.core.service.workflow.merge.MergeOptions;
-import bio.terra.pearl.core.service.workflow.merge.MergePlan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

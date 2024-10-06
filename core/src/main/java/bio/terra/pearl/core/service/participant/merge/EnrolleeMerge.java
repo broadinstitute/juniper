@@ -1,8 +1,7 @@
-package bio.terra.pearl.core.service.workflow.merge;
+package bio.terra.pearl.core.service.participant.merge;
 
 
 import bio.terra.pearl.core.model.kit.KitRequest;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -17,7 +16,6 @@ import java.util.List;
 @Setter
 @Builder
 public class EnrolleeMerge {
-    private MergePair<Enrollee> enrollees;
     @Builder.Default
     private List<MergeAction<ParticipantTask, ?>> tasks = new ArrayList<>();
     @Builder.Default

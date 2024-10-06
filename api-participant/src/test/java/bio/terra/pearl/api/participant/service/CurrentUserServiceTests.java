@@ -4,7 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
@@ -110,9 +113,9 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUserLoginWithEnrollees(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+    EnrolleeBundle enrolleeBundle =
         enrolleeFactory.buildWithPortalUser(
             getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
 
@@ -152,7 +155,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testUserLoginWithProxy(TestInfo info) {
     String email = "proxy" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
-    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy =
+    EnrolleeAndProxy enrolleeAndProxy =
         enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), email);
     String token = generateFakeJwtToken(email);
     String portalShortcode =

@@ -6,8 +6,10 @@ import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -37,16 +39,16 @@ public class ParticipantTaskExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateTasksForSurvey(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
     AdminUser operator =
         portalAdminUserFactory
             .buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()))
             .user();
-    EnrolleeFactory.EnrolleeBundle enrollee1 =
+    EnrolleeBundle enrollee1 =
         enrolleeFactory.buildWithPortalUser(
             getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
-    EnrolleeFactory.EnrolleeBundle enrollee2 =
+    EnrolleeBundle enrollee2 =
         enrolleeFactory.buildWithPortalUser(
             getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 

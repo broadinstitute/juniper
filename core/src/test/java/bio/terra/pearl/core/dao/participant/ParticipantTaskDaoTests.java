@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
@@ -38,7 +39,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     public void testFindByStatusAndTimeOneTask(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
         ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
         // check status filtering
@@ -81,8 +82,8 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     public void testFindByStatusAndTimeMultiTasks(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
         ParticipantTask task1_1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
         ParticipantTask task1_2 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
@@ -119,8 +120,8 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
 
         participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_1", "task_name1", TaskStatus.NEW, TaskType.CONSENT);
         participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_2", "task_name2", TaskStatus.NEW, TaskType.SURVEY);

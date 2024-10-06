@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.workflow.merge;
+package bio.terra.pearl.core.service.participant.merge;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;
