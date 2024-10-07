@@ -22,7 +22,7 @@ import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
-import LoadingSpinner from '../../../util/LoadingSpinner'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
