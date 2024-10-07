@@ -7,31 +7,37 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExtService {
-  private AuthUtilService authUtilService;
-  private EnrolleeService enrolleeService;
-  private WithdrawnEnrolleeService withdrawnEnrolleeService;
-  private ParticipantDataChangeService participantDataChangeService;
+  private final AuthUtilService authUtilService;
+  private final EnrolleeService enrolleeService;
+  private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+  private final ParticipantDataChangeService participantDataChangeService;
+  private final StudyEnvironmentService studyEnvironmentService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
-      ParticipantDataChangeService participantDataChangeService) {
+      ParticipantDataChangeService participantDataChangeService,
+      StudyEnvironmentService studyEnvironmentService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.participantDataChangeService = participantDataChangeService;
+    this.studyEnvironmentService = studyEnvironmentService;
   }
 
   public List<Enrollee> findForKitManagement(
@@ -43,7 +49,12 @@ public class EnrolleeExtService {
     return enrolleeService.findForKitManagement(studyShortcode, environmentName);
   }
 
-  public Enrollee findWithAdminLoad(AdminUser operator, String enrolleeShortcodeOrId) {
+  public Enrollee findWithAdminLoad(
+      AdminUser operator,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName envName,
+      String enrolleeShortcodeOrId) {
     String enrolleeShortcode = enrolleeShortcodeOrId;
     if (enrolleeShortcode != null && enrolleeShortcode.length() > 16) {
       // it's an id, not a shortcode
@@ -57,7 +68,15 @@ public class EnrolleeExtService {
                               .formatted(operator.getUsername(), enrolleeShortcodeOrId)))
               .getShortcode();
     }
+    Optional<StudyEnvironment> studyEnvironment =
+        studyEnvironmentService.findByStudy(studyShortcode, envName);
+    if (studyEnvironment.isEmpty()) {
+      throw new NotFoundException("Study environment not found");
+    }
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
+    if (!studyEnvironment.get().getId().equals(enrollee.getStudyEnvironmentId())) {
+      throw new NotFoundException("Enrollee does not exist in this study environment");
+    }
     return enrolleeService.loadForAdminView(enrollee);
   }
 
