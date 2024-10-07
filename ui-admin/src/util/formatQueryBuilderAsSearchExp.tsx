@@ -11,7 +11,8 @@ import {
 import {
   get,
   has,
-  isEmpty
+  isEmpty,
+  isString
 } from 'lodash'
 
 /**
@@ -22,7 +23,7 @@ import {
 export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSearchFacets): RuleProcessor => {
   return (
     { field, operator, value, valueSource },
-    { escapeQuotes, parseNumbers } = {}
+    { escapeQuotes } = {}
   ) => {
     const valueIsField = valueSource === 'field'
 
@@ -32,13 +33,8 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
     }
     const typeDefinition = get(facets, field, defaultTypeDefinition)
 
-    const useBareValue =
-      typeof value === 'number' ||
-      typeof value === 'boolean' ||
-      typeof value === 'bigint' ||
-      shouldRenderAsNumber(value, typeDefinition, true) ||
-      value === 'true' ||
-      value === 'false'
+    const useBareValue = typeDefinition.type === 'NUMBER' ||
+      typeDefinition.type === 'BOOLEAN'
 
     const processedField = has(facets, field) ? `{${field}}` : field
 
@@ -56,6 +52,8 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
         } else if (useBareValue) {
           if (isEmpty(value) && typeDefinition.type === 'NUMBER') {
             processedValue = 0
+          } else if (typeDefinition.type === 'BOOLEAN') {
+            processedValue = isString(value) ? value.toLowerCase() === 'true' : false
           } else {
             processedValue = trimIfString(value)
           }
@@ -111,7 +109,7 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
             .map(
               val =>
                 `${field} = ${
-                  valueIsField || shouldRenderAsNumber(val, typeDefinition, parseNumbers)
+                  valueIsField || typeDefinition.type === 'NUMBER'
                     ? `${trimIfString(val)}`
                     : `'${escape(val, escapeQuotes)}'`
                 }`
@@ -127,10 +125,10 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
         const valueAsArray = toArray(value)
         if (valueAsArray.length >= 2 && !!valueAsArray[0] && !!valueAsArray[1]) {
           const [first, second] = valueAsArray
-          const firstNum = shouldRenderAsNumber(first, typeDefinition, true)
+          const firstNum = typeDefinition.type === 'NUMBER'
             ? parseNumber(first, { parseNumbers: true })
             : NaN
-          const secondNum = shouldRenderAsNumber(second, typeDefinition, true)
+          const secondNum = typeDefinition.type === 'NUMBER'
             ? parseNumber(second, { parseNumbers: true })
             : NaN
           let firstValue = isNaN(firstNum)
@@ -174,12 +172,3 @@ const escape = (
 ) => (typeof v !== 'string' || !escapeQuotes
   ? v
   : v.replaceAll(`'`, ``).replaceAll('\\', ''))
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const shouldRenderAsNumber = (v: any,
-  typeDef: SearchValueTypeDefinition,
-  parseNumbers?: boolean) =>
-  parseNumbers &&
-  (typeof v === 'number' ||
-    typeof v === 'bigint' ||
-    (typeof v === 'string' && typeDef.type === 'NUMBER'))
