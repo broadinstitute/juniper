@@ -82,23 +82,24 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     }
 
     @Test
-    void testOutreachIsDuplicate() {
+    void testIsDuplicateForTaskTypes() {
         Survey survey = Survey.builder().recur(false).build();
         StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
                 .survey(survey)
                 .build();
-        ParticipantTask outreachTask1 = ParticipantTask.builder()
-                .targetStableId("oh_outsideAdvert")
-                .taskType(TaskType.OUTREACH)
-                .build();
-        List<ParticipantTask> existingTasks = List.of(outreachTask1);
-        ParticipantTask outreachTask2 = ParticipantTask.builder()
-                .targetStableId("oh_outsideAdvert")
-                .taskType(TaskType.OUTREACH)
-                .build();
-        boolean isDuplicate = SurveyTaskDispatcher.isDuplicateTask(studyEnvironmentSurvey, outreachTask2,
-                existingTasks);
-        assertTrue(isDuplicate);
+        List.of(TaskType.SURVEY, TaskType.CONSENT, TaskType.OUTREACH, TaskType.ADMIN_FORM).stream().forEach(taskType -> {
+            ParticipantTask surveyTask1 = ParticipantTask.builder()
+                    .targetStableId("TASK_1")
+                    .taskType(taskType)
+                    .build();
+            ParticipantTask surveyTask2 = ParticipantTask.builder()
+                    .targetStableId("TASK_1")
+                    .taskType(taskType)
+                    .build();
+            boolean isDuplicate = SurveyTaskDispatcher.isDuplicateTask(studyEnvironmentSurvey, surveyTask2,
+                    List.of(surveyTask1));
+            assertTrue(isDuplicate);
+        });
     }
 
     @Test

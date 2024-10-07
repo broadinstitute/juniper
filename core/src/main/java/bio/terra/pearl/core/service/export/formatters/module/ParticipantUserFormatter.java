@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 
 import java.util.List;

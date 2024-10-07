@@ -38,7 +38,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
@@ -136,7 +137,39 @@
             {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
             {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
           ]
-      }]
+      }],
+      "exportIntegrations": [
+        {
+          "name": "Airtable participant table",
+          "destinationType": "AIRTABLE",
+          "enabled": true,
+          "exportOptions": {
+            "fileFormat": "CSV",
+            "excludeModules": ["surveys"],
+            "filterString": "{enrollee.subject} = true and {enrollee.consented} = true",
+            "includeSubHeaders": false,
+            "onlyIncludeMostRecent": true,
+            "splitOptionsIntoColumns": false,
+            "stableIdsForOptions": true
+          },
+          "destinationUrl": "v0/appuvwHZz05qaMzh4/tblzvXokWgOkA0IiE/sync/fc4ZyPiQ"
+        },
+        {
+          "name": "Airtable answer data",
+          "destinationType": "AIRTABLE",
+          "enabled": true,
+          "exportOptions": {
+            "fileFormat": "CSV",
+            "excludeModules": ["profile"],
+            "filterString": "{enrollee.subject} = true and {enrollee.consented} = true",
+            "includeSubHeaders": false,
+            "onlyIncludeMostRecent": true,
+            "splitOptionsIntoColumns": false,
+            "stableIdsForOptions": true
+          },
+          "destinationUrl": "not-yet-implemented"
+        }
+      ]
     },
     {
       "environmentName": "irb",
@@ -147,7 +180,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"
@@ -196,7 +230,8 @@
         "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "enableInPersonKits": true
       },
       "preEnrollSurveyDto": {
         "populateFileName": "surveys/preEnroll.json"

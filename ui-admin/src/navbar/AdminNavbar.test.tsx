@@ -29,5 +29,5 @@ test('renders the user menu', async () => {
   render(RoutedComponent)
   expect(screen.getByTitle('user menu')).toBeInTheDocument()
   userEvent.click(screen.getByTitle('user menu'))
-  expect(screen.getByText('testuser123')).toBeInTheDocument()
+  expect(screen.queryAllByText('testuser123')).toHaveLength(2)
 })

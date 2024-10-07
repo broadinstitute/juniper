@@ -10,7 +10,7 @@ import Api, {
   PortalEnvironmentConfig,
   PortalStudy,
   SiteMediaMetadata,
-  StudyEnvironment,
+  StudyEnvironment, StudyEnvironmentConfig,
   SurveyResponse,
   Trigger
 } from 'api/api'
@@ -20,7 +20,7 @@ import {
   EmailTemplate,
   Enrollee,
   Family,
-  KitRequest,
+  KitRequest, KitRequestStatus,
   KitType,
   LocalizedEmailTemplate,
   ParticipantDashboardAlert,
@@ -178,6 +178,20 @@ export const mockSurveyVersionsList: () => Survey[] = () => ([
   }
 ])
 
+export const mockStudyEnvironmentConfig = (): StudyEnvironmentConfig => {
+  return {
+    initialized: true,
+    password: 'blah',
+    passwordProtected: false,
+    acceptingEnrollment: true,
+    enableFamilyLinkage: false,
+    acceptingProxyEnrollment: false,
+    useDevDsmRealm: false,
+    useStubDsm: false,
+    enableInPersonKits: false
+  }
+}
+
 /** returns a simple studyEnvContext object for use/extension in tests */
 export const mockStudyEnvContext: () => StudyEnvContextT = () => {
   const sandboxEnv: StudyEnvironment = {
@@ -185,16 +199,8 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
     id: 'studyEnvId',
     configuredSurveys: [mockConfiguredSurvey()],
     triggers: [],
-    studyEnvironmentConfig: {
-      initialized: true,
-      password: 'blah',
-      passwordProtected: false,
-      acceptingEnrollment: true,
-      enableFamilyLinkage: false,
-      acceptingProxyEnrollment: false,
-      useDevDsmRealm: false,
-      useStubDsm: false
-    }
+    studyEnvironmentConfig: mockStudyEnvironmentConfig(),
+    kitTypes: []
   }
   return {
     study: {
@@ -273,11 +279,12 @@ export const mockExternalKitRequest = (): PepperKit => {
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
   enrolleeShortcode?: string,
-  status?: string
+  status?: KitRequestStatus
 }) => KitRequest = ({ enrolleeShortcode, status } = {}) => ({
   id: 'kitRequestId',
   createdAt: 1704393045,
   kitType: mockKitType(),
+  distributionMethod: 'MAILED',
   status: status || 'CREATED',
   // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
   // is a capture of the mailing address at the time the kit was sent.

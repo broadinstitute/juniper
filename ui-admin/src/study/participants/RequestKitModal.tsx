@@ -27,7 +27,7 @@ export default function RequestKitModal({
     setIsLoading(true)
     try {
       await Api.createKitRequest(portal.shortcode, study.shortcode,
-        currentEnv.environmentName, enrolleeShortcode, { kitType, skipAddressValidation })
+        currentEnv.environmentName, enrolleeShortcode, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
       Store.addNotification(successNotification('Kit request created'))
       onSubmit()
     } catch (e) {

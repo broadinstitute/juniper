@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react'
-import Api, { PreEnrollmentResponse, Survey } from 'api/api'
+import Api, {
+  PreEnrollmentResponse,
+  Survey
+} from 'api/api'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import {
-  getResumeData, getSurveyJsAnswerList,
+  getResumeData,
+  getSurveyJsAnswerList,
   SurveyAutoCompleteButton,
   SurveyReviewModeButton,
   useI18n,
@@ -37,6 +41,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     studyEnv.environmentName,
     profile || undefined,
     proxyProfile,
+    [],
     { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment, isSubjectEnrollment } }
   )
 

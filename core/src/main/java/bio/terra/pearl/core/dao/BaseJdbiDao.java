@@ -540,6 +540,19 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected void deleteByProperty(String columnName, Collection columnValues) {
+        if (columnValues.isEmpty()) {
+            return;
+        }
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        delete from %s where %s in (<columnValues>)
+                        """.formatted(tableName, columnName))
+                        .bindList("columnValues", columnValues)
+                        .execute()
+        );
+    }
+
     protected void deleteByTwoProperties(String columnName, Object columnValue, String column2Name, Object column2Value) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("""

@@ -1,34 +1,31 @@
-resource "google_project_service" "enable_gke" {
-  project = var.project
-  service = "container.googleapis.com"
+locals {
+  enable_services = [
+    "container.googleapis.com",
+    "containersecurity.googleapis.com",
+    "dns.googleapis.com",
+    "secretmanager.googleapis.com",
+    "sql-component.googleapis.com",
+    "sqladmin.googleapis.com",
+    "logging.googleapis.com",
+    "recommender.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "cloudkms.googleapis.com",
+    "binaryauthorization.googleapis.com",
+  ]
 }
 
-resource "google_project_service" "enable_dns" {
+resource "google_project_service" "enable_all_services" {
+  for_each = toset(local.enable_services)
+
   project = var.project
-  service = "dns.googleapis.com"
+  service = each.value
+  disable_on_destroy = false
 }
 
-resource "google_project_service" "enable_secret_manager" {
-  project = var.project
-  service = "secretmanager.googleapis.com"
-}
+resource "time_sleep" "enable_all_services_with_timeout" {
+  create_duration = "3m"
 
-resource "google_project_service" "enable_sql" {
-  project = var.project
-  service = "sql-component.googleapis.com"
-}
-
-resource "google_project_service" "enable_sql_admin" {
-  project = var.project
-  service = "sqladmin.googleapis.com"
-}
-
-resource "google_project_service" "enable_cloud_logging" {
-  project = var.project
-  service = "logging.googleapis.com"
-}
-
-resource "google_project_service" "enable_recommender" {
-  project = var.project
-  service = "recommender.googleapis.com"
+  depends_on = [
+    google_project_service.enable_all_services
+  ]
 }

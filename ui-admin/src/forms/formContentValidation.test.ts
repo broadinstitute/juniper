@@ -160,6 +160,74 @@ describe('validateFormContent', () => {
     expect(errors[0]).toBe(`Duplicate element name: test`)
   })
 
+  it('validateElementNames returns an error if two elements have a duplicate name within paneldynamic', () => {
+    const formContent: FormContent = {
+      title: 'test',
+      pages: [
+        {
+          elements: [
+            {
+              name: 'test',
+              type: 'paneldynamic',
+              templateElements: [
+                {
+                  name: 'test',
+                  type: 'text',
+                  title: 'test title'
+                }
+              ],
+              title: 'test title'
+            }
+          ]
+        }
+      ]
+    } as FormContent
+
+    const elements = getAllElements(formContent)
+    const errors = validateElementNames(elements)
+    expect(errors).toHaveLength(1)
+    expect(errors[0]).toBe(`Duplicate element name: test`)
+  })
+
+  it('validateElementNames searches deeply nested questions', () => {
+    const formContent: FormContent = {
+      title: 'test',
+      pages: [
+        {
+          elements: [
+            {
+              type: 'panel',
+              elements: [
+                {
+                  name: 'testpanel',
+                  type: 'paneldynamic',
+                  templateElements: [
+                    {
+                      name: 'test',
+                      type: 'text',
+                      title: 'test title'
+                    },
+                    {
+                      name: 'test',
+                      type: 'text',
+                      title: 'test title 2'
+                    }
+                  ]
+                }
+              ],
+              title: 'test title'
+            }
+          ]
+        }
+      ]
+    } as FormContent
+
+    const elements = getAllElements(formContent)
+    const errors = validateElementNames(elements)
+    expect(errors).toHaveLength(1)
+    expect(errors[0]).toBe(`Duplicate element name: test`)
+  })
+
   it('validateElementTypes returns an error if an element is missing a type', () => {
     const formContent: FormContent = {
       title: 'test',

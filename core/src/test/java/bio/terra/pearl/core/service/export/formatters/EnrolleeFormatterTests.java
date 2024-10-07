@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.export.formatters;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import org.junit.jupiter.api.Test;
 
