@@ -3,7 +3,6 @@ import {
   Serializer
 } from 'survey-core'
 
-
 Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
 
 Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
