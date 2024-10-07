@@ -44,9 +44,9 @@ const AdminSidebar = ({ config }: { config: Config }) => {
 
   const color = ZONE_COLORS[config.deploymentZone] || ZONE_COLORS['prod']
 
-  //if current path is /kits/scan, we automatically collapse the sidebar
+  // automatically collapse the sidebar for mobile-first routes
   useEffect(() => {
-    if (window.location.pathname.endsWith('kits/scan')) {
+    if (isMobileFirstRoute()) {
       setOpen(false)
     }
   }, [])
@@ -88,6 +88,10 @@ const AdminSidebar = ({ config }: { config: Config }) => {
       </>}
     </>
   </div>
+}
+
+const isMobileFirstRoute = () => {
+  return window.location.pathname.endsWith('kits/scan')
 }
 
 export default AdminSidebar
