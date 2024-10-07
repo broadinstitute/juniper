@@ -96,7 +96,7 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         assertThat(withdrawnUsers.get(0).getShortcode(), equalTo(sourceBundle.enrollee().getShortcode()));
     }
 
-    /** merge two enrollees who each have a single not-started survey task */
+    /** test merge of two participants who have enrolled in a combination of studies within a portal */
     @Test
     @Transactional
     public void testMultiStudyMerge(TestInfo info) {
@@ -105,7 +105,7 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
         StudyEnvironmentBundle studyEnvBundle3 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
 
-        // a person created two accounts.  They enrolled in study 1 under both, but only one in study 2 and a different one in 3
+        // a person created two accounts.  They enrolled in study 1 under both, but only one in study 2 and the other one in study 3
         RegistrationService.RegistrationResult sourceUser = registrationService.register(studyEnvBundle1.getPortal().getShortcode(), studyEnvBundle1.getStudyEnv().getEnvironmentName(),
                 "username1", null, null);
         RegistrationService.RegistrationResult targetUser = registrationService.register(studyEnvBundle1.getPortal().getShortcode(), studyEnvBundle1.getStudyEnv().getEnvironmentName(),
