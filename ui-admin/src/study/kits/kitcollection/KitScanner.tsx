@@ -170,12 +170,14 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       <div className="mb-3">
         Click the button below to open the camera and scan the enrollee&apos;s unique QR code.
         <InfoPopup content={
-          <>
+          <div>
             The enrollee can find their unique QR code by going to the kits page on their profile.
             If you are unable to use your camera or scan the barcode for any reason, you may override
-            manually and enter the participant code (shortcode) found directly under their QR code. Note
-            that participant shortcodes only contain letters, and will <b>not</b> contain any numbers.
-          </>
+            manually and enter the participant code (shortcode) found directly under their QR code.
+            <div className="text-muted fst-italic mt-2">
+              Note: participant shortcodes only contain letters, and will <b>not</b> contain any numbers.
+            </div>
+          </div>
         }/>
       </div>
       {showEnrolleeCodeScanner &&
