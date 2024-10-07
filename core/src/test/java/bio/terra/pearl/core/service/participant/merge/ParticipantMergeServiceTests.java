@@ -13,11 +13,14 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.google.api.client.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -43,6 +46,8 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
     @Autowired
     private EnrolleeService enrolleeService;
     @Autowired
+    private EnrollmentService enrollmentService;
+    @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
     private ParticipantTaskService participantTaskService;
@@ -50,6 +55,8 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
+    @Autowired
+    private RegistrationService registrationService;
 
     /** merge two enrollees who each have a single not-started survey task */
     @Test
@@ -80,15 +87,58 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(allEnrollees.get(0).getId()), hasSize(1));
 
         // confirm only the target user is left
-        List<ParticipantUser> allUsers = participantUserService.findAll();
-        assertThat(allUsers, hasSize(1));
-        assertThat(allUsers.get(0).getId(), equalTo(targetBundle.participantUser().getId()));
+        assertThat(participantUserService.find(sourceBundle.participantUser().getId()).isPresent(), is(false));
+        assertThat(participantUserService.find(targetBundle.participantUser().getId()).isPresent(), is(true));
 
         // confirm the source enrollee is withdrawn
         List<WithdrawnEnrollee> withdrawnUsers = withdrawnEnrolleeService.findByStudyEnvironmentIdNoData(studyEnvBundle.getStudyEnv().getId());
         assertThat(withdrawnUsers, hasSize(1));
         assertThat(withdrawnUsers.get(0).getShortcode(), equalTo(sourceBundle.enrollee().getShortcode()));
     }
+
+    /** merge two enrollees who each have a single not-started survey task */
+    @Test
+    @Transactional
+    public void testMultiStudyMerge(TestInfo info) {
+        // build 3 studies in the same portal
+        StudyEnvironmentBundle studyEnvBundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+        StudyEnvironmentBundle studyEnvBundle3 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+
+        // a person created two accounts.  They enrolled in study 1 under both, but only one in study 2 and a different one in 3
+        RegistrationService.RegistrationResult sourceUser = registrationService.register(studyEnvBundle1.getPortal().getShortcode(), studyEnvBundle1.getStudyEnv().getEnvironmentName(),
+                "username1", null, null);
+        RegistrationService.RegistrationResult targetUser = registrationService.register(studyEnvBundle1.getPortal().getShortcode(), studyEnvBundle1.getStudyEnv().getEnvironmentName(),
+                "username2", null, null);
+
+        HubResponse sourceEnrollee1 = enrollmentService.enroll(studyEnvBundle1.getStudyEnv().getEnvironmentName(), studyEnvBundle1.getStudy().getShortcode(), sourceUser.participantUser(), sourceUser.portalParticipantUser(), null);
+        HubResponse targetEnrollee1 = enrollmentService.enroll(studyEnvBundle2.getStudyEnv().getEnvironmentName(), studyEnvBundle1.getStudy().getShortcode(), targetUser.participantUser(), targetUser.portalParticipantUser(), null);
+        HubResponse sourceEnrollee2 = enrollmentService.enroll(studyEnvBundle1.getStudyEnv().getEnvironmentName(), studyEnvBundle2.getStudy().getShortcode(), sourceUser.participantUser(), sourceUser.portalParticipantUser(), null);
+        HubResponse targetEnrollee3 = enrollmentService.enroll(studyEnvBundle3.getStudyEnv().getEnvironmentName(), studyEnvBundle3.getStudy().getShortcode(), targetUser.participantUser(), targetUser.portalParticipantUser(), null);
+
+        ParticipantUserMerge merge = participantMergePlanService.planMerge(sourceUser.participantUser(), targetUser.participantUser(),
+                studyEnvBundle1.getPortal());
+        // we expect three merge pairs, one for each study
+        assertThat(merge.getEnrollees(), hasSize(3));
+        for(MergeAction<Enrollee, EnrolleeMerge> enrolleeMerge : merge.getEnrollees()) {
+            if (enrolleeMerge.getSource() != null && enrolleeMerge.getSource().getId().equals(sourceEnrollee1.getEnrollee().getId())) {
+                assertThat(enrolleeMerge.getTarget().getId(), equalTo(targetEnrollee1.getEnrollee().getId()));
+                assertThat(enrolleeMerge.getAction(), equalTo(MergeAction.Action.MERGE));
+            } else if (enrolleeMerge.getSource() != null && enrolleeMerge.getSource().getId().equals(sourceEnrollee2.getEnrollee().getId())) {
+                assertThat(enrolleeMerge.getTarget(), nullValue());
+                assertThat(enrolleeMerge.getAction(), equalTo(MergeAction.Action.MOVE_SOURCE));
+            } else if (enrolleeMerge.getTarget() != null && enrolleeMerge.getTarget().getId().equals(targetEnrollee3.getEnrollee().getId())) {
+                assertThat(enrolleeMerge.getSource(), nullValue());
+                assertThat(enrolleeMerge.getAction(), equalTo(MergeAction.Action.NO_ACTION));
+            } else {
+                throw new RuntimeException("unexpected enrollee merge");
+            }
+        }
+
+        participantMergeService.applyMerge(merge, DataAuditInfo.builder().systemProcess("test").build());
+
+    }
+
 
     /** merge two enrollees who each have a survey task with a response */
     @Test
@@ -139,7 +189,7 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
                 assertThat(taskMerge.getAction(), equalTo(MergeAction.Action.MERGE));
             } else if (Objects.equal(taskMerge.getSource().getTargetStableId(), survey2.getStableId())) {
                 assertThat(taskMerge.getTarget().getTargetStableId(), equalTo(survey2.getStableId()));
-                assertThat(taskMerge.getAction(), equalTo(MergeAction.Action.DELETE_TARGET));
+                assertThat(taskMerge.getAction(), equalTo(MergeAction.Action.MOVE_SOURCE_DELETE_TARGET));
             } else if (Objects.equal(taskMerge.getTarget().getTargetStableId(), survey3.getStableId())) {
                 assertThat(taskMerge.getSource().getTargetStableId(), equalTo(survey3.getStableId()));
                 assertThat(taskMerge.getAction(), equalTo(MergeAction.Action.DELETE_SOURCE));

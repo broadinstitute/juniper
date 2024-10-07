@@ -25,7 +25,7 @@ public class MergeAction<T extends BaseEntity, MP> {
         if (action ==Action.DELETE_SOURCE && pair.getSource() == null) {
             throw new IllegalArgumentException("source cannot be null for DELETE_SOURCE action");
         }
-        if (action == Action.MERGE && (mergePlan == null || pair.getSource() == null || pair.getTarget() == null)) {
+        if (action == Action.MERGE && (pair.getSource() == null || pair.getTarget() == null)) {
             throw new IllegalArgumentException("MERGE requires a source, target and plan");
         }
         this.pair = pair;
@@ -46,6 +46,6 @@ public class MergeAction<T extends BaseEntity, MP> {
         NO_ACTION,
         MERGE,
         DELETE_SOURCE,
-        DELETE_TARGET
+        MOVE_SOURCE_DELETE_TARGET
     }
 }

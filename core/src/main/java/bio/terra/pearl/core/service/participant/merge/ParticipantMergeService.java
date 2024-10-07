@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ParticipantMergeService {
@@ -90,14 +91,14 @@ public class ParticipantMergeService {
     protected void mergeEnrolleeData(Enrollee source, Enrollee target, EnrolleeMerge mergePlan, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
         for (MergeAction<ParticipantTask,?> action : mergePlan.getTasks()) {
             if (action.getAction().equals(MergeAction.Action.DELETE_SOURCE)) {
-                participantTaskService.delete(action.getSource().getId(), auditInfo);
-            } else if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE) || action.getAction().equals(MergeAction.Action.MERGE)) {
-                // For now 'merge' is the same as 'move' -- we don't have a plan for merging tasks
-                // refetch the target task to make sure we have the latest version and for safety, the reassign ids
-                ParticipantTask task = participantTaskService.find(action.getSource().getId()).orElseThrow();
-                task.setEnrolleeId(target.getId());
-                task.setPortalParticipantUserId(targetPpUser.getId());
-                participantTaskService.update(task, auditInfo);
+                deleteTask(action.getSource(), auditInfo);
+            } else if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE) ||
+                    action.getAction().equals(MergeAction.Action.MERGE) ||
+                    action.getAction().equals(MergeAction.Action.MOVE_SOURCE_DELETE_TARGET)) {
+                moveTask(action.getSource().getId(), target, targetPpUser, auditInfo);
+                if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE_DELETE_TARGET)) {
+                    deleteTask(action.getTarget(), auditInfo);
+                }
             } else if (action.getAction().equals(MergeAction.Action.NO_ACTION)) {
                 // nothing to do
             } else {
@@ -105,49 +106,56 @@ public class ParticipantMergeService {
             }
         }
 
-        for (MergeAction<SurveyResponse, ?> action : mergePlan.getSurveyResponses()) {
-            if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE) || action.getAction().equals(MergeAction.Action.MERGE)) {
-                // For now 'merge' is the same as 'move' -- we don't have a strategy for merging responses
-                // refetch the response to make sure we have the latest version and for safety, the reassign ids
-                SurveyResponse response = surveyResponseService.find(action.getSource().getId()).orElseThrow();
-                response.setEnrolleeId(target.getId());
-                if (response.getCreatingParticipantUserId() != null) {
-                    response.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
-                }
-                surveyResponseService.update(response);
-            } else if (action.getAction().equals(MergeAction.Action.NO_ACTION)) {
-                // nothing to do
-            } else {
-                throw new IllegalArgumentException("Unexpected action in SurveyResponse merge plan");
-            }
+        // for now, we reassign all notifications and events to the target enrollee
+        mergeDao.reassignEnrolleeNotifications(source.getId(), target.getId());
+        mergeDao.reassignEnrolleeEvents(source.getId(), target.getId());
+        reassignDataChanges(source, target, targetPpUser);
+    }
+
+    private void moveTask(UUID taskId, Enrollee targetEnrollee, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
+        // refetch the target task to make sure we have the latest version and for safety (since the task
+        // may come from a Merge object from the client), the reassign ids
+        ParticipantTask task = participantTaskService.find(taskId).orElseThrow();
+        task.setEnrolleeId(targetEnrollee.getId());
+        task.setPortalParticipantUserId(targetPpUser.getId());
+        participantTaskService.update(task, auditInfo);
+
+        if (task.getSurveyResponseId() != null) {
+            moveResponse(task.getSurveyResponseId(), targetEnrollee, targetPpUser, auditInfo);
+        } else if (task.getKitRequestId() != null) {
+            moveKitRequest(task.getKitRequestId(), targetEnrollee, targetPpUser, auditInfo);
         }
-        // for now, just copy over all answers.  Later this will be folded into how we merge responses
-        List<Answer> answers = answerService.findByEnrollee(source.getId());
+    }
+
+    private void deleteTask(ParticipantTask task, DataAuditInfo auditInfo) {
+        // for now, we only support deleting tasks with no data attached
+        task = participantTaskService.find(task.getId()).orElseThrow();
+        if (ParticipantMergePlanService.hasMergeData(task)) {
+            throw new IllegalArgumentException("Cannot delete task with data");
+        }
+        participantTaskService.delete(task.getId(), auditInfo);
+    }
+
+    private void moveResponse(UUID responseId, Enrollee targetEnrollee, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
+        SurveyResponse response = surveyResponseService.find(responseId).orElseThrow();
+        response.setEnrolleeId(targetEnrollee.getId());
+        if (response.getCreatingParticipantUserId() != null) {
+            response.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
+        }
+        surveyResponseService.update(response);
+        List<Answer> answers = answerService.findByResponse(responseId);
         for (Answer answer : answers) {
-            answer.setEnrolleeId(target.getId());
             if (answer.getCreatingParticipantUserId() != null) {
                 answer.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
             }
             answerService.update(answer);
         }
+    }
 
-        for (MergeAction<KitRequest, ?> action : mergePlan.getKitRequests()) {
-            if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE)) {
-                // refetch the kitrequest to make sure we have the latest version and for safety, the reassign ids
-                KitRequest request = kitRequestService.find(action.getSource().getId()).orElseThrow();
-                request.setEnrolleeId(target.getId());
-                kitRequestService.update(request);
-            } else if (action.getAction().equals(MergeAction.Action.NO_ACTION)) {
-                // nothing to do
-            } else {
-                throw new IllegalArgumentException("Unexpected action in KitRequest merge plan");
-            }
-        }
-
-        mergeDao.reassignEnrolleeNotifications(source.getId(), target.getId());
-        mergeDao.reassignEnrolleeEvents(source.getId(), target.getId());
-
-        reassignDataChanges(source, target, targetPpUser);
+    private void moveKitRequest(UUID kitRequestId, Enrollee targetEnrollee, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
+        KitRequest kitRequest = kitRequestService.find(kitRequestId).orElseThrow();
+        kitRequest.setEnrolleeId(targetEnrollee.getId());
+        kitRequestService.update(kitRequest);
     }
 
     private void moveEnrollee(Enrollee enrollee, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
@@ -171,14 +179,6 @@ public class ParticipantMergeService {
                 response.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
                 surveyResponseService.update(response);
             }
-        }
-
-        List<Answer> answers = answerService.findByEnrollee(enrollee.getId());
-        for (Answer answer : answers) {
-            if (answer.getCreatingParticipantUserId() != null) {
-                answer.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
-            }
-            answerService.update(answer);
         }
         reassignDataChanges(enrollee, enrollee, targetPpUser);
     }
