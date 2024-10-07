@@ -1,10 +1,5 @@
 package bio.terra.pearl.compliance.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-
 public class SyncResult {
 
     private boolean hasChanged;

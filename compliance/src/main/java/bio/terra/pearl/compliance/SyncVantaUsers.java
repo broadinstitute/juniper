@@ -245,7 +245,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     }
 
     private RetryBackoffSpec getRetry() {
-        return Retry.fixedDelay(5, Duration.ofSeconds(61)).filter(e -> e instanceof RateLimitException);
+        return Retry.fixedDelay(5, Duration.ofSeconds(61)).filter(RateLimitException.class::isInstance);
     }
 
     private WebClient getWebClientForIntegration(String accessToken, String integrationId, String resourceKind) {
