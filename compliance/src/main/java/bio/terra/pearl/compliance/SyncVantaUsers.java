@@ -166,6 +166,7 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
             log.info("Vanta sync completed after {}m.  Posting update to slack.", duration.toMinutes());
 
+            // only post to slack if something has changed
             if (syncSummary.hasVantaDataChanged()) {
                 try (Slack slack = Slack.getInstance()) {
                     ChatPostMessageResponse response = slack.methods(userSyncConfig.getSlackToken()).chatPostMessage(req -> req
