@@ -40,7 +40,7 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
-  const { enrollees } = useActiveUser()
+  const { enrollees, ppUser } = useActiveUser()
   const { user, updateEnrollee, updateProfile, enrollees: allEnrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
@@ -48,9 +48,9 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
 
-  const proxyProfile = allEnrollees
+  const proxyProfile = ppUser?.participantUserId != user?.id ? allEnrollees
     .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
-    ?.profile
+    ?.profile : undefined
 
   const { i18n, selectedLanguage } = useI18n()
   const taskId = useTaskIdParam() ?? ''
