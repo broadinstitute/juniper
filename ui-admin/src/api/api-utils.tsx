@@ -66,7 +66,10 @@ export const doApiLoad = async (loadingFunc: () => Promise<unknown>,
         customErrorMsg?: string,
         alertErrors?: boolean,
         setError?: (error: string) => void
-    } = { alertErrors: true }) => {
+    } = {}) => {
+  if (opts.alertErrors === undefined) {
+    opts.alertErrors = true
+  }
   if (opts.setIsLoading) { opts.setIsLoading(true) }
   try {
     await loadingFunc()
