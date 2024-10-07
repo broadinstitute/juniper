@@ -236,7 +236,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         <label className={'fw-bold'}>Full Name</label>
         <div className="mb-3">
           {enrollee ?
-            `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : 'Participant has not provided a name'}
+            `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : 'not yet entered'}
         </div>
         <label className={'fw-bold'}>Date of Birth</label>
         <div className="mb-3">
