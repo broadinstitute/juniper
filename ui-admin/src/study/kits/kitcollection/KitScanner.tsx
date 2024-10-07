@@ -241,7 +241,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         <label className={'fw-bold'}>Date of Birth</label>
         <div className="mb-3">
           {enrollee.profile.birthDate ?
-            dateToDefaultString(enrollee.profile.birthDate) : 'Participant has not provided a date of birth'}
+            dateToDefaultString(enrollee.profile.birthDate) : 'not yet entered'}
         </div>
       </> :
         <div className="fst-italic text-muted mb-3">Please scan an enrollee QR code</div>
