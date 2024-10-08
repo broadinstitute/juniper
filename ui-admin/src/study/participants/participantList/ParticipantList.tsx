@@ -10,17 +10,16 @@ import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import WithdrawnEnrolleeList from './WithdrawnEnrolleeList'
-import { useSearchParams } from 'react-router-dom'
+import { Route, Routes, useSearchParams } from 'react-router-dom'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
+import PortalUserList from './PortalUserList'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [view, setView] = useState<'participant' | 'family' | 'withdrawn'>(
-      searchParams.get('view') as never || 'participant')
+
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
@@ -61,23 +60,20 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         disabled={view === 'withdrawn'}
       />
       <ParticipantListViewSwitcher
-        view={view}
-        setView={setView}
         setSearchParams={setSearchParams}
         familyLinkageEnabled={familyLinkageEnabled}
       />
     </div>
 
     <LoadingSpinner isLoading={isLoading}>
-      {view === 'family' &&
-        <ParticipantListTableGroupedByFamily participantList={participantList} studyEnvContext={studyEnvContext}/>
-      }
-      {view === 'participant' &&
-        <ParticipantListTable participantList={participantList} studyEnvContext={studyEnvContext} reload={reload}/>
-      }
-      {view === 'withdrawn' &&
-        <WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>
-      }
+      <Routes>
+        <Route path="withdrawn" element={<WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>}/>
+        <Route path="portalUsers" element={<PortalUserList
+          portalShortcode={studyEnvContext.portal.shortcode} envName={studyEnvContext.currentEnv.environmentName}
+        />}/>
+        <Route path="families" element={<ParticipantListTableGroupedByFamily
+          participantList={participantList} studyEnvContext={studyEnvContext}/>}/>
+      </Routes>
     </LoadingSpinner>
   </div>
 }

@@ -1,10 +1,10 @@
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
+import { faList, faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 import React from 'react'
 
-type ParticipantView = 'participant' | 'family' | 'withdrawn'
+type ParticipantView = 'participant' | 'family' | 'withdrawn' | 'account'
 
 type ParticipantListViewSwitcherProps = {
     view: ParticipantView
@@ -47,6 +47,16 @@ export const ParticipantListViewSwitcher = (props: ParticipantListViewSwitcherPr
         }}>
         <FontAwesomeIcon icon={faUsers}/>
       </Button> }
+      <Button variant='light'
+        aria-label={'Switch to account list'}
+        className={`btn btn-sm ${view === 'account' ? 'btn-dark' : 'btn-light'}`}
+        tooltip={'Switch to account view'}
+        onClick={() => {
+          setSearchParams({ view: 'account' })
+          setView('account')
+        }}>
+        <FontAwesomeIcon icon={faList}/>
+      </Button>
     </div>
   )
 }

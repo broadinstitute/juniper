@@ -309,6 +309,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findAllByFamilyId(id);
     }
 
+    public List<Enrollee> findAllByPortalEnv(UUID portalId, EnvironmentName environmentName) {
+        return dao.findAllByPortalEnv(portalId, environmentName);
+    }
+
     public enum AllowedCascades implements CascadeProperty {
         PARTICIPANT_USER
     }

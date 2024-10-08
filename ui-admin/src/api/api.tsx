@@ -80,6 +80,11 @@ export type EnrolleeSearchExpressionResult = {
   participantUser?: ParticipantUser
 }
 
+export type ParticipantUsersWithEnrollees = {
+  participantUsers: ParticipantUser[],
+  enrollees: Enrollee[]
+}
+
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
 
 export type ProfileUpdateDto = {
@@ -504,6 +509,12 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async fetchStudiesWithEnvs(portalShortcode: string, envName: string): Promise<Study[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/studies?envName=${envName}`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
     const params = queryString.stringify({ portalShortcode, language: selectedLanguage })
     const url = `${API_ROOT}/i18n/v1?${params}`
@@ -756,6 +767,12 @@ export default {
 
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersWithEnrollees> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers`,
       this.getGetInit())
     return await this.processJsonResponse(response)
   },
