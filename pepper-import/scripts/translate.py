@@ -5,13 +5,12 @@ import os.path
 import re
 from copy import copy
 from datetime import datetime
-from openpyxl import load_workbook
 from typing import Any, Union
+
+from openpyxl import load_workbook
 
 
 # todo s:
-#       - figure out _DETAIL questions on the import side
-#       - check multi-select options match?
 #       - for each survey, also map `.COMPLETEDAT` to `lastUpdatedAt` and `completed` on the juniper side
 #       - create export rows for non-subject users that are proxies of a governed user
 #       - export enrollee.subject=true for all subjects (how to track?)
@@ -536,6 +535,8 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
         juniper_data[juniper_question.stable_id] = json.dumps(get_dynamic_panel_values(translation, dsm_data))
     elif dsm_question.question_type.lower() == 'multiselect':
         juniper_data[juniper_question.stable_id] = json.dumps(get_multi_panel_values(translation, dsm_data))
+    elif juniper_question.question_type.lower() == 'checkbox' and dsm_question.question_type.lower() == 'picklist':
+        juniper_data[juniper_question.stable_id] = json.dumps([dsm_data[dsm_question.stable_id]] if len(dsm_data[dsm_question.stable_id]) > 0 else [])
     else:
         simple_translate(
             translation, dsm_data, juniper_data
