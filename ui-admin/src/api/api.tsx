@@ -31,7 +31,8 @@ import {
 import queryString from 'query-string'
 import {
   AdminUser,
-  AdminUserParams, Role
+  AdminUserParams,
+  Role
 } from './adminUser'
 
 export type {
@@ -266,8 +267,10 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
-  filter?: string,
-  limit?: number
+  includeSubHeaders?: boolean,
+  excludeModules?: string[],
+  filterString?: string,
+  rowLimit?: number
 }
 
 export type ExportData = {
@@ -316,6 +319,7 @@ export type KitRequestListResponse = {
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
   addrValidationConfig: Record<string, string>
+  airtable: Record<string, string>
 }
 
 export type ParticipantTaskUpdateDto = {
@@ -361,6 +365,28 @@ export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string
   userData: string
+}
+
+export type ExportIntegration = {
+    id: string,
+  name: string,
+    createdAt: number,
+    lastUpdatedAt: number,
+    destinationType: string,
+    enabled: boolean,
+    exportOptions: ExportOptions,
+    destinationUrl: string
+}
+
+export type ExportIntegrationJob = {
+  id: string,
+  status: string,
+  exportIntegrationId: string,
+  startedAt: number,
+  completedAt?: number,
+  result: string,
+  creatingAdminUserId?: string,
+  systemProcess?: string
 }
 
 let bearerToken: string | null = null
@@ -927,10 +953,27 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, skipAddressValidation: boolean }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean, kitLabel?: string }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitOptions)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async collectKit(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    kitOptions: { kitLabel: string, returnTrackingNumber: string }
+  ): Promise<string> {
+    const url =
+        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/collectKit`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -944,7 +987,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitOptions: { kitType: string, skipAddressValidation: boolean }
+    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean }
   ): Promise<KitRequestListResponse> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {
@@ -1058,11 +1101,7 @@ export default {
     Promise<Response> {
     const exportOptionsParams = exportOptions as Record<string, unknown>
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
-    const searchParams = new URLSearchParams()
-    for (const prop in exportOptionsParams) {
-      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
-    }
-    url += searchParams.toString()
+    url += queryString.stringify(exportOptionsParams)
     return fetch(url, this.getGetInit())
   },
 
@@ -1073,10 +1112,50 @@ export default {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
     const searchParams = new URLSearchParams()
     for (const prop in exportOptionsParams) {
-      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+      if (exportOptionsParams[prop] !== undefined) {
+        searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+      }
     }
     url += searchParams.toString()
     return fetch(url, this.getGetInit())
+  },
+
+  async fetchExportIntegrations(studyEnvParams: StudyEnvParams): Promise<ExportIntegration[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createExportIntegration(studyEnvParams: StudyEnvParams, integration: ExportIntegration):
+    Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(integration)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async runExportIntegration(studyEnvParams: StudyEnvParams, id: string): Promise<ExportIntegrationJob> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${id}/run`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchExportIntegrationJobs(studyEnvParams: StudyEnvParams): Promise<ExportIntegrationJob[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrationJobs`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async findTrigger(portalShortcode: string, studyShortcode: string, envName: string, id: string):

@@ -14,6 +14,14 @@
     ]
   },
   {
+    "name": "exporter",
+    "displayName": "Exporter",
+    "description": "control automatic export settings",
+    "permissionNames": [
+      "export_integration"
+    ]
+  },
+  {
     "name": "publisher",
     "displayName": "Study publisher",
     "description": "publish changes to irb and live environments",
@@ -25,7 +33,7 @@
     "name": "prototype_tester",
     "displayName": "Prototype access",
     "description": "Use features being prototyped",
-    "permissionNames": ["team_roles_edit"]
+    "permissionNames": []
   },
   {
     "name": "power_user",

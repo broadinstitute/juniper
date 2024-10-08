@@ -16,7 +16,7 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -188,12 +188,12 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     }
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = ExportOptions
+        ExportOptionsWithExpression options = ExportOptionsWithExpression
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
-                .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
-                .limit(null)
+                .filterExpression(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
+                .rowLimit(null)
                 .build();
 
         List<EnrolleeExportData> enrolleeExportData = enrolleeExportService.loadEnrolleeExportData(sandboxEnvironmentId, options);

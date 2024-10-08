@@ -1,0 +1,62 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: juniper-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: admin-ip
+    networking.gke.io/managed-certificates: "admin-cert,demo-cert"
+    # If the class annotation is not specified it defaults to "gce".
+    kubernetes.io/ingress.class: "gce"
+spec:
+
+  rules:
+    # need:
+    # - sandbox.demo.juniper-cmi.dev
+    # - irb.demo.juniper-cmi.dev
+    # - demo.juniper-cmi.dev
+    # and for the other services (cmi, hearthive, atcp, ourhealth)
+    - host: "sandbox.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "irb.demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "demo.juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: participant-service
+                port:
+                  number: 80
+    - host: "juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-service
+                port:
+                  number: 80
+  defaultBackend:
+    service:
+      name: participant-service
+      port:
+        number: 80

@@ -848,6 +848,26 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/collectKit:
+    post:
+      summary: Collects a sample kit from an enrollee and updates the kit status
+      tags: [ kit ]
+      operationId: collectKit
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
+      requestBody:
+        required: true
+        description: kit request creation dto
+        content: *jsonContent
+      responses:
+        '200':
+          description: Kit request
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/participantNote:
     post:
       summary: Create a participant note
@@ -1149,9 +1169,11 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: includeSubheaders, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: excludeModules, in: query, required: false, schema: { type: array, items: { type: string } } }
         - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
-        - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: rowLimit, in: query, required: false, schema: { type: integer } }
       responses:
         '200':
           description: export data
@@ -1176,6 +1198,85 @@ paths:
         '200':
           description: export data
           content: { text/plain: { schema: { type: string, format: binary } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations:
+    get:
+      summary: gets all the active exportIntegrations for the environment
+      tags: [ exportIntegration ]
+      operationId: findByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrations
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: create a new exportIntegration for the environment
+      tags: [ exportIntegration ]
+      operationId: create
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}:
+    get:
+      summary: gets the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: get
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}/run:
+    post:
+      summary: runs the exportIntegration by id
+      tags: [ exportIntegration ]
+      operationId: run
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration result
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrationJobs:
+    get:
+      summary: gets all the exportIntegrationJobs for the environment
+      tags: [ exportIntegration ]
+      operationId: findJobsByStudy
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: The exportIntegrationJobs
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
@@ -2020,6 +2121,73 @@ paths:
         '200':
           description: logs
           content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/track:
+    post:
+      summary: Tracks a user event
+      tags: [ logging ]
+      operationId: trackEvent
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+          text/plain:
+            schema:
+              type: string
+              description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/engage:
+    post:
+      summary: Tracks a user engagement event (stub)
+      tags: [ logging ]
+      operationId: trackEngage
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/groups:
+    post:
+      summary: Tracks user groups (stub)
+      tags: [ logging ]
+      operationId: trackGroups
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string } } }
         '500':
           $ref: '#/components/responses/ServerError'
 

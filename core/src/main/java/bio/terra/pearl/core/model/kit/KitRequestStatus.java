@@ -17,7 +17,8 @@ public enum KitRequestStatus {
     CREATED,
     QUEUED,
     SENT,
-    RECEIVED,
+    COLLECTED_BY_STAFF, // for a kit that has been handed back to study staff in person. staff will mail it back to GP
+    RECEIVED, // for a kit that has been received by GP
     ERRORED,
     DEACTIVATED, // stopped -- no more processing/shipping will be done on this kit
     UNKNOWN // for when we receive a status from Pepper that we don't recognize

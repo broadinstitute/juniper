@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -20,15 +21,16 @@ import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
-import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
-import bio.terra.pearl.core.service.dataimport.ImportItemService;
-import bio.terra.pearl.core.service.dataimport.ImportService;
+import bio.terra.pearl.core.service.export.dataimport.ImportFileFormat;
+import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
+import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -80,6 +82,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private ImportItemService importItemService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private SurveyResponseService surveyResponseService;
+
+
     @Autowired
     KitRequestService kitRequestService;
 
@@ -485,6 +491,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(tasks, hasSize(1));
         assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).isComplete(), equalTo(true));
 
         List<Answer> answers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), "importTest1");
         assertThat(answers, hasSize(2));
@@ -498,6 +507,63 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         // confirm profile mapping got processed
         Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
         assertThat(profile.getGivenName(), equalTo("Jeff"));
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyResponseImportDefaultComplete(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .answerMappings(List.of(
+                        AnswerMapping.builder()
+                                .targetType(AnswerMappingTargetType.PROFILE)
+                                .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                                .targetField("givenName")
+                                .questionStableId("importFirstName")
+                                .build()
+                ))
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+        Map<String, String> enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username,
+                "importTest1.lastUpdatedAt", "2023-08-21 05:17AM",
+                "importTest1.importFirstName", "Jeff",
+                "importTest1.importFavColors", "[\"red\", \"blue\"]");
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        // confirm a task got created for the enrollee, and the task is complete
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).isComplete(), equalTo(true));
+
+        // now an enrollee with unspecified complete, but no answers for the survey
+        enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username + "2",
+                "importTest1.lastUpdatedAt", "",
+                "importTest1.importFirstName", "",
+                "importTest1.importFavColors", "");
+        enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+        // confirm a task got created for the enrollee, and the task is NOT complete
+        tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.NEW));
+        responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(0));
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,

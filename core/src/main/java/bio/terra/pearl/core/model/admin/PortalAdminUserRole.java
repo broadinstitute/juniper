@@ -17,5 +17,4 @@ public class PortalAdminUserRole extends BaseEntity {
     private UUID portalAdminUserId;
     private Role role;
     private UUID roleId;
-    private UUID studyId;
 }

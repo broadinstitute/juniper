@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.datarepo;
 
-import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
-import bio.terra.pearl.core.model.datarepo.DataRepoJob;
+import bio.terra.pearl.core.dao.export.datarepo.DataRepoJobDao;
+import bio.terra.pearl.core.model.export.datarepo.DataRepoJob;
 import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 

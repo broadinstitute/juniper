@@ -17,23 +17,25 @@ export const PanelEditor = ({ panel, onChange, currentLanguage, supportedLanguag
 }) => {
   return (
     <>
-      <TextInput className={'mb-2'} label={'Panel Title'} value={panel.title}
+      <TextInput className={'mb-2'} label={'Panel Title'} labelClassname={'mb-0'} value={panel.title}
+        placeholder={'Enter an optional panel title'}
         onChange={title => onChange({ ...panel, title })}/>
-      <hr/>
+      <hr className="mb-0"/>
       <div>
         {panel.elements.map((element, elementIndex) => {
           return <div key={elementIndex}>
-            <div className="d-flex justify-content-between">
-              <div className="h5 mb-3">Edit question</div>
-              <ListElementController
-                items={panel.elements}
-                index={elementIndex}
-                updateItems={newItems => {
-                  onChange({
-                    ...panel,
-                    elements: newItems
-                  })
-                }}/>
+            <div className="d-flex justify-content-end">
+              <div className="d-flex border rounded-3 rounded-top-0 border-top-0 bg-light">
+                <ListElementController
+                  items={panel.elements}
+                  index={elementIndex}
+                  updateItems={newItems => {
+                    onChange({
+                      ...panel,
+                      elements: newItems
+                    })
+                  }}/>
+              </div>
             </div>
             <FullQuestionDesigner
               key={elementIndex}
@@ -51,7 +53,7 @@ export const PanelEditor = ({ panel, onChange, currentLanguage, supportedLanguag
               currentLanguage={currentLanguage}
               supportedLanguages={supportedLanguages}
             />
-            <hr/>
+            <hr className="mb-0"/>
           </div>
         })}
         <div className="my-2">

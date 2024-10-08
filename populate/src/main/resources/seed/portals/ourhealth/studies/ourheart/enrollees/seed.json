@@ -94,6 +94,7 @@
     {
       "creatingAdminUsername": "staff@ourhealth.org",
       "kitTypeName": "SALIVA",
+      "distributionMethod": "MAILED",
       "status": "CREATED",
       "dsmStatusJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",

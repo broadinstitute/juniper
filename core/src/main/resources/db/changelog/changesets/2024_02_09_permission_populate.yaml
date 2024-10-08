@@ -1,4 +1,4 @@
-databaseChangeLog:
+databaseChangeLog:  # This script is DEPRECATED -- it has been replaced by RolePopulator.  This has been removed from the changelog
   - changeSet:
       id: "add_initial_permissions"
       author: dbush

@@ -25,11 +25,8 @@ import { isEmpty } from 'lodash'
 import useStateCallback from 'util/useStateCallback'
 import AnswerMappingEditor from 'study/surveys/AnswerMappingEditor'
 import { SplitFormDesigner } from './designer/split/SplitFormDesigner'
-import {
-  userHasPermission,
-  useUser
-} from 'user/UserProvider'
 import { SplitCalculatedValueDesigner } from 'forms/designer/SplitCalculatedValueDesigner'
+import { userHasPermission, useUser } from 'user/UserProvider'
 
 type FormContentEditorProps = {
   portal: Portal
@@ -55,7 +52,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     onAnswerMappingChange
   } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('designer')
+  const [activeTab, setActiveTab] = useState<string | null>('split')
   const [tabsEnabled, setTabsEnabled] = useState(true)
   const { user } = useUser()
 
@@ -65,39 +62,15 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
       <Tabs
         activeKey={activeTab ?? undefined}
-        className="mb-1"
         mountOnEnter
         unmountOnExit
         onSelect={setActiveTab}
+        className="px-3"
       >
         <Tab
-          disabled={activeTab !== 'designer' && !tabsEnabled}
-          eventKey="designer"
-          title="Designer"
-        >
-          <ErrorBoundary>
-            <FormDesigner
-              readOnly={readOnly}
-              content={editedContent}
-              currentLanguage={currentLanguage}
-              supportedLanguages={supportedLanguages}
-              onChange={(newContent, callback?: () => void) => {
-                setEditedContent(newContent, callback)
-                try {
-                  const errors = validateFormContent(newContent)
-                  onFormContentChange(errors, newContent)
-                } catch (err) {
-                  //@ts-ignore
-                  onFormContentChange([err.message], undefined)
-                }
-              }}
-            />
-          </ErrorBoundary>
-        </Tab>
-        {userHasPermission(user, portal.id, 'prototype_tester') && <Tab
           disabled={activeTab !== 'split' && !tabsEnabled}
           eventKey="split"
-          title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+          title="Designer"
         >
           <ErrorBoundary>
             <SplitFormDesigner
@@ -116,7 +89,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               }}
             />
           </ErrorBoundary>
-        </Tab> }
+        </Tab>
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
@@ -168,6 +141,30 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} currentLanguage={currentLanguage} />
           </ErrorBoundary>
         </Tab>
+        {userHasPermission(user, portal.id, 'prototype_tester') &&< Tab
+          disabled={activeTab !== 'designer' && !tabsEnabled}
+          eventKey="designer"
+          title={<>Designer<span className='badge bg-primary fw-light ms-2'>LEGACY</span></>}
+        >
+          <ErrorBoundary>
+            <FormDesigner
+              readOnly={readOnly}
+              content={editedContent}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
+              onChange={(newContent, callback?: () => void) => {
+                setEditedContent(newContent, callback)
+                try {
+                  const errors = validateFormContent(newContent)
+                  onFormContentChange(errors, newContent)
+                } catch (err) {
+                  //@ts-ignore
+                  onFormContentChange([err.message], undefined)
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </Tab> }
       </Tabs>
     </div>
   )

@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 
 const runPopulatePortalScript = (): Promise<undefined> => {
   return new Promise((resolve, reject) => {
-    exec('../scripts/populate_portal.sh demo ourhealth', (err, stdout, stderr) => {
+    exec('../scripts/populate/populate_portal.sh demo ourhealth', (err, stdout, stderr) => {
       if (err) {
         console.error(err.message)
         console.error(stderr)

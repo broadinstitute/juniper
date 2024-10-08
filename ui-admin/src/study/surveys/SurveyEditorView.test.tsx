@@ -10,6 +10,12 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { select } from 'react-select-event'
 import clearAllMocks = jest.clearAllMocks
+import { userHasPermission } from 'user/UserProvider'
+
+jest.mock('user/UserProvider', () => ({
+  ...jest.requireActual('user/UserProvider'),
+  userHasPermission: jest.fn()
+}))
 
 describe('SurveyEditorView', () => {
   const mockForm = ():Survey => ({
@@ -114,6 +120,9 @@ describe('SurveyEditorView', () => {
 
   test('toggles languages', async () => {
     const portal = mockTwoLanguagePortal()
+    ;(userHasPermission as jest.Mock).mockImplementation(() => {
+      return true
+    })
     renderInPortalRouter(portal,
       <SurveyEditorView
         studyEnvContext={mockStudyEnvContext()}
@@ -129,6 +138,8 @@ describe('SurveyEditorView', () => {
         onCancel={jest.fn()}
         onSave={jest.fn()}
       />)
+    await userEvent.click(screen.getAllByText('Designer')[1])
+
     await userEvent.click(screen.getByText('testQ'))
     expect(screen.getByText('English question')).toBeInTheDocument()
     expect(screen.queryByText('Español pregunta')).not.toBeInTheDocument()

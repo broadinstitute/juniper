@@ -55,6 +55,7 @@ public class RoleService extends CrudService<Role, RoleDao> {
         return savedRole;
     }
 
+    @Transactional
     public Role update(Role role) {
         rolePermissionService.deleteByRoleId(role.getId());
 

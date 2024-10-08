@@ -28,6 +28,10 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
         return super.findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public Optional<KitRequest> findByEnrolleeAndLabel(UUID enrolleeId, String kitLabel) {
+        return findByTwoProperties("enrollee_id", enrolleeId, "kit_label", kitLabel);
+    }
+
     public Map<UUID, List<KitRequest>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
         return findAllByPropertyCollection("enrollee_id", enrolleeIds)
                 .stream().collect(Collectors.groupingBy(KitRequest::getEnrolleeId, Collectors.toList()));

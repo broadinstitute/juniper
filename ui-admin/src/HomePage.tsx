@@ -41,7 +41,7 @@ function HomePage() {
           placeholder={'Search for portals or studies'}
           onChange={e => setPortalSearch(e.target.value)}/>
       </form>
-      <div className="btn-group position-absolute end-0 px-3">
+      <div className="btn-group position-absolute end-0 mx-3 border">
         <button id="grid" className={`btn btn-sm ${view === 'grid' ? 'btn-dark' : 'btn-light'}`}
           onClick={() => setView('grid')}>
           <FontAwesomeIcon icon={faTableCellsLarge}/> Grid

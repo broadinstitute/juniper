@@ -1,11 +1,18 @@
-import classNames from 'classnames'
-import React, { useCallback, useState } from 'react'
+import React, {
+  useCallback,
+  useState
+} from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { validateFormContent, validateFormJson } from './formContentValidation'
+import {
+  validateFormContent,
+  validateFormJson
+} from './formContentValidation'
 import { OnChangeFormContent } from './formEditorTypes'
+import classNames from 'classnames'
 import { isEmpty } from 'lodash'
+import { LazyJsonEditor } from 'util/json/LazyJsonEditor'
 
 type FormContentJsonEditorProps = {
   initialValue: FormContent
@@ -32,20 +39,12 @@ export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   }, [])
 
   return (
-    <div className="d-flex flex-column flex-grow-1">
-      <textarea
-        className={classNames('w-100 flex-grow-1 form-control font-monospace',
-          { 'is-invalid': !isEmpty(validationErrors) })}
-        readOnly={readOnly}
-        style={{
-          overflowX: 'auto',
-          resize: 'none',
-          // @ts-ignore TS thinks this isn't a valid style property
-          textWrap: 'nowrap'
-        }}
-        value={editorValue}
-        onChange={e => { setEditorValue(e.target.value) }}
-      />
-    </div>
+    <LazyJsonEditor
+      value={editorValue}
+      className={classNames('p-1', { 'is-invalid': !isEmpty(validationErrors) })}
+      readOnly={readOnly}
+      width={'80vw'}
+      setValue={setEditorValue}
+      height={'75vh'}/>
   )
 }

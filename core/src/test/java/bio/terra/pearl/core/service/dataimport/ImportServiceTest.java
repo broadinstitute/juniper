@@ -10,7 +10,7 @@ import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;

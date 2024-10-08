@@ -213,9 +213,6 @@ databaseChangeLog:
       file: changesets/2024_02_23_rename_site_image.yaml
       relativeToChangelogFile: true
   - include:
-      file: changesets/2024_02_09_permission_populate.yaml
-      relativeToChangelogFile: true
-  - include:
       file: changesets/2024_03_05_portal_user_constraints.yaml
       relativeToChangelogFile: true
   - include:
@@ -309,6 +306,9 @@ databaseChangeLog:
       file: changesets/2024_08_12_add_parent_to_question_def.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_08_28_in_person_kits.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_09_05_participant_shortcode.yaml
       relativeToChangelogFile: true
   - include:
@@ -319,6 +319,18 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changesets/2024_09_10_participant_shortcode_non_nullable.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_09_18_survey_assign_rename.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_09_20_export_integration.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_10_02_in_person_kits_env_config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_09_30_referenced_questions.yaml
       relativeToChangelogFile: true
 
 

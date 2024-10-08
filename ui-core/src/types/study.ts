@@ -1,5 +1,6 @@
 import { Survey } from './forms'
 import { ParticipantTaskStatus } from './task'
+import { KitType } from 'src/types/kits'
 
 export type Study = {
   name: string
@@ -24,6 +25,7 @@ export type StudyEnvironment = {
   preEnrollSurveyId?: string
   configuredSurveys: StudyEnvironmentSurvey[]
   triggers: Trigger[]
+  kitTypes: KitType[]
 }
 
 export type StudyEnvironmentConfig = {
@@ -35,6 +37,7 @@ export type StudyEnvironmentConfig = {
   password: string
   useStubDsm: boolean
   useDevDsmRealm: boolean
+  enableInPersonKits: boolean
 }
 
 export type StudyEnvironmentSurvey = {

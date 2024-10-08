@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.*;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -15,9 +16,9 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
-import bio.terra.pearl.core.service.dataimport.ImportItemService;
-import bio.terra.pearl.core.service.dataimport.ImportService;
+import bio.terra.pearl.core.service.export.dataimport.ImportFileFormat;
+import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
+import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -42,7 +43,6 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.FeatureDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,7 +59,7 @@ public class EnrolleeImportService {
             .stableIdsForOptions(true)
             .onlyIncludeMostRecent(true)
             .fileFormat(ExportFileFormat.TSV)
-            .limit(null)
+            .rowLimit(null)
             .build();
 
     ExportOptions IMPORT_OPTIONS_CSV = ExportOptions
@@ -67,7 +67,7 @@ public class EnrolleeImportService {
             .stableIdsForOptions(true)
             .onlyIncludeMostRecent(true)
             .fileFormat(ExportFileFormat.CSV)
-            .limit(null)
+            .rowLimit(null)
             .build();
 
     private final RegistrationService registrationService;

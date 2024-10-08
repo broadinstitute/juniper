@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
+import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -50,7 +51,15 @@ public class LivePepperDSMClient implements PepperDSMClient {
     @Override
     public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
     throws PepperApiException, PepperParseException {
-        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address));
+        String kitRequestBody;
+
+        if (kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
+            kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest);
+        } else {
+            kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
+        }
+
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", kitRequestBody);
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
@@ -97,6 +106,29 @@ public class LivePepperDSMClient implements PepperDSMClient {
                 .juniperStudyId(getPepperStudyName(studyShortcode, studyEnvironmentConfig))
                 .build();
 
+        try {
+            return objectMapper.writeValueAsString(pepperDSMKitRequest);
+        } catch (JsonProcessingException e) {
+            // There's no normal reason for PepperDSMKitRequest serialization to fail,
+            // so if it fails, something very unexpected is happening
+            throw new InternalServerException("Error serializing PepperDSMKitRequest", e);
+        }
+    }
+
+    private String makeKitReturnOnlyRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest) {
+        PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builder()
+                .juniperKitId(kitRequest.getId().toString())
+                .juniperParticipantId(enrollee.getShortcode())
+                .skipAddressValidation(kitRequest.isSkipAddressValidation())
+                .kitLabel(kitRequest.getKitLabel())
+                .returnOnly(true)
+                .returnTrackingId(kitRequest.getReturnTrackingNumber())
+                .build();
+        PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
+                .juniperKitRequest(juniperKitRequest)
+                .kitType(kitRequest.getKitType().getName())
+                .juniperStudyId(getPepperStudyName(studyShortcode, studyEnvironmentConfig))
+                .build();
         try {
             return objectMapper.writeValueAsString(pepperDSMKitRequest);
         } catch (JsonProcessingException e) {

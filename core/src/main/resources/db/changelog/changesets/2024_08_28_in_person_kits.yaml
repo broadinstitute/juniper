@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: "in_person_kits"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: distribution_method, type: text, defaultValue: 'MAILED', constraints: { nullable: false } }
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: kit_label, type: text, constraints: { nullable: true } }
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: collecting_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_kit_request_collecting_admin_user, references: admin_user(id) }
+              }

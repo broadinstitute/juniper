@@ -25,6 +25,9 @@ public class UserSyncConfig {
 
     private String slackChannel;
 
+    // gs: path to json file that contains message ids to ignore
+    private String messageIdsBucketPath;
+
     /**
      * For reasons unknown, there are some resource ids that vanta
      * flags as nonexistent when updating metadata, even though

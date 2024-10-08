@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: "survey_assign_rename"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: auto_assign, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+        - sql:
+            sql: |
+              update survey set 
+                auto_assign = assign_to_all_new_enrollees;

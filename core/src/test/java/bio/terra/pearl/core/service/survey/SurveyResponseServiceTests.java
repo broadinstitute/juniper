@@ -2,11 +2,13 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -20,7 +22,6 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -63,6 +61,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     private EnrolleeFactory enrolleeFactory;
     @Autowired
     private SurveyTaskDispatcher surveyTaskDispatcher;
+    @Autowired
+    private StudyEnvironmentFactory studyEnvironmentFactory;
 
     @Test
     @Transactional
@@ -71,7 +71,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         DaoTestUtils.assertGeneratedProperties(savedResponse);
-        Assertions.assertEquals(surveyResponse.getSurveyId(), savedResponse.getSurveyId());
+        assertEquals(surveyResponse.getSurveyId(), savedResponse.getSurveyId());
     }
 
     @Test
@@ -111,6 +111,45 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertThat(survWithResponse.studyEnvironmentSurvey().getSurveyOrder(), equalTo(2));
         assertThat(survWithResponse.studyEnvironmentSurvey().getSurvey().getId(),
                 equalTo(survey.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyResponseWithAnswersAttachesReferencesAnswers(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}"));
+
+        surveyFactory.attachToEnv(survey1, studyEnvBundle.getStudyEnv().getId(), true);
+
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("survey2")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"Tell me more about {survey1.diagnosis}\"}]}]}"));
+
+        surveyFactory.attachToEnv(survey2, studyEnvBundle.getStudyEnv().getId(), true);
+
+        assertEquals(1, survey2.getReferencedQuestions().size());
+        assertEquals("survey1.diagnosis", survey2.getReferencedQuestions().getFirst());
+
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+
+        surveyResponseFactory.buildWithAnswers(enrollee, survey1, Map.of("diagnosis", "old response, should ignore"));
+        surveyResponseFactory.buildWithAnswers(enrollee, survey1, Map.of("diagnosis", "cancer"));
+        
+        SurveyWithResponse surveyWithResponse = surveyResponseService.findWithActiveResponse(studyEnvBundle.getStudyEnv().getId(),
+                studyEnvBundle.getPortal().getId(), survey2.getStableId(), survey2.getVersion(), enrollee, null);
+
+        assertEquals(1, surveyWithResponse.referencedAnswers().size());
+
+        Answer answer = surveyWithResponse.referencedAnswers().get(0);
+
+        assertEquals(answer.getSurveyStableId(), "survey1");
+        assertEquals(answer.getQuestionStableId(), "diagnosis");
+        assertEquals(answer.getStringValue(), "cancer");
     }
 
     @Test

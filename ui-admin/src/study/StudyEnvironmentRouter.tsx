@@ -26,10 +26,10 @@ import StudyContent from './StudyContent'
 import KitsRouter from './kits/KitsRouter'
 import ParticipantsRouter from './participants/ParticipantsRouter'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
-import ExportDataBrowser from './participants/export/ExportDataBrowser'
+import ExportDataBrowser from './export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
-import DatasetDashboard from './participants/datarepo/DatasetDashboard'
-import DatasetList from './participants/datarepo/DatasetList'
+import DatasetDashboard from './export/datarepo/DatasetDashboard'
+import DatasetList from './export/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import { ENVIRONMENT_ICON_MAP } from './publishing/PortalPublishingView'
@@ -48,8 +48,11 @@ import { previewApi } from 'util/apiContextUtils'
 import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 import FamilyRouter from './families/FamilyRouter'
-import { KitCollection } from './kits/kitcollection/KitCollection'
+import { KitScanner } from './kits/kitcollection/KitScanner'
 import { LoadedSettingsView } from 'study/settings/SettingsView'
+import ExportIntegrationList from './export/integrations/ExportIntegrationList'
+import ExportIntegrationView from './export/integrations/ExportIntegrationView'
+import ExportIntegrationJobList from './export/integrations/ExportIntegrationJobList'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -112,7 +115,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalContext={portalContext}/>}/>
           <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="families/*" element={<FamilyRouter studyEnvContext={studyEnvContext}/>}/>
-          <Route path="kits/collectKit/*" element={<KitCollection studyEnvContext={studyEnvContext}/>}/>
+          <Route path="kits/scan" element={<KitScanner studyEnvContext={studyEnvContext}/>}/>
           <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
           <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
@@ -123,10 +126,15 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalEnv={portalEnv}/>}/>
           <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
           <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="settings/*" element={<LoadedSettingsView
+          <Route path="settings/*" element={<LoadedSettingsView key={currentEnv.environmentName}
             studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}
           />
+          <Route path="export/integrations" element={<ExportIntegrationList studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/integrations/:id" element={<ExportIntegrationView studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/integrations/jobs"
+            element={<ExportIntegrationJobList studyEnvContext={studyEnvContext}/>}/>
+
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
           <Route path="export/dataRepo/datasets/:datasetName"
@@ -214,6 +222,21 @@ export const triggerPath = (config: Trigger, currentEnvPath: string) => {
 export const studyEnvDataBrowserPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/export/dataBrowser`
 }
+
+/** path to the export integration configs */
+export const studyEnvExportIntegrationsPath = (studyEnvParams: StudyEnvParams) => {
+  return `${baseStudyEnvPath(studyEnvParams)}/export/integrations`
+}
+
+/** path to the export integration configs */
+export const studyEnvExportIntegrationPath = (studyEnvParams: StudyEnvParams, id: string) => {
+  return `${studyEnvExportIntegrationsPath(studyEnvParams)}/${id}`
+}
+
+export const studyEnvExportIntegrationJobsPath = (studyEnvParams: StudyEnvParams) => {
+  return `${studyEnvExportIntegrationsPath(studyEnvParams)}/jobs`
+}
+
 
 /** helper function for metrics route */
 export const studyEnvMetricsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {

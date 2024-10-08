@@ -21,9 +21,9 @@ export const CheckboxFields = (props: CheckboxFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={!!question.showNoneItem}
-          description={'Show a "None" option that, when selected, clears all other selections for this question.'}
           disabled={disabled}
           label={'Show "None" option'}
+          infoContent={'Show a "None" option that, when selected, clears all other selections for this question.'}
           onChange={checked => {
             if (checked) {
               const { noneText, noneValue } = question
@@ -45,13 +45,12 @@ export const CheckboxFields = (props: CheckboxFieldsProps) => {
 
       {!!question.showNoneItem && (
         <fieldset>
-          <legend className="form-label fs-5">&ldquo;None&rdquo; option</legend>
-
           <div className="mb-3">
             <TextInput
-              description={'Label for the "None" option.'}
               disabled={disabled}
               label="Label"
+              labelClassname="mb-0"
+              infoContent="Label for the 'None' option."
               value={i18nSurveyText(question.noneText)}
               onChange={value => {
                 onChange({
@@ -64,9 +63,10 @@ export const CheckboxFields = (props: CheckboxFieldsProps) => {
 
           <div className="mb-3">
             <TextInput
-              description={'Value for the "None" option.'}
               disabled={disabled}
               label="Value"
+              labelClassname="mb-0"
+              infoContent="Value for the 'None' option."
               value={i18nSurveyText(question.noneValue)}
               onChange={value => {
                 onChange({

@@ -40,6 +40,11 @@ env:
     participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}
     adminUi: ${ADMIN_UI_HOSTNAME:localhost:3000}
     adminApi: ${ADMIN_API_HOSTNAME:localhost:8080}
+  mixpanel:
+    enabled: ${MIXPANEL_ENABLED:false}
+    token: ${MIXPANEL_TOKEN:}
+  airtable:
+    authToken: ${AIRTABLE_AUTH_TOKEN:foobar}
 
 
 # Below here is non-deployment-specific

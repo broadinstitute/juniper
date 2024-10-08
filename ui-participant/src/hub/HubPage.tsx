@@ -75,7 +75,7 @@ export default function HubPage() {
     <>
       <DocumentTitle title={i18n('navbarDashboard')}/>
       <div
-        className="hub-dashboard-background flex-grow-1 mb-2"
+        className="hub-dashboard-background flex-grow-1 pb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && hasSubjectEnrollee && noActivitiesAlert && <HubMessageAlert
@@ -102,9 +102,9 @@ export default function HubPage() {
 
 
         <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
-          <div className="w-100 mt-2 mb-0 d-flex mb-2">
-            {proxyRelations.length > 0 && <ParticipantSelector/>}
-          </div>
+          { proxyRelations.length > 0 && <div className="w-100 mt-2 mb-0 d-flex mb-2">
+            <ParticipantSelector/>
+          </div> }
           <main
             className="hub-dashboard py-4 px-2 px-md-5 shadow-sm"
             style={{ background: '#fff' }}

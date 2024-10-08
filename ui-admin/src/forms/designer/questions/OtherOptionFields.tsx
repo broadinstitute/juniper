@@ -47,12 +47,13 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
       </div>
 
       {!!question.showOtherItem && (
-        <fieldset className="ms-4">
+        <fieldset>
           <div className="mb-3">
             <TextInput
-              description={'Label for the "Other" option.'}
               disabled={disabled}
               label="Label"
+              labelClassname="mb-0"
+              infoContent="Label for the 'Other' option."
               value={i18nSurveyText(question.otherText)}
               onChange={value => {
                 onChange({
@@ -65,9 +66,10 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
 
           <div className="mb-3">
             <TextInput
-              description={'Placeholder text for the text response input.'}
               disabled={disabled}
               label="Placeholder"
+              labelClassname="mb-0"
+              infoContent="Placeholder text for the text response input."
               value={i18nSurveyText(question.otherPlaceholder)}
               onChange={value => {
                 onChange({
@@ -80,10 +82,11 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
 
           <div className="mb-3">
             <TextInput
-              // eslint-disable-next-line max-len
-              description={'Error message shown if the participant selects the "Other" option but does not provide a text response'}
               disabled={disabled}
               label="Error message"
+              labelClassname="mb-0"
+              // eslint-disable-next-line max-len
+              infoContent="Error message shown if the participant selects the 'Other' option but does not provide a text response."
               value={i18nSurveyText(question.otherErrorText)}
               onChange={value => {
                 onChange({

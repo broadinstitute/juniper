@@ -15,7 +15,8 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -42,6 +43,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testPopulateOurHealth() throws Exception {
+        baseSeedPopulator.populateRolesAndPermissions();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
@@ -113,13 +115,13 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) {
         // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
-        ExportOptions options = ExportOptions
+        ExportOptionsWithExpression options = ExportOptionsWithExpression
                 .builder()
                 .splitOptionsIntoColumns(true)
                 .stableIdsForOptions(true)
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
-                .limit(null)
+                .rowLimit(null)
                 .build();
         List<EnrolleeExportData> enrolleeExportData = enrolleeExportService.loadEnrolleeExportData(sandboxEnvironmentId, options);
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId, enrolleeExportData);
@@ -141,7 +143,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
-                .limit(null)
+                .rowLimit(null)
                 .build();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         dictionaryExportService.exportDictionary(options, portalId, sandboxEnvironmentId, baos);

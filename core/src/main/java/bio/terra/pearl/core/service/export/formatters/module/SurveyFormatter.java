@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
@@ -426,6 +426,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     @Override
     public SurveyResponse fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
         SurveyResponse response = new SurveyResponse();
+        boolean specifiedComplete = false;
         for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, 1);
             if (!enrolleeMap.containsKey(columnName)) {
@@ -434,10 +435,20 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             }
             String stringVal = enrolleeMap.get(columnName);
 
+            // track whether the complete field was explicitly set
+            if (itemFormatter.getBaseColumnKey().equals("complete") && stringVal != null) {
+                specifiedComplete = true;
+            }
+
             if (stringVal != null && !stringVal.isEmpty()) {
                 itemFormatter.importValueToBean(response, stringVal);
             }
         }
+        // default to complete if not specified otherwise and there are answers
+        if (!specifiedComplete && !response.getAnswers().isEmpty()) {
+            response.setComplete(true);
+        }
+
         return (response.getAnswers().isEmpty() ? null : response);
     }
 }

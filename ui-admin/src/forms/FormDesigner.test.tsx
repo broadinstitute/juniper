@@ -35,8 +35,6 @@ describe('FormDesigner', () => {
 
     expect(screen.getByLabelText('test_firstName')).toBeInTheDocument()
     expect(screen.getByLabelText('test_lastName')).toBeInTheDocument()
-    // 'pages' should appear in table of contents, and be currently selected
-    expect(screen.getAllByText('Pages')).toHaveLength(2)
   })
 
   it('shows elements based on the path', async () => {
