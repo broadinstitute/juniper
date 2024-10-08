@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import Api from '../api/api'
 
 export const StatusPage = () => {
   useEffect(() => {
-
+    const foo = Api.getSystemStatus()
+    console.log(foo)
   }, [])
 
 

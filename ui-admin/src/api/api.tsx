@@ -1693,8 +1693,23 @@ export default {
 
   setBearerToken(token: string | null) {
     bearerToken = token
+  },
+
+  getSystemStatus(): Promise<SystemStatus> {
+    const url = `http://localhost:8080/status`
+    return fetch(url, this.getGetInit())
+      .then(this.processJsonResponse)
   }
 
+}
+
+type SystemStatus = {
+  ok: boolean
+  systems: Record<string, SubsystemStatus>[]
+}
+
+type SubsystemStatus = {
+  ok: boolean
 }
 
 /** gets an image url for SiteMedia */
