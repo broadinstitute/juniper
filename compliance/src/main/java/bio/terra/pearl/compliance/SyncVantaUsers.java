@@ -4,7 +4,9 @@ import bio.terra.pearl.compliance.exception.RateLimitException;
 import bio.terra.pearl.compliance.exception.VantaUpdateException;
 import bio.terra.pearl.compliance.model.AccessToken;
 import bio.terra.pearl.compliance.model.CloudEventPayload;
+import bio.terra.pearl.compliance.model.DuoAccount;
 import bio.terra.pearl.compliance.model.GithubAccount;
+import bio.terra.pearl.compliance.model.GsuiteAccount;
 import bio.terra.pearl.compliance.model.JamfComputer;
 import bio.terra.pearl.compliance.model.JiraAccount;
 import bio.terra.pearl.compliance.model.PersonInScope;
@@ -88,6 +90,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
     public static final String SLACK_INTEGRATION_ID = "slack";
     public static final String GITHUB_INTEGRATION_ID = "github";
     public static final String JAMF_INTEGRATION_ID = "jamf";
+    public static final String DUO_INTEGRATION_ID = "duo";
+    public static final String GSUITE_INTEGRATION_ID = "gsuiteadmin";
 
     private Gson gson = newGson();
 
@@ -254,6 +258,10 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
 
     private List<VantaIntegration> getIntegrations() {
         List<VantaIntegration> integrationsToSync = new ArrayList<>();
+        integrationsToSync.add(new VantaIntegration(GSUITE_INTEGRATION_ID, "GsuiteUser", new ParameterizedTypeReference<VantaResultsResponse<GsuiteAccount>>() {},
+                userSyncConfig.getResourceIdsToIgnore(GSUITE_INTEGRATION_ID)));
+        integrationsToSync.add(new VantaIntegration(DUO_INTEGRATION_ID, "DuoAccount", new ParameterizedTypeReference<VantaResultsResponse<DuoAccount>>() {},
+                userSyncConfig.getResourceIdsToIgnore(DUO_INTEGRATION_ID)));
         integrationsToSync.add(new VantaIntegration(JAMF_INTEGRATION_ID, "JamfManagedComputer", new ParameterizedTypeReference<VantaResultsResponse<JamfComputer>>() {},
                 userSyncConfig.getResourceIdsToIgnore(JAMF_INTEGRATION_ID)));
         integrationsToSync.add(new VantaIntegration(JIRA_INTEGRATION_ID, "JiraAccount", new ParameterizedTypeReference<VantaResultsResponse<JiraAccount>>() {},
@@ -380,10 +388,11 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
         try {
             String updateResult = getWebClientForIntegration(accessTokeen, integrationId, resourceKind)
                     .patch().bodyValue(updateMetadata).retrieve().onStatus(HttpStatus.TOO_MANY_REQUESTS::equals, get429StatusHander())
+                    .onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res -> res.bodyToMono(String.class).map(VantaUpdateException::new))
                     .bodyToMono(String.class).retryWhen(getRetry()).block();
             log.info("Updated {} {} objects to {} with response {}", updateMetadata.size(), integrationId, isInScope, updateResult);
-        } catch (VantaUpdateException e) {
-            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.size(), e.getMessage());
+        } catch (Exception e) {
+            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.size(), e.getMessage(), e);
         }
     }
 
