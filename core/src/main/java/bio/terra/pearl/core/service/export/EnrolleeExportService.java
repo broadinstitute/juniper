@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -21,8 +22,10 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +44,8 @@ public class EnrolleeExportService {
     private final AnswerDao answerDao;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private final SurveyService surveyService;
+    private final StudyEnvironmentService studyEnvironmentService;
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
     private final KitRequestService kitRequestService;
@@ -55,7 +60,7 @@ public class EnrolleeExportService {
                                  AnswerDao answerDao,
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                 SurveyResponseService surveyResponseService,
+                                 SurveyService surveyService, StudyEnvironmentService studyEnvironmentService, SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
                                  KitRequestService kitRequestService,
                                  ParticipantUserService participantUserService,
@@ -67,6 +72,8 @@ public class EnrolleeExportService {
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
+        this.surveyService = surveyService;
+        this.studyEnvironmentService = studyEnvironmentService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.kitRequestService = kitRequestService;
@@ -190,12 +197,25 @@ public class EnrolleeExportService {
                     objectMapper));
         }
 
+        // now add the pre-enrollment survey (if it exists)
+        StudyEnvironment studyEnvironment = studyEnvironmentService.find(studyEnvironmentId).orElseThrow();
+        if (studyEnvironment.getPreEnrollSurveyId() != null) {
+            Survey preEnrollSurvey = surveyService.find(studyEnvironment.getPreEnrollSurveyId()).orElseThrow();
+            List<SurveyQuestionDefinition> preEnrollSurveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(List.of(preEnrollSurvey.getId()));
+            moduleFormatters.add(new SurveyFormatter(
+                    exportOptions,
+                    preEnrollSurvey.getStableId(),
+                    List.of(preEnrollSurvey),
+                    preEnrollSurveyQuestionDefinitions,
+                    enrolleeExportData,
+                    objectMapper));
+        }
+
         return moduleFormatters;
     }
 
     protected List<EnrolleeExportData> loadEnrolleesForExport(StudyEnvironmentConfig config,
                                                               List<Enrollee> enrollees) {
-
 
         // for now, load each enrollee individually.  Later we'll want more sophisticated batching strategies
         return enrollees
