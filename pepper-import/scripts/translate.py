@@ -3,7 +3,7 @@ import csv
 import json
 import os.path
 import re
-from copy import copy
+from copy import copy, deepcopy
 from datetime import datetime
 from typing import Any, Union
 
@@ -450,7 +450,6 @@ def standardize_stable_id(stable_id: str) -> str:
 
     return stable_id.replace('.', '_').strip().lower()
 
-
 def validate_leftover_questions(
         leftover_dsm_questions: list[DataDefinition],
         leftover_juniper_questions: list[DataDefinition]
@@ -507,6 +506,10 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
     for row in data:
         new_row = {}
         for translation in translations:
+            # certain modules (e.g. kit requests, families, relations) can be repeated, so we need
+            # to loop through all of them
+            if is_in_repeatable_juniper_module(translation.juniper_question_definition.stable_id):
+                apply_repeatable_translation(row, new_row, translation)
             apply_translation(row, new_row, translation)
 
         has_all_needed_columns = True
@@ -520,6 +523,57 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
 
     return out
 
+repeatable_juniper_modules = ['sample_kit', 'family', 'relation']
+def is_in_repeatable_juniper_module(stable_id: str) -> bool:
+    for module in repeatable_juniper_modules:
+        if stable_id.startswith(module):
+            return True
+    return False
+
+def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
+    # for each translation, we need to go through all possible
+    # repeats of the question. e.g.,
+    # dsm_question.stable_id, dsm_question_2.stable_id, dsm_question_3.stable_id, ...
+    #
+    # most module repeats will be ignored by juniper,
+    # but certain things (notably kits) will need to
+    # be repeated, so let's just repeat all of them
+    # to be safe.
+    module_repeat = 1
+    while True:
+        dsm_module_repeat_stable_id = generate_dsm_module_repeat_stable_id(translation.dsm_question_definition.stable_id, module_repeat)
+        juniper_module_repeat_stable_id = generate_juniper_module_repeat_stable_id(translation.juniper_question_definition.stable_id, module_repeat)
+
+        if dsm_module_repeat_stable_id not in dsm_data:
+            break
+
+        repeat_translation = deepcopy(translation)
+        repeat_translation.dsm_question_definition.stable_id = dsm_module_repeat_stable_id
+        repeat_translation.juniper_question_definition.stable_id = juniper_module_repeat_stable_id
+
+        apply_translation(dsm_data, juniper_data, repeat_translation)
+        module_repeat += 1
+
+def generate_dsm_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
+    if repeat == 1:
+        return stable_id
+
+    split = stable_id.split('.')
+    if len(split) == 1:
+        print('Warning: DSM stable ID does not contain a period, might be invalid: ' + stable_id)
+
+    if split[0].lower() == 'dsm':
+        split[1] = split[1] + '_' + str(repeat)
+    else:
+        split[0] = split[0] + '_' + str(repeat)
+
+    return '.'.join(split)
+
+def generate_juniper_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
+    if repeat == 1:
+        return stable_id
+
+    return stable_id + '_' + str(repeat)
 
 def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
     if translation.translation_override is not None and translation.translation_override.constant_value is not None:
