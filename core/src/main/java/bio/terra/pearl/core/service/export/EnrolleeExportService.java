@@ -170,33 +170,7 @@ public class EnrolleeExportService {
      * If multiple versions of a survey have been attached, those will be consolidated into a single ModuleExportInfo
      */
     protected List<SurveyFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
-        // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
-        List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
-        Map<String, List<StudyEnvironmentSurvey>> configuredSurveysByStableId = configuredSurveys.stream().collect(
-                groupingBy(cfgSurvey -> cfgSurvey.getSurvey().getStableId())
-        );
-
-        // sort by surveyType, then by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
-        List<Map.Entry<String, List<StudyEnvironmentSurvey>>> sortedCfgSurveysByStableId = configuredSurveysByStableId.entrySet()
-                .stream().sorted(Comparator.comparing(entry ->
-                                SURVEY_TYPE_EXPORT_ORDER.indexOf(((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurvey().getSurveyType()))
-                        .thenComparing(entry -> ((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurveyOrder()))
-                .toList();
-
-        // create one moduleExportInfo for each survey stableId.
         List<SurveyFormatter> moduleFormatters = new ArrayList<>();
-        for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
-            List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
-            List<SurveyQuestionDefinition> surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
-            moduleFormatters.add(new SurveyFormatter(
-                    exportOptions,
-                    surveysOfStableId.getKey(),
-                    surveys,
-                    surveyQuestionDefinitions,
-                    enrolleeExportData,
-                    objectMapper));
-        }
-
         // now add the pre-enrollment survey (if it exists)
         StudyEnvironment studyEnvironment = studyEnvironmentService.find(studyEnvironmentId).orElseThrow();
         if (studyEnvironment.getPreEnrollSurveyId() != null) {
@@ -211,6 +185,32 @@ public class EnrolleeExportService {
                     objectMapper));
         }
 
+        // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
+        List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
+        Map<String, List<StudyEnvironmentSurvey>> configuredSurveysByStableId = configuredSurveys.stream().collect(
+                groupingBy(cfgSurvey -> cfgSurvey.getSurvey().getStableId())
+        );
+
+        // sort by surveyType, then by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
+        List<Map.Entry<String, List<StudyEnvironmentSurvey>>> sortedCfgSurveysByStableId = configuredSurveysByStableId.entrySet()
+                .stream().sorted(Comparator.comparing(entry ->
+                                SURVEY_TYPE_EXPORT_ORDER.indexOf(((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurvey().getSurveyType()))
+                        .thenComparing(entry -> ((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurveyOrder()))
+                .toList();
+
+        // create one moduleExportInfo for each survey stableId.
+
+        for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
+            List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
+            List<SurveyQuestionDefinition> surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
+            moduleFormatters.add(new SurveyFormatter(
+                    exportOptions,
+                    surveysOfStableId.getKey(),
+                    surveys,
+                    surveyQuestionDefinitions,
+                    enrolleeExportData,
+                    objectMapper));
+        }
         return moduleFormatters;
     }
 
