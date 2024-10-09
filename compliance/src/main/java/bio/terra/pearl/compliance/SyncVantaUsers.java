@@ -391,8 +391,8 @@ public class SyncVantaUsers implements CommandLineRunner, CloudEventsFunction {
                     .onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals, res -> res.bodyToMono(String.class).map(VantaUpdateException::new))
                     .bodyToMono(String.class).retryWhen(getRetry()).block();
             log.info("Updated {} {} objects to {} with response {}", updateMetadata.size(), integrationId, isInScope, updateResult);
-        } catch (Exception e) {
-            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.size(), e.getMessage(), e);
+        } catch (VantaUpdateException e) {
+            log.warn("Could not change scope to {} on some of {} {} objects due to {}", isInScope, integrationId, updateMetadata.size(), e.getMessage());
         }
     }
 

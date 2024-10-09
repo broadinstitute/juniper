@@ -393,6 +393,14 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             kitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKit));
             kitRequest.setExternalKitFetchedAt(pepperStatusFetchedAt);
             KitRequestStatus status = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
+
+            // This is a special case for in-person kits that have been collected by staff. DSM considers these
+            // kits to be "sent", but we need to provide some extra granularity for study staff, so they know which
+            // kits have been collecting and which are still waiting to be collected.
+            if(status == KitRequestStatus.SENT && kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
+                status = KitRequestStatus.COLLECTED_BY_STAFF;
+            }
+
             kitRequest.setStatus(status);
             setKitDates(kitRequest, pepperKit);
             // for now just copy these over on each update, since there is currently no reason to make it conditional

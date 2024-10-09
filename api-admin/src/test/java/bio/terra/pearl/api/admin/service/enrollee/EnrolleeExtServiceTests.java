@@ -38,24 +38,40 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
         enrolleeFactory.buildWithPortalUser(
             getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 
+    String portalShortcode = bundle.getPortal().getShortcode();
+    String studyShortcode = bundle.getStudy().getShortcode();
+    EnvironmentName envName = bundle.getStudyEnv().getEnvironmentName();
+
     Enrollee loadedEnrollee =
-        enrolleeExtService.findWithAdminLoad(operator, enrollee1.enrollee().getShortcode());
+        enrolleeExtService.findWithAdminLoad(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            envName,
+            enrollee1.enrollee().getShortcode());
     assertThat(loadedEnrollee.getId(), equalTo(enrollee1.enrollee().getId()));
 
     loadedEnrollee =
-        enrolleeExtService.findWithAdminLoad(operator, enrollee1.enrollee().getId().toString());
+        enrolleeExtService.findWithAdminLoad(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            envName,
+            enrollee1.enrollee().getId().toString());
     assertThat(loadedEnrollee.getId(), equalTo(enrollee1.enrollee().getId()));
 
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          enrolleeExtService.findWithAdminLoad(operator, UUID.randomUUID().toString());
+          enrolleeExtService.findWithAdminLoad(
+              operator, portalShortcode, studyShortcode, envName, UUID.randomUUID().toString());
         });
 
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          enrolleeExtService.findWithAdminLoad(operator, "BADCODE");
+          enrolleeExtService.findWithAdminLoad(
+              operator, portalShortcode, studyShortcode, envName, "BADCODE");
         });
   }
 }
