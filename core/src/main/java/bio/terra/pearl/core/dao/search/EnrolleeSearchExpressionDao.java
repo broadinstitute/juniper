@@ -42,6 +42,7 @@ public class EnrolleeSearchExpressionDao {
     private final EnrolleeDao enrolleeDao;
     private final ProfileDao profileDao;
 
+    /** list of mappers for the various modules that can be included in a search result */
     protected static final List<SearchModuleMapper<? extends BaseEntity>> moduleMappers = List.of(
             new SearchModuleMapper<>("enrollee", Enrollee.class, EnrolleeSearchExpressionResult::setEnrollee),
             new SearchModuleMapper<>("profile", Profile.class, EnrolleeSearchExpressionResult::setProfile),
@@ -140,6 +141,7 @@ public class EnrolleeSearchExpressionDao {
         }
     }
 
+    /** for simple beans that need to be mapped to a property in the EnrolleeSearchExpressionResult, like Profile */
     @Getter
     private static class SearchModuleMapper<T> {
         protected final String prefix;
@@ -170,6 +172,7 @@ public class EnrolleeSearchExpressionDao {
         }
     }
 
+    /** for modules that are mapped to a collection in the EnrolleeSearchExpressionResult, such as tasks */
     private static class SearchModuleCollectionMapper<T> extends SearchModuleMapper<T> {
         public SearchModuleCollectionMapper(String prefix, Class<T> clazz, BiConsumer<EnrolleeSearchExpressionResult, T> consumer) {
             super(prefix, clazz, consumer);
