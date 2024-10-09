@@ -39,7 +39,7 @@ const DEFAULT_EXPORT_OPTS: ExportOptions = {
   excludeModules: []
 }
 
-const MODULE_EXCLUDE_OPTIONS: Record<string, string> = { surveys: 'Surveys' }
+const MODULE_EXCLUDE_OPTIONS: Record<string, string> = { surveys: 'Surveys', profile: 'Profile', account: 'Account' }
 
 /** form for configuring and downloading enrollee data */
 const ExportDataModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,

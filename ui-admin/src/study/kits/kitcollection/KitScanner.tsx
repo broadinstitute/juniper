@@ -21,6 +21,8 @@ import {
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Checkbox } from 'components/forms/Checkbox'
+import { Textarea } from 'components/forms/Textarea'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
@@ -39,6 +41,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [kitCodeError, setKitCodeError] = useState<string>()
   const [returnTrackingNumber, setReturnTrackingNumber] = useState<string>()
   const [returnTrackingNumberError, setReturnTrackingNumberError] = useState<string>()
+  const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string>()
 
   const [enableManualShortcodeOverride, setEnableManualShortcodeOverride] = useState(false)
   const [enableManualKitLabelOverride, setEnableManualKitLabelOverride] = useState(false)
@@ -69,11 +73,12 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       )
       Store.addNotification(successNotification('Kit successfully assigned'))
     }, {
-      setIsError: error => {
+      setError: error => {
         if (error) {
-          Store.addNotification(failureNotification('Error assigning kit'))
+          setSubmitError(`Error assigning kit: ${error}`)
         }
-      }
+      },
+      setIsLoading: setLoading
     })
   }
 
@@ -95,11 +100,12 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       )
       Store.addNotification(successNotification('Kit successfully collected'))
     }, {
-      setIsError: error => {
+      setError: error => {
         if (error) {
-          Store.addNotification(failureNotification('Error collecting kit'))
+          setSubmitError(`Error collecting kit: ${error}`)
         }
-      }
+      },
+      setIsLoading: setLoading
     })
   }
 
@@ -124,7 +130,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setEnrolleeCodeError('Error loading enrollee. Did you scan the correct QR code?')
           setEnrollee(undefined)
         }
-      }
+      },
+      alertErrors: false
     })
   }
 
@@ -151,6 +158,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setEnrollee(undefined)
           setIsEnrolleeIdentityConfirmed(false)
           setKitLabel(undefined)
+          setSubmitError(undefined)
         }}
       />
     </KitCollectionStepWrapper>
@@ -162,11 +170,31 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       <div className="mb-3">
         Click the button below to open the camera and scan the enrollee&apos;s unique QR code.
         <InfoPopup content={
-          <>The enrollee can find their unique QR code by going to the kits page on their profile.
-          If you are unable to use your camera or scan the barcode for any reason, you may override
-          manually and enter the participant code (shortcode) found directly under their QR code.</>}/>
+          <div>
+            The enrollee can find their unique QR code by going to the kits page on their profile.
+            If you are unable to use your camera or scan the barcode for any reason, you may override
+            manually and enter the participant code (shortcode) found directly under their QR code.
+            <div className="text-muted fst-italic mt-2">
+              Note: participant shortcodes only contain letters, and will <b>not</b> contain any numbers.
+            </div>
+          </div>
+        }/>
       </div>
-      <Button className="mb-2" disabled={!selectedScanMode} variant={'primary'} onClick={() => {
+      {showEnrolleeCodeScanner &&
+          <BarcodeScanner
+            expectedFormats={['qr_code']}
+            onError={error => {
+              setEnrolleeCodeError(error)
+              setShowEnrolleeCodeScanner(false)
+              setEnrollee(undefined)
+            }}
+            onSuccess={result => {
+              loadEnrollee(result.rawValue)
+              setEnrolleeCodeError(undefined)
+              setShowEnrolleeCodeScanner(false)
+            }}/>
+      }
+      <Button className="my-2" disabled={!selectedScanMode} variant={'primary'} onClick={() => {
         setEnrollee(undefined)
         setShowEnrolleeCodeScanner(!showEnrolleeCodeScanner)
         setIsEnrolleeIdentityConfirmed(false)
@@ -174,27 +202,16 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       }}>
         <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan enrollee code
       </Button>
+      <InfoPopup content={
+        `If your camera does not turn on and you are not prompted to allow camera 
+        access, please check your browser or device settings and allow camera access manually.`}/>
       <Checkbox
         disabled={!selectedScanMode}
         label={'Enable manual shortcode override'}
         checked={enableManualShortcodeOverride} onChange={e => {
           setEnableManualShortcodeOverride(e)
         }}/>
-      { showEnrolleeCodeScanner &&
-        <BarcodeScanner
-          expectedFormats={['qr_code']}
-          onError={error => {
-            setEnrolleeCodeError(error)
-            setShowEnrolleeCodeScanner(false)
-            setEnrollee(undefined)
-          }}
-          onSuccess={result => {
-            loadEnrollee(result.rawValue)
-            setEnrolleeCodeError(undefined)
-            setShowEnrolleeCodeScanner(false)
-          }}/>
-      }
-      { enableManualShortcodeOverride && <div className="d-flex align-items-center">
+      {enableManualShortcodeOverride && <div className="d-flex align-items-center">
         <TextInput
           disabled={false}
           value={enrolleeShortcodeOverride}
@@ -206,9 +223,9 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         }}>
           <FontAwesomeIcon icon={faSearch}/>
         </Button>
-      </div> }
-      { enrolleeCodeError &&
-        <div className="text-danger">{enrolleeCodeError}</div>
+      </div>}
+      {enrolleeCodeError &&
+          <div className="text-danger">{enrolleeCodeError}</div>
       }
     </KitCollectionStepWrapper>
 
@@ -217,19 +234,23 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       status={isEnrolleeIdentityConfirmed && enrollee ? 'COMPLETE' : 'INCOMPLETE'}
     >
       <div className="mb-3">Confirm the enrollee&apos;s identity using their full name and date of birth.</div>
-      <TextInput
-        label={'Full Name'}
-        className="mb-2" disabled={true}
-        value={enrollee ? `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : ''}>
-      </TextInput>
-      <TextInput
-        label={'Date of Birth'}
-        className="mb-3" disabled={true}
-        value={enrollee ? dateToDefaultString(enrollee.profile.birthDate) : ''}>
-      </TextInput>
+      {enrollee ? <>
+        <label className={'fw-bold'}>Full Name</label>
+        <div className="mb-3">
+          {enrollee ?
+            `${enrollee.profile.givenName} ${enrollee.profile.familyName}` : 'not yet entered'}
+        </div>
+        <label className={'fw-bold'}>Date of Birth</label>
+        <div className="mb-3">
+          {enrollee.profile.birthDate ?
+            dateToDefaultString(enrollee.profile.birthDate) : 'not yet entered'}
+        </div>
+      </> :
+        <div className="fst-italic text-muted mb-3">Please scan an enrollee QR code</div>
+      }
       <Button className="mb-2" variant={'primary'}
         disabled={!enrollee} onClick={() => setIsEnrolleeIdentityConfirmed(true)}>
-            Mark as confirmed
+        Mark as confirmed
       </Button>
     </KitCollectionStepWrapper>
 
@@ -238,7 +259,16 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
       status={kitLabel ? 'COMPLETE' : 'INCOMPLETE'}
     >
       <div className="mb-3">Click to open the camera and scan the label on the kit.</div>
-      <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
+      {showKitScanner &&
+          <BarcodeScanner
+            expectedFormats={['code_128']}
+            onError={error => setKitCodeError(error)}
+            onSuccess={result => {
+              setKitLabel(result.rawValue)
+              setShowKitScanner(false)
+            }}/>
+      }
+      <Button className="my-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
         tooltip={!isEnrolleeIdentityConfirmed ? 'You must complete the prior steps first' : ''}
         onClick={() => setShowKitScanner(!showKitScanner)}>
         <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit label
@@ -249,15 +279,6 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         checked={enableManualKitLabelOverride} onChange={e => {
           setEnableManualKitLabelOverride(e)
         }}/>
-      { showKitScanner &&
-        <BarcodeScanner
-          expectedFormats={['code_128']}
-          onError={error => setKitCodeError(error)}
-          onSuccess={result => {
-            setKitLabel(result.rawValue)
-            setShowKitScanner(false)
-          }}/>
-      }
       <TextInput
         className="my-2"
         disabled={!enableManualKitLabelOverride}
@@ -265,49 +286,53 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         value={kitLabel}
         onChange={e => setKitLabel(e)}>
       </TextInput>
-      { kitCodeError &&
+      {kitCodeError &&
           <div className="text-danger">{kitCodeError}</div>
       }
     </KitCollectionStepWrapper>
-    { selectedScanMode?.value === 'COLLECT' &&
-        <KitCollectionStepWrapper
-          title={'Step 5'}
-          status={returnTrackingNumber ? 'COMPLETE' : 'INCOMPLETE'}
-        >
-          <div className="mb-3">Place the kit in the provided return packaging. Afterwards,
-        click to open the camera and scan the return label on the return packaging.</div>
-          <Button className="mb-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
-            tooltip={!kitLabel ? 'You must complete the prior steps first' : ''}
-            onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
-            <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit return label
-          </Button>
-          <Checkbox
-            disabled={!isEnrolleeIdentityConfirmed}
-            label={'Enable manual return label override'}
-            checked={enableManualReturnLabelOverride} onChange={e => {
-              setEnableManualReturnLabelOverride(e)
+    {selectedScanMode?.value === 'COLLECT' &&
+      <KitCollectionStepWrapper
+        title={'Step 5'}
+        status={returnTrackingNumber ? 'COMPLETE' : 'INCOMPLETE'}
+      >
+        <div className="mb-3">Place the kit in the provided return packaging. Afterwards,
+          click to open the camera and scan the return label on the return packaging.
+        </div>
+        {showReturnTrackingNumberScanner &&
+          <BarcodeScanner
+            expectedFormats={['code_128']}
+            onError={error => setReturnTrackingNumberError(error)}
+            onSuccess={result => {
+              setReturnTrackingNumber(result.rawValue)
+              setShowReturnTrackingNumberScanner(false)
             }}/>
-          { showReturnTrackingNumberScanner &&
-            <BarcodeScanner
-              expectedFormats={['code_128']}
-              onError={error => setReturnTrackingNumberError(error)}
-              onSuccess={result => {
-                setReturnTrackingNumber(result.rawValue)
-                setShowReturnTrackingNumberScanner(false)
-              }}/>
-          }
-          <TextInput
-            className="my-2"
-            disabled={!enableManualReturnLabelOverride}
-            placeholder={'Scan return label'}
-            value={returnTrackingNumber}
-            onChange={e => setReturnTrackingNumber(e)}>
-          </TextInput>
-          { returnTrackingNumberError &&
-          <div className="text-danger">{returnTrackingNumberError}</div>
-          }
-        </KitCollectionStepWrapper> }
-    <div className="d-flex justify-content-end">
+        }
+        <Button className="my-2" variant={'primary'} disabled={!isEnrolleeIdentityConfirmed}
+          tooltip={!kitLabel ? 'You must complete the prior steps first' : ''}
+          onClick={() => setShowReturnTrackingNumberScanner(!showReturnTrackingNumberScanner)}>
+          <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan kit return label
+        </Button>
+        <Checkbox
+          disabled={!isEnrolleeIdentityConfirmed}
+          label={'Enable manual return label override'}
+          checked={enableManualReturnLabelOverride} onChange={e => {
+            setEnableManualReturnLabelOverride(e)
+          }}/>
+        <Textarea
+          className="my-2"
+          rows={2}
+          disabled={!enableManualReturnLabelOverride}
+          placeholder={'Scan return label'}
+          value={returnTrackingNumber}
+          onChange={e => setReturnTrackingNumber(e)}>
+        </Textarea>
+        {returnTrackingNumberError &&
+            <div className="text-danger">{returnTrackingNumberError}</div>
+        }
+      </KitCollectionStepWrapper>}
+    <div className="d-flex justify-content-end align-items-center">
+      { submitError && <span className="text-danger me-2">{submitError}</span>}
+      <LoadingSpinner isLoading={loading}/>
       <Button disabled={isSubmitDisabled()}
         variant={'primary'}
         onClick={async () => {
@@ -324,11 +349,12 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setReturnTrackingNumberError(undefined)
           if (selectedScanMode?.value === 'ASSIGN') {
             await assignKit()
-          } if (selectedScanMode?.value === 'COLLECT') {
+          }
+          if (selectedScanMode?.value === 'COLLECT') {
             await collectKit()
           }
         }}>
-          Submit
+        Submit
       </Button>
     </div>
   </div>

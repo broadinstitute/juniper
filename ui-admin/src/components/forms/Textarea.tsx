@@ -5,7 +5,7 @@ import InfoPopup from './InfoPopup'
 export type TextareaProps = Omit<JSX.IntrinsicElements['textarea'], 'onChange'> & {
   description?: string
   infoContent?: React.ReactNode
-  label: string
+  label?: string
   labelClassname?: string,
   required?: boolean
   onChange?: (value: string) => void

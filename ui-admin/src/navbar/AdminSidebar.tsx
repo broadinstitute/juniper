@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useUser } from '../user/UserProvider'
 import { Link, NavLink, useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
 import { Study } from '@juniper/ui-core'
 import { studyShortcodeFromPath } from '../study/StudyRouter'
 import { useNavContext } from './NavContextProvider'
@@ -44,6 +44,13 @@ const AdminSidebar = ({ config }: { config: Config }) => {
 
   const color = ZONE_COLORS[config.deploymentZone] || ZONE_COLORS['prod']
 
+  // automatically collapse the sidebar for mobile-first routes
+  useEffect(() => {
+    if (isMobileFirstRoute()) {
+      setOpen(false)
+    }
+  }, [])
+
   return <div style={{ backgroundColor: color, minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
     className="p-2 pt-3">
     <>
@@ -55,7 +62,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
             localStorage.setItem(SHOW_SIDEBAR_KEY, (!open).toString())
           }}
           tooltip={open ? 'Hide sidebar' : 'Show sidebar'}>
-          <FontAwesomeIcon icon={faArrowRightFromBracket}
+          <FontAwesomeIcon icon={faCaretRight}
             className={classNames(open ? 'fa-rotate-180' : '')}/>
         </Button>
       </div>
@@ -81,6 +88,10 @@ const AdminSidebar = ({ config }: { config: Config }) => {
       </>}
     </>
   </div>
+}
+
+const isMobileFirstRoute = () => {
+  return window.location.pathname.endsWith('kits/scan')
 }
 
 export default AdminSidebar
