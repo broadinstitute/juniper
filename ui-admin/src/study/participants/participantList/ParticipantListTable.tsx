@@ -127,7 +127,7 @@ function ParticipantListTable({
       meta: {
         columnType: 'instant'
       },
-      accessorFn: row => row.participantUser?.lastLogin,
+      accessorFn: row => row.portalParticipantUser?.lastLogin,
       cell: info => instantToDefaultString(info.getValue() as unknown as number)
     }, {
       id: 'familyName',

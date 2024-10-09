@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser> {
+public class PortalParticipantUserDao extends BaseMutableJdbiDao<PortalParticipantUser> {
     private ProfileDao profileDao;
     public PortalParticipantUserDao(Jdbi jdbi, ProfileDao profileDao) {
         super(jdbi);

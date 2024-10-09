@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -20,4 +21,5 @@ public class PortalParticipantUser extends BaseEntity {
     private UUID portalEnvironmentId;
     private Profile profile;
     private UUID profileId;
+    private Instant lastLogin;
 }

@@ -18,6 +18,7 @@ import {
   PortalEnvironment,
   PortalEnvironmentConfig,
   PortalEnvironmentLanguage,
+  PortalParticipantUser,
   Profile,
   SiteContent,
   Study,
@@ -78,6 +79,7 @@ export type EnrolleeSearchExpressionResult = {
   latestKit?: KitRequest,
   families: Family[]
   participantUser?: ParticipantUser
+  portalParticipantUser?: PortalParticipantUser
 }
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }

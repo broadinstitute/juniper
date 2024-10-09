@@ -32,7 +32,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   } = useParticipantSearchState()
 
   const generateFullSearchExpression = () => {
-    const expressions: string[] = [searchExpression, 'include({user.lastLogin})']
+    const expressions: string[] = [searchExpression, 'include({user.username})', 'include({portal_user.lastLogin})']
     if (familyLinkageEnabled) {
       expressions.push('include({family.shortcode})')
     }
