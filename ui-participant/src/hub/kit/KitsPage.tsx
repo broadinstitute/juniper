@@ -67,11 +67,11 @@ const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
   return (
     <div className="progress-stacked border-top border-bottom border-start" style={{ height: '50px' }}>
       <ProgressBar width="33%" complete={getStepCompletion(kit, 'PREPARING')}
-        icon={faBoxesPacking} label={i18n('kitsPageStatusPreparing')}/>
+        icon={faBoxesPacking} stepId={'preparing'} label={i18n('kitsPageStatusPreparing')}/>
       <ProgressBar width="34%" complete={getStepCompletion(kit, 'SHIPPED')}
-        icon={faTruckFast} label={i18n('kitsPageStatusShipped')}/>
+        icon={faTruckFast} stepId={'shipped'} label={i18n('kitsPageStatusShipped')}/>
       <ProgressBar width="33%" complete={getStepCompletion(kit, 'RETURNED')}
-        icon={faCircleCheck} label={i18n('kitsPageStatusReturned')}/>
+        icon={faCircleCheck} stepId={'returned'} label={i18n('kitsPageStatusReturned')}/>
     </div>
   )
 }
@@ -82,20 +82,20 @@ const InPersonKitStatusBar = ({ kit }: { kit: KitRequest }) => {
   return (
     <div className="progress-stacked" style={{ height: '50px' }}>
       <ProgressBar width="50%" complete={getStepCompletion(kit, 'PREPARING')}
-        icon={faBoxesPacking} label={i18n('kitsPageStatusCreated')}/>
+        icon={faBoxesPacking} stepId={'created'} label={i18n('kitsPageStatusCreated')}/>
       <ProgressBar width="50%" complete={getStepCompletion(kit, 'COLLECTED')}
-        icon={faCircleCheck} label={i18n('kitsPageStatusCollected')}/>
+        icon={faCircleCheck} stepId={'collected'} label={i18n('kitsPageStatusCollected')}/>
     </div>
   )
 }
 
-const ProgressBar = ({ icon, label, width, complete }: {
-  icon: IconDefinition, label: string, width: string, complete: boolean
+const ProgressBar = ({ stepId, icon, label, width, complete }: {
+  stepId: string, icon: IconDefinition, label: string, width: string, complete: boolean
 }) => {
   return (
     <div className="progress" role="progressbar" style={{ width, height: '50px' }}>
       <div className={`progress-bar border-end ${complete ? '' : 'bg-dark-subtle'}`}
-        data-testid={`${label.toLowerCase()}-${complete}`}
+        data-testid={`${stepId}-${complete}`}
         style={{ background: 'var(--brand-color)' }}>
         <div className="d-flex flex-column align-items-center justify-content-center h-100">
           <FontAwesomeIcon icon={icon} className={'fa-xl'}/>
