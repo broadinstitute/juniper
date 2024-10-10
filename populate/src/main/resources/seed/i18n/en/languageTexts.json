@@ -134,5 +134,6 @@
   {"keyName": "inPersonKitsCollectedThankYou", "text": "Thank you for your participation.", "language": "en"},
   {"keyName": "kitTypeSaliva", "text": "Saliva kit", "language": "en"},
   {"keyName": "kitTypeStool", "text": "Stool kit", "language": "en"},
-  {"keyName": "kitTypeBlood", "text": "Blood kit", "language": "en"}
+  {"keyName": "kitTypeBlood", "text": "Blood kit", "language": "en"},
+  {"keyName": "inPersonKitsYourKitInstructions", "text": "After you have completed the sample collection kit, please return it to a member of the study team and allow them to scan your participation code below.", "language": "en"}
 ]

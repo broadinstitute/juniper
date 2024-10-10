@@ -134,5 +134,6 @@
   {"keyName": "inPersonKitsCollectedThankYou", "text": "Gracias por su participación.", "language": "es"},
   {"keyName": "kitTypeSaliva", "text": "Kit de saliva", "language": "es"},
   {"keyName": "kitTypeStool", "text": "Kit de heces", "language": "es"},
-  {"keyName": "kitTypeBlood", "text": "Kit de sangre", "language": "es"}
+  {"keyName": "kitTypeBlood", "text": "Kit de sangre", "language": "es"},
+  {"keyName": "inPersonKitsYourKitInstructions", "text": "Una vez que haya completado el kit de recolección de muestras, devuélvaselo a un miembro del equipo de estudio y permítale escanear su código de participación a continuación.", "language": "es"}
 ]
