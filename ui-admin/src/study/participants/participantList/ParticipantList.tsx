@@ -9,17 +9,13 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import WithdrawnEnrolleeList from './WithdrawnEnrolleeList'
-import { Route, Routes, useSearchParams } from 'react-router-dom'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
-import PortalUserList from './PortalUserList'
 
 /** Shows a list of (for now) enrollees */
-function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+function ParticipantList({ studyEnvContext, groupByFamily }:
+  {studyEnvContext: StudyEnvContextT, groupByFamily: boolean}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
-
-
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
@@ -49,7 +45,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
   return <div className="ParticipantList container-fluid px-4 py-2">
-    {renderPageHeader('Participant List')}
+    <div className="d-flex align-items-center justify-content-between ">
+      {renderPageHeader('Participant List')}
+      <ParticipantListViewSwitcher
+        studyEnvConfig={currentEnv.studyEnvironmentConfig}
+      />
+    </div>
     <div className="d-flex align-content-center align-items-center justify-content-between">
       <ParticipantSearch
         key={currentEnv.environmentName}
@@ -57,25 +58,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         searchState={searchState}
         updateSearchState={updateSearchState}
         setSearchState={setSearchState}
-        disabled={view === 'withdrawn'}
-      />
-      <ParticipantListViewSwitcher
-        setSearchParams={setSearchParams}
-        familyLinkageEnabled={familyLinkageEnabled}
+        disabled={false}
       />
     </div>
-
     <LoadingSpinner isLoading={isLoading}>
-      <Routes>
-        <Route path="withdrawn" element={<WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>}/>
-        <Route path="portalUsers" element={<PortalUserList
-          portalShortcode={studyEnvContext.portal.shortcode} envName={studyEnvContext.currentEnv.environmentName}
-        />}/>
-        <Route path="families" element={<ParticipantListTableGroupedByFamily
-          participantList={participantList} studyEnvContext={studyEnvContext}/>}/>
-      </Routes>
+      {groupByFamily && <ParticipantListTableGroupedByFamily
+        participantList={participantList} studyEnvContext={studyEnvContext}/> }
+      {!groupByFamily && <ParticipantListTable participantList={participantList}
+        studyEnvContext={studyEnvContext} reload={reload}/>}
     </LoadingSpinner>
   </div>
 }
-
 export default ParticipantList

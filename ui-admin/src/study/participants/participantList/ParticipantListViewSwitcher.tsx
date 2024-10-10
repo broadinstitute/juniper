@@ -3,60 +3,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faUserLarge, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { StudyEnvironmentConfig } from '@juniper/ui-core'
 
-type ParticipantView = 'participant' | 'family' | 'withdrawn' | 'account'
+const VIEWS = [{
+  name: 'withdrawn',
+  icon: faUserLargeSlash,
+  path: '/withdrawn'
+}, {
+  name: 'family',
+  icon: faUsers,
+  path: '/withdrawn'
+}, {
+  name: 'participant',
+  icon: faUserLarge,
+  path: ''
+}, {
+  name: 'account',
+  icon: faList,
+  path: '/accounts'
+}]
 
-type ParticipantListViewSwitcherProps = {
-    view: ParticipantView
-    setView: (view: ParticipantView) => void
-    setSearchParams: (params: { view: string }) => void
-    familyLinkageEnabled: boolean
-}
-
-export const ParticipantListViewSwitcher = (props: ParticipantListViewSwitcherProps) => {
-  const { view, setView, setSearchParams, familyLinkageEnabled } = props
+export const ParticipantListViewSwitcher = ({ studyEnvConfig }: {studyEnvConfig: StudyEnvironmentConfig}) => {
+  const navigate = useNavigate()
+  const availableViews = VIEWS.filter(view => view.name !== 'family' || studyEnvConfig.enableFamilyLinkage)
   return (
     <div className="btn-group border my-1">
-      <Button variant='light'
-        aria-label={'Switch to withdrawn view'}
-        className={`btn btn-sm ${view === 'withdrawn' ? 'btn-dark' : 'btn-light'}`}
-        tooltip={'Switch to withdrawn view'}
+      { availableViews.map(view => <Button variant='light' key={view.name}
+        aria-label={`Switch to ${view.name} view`}
+        className={`btn btn-sm btn-light`}
+        tooltip={`Switch to ${view.name} view`}
         onClick={() => {
-          setSearchParams({ view: 'withdrawn' })
-          setView('withdrawn')
+          navigate(`..${view.path}`)
         }}>
-        <FontAwesomeIcon icon={faUserLargeSlash}/>
-      </Button>
-      <Button variant='light'
-        aria-label={'Switch to participant view'}
-        className={`btn btn-sm ${view === 'participant' ? 'btn-dark' : 'btn-light'}`}
-        tooltip={'Switch to participant view'}
-        onClick={() => {
-          setSearchParams({ view: 'participant' })
-          setView('participant')
-        }}>
-        <FontAwesomeIcon icon={faUserLarge}/>
-      </Button>
-      { familyLinkageEnabled && <Button variant='light'
-        aria-label={'Switch to family view'}
-        className={`btn btn-sm ${view === 'family' ? 'btn-dark' : 'btn-light'}`}
-        tooltip={'Switch to family view'}
-        onClick={() => {
-          setSearchParams({ view: 'family' })
-          setView('family')
-        }}>
-        <FontAwesomeIcon icon={faUsers}/>
-      </Button> }
-      <Button variant='light'
-        aria-label={'Switch to account list'}
-        className={`btn btn-sm ${view === 'account' ? 'btn-dark' : 'btn-light'}`}
-        tooltip={'Switch to account view'}
-        onClick={() => {
-          setSearchParams({ view: 'account' })
-          setView('account')
-        }}>
-        <FontAwesomeIcon icon={faList}/>
-      </Button>
+        <FontAwesomeIcon icon={view.icon}/>
+      </Button>)}
     </div>
   )
 }

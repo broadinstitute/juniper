@@ -1,12 +1,12 @@
 {
   "participantUser": {
-    "username": "consented@test.com",
-    "lastLoginHoursAgo": 152
+    "username": "consentedOtherEmail@test.com",
+    "lastLoginHoursAgo": 14
   },
   "profile": {
     "givenName": "Con",
     "familyName": "Senter",
-    "contactEmail": "consented@test.com",
+    "contactEmail": "consentedOtherEmail@test.com",
     "sexAtBirth": "female",
     "mailingAddress": {
       "street1": "600 Muirfield Ct.",
