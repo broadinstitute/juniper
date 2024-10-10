@@ -2,13 +2,12 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class StudyEnvironmentSurveyDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testFindSurveyNoContent(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);

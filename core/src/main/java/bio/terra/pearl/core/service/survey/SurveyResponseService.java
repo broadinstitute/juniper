@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
+public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
     private final AnswerService answerService;
     private final SurveyService surveyService;
     private final ParticipantTaskService participantTaskService;

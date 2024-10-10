@@ -1,8 +1,10 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -90,7 +92,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     KitRequestService kitRequestService;
 
     public DataImportSetUp setup(TestInfo info, String csvString) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
 
         //create survey
@@ -298,7 +300,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testImportEnrollees(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
 
@@ -347,7 +349,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testBaseEnrolleeImport(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
         Map<String, String> enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username);
         enrolleeImportService.importEnrollee(
@@ -364,7 +366,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEnrolleeProfileImport(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
         Map<String, String> enrolleeMap = Map.of(
                 "account.username", username,
@@ -438,8 +440,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEnrolleeProfileImportDoesntOverwrite(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle study1Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-        StudyEnvironmentFactory.StudyEnvironmentBundle study2Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb,
+        StudyEnvironmentBundle study1Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle study2Bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb,
                 study1Bundle.getPortal(), study1Bundle.getPortalEnv());
         Profile existingProfile = Profile.builder()
                 .givenName("John")
@@ -449,7 +451,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                         .postalCode("12345")
                         .build())
                 .build();
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), study1Bundle.getPortalEnv(), study1Bundle.getStudyEnv(), existingProfile);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), study1Bundle.getPortalEnv(), study1Bundle.getStudyEnv(), existingProfile);
         String username = enrolleeBundle.participantUser().getUsername();
         Map<String, String> enrolleeMap = Map.of(
                 "account.username", username,
@@ -504,7 +506,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSurveyResponseImport(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .stableId("importTest1")
                 .content(TWO_QUESTION_SURVEY_CONTENT)
@@ -557,7 +559,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSurveyResponseImportDefaultComplete(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .stableId("importTest1")
                 .content(TWO_QUESTION_SURVEY_CONTENT)
@@ -640,7 +642,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(enrolleeCount, equalTo(Long.valueOf(importItemCount)));
     }
 
-    private Import doImport(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
+    private Import doImport(StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
         return enrolleeImportService.importEnrollees(
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
@@ -679,7 +681,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @NoArgsConstructor
     @Builder
     public static class DataImportSetUp {
-        private StudyEnvironmentFactory.StudyEnvironmentBundle bundle;
+        private StudyEnvironmentBundle bundle;
         private AdminUser adminUser;
         private String csvString;
     }

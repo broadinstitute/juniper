@@ -1,7 +1,9 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -46,9 +48,9 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testRegisterForGovernedUser(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
-        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
+        EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
         ParticipantUser proxyUser = participantUserService.find(proxyBundle.enrollee().getParticipantUserId()).orElseThrow();
         RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(proxyUser, proxyBundle.portalParticipantUser(), proxyUser.getUsername()+"-prox-RFGU", null);
         Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUser.getUsername()));

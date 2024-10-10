@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
@@ -73,7 +74,7 @@ public class EventDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testFullEventCreation(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Event event = Event
                 .builder()

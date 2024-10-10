@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service.workflow;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
@@ -16,8 +17,7 @@ public class ParticipantDataChangeServiceTest extends BaseSpringBootTest {
 
   @Test
   public void testFindAllRecordsForEnrollee(TestInfo info) {
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
-        enrolleeFactory.buildWithPortalUser(info.getDisplayName());
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(info.getDisplayName());
 
     Assertions.assertEquals(
         0,

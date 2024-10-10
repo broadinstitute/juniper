@@ -1,11 +1,10 @@
 package bio.terra.pearl.core.dao.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
-import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.factory.participant.FamilyFactory;
-import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
+import bio.terra.pearl.core.factory.participant.*;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -328,7 +327,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testTaskFacets(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         EnrolleeSearchExpression assignedExp = enrolleeSearchExpressionParser.parseRule(
                 "{task.demographic_survey.assigned} = true"
         );
@@ -338,21 +337,21 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         );
 
         // enrollee not assigned
-        EnrolleeFactory.EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee enrolleeNotAssigned = eBundleNotAssigned.enrollee();
 
         // enrollee assigned not started
-        EnrolleeFactory.EnrolleeBundle eBundleNotStarted = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle eBundleNotStarted = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleNotStarted, "demographic_survey", TaskStatus.NEW, TaskType.SURVEY);
         Enrollee enrolleeNotStarted = eBundleNotStarted.enrollee();
 
         // enrollee assigned in progress
-        EnrolleeFactory.EnrolleeBundle eBundleInProgress = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle eBundleInProgress = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleInProgress, "demographic_survey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
         Enrollee enrolleeInProgress = eBundleInProgress.enrollee();
 
         // enrollee assigned in progress but different task
-        EnrolleeFactory.EnrolleeBundle eBundleInProgressWrongTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle eBundleInProgressWrongTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleInProgressWrongTask, "something_else", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
         List<EnrolleeSearchExpressionResult> resultsAssigned = enrolleeSearchExpressionDao.executeSearch(assignedExp, studyEnvBundle.getStudyEnv().getId());
@@ -374,7 +373,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEnrolleeFacets(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         UUID studyEnvId = studyEnvBundle.getStudyEnv().getId();
         EnrolleeSearchExpression consentedExp = enrolleeSearchExpressionParser.parseRule(
                 "{enrollee.consented} = true"
@@ -419,7 +418,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testContains(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         UUID studyEnvId = studyEnvBundle.getStudyEnv().getId();
 
         EnrolleeSearchExpression shortcodeExp = enrolleeSearchExpressionParser.parseRule(
@@ -449,7 +448,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProfileName(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
 
@@ -458,19 +457,19 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         );
 
 
-        EnrolleeFactory.EnrolleeBundle jsalkBundle = enrolleeFactory.buildWithPortalUser(
+        EnrolleeBundle jsalkBundle = enrolleeFactory.buildWithPortalUser(
                 getTestName(info),
                 portalEnv,
                 studyEnv,
                 Profile.builder().givenName("Jonas").familyName("Salk").build());
 
-        EnrolleeFactory.EnrolleeBundle psalkBundle = enrolleeFactory.buildWithPortalUser(
+        EnrolleeBundle psalkBundle = enrolleeFactory.buildWithPortalUser(
                 getTestName(info),
                 portalEnv,
                 studyEnv,
                 Profile.builder().givenName("Peter").familyName("Salk").build());
 
-        EnrolleeFactory.EnrolleeBundle reversedBundle = enrolleeFactory.buildWithPortalUser(
+        EnrolleeBundle reversedBundle = enrolleeFactory.buildWithPortalUser(
                 getTestName(info),
                 portalEnv,
                 studyEnv,
@@ -550,7 +549,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testNot(TestInfo info) {
-        EnrolleeFactory.EnrolleeAndProxy bundle = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy@test.com");
+        EnrolleeAndProxy bundle = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy@test.com");
 
         EnrolleeSearchExpression notSubjectExp = enrolleeSearchExpressionParser.parseRule(
                 "!{enrollee.subject} = true"

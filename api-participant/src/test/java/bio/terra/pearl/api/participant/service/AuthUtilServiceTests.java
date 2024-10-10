@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -57,7 +58,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testAuthToPortalParticipantUserAllowsIfParticipant(TestInfo info) {
-    EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
     PortalParticipantUser ppUser =
         authUtilService.authParticipantUserToPortalParticipantUser(
             bundle.enrollee().getParticipantUserId(), bundle.portalParticipantUser().getId());
@@ -68,10 +69,8 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testAuthToPortalParticipantUserAllowsIfProxy(TestInfo info) {
 
-    EnrolleeFactory.EnrolleeBundle proxyBundle =
-        enrolleeFactory.buildWithPortalUser(getTestName(info));
-    EnrolleeFactory.EnrolleeBundle targetBundle =
-        enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
     enrolleeRelationService.create(
         EnrolleeRelation.builder()
@@ -92,7 +91,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testAuthToPortalParticipantUserDisallowsIfNotParticipantOrProxy(TestInfo info) {
-    EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
     StudyEnvironment studyEnv =
         studyEnvironmentService.find(bundle.enrollee().getStudyEnvironmentId()).get();
     ParticipantUser otherUser =

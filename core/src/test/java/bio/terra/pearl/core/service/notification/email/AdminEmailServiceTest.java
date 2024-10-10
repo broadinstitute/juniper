@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserBundle;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.*;
@@ -47,7 +49,7 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
     @Transactional
     public void testSendFromTrigger(TestInfo info) throws Exception {
 
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), bundle.getPortal().getId());
         localizedEmailTemplateService.create(LocalizedEmailTemplate.builder().emailTemplateId(emailTemplate.getId()).language("en").subject("subject").body("body").build());
@@ -61,7 +63,7 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
                 bundle.getStudyEnv().getId(),
                 bundle.getPortalEnv().getId());
 
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 
 
         AdminUserBundle adminUserBundle1 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));

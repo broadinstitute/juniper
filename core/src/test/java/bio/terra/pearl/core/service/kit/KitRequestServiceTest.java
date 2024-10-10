@@ -3,10 +3,12 @@ package bio.terra.pearl.core.service.kit;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -33,8 +35,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -64,7 +64,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     public void testRequestKitAssemble(TestInfo testInfo) throws Exception {
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         Profile profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -93,7 +93,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testRequestKitError(TestInfo testInfo) {
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
         KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         Profile profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -120,7 +120,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testRequestKitMailed(TestInfo testInfo) throws JsonProcessingException {
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
         KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         Profile profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -151,7 +151,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testRequestKitInPerson(TestInfo testInfo) {
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
         KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         Profile profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -177,7 +177,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     void testUpdateKitStatus(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
@@ -255,7 +255,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testCantCollectMailedKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName,
@@ -271,7 +271,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testAssignKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
         KitRequest kitRequest = kitRequestDao.create(
@@ -294,7 +294,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     public void testCollectInPersonKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
         KitRequest kitRequest = kitRequestDao.create(
@@ -414,8 +414,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment.getId());
         Study study = studyDao.find(studyEnvironment.getStudyId()).get();
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle1a = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle1b = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
+        EnrolleeBundle enrolleeBundle1a = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
+        EnrolleeBundle enrolleeBundle1b = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
 
         Enrollee enrollee1a = enrolleeBundle1a.enrollee();
         Enrollee enrollee1b = enrolleeBundle1b.enrollee();
@@ -427,7 +427,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         StudyEnvironment studyEnvironment2 = studyEnvironmentFactory.buildPersisted(testName);
         kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment2.getId());
         Study study2 = studyDao.find(studyEnvironment2.getStudyId()).get();
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment2);
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment2);
         Enrollee enrollee2 = enrolleeBundle2.enrollee();
         KitRequest kitRequest2 = kitRequestFactory.buildPersisted(testName,
             enrollee2, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
@@ -474,7 +474,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     void testNotifyKitStatus(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
         UUID kitRequestId = UUID.randomUUID();
         KitRequest kitRequest = KitRequest.builder()
@@ -524,7 +524,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         // set up a study and enrollee, initially set the study env to use stub DSM
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
-        StudyEnvironmentFactory.StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
         StudyEnvironmentConfig config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
         config.setUseStubDsm(true);
         studyEnvironmentConfigService.update(config);
