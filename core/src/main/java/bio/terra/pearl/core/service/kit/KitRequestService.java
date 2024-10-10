@@ -197,6 +197,13 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return createKitRequestDto(kits, getKitTypeMap(), getEnrollees(kits));
     }
 
+    /**
+     * Fetch all kits for an enrollee without converting into dtos.
+     */
+    public List<KitRequest> findByEnrolleeRaw(Enrollee enrollee) {
+        return dao.findByEnrollee(enrollee.getId());
+    }
+
     public KitRequest findByEnrolleeAndBarcode(Enrollee enrollee, String barcode) {
         return dao.findByEnrolleeAndLabel(enrollee.getId(), barcode).orElseThrow(() ->
                 new NotFoundException("Kit request not found for enrollee %s and barcode %s"

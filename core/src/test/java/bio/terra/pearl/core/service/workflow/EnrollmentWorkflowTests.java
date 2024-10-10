@@ -2,9 +2,9 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
-import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -20,14 +20,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.*;
-import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -87,7 +84,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEnroll(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = bundle.getPortalEnv();
         StudyEnvironment studyEnv = bundle.getStudyEnv();
         String studyShortcode =  bundle.getStudy().getShortcode();
@@ -116,7 +113,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testParticipantWorkflow(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = bundle.getPortalEnv();
         StudyEnvironment studyEnv = bundle.getStudyEnv();
         String studyShortcode = bundle.getStudy().getShortcode();
@@ -191,7 +188,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testBackfillPreEnroll(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnvironmentName envName = studyEnv.getEnvironmentName();
@@ -248,7 +245,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserEnrollment(TestInfo info){
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
@@ -289,7 +286,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProxyEnrollingMultipleChild(TestInfo info){
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
@@ -338,7 +335,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testDetectingProxyWhileEnrollment(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnvironmentName envName = studyEnv.getEnvironmentName();
@@ -381,7 +378,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testNotAcceptingProxyEnrollment(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnvironmentName envName = studyEnv.getEnvironmentName();
@@ -413,7 +410,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testMappingProxyAndGovernedUserProfileFromPreEnroll(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
@@ -503,7 +500,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testDetectingProxyNoPreEnroll(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnvironmentName envName = studyEnv.getEnvironmentName();
         String studyShortcode = studyEnvBundle.getStudy().getShortcode();

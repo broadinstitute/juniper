@@ -120,7 +120,7 @@ export default function ExportIntegrationList({ studyEnvContext }:
         <Button variant="secondary" onClick={() => {
           setShowCreateModal(false)
           setNewIntegration(DEFAULT_EXPORT_INTEGRATION)
-        }}>Create</Button>
+        }}>Cancel</Button>
       </Modal.Footer>
     </Modal>
 

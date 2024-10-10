@@ -12,9 +12,6 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -96,15 +93,6 @@ public class StudyEnvironmentFactory {
                 .portal(portal)
                 .portalEnv(portalEnvironment)
                 .build();
-    }
-
-    @Getter @Setter
-    @Builder
-    public static class StudyEnvironmentBundle {
-        private Study study;
-        private StudyEnvironment studyEnv;
-        private Portal portal;
-        private PortalEnvironment portalEnv;
     }
 
 }

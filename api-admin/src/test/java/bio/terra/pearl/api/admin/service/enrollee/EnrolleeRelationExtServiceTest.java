@@ -7,8 +7,10 @@ import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -48,13 +50,13 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void testFindRelationsForTargetEnrolleeOnlyInCorrectStudyEnv(TestInfo info) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
-    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy =
+    EnrolleeAndProxy enrolleeAndProxy =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
 
-    StudyEnvironmentFactory.StudyEnvironmentBundle otherStudyEnv =
+    StudyEnvironmentBundle otherStudyEnv =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     List<EnrolleeRelation> relations =
@@ -95,7 +97,7 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void testCannotCreateBetweenDifferentStudyEnvs(TestInfo info) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
     Enrollee enrollee1 =
         enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());

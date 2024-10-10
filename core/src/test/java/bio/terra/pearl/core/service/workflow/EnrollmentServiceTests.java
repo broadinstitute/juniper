@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.workflow;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
@@ -150,7 +151,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
 
-        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), portalEnv, studyEnv);
+        EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), portalEnv, studyEnv);
         Enrollee proxy = enrolleeAndProxy.proxy();
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(proxy);
         ParticipantUser user = participantUserService.find(ppUser.getParticipantUserId()).orElseThrow();

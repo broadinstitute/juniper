@@ -2,9 +2,11 @@ package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
@@ -72,8 +74,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         Portal portal = portalFactory.buildPersisted(testName);
         Study study = studyFactory.buildPersisted(portal.getId(), testName);
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
-        StudyEnvironmentFactory.StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study);
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
+        StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study);
         Survey survey = surveyFactory.buildPersisted(testName, portal.getId());
         StudyEnvironment irbStudyEnv = irbBundle.getStudyEnv();
         irbStudyEnv.setPreEnrollSurveyId(survey.getId());
@@ -93,8 +95,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         Portal portal = portalFactory.buildPersisted(testName);
         Study study = studyFactory.buildPersisted(portal.getId(), testName);
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
-        StudyEnvironmentFactory.StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study);
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
+        StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study);
 
         triggerFactory.buildPersisted(Trigger.builder()
                 .triggerType(TriggerType.EVENT)
@@ -111,8 +113,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         Portal portal = portalFactory.buildPersisted(testName);
         Study study = studyFactory.buildPersisted(portal.getId(), testName);
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
-        StudyEnvironmentFactory.StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study );
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb, portal, study);
+        StudyEnvironmentBundle liveBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live, portal, study );
 
         Survey survey = surveyFactory.buildPersisted(testName, portal.getId());
         StudyEnvironmentSurvey surveyConfig = surveyFactory.attachToEnv(survey, irbBundle.getStudyEnv().getId(), true);
@@ -146,8 +148,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testApplyChangesPublishSurveyUpdate(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
                 sandboxBundle.getPortal(), sandboxBundle.getStudy());
 
         UUID portalId = sandboxBundle.getPortal().getId();
@@ -159,7 +161,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(surveyV2, sandboxBundle.getStudyEnv().getId(), true);
 
         // assign v1 of the survey to an enrollee in the irb environment
-        EnrolleeFactory.EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(irbEnrollee, ParticipantTaskFactory.DEFAULT_BUILDER
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion()));
@@ -181,8 +183,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testPublishSurveyAssignExisting(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
                 sandboxBundle.getPortal(), sandboxBundle.getStudy());
         UUID portalId = sandboxBundle.getPortal().getId();
 
@@ -191,7 +193,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
                 surveyFactory.builder(getTestName(testInfo)).portalId(portalId).assignToExistingEnrollees(true));
 
         // create an enrollee in the irb environment with no survey tasks
-        EnrolleeFactory.EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
 
         // attach surveys to sandbox, then copy sandbox to irb
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);

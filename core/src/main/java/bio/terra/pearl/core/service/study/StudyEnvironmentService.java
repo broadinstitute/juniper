@@ -23,6 +23,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    FamilyEnrolleeService familyEnrolleeService,
                                    EnrolleeRelationService enrolleeRelationService,
                                    ParticipantDataChangeService participantDataChangeService,
-                                   ExportIntegrationService exportIntegrationService) {
+                                   @Lazy ExportIntegrationService exportIntegrationService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -89,6 +90,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
 
     public Optional<StudyEnvironment> findByStudy(String studyShortcode, EnvironmentName environmentName) {
         return dao.findByStudy(studyShortcode, environmentName);
+    }
+
+    public List<StudyEnvironment> findAllByPortalAndEnvironment(UUID portalId, EnvironmentName environmentName) {
+        return dao.findAllByPortalAndEnvironment(portalId, environmentName);
     }
 
     public StudyEnvironment verifyStudy(String studyShortcode, EnvironmentName environmentName) {
