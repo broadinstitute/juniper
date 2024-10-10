@@ -29,7 +29,6 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
-import { useUser } from 'user/UserProvider'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -54,7 +53,6 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     { id: 'requiredSurveysComplete', value: true }
   ])
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
-  const { user } = useUser()
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const enrollees = await Api.fetchEnrolleesWithKits(
