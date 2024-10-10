@@ -393,7 +393,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testImportPreEnroll(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         Survey preEnroll = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .stableId("preEnroll")
