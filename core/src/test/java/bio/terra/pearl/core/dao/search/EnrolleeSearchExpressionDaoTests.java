@@ -703,7 +703,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testIncludeUserData(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         Instant loginTime = Instant.now();
         bundle.portalParticipantUser().setLastLogin(loginTime);
         portalParticipantUserService.update(bundle.portalParticipantUser());
