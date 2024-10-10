@@ -388,6 +388,51 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
     }
 
+    @Test
+    @Transactional
+    public void testImportPreEnroll(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        Survey preEnroll = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("preEnroll")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"name\",\"title\":\"What is your name?\"}]}]}")
+                .portalId(bundle.getPortal().getId()));
+
+        surveyFactory.attachToEnv(preEnroll, bundle.getStudyEnv().getId(), true);
+
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "preEnroll.name", "Alex",
+                "profile.givenName", "Alex",
+                "profile.birthDate", "1998-05-14",
+                "profile.doNotEmailSolicit", "true",
+                "profile.mailingAddress.street1", "105 Broadway",
+                "profile.mailingAddress.postalCode", "45455");
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(responses, hasSize(1));
+        SurveyResponse response = responses.get(0);
+
+        assertThat(response.getSurveyId(), equalTo(preEnroll.getId()));
+
+        List<Answer> answers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), preEnroll.getStableId());
+        assertThat(answers, hasSize(1));
+
+        Answer answer = answers.getFirst();
+        assertThat(answer.getQuestionStableId(), equalTo("name"));
+        assertThat(answer.getStringValue(), equalTo("Alex"));
+
+    }
+
 
     /** check that imports won't overwrite previously entered profiles in a multi-study setting */
     @Test

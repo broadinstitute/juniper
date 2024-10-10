@@ -311,7 +311,7 @@ def parse_translation_override(filepath: str) -> list[TranslationOverride]:
 
     with open(filepath, 'r') as f:
         for row in csv.reader(f):
-            out.append(TranslationOverride(row[0], row[1]))
+            out.append(TranslationOverride(row[0], row[1], value_if_present=row[2] if len(row) > 0 else None))
 
     return out
 
@@ -335,14 +335,13 @@ class Translation:
 
 default_translation_overrides = [
     TranslationOverride('PROFILE.EMAIL', 'profile.contactEmail'),
-    TranslationOverride('PROFILE.EMAIL', 'account.username'),
     # if the user doesn't have an email, it usually means their proxy does, so check there
     # as well
     TranslationOverride('PROFILE.PROXY.EMAIL', 'account.username'),
+    TranslationOverride('PROFILE.EMAIL', 'account.username'),
     TranslationOverride('PROFILE.FIRSTNAME', 'profile.givenName'),
     TranslationOverride('PROFILE.LASTNAME', 'profile.familyName'),
     TranslationOverride(None, 'enrollee.subject', constant_value='true'),
-    TranslationOverride('CONSENT.CREATEDAT', 'enrollee.role', value_if_present='true'),
 ]
 
 
@@ -507,7 +506,7 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
         new_row = {}
         for translation in translations:
             # certain modules (e.g. kit requests, families, relations) can be repeated, so we need
-            # to loop through all of them
+            # to see how many repeats there are and apply the translation to each one
             if is_in_repeatable_juniper_module(translation.juniper_question_definition.stable_id):
                 apply_repeatable_translation(row, new_row, translation)
             apply_translation(row, new_row, translation)
@@ -616,7 +615,7 @@ def simple_translate(translation: Translation,
 
 
 def translate_value(translation: Translation, value: Any) -> Any:
-    if translation.translation_override is not None and translation.translation_override.value_if_present is not None:
+    if translation.translation_override is not None and translation.translation_override.value_if_present is not None and translation.translation_override.value_if_present != '':
         return translation.translation_override.value_if_present if value.strip() != '' else None
 
     # possible data types: string, date, boolean, date_time, object_string
