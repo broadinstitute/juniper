@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faHandHolding, faQuestion, faTruckFast } from '@fortawesome/free-solid-svg-icons'
-import { KitRequest } from '@juniper/ui-core'
+import { KitRequest, useI18n } from '@juniper/ui-core'
 import { NavLink } from 'react-router-dom'
 import { instantToDateString } from 'util/timeUtils'
 
@@ -43,6 +43,7 @@ const renderHeader = () => {
 
 /** Renders kit tasks for the hub page */
 export default function KitBanner({ kitRequests }: {kitRequests: KitRequest[]}) {
+  const { i18n } = useI18n()
   const hasKitRequests = kitRequests.length > 0
   if (!hasKitRequests) {
     return null
@@ -59,7 +60,7 @@ export default function KitBanner({ kitRequests }: {kitRequests: KitRequest[]}) 
 
   return (
     <>
-      <h2 className="fs-6 text-uppercase mb-0">Sample collection kits</h2>
+      <h2 className="fs-6 text-uppercase mb-0">{i18n('kitsPageTitle')}</h2>
       {renderHeader()}
       <ul className="list-unstyled">
         {kitsToDisplay.map(kitRequest => {

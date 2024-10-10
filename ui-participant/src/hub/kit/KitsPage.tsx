@@ -1,4 +1,4 @@
-import { Enrollee, KitRequest, KitRequestStatus } from '@juniper/ui-core'
+import { Enrollee, KitRequest, KitRequestStatus, KitType, useI18n } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBoxesPacking, faCircleCheck, faTruckFast } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
@@ -62,25 +62,29 @@ const getStepCompletion = (kit: KitRequest, step: string) => {
 }
 
 const MailedKitStatusBar = ({ kit }: { kit: KitRequest }) => {
+  const { i18n } = useI18n()
+
   return (
     <div className="progress-stacked border-top border-bottom border-start" style={{ height: '50px' }}>
-      <ProgressBar
-        width="33%" complete={getStepCompletion(kit, 'PREPARING')} icon={faBoxesPacking} label={'Preparing'}/>
-      <ProgressBar
-        width="34%" complete={getStepCompletion(kit, 'SHIPPED')} icon={faTruckFast} label={'Shipped'}/>
-      <ProgressBar
-        width="33%" complete={getStepCompletion(kit, 'RETURNED')} icon={faCircleCheck} label={'Returned'}/>
+      <ProgressBar width="33%" complete={getStepCompletion(kit, 'PREPARING')}
+        icon={faBoxesPacking} label={i18n('kitsPageStatusPreparing')}/>
+      <ProgressBar width="34%" complete={getStepCompletion(kit, 'SHIPPED')}
+        icon={faTruckFast} label={i18n('kitsPageStatusShipped')}/>
+      <ProgressBar width="33%" complete={getStepCompletion(kit, 'RETURNED')}
+        icon={faCircleCheck} label={i18n('kitsPageStatusReturned')}/>
     </div>
   )
 }
 
 const InPersonKitStatusBar = ({ kit }: { kit: KitRequest }) => {
+  const { i18n } = useI18n()
+
   return (
     <div className="progress-stacked" style={{ height: '50px' }}>
-      <ProgressBar
-        width="50%" complete={getStepCompletion(kit, 'PREPARING')} icon={faBoxesPacking} label={'Created'}/>
-      <ProgressBar
-        width="50%" complete={getStepCompletion(kit, 'COLLECTED')} icon={faCircleCheck} label={'Collected'}/>
+      <ProgressBar width="50%" complete={getStepCompletion(kit, 'PREPARING')}
+        icon={faBoxesPacking} label={i18n('kitsPageStatusCreated')}/>
+      <ProgressBar width="50%" complete={getStepCompletion(kit, 'COLLECTED')}
+        icon={faCircleCheck} label={i18n('kitsPageStatusCollected')}/>
     </div>
   )
 }
@@ -113,36 +117,41 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
       studyEnv.environmentName === portalEnv.environmentName))?.study.studyEnvironments[0]
   const isInPersonKitEnabled = currentStudyEnv?.studyEnvironmentConfig.enableInPersonKits
 
+  const { i18n } = useI18n()
+
   return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
-    <h1 className="pb-3">Sample collection kits</h1>
+    <h1 className="pb-3">
+      {i18n('kitsPageTitle')}
+    </h1>
     <div className="pb-4">
-      Sample collection kits are a valuable part of the study process and can help provide researchers with
-      important insights. Below you will find the status of all kits that have been provided to you.
+      {i18n('kitsPageDescription')}
     </div>
     { isInPersonKitEnabled &&
       <>
-        <h3>Provide a sample in-person</h3>
+        <h3>
+          {i18n('kitsPageInPersonTitle')}
+        </h3>
         <div className="pb-2">
-          This study is currently offering the option to complete a sample collection kit in-person.
+          {i18n('kitsPageInPersonDescription')}
         </div>
         <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
           <Link to={'/hub/kits/in-person'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-            Complete a kit in-person
+            {i18n('kitsPageInPersonCompleteButton')}
           </Link>
         </div>
       </>}
-    <h3>Your kits ({visibleKitRequests.length})</h3>
+    <h3>{i18n('kitsPageYourKitsTitle')} ({visibleKitRequests.length})</h3>
     <div className="d-flex flex-column">
       {visibleKitRequests.length === 0 ? (
         <div className="text-center text-muted fst-italic my-4">
-          You do not have any sample collection kits at this time.
+          {i18n('kitsPageNoKits')}
         </div>
       ) : (
         visibleKitRequests.map((kit, index) => (
           <div key={index}
             className="d-flex align-items-center justify-content-between mb-3 border rounded-3 p-3">
             <div>
-              <div className="fw-bold">{kit.kitType.displayName} Kit</div>
+              <div className="fw-bold">{i18n(kitTypeToI18nKey(kit.kitType))}</div>
               <div className="fst-italic text-muted">
                 {instantToDateString(kit.createdAt)}
               </div>
@@ -155,4 +164,17 @@ const EnrolleeKitRequests = ({ enrollee }: { enrollee: Enrollee }) => {
       )}
     </div>
   </div>
+}
+
+const kitTypeToI18nKey = (kitType: KitType) => {
+  switch (kitType.name) {
+    case 'SALIVA':
+      return 'kitTypeSaliva'
+    case 'BLOOD':
+      return 'kitTypeBlood'
+    case 'STOOL':
+      return 'kitTypeStool'
+    default:
+      return 'kitTypeUnknown'
+  }
 }

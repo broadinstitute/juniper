@@ -188,9 +188,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         <RowVisibilityCount table={table}/>
       </div>
       <div className="d-flex">
-        { user?.superuser && <Link to={'../scan'}>
+        <Link to={'../scan'}>
           <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan kit</Button>
-        </Link> }
+        </Link>
         <Button onClick={() => { setShowRequestKitModal(true) }}
           variant="light" className="border m-1" disabled={!enableActionButtons}
           tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
