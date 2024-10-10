@@ -613,6 +613,10 @@ def simple_translate(translation: Translation,
             continue  # assume any value is good enough
         juniper_data[response_stable_id] = translate_value(translation, value)
 
+        # at's state province field is, e.g., US-MA for some reason.
+        if juniper_question.stable_id == "PREQUAL.REGISTRATION_STATE_PROVINCE":
+            juniper_data[response_stable_id] = juniper_data[response_stable_id].split("-")[-1]
+
 
 def translate_value(translation: Translation, value: Any) -> Any:
     if translation.translation_override is not None and translation.translation_override.value_if_present is not None and translation.translation_override.value_if_present != '':
