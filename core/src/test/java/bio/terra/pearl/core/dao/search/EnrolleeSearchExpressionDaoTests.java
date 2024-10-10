@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.util.List;
 import java.util.Map;
@@ -722,8 +723,8 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         assertEquals(1, results.size());
         // we can't check exact equality since it goes to the DB, so instead just confirm seconds
-        assertThat(results.get(0).getPortalParticipantUser().getLastLogin().get(ChronoField.SECOND_OF_MINUTE),
-                equalTo(loginTime.get(ChronoField.SECOND_OF_MINUTE)));
+        assertThat(results.get(0).getPortalParticipantUser().getLastLogin().truncatedTo(ChronoUnit.MILLIS),
+                equalTo(loginTime.truncatedTo(ChronoUnit.MILLIS)));
         assertThat(results.get(0).getParticipantUser().getUsername(), equalTo(bundle.participantUser().getUsername()));
     }
 }
