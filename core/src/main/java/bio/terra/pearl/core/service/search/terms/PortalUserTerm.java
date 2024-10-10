@@ -37,14 +37,14 @@ public class PortalUserTerm implements SearchTerm {
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.JoinClause("portal_participant_user", "portal_user", "portal_user.profile_id = profile.id")
+                new EnrolleeSearchQueryBuilder.JoinClause("portal_participant_user", "portalUser", "portalUser.profile_id = profile.id")
         );
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.SelectClause("portal_user", portalParticipantUserDao)
+                new EnrolleeSearchQueryBuilder.SelectClause("portalUser", portalParticipantUserDao)
         );
     }
 
@@ -55,7 +55,7 @@ public class PortalUserTerm implements SearchTerm {
 
     @Override
     public String termClause() {
-        return "portal_user." + toSnakeCase(field);
+        return "portalUser." + toSnakeCase(field);
     }
 
     @Override

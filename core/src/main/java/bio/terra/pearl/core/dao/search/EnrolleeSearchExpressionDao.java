@@ -46,8 +46,8 @@ public class EnrolleeSearchExpressionDao {
     protected static final List<SearchModuleMapper<? extends BaseEntity>> moduleMappers = List.of(
             new SearchModuleMapper<>("enrollee", Enrollee.class, EnrolleeSearchExpressionResult::setEnrollee),
             new SearchModuleMapper<>("profile", Profile.class, EnrolleeSearchExpressionResult::setProfile),
-            new SearchModuleMapper<>("portal_user", PortalParticipantUser.class, EnrolleeSearchExpressionResult::setPortalParticipantUser),
-            new SearchModuleMapper<>("participant_user", PortalParticipantUser.class, EnrolleeSearchExpressionResult::setPortalParticipantUser),
+            new SearchModuleMapper<>("portalUser", PortalParticipantUser.class, EnrolleeSearchExpressionResult::setPortalParticipantUser),
+            new SearchModuleMapper<>("participant_user", ParticipantUser.class, EnrolleeSearchExpressionResult::setParticipantUser),
             new SearchModuleMapper<>("mailing_address", MailingAddress.class, EnrolleeSearchExpressionResult::setMailingAddress),
             new SearchModuleMapper<>("latest_kit", KitRequest.class, EnrolleeSearchExpressionResult::setLatestKit),
             new SearchModuleCollectionMapper<>("answer", Answer.class, (result, answer) -> result.getAnswers().add(answer)),

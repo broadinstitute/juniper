@@ -223,7 +223,7 @@ public class EnrolleeSearchExpressionParser {
             case "user":
                 String userField = parseField(trimmedVar);
                 return new UserTerm(participantUserDao, userField);
-            case "portal_user":
+            case "portalUser":
                 String portalUserField = parseField(trimmedVar);
                 return new PortalUserTerm(portalParticipantUserDao, portalUserField);
             default:
