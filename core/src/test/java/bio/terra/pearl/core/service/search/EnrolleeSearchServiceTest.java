@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
@@ -48,7 +49,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
     void testGetSearchFacetsForPortal(TestInfo info) {
         Portal portal = portalFactory.buildPersisted(getTestName(info));
         Study study = studyFactory.buildPersisted(portal.getId(), getTestName(info));
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, portal, study);
+        StudyEnvironmentBundle bundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox, portal, study);
         StudyEnvironment se2 = studyEnvironmentFactory.buildPersisted(bundle1.getPortalEnv(), getTestName(info));
 
         Survey survey1 = surveyFactory.buildPersisted(

@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
@@ -510,7 +511,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSurveyReferencesAnswers(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .portalId(studyEnvBundle.getPortal().getId())
@@ -525,7 +526,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSurveyReferencesAnswerFiltersObjectQuestions(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .portalId(studyEnvBundle.getPortal().getId())

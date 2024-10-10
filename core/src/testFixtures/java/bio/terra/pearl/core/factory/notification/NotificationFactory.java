@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory.notification;
 
-import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class NotificationFactory {
     @Autowired
     private NotificationService notificationService;
-    public Notification.NotificationBuilder builder(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
+    public Notification.NotificationBuilder builder(EnrolleeBundle enrolleeBundle,
                                                     Trigger config) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         return Notification.builder()
@@ -27,7 +27,7 @@ public class NotificationFactory {
                 .retries(0);
     }
 
-    public Notification buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
+    public Notification buildPersisted(EnrolleeBundle enrolleeBundle,
                                        Trigger config) {
         return notificationService.create(builder(enrolleeBundle, config).build());
     }

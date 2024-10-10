@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -63,9 +64,9 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void testFindOnlyInCorrectStudyEnv(TestInfo info) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
-    StudyEnvironmentFactory.StudyEnvironmentBundle otherBundle =
+    StudyEnvironmentBundle otherBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     StudyEnvironment studyEnv = bundle.getStudyEnv();
@@ -129,7 +130,7 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void testAddMemberOnlyInCorrectStudyEnv(TestInfo info) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     Enrollee enrollee =
@@ -170,7 +171,7 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void createAlsoAddsProbandToFamily(TestInfo info) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     Enrollee enrollee =

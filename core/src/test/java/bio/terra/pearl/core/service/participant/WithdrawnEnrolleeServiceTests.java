@@ -2,7 +2,10 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -57,7 +60,7 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testWithdrawProxyEnrollee(TestInfo info) {
-    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy-email@test.com");
+    EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy-email@test.com");
     Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
     Enrollee governedEnrollee = enrolleeAndProxy.governedEnrollee();
     DaoTestUtils.assertGeneratedProperties(proxyEnrollee);
@@ -78,13 +81,13 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
     // potential edge case: withdrawing a subject that is also a proxy should withdraw the proxy
     // but then recreate a non-subject enrollee so that they can keep proxying.
 
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
     StudyEnvironment studyEnvironment = studyEnvBundle.getStudyEnv();
     PortalEnvironment portalEnvironment = studyEnvBundle.getPortalEnv();
 
 
-    EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
-    EnrolleeFactory.EnrolleeBundle governedBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+    EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+    EnrolleeBundle governedBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
 
     Enrollee proxyEnrollee = proxyBundle.enrollee();
     Enrollee governedEnrollee = governedBundle.enrollee();
@@ -133,13 +136,13 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testWithdrawGovernedUserWithProxyThatIsSubject(TestInfo info) {
     // potential edge case: withdrawing a governed user that is being proxied by a subject should withdraw ONLY the governed user
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
     StudyEnvironment studyEnvironment = studyEnvBundle.getStudyEnv();
     PortalEnvironment portalEnvironment = studyEnvBundle.getPortalEnv();
 
 
-    EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
-    EnrolleeFactory.EnrolleeBundle governedBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+    EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+    EnrolleeBundle governedBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
 
     Enrollee proxyEnrollee = proxyBundle.enrollee();
     Enrollee governedEnrollee = governedBundle.enrollee();

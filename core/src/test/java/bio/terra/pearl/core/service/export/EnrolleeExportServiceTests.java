@@ -1,7 +1,9 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -99,9 +101,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testExportWithProxies(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live);
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
-        EnrolleeFactory.EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
 
         List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
@@ -150,7 +152,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testExportChecksStudyEnvConfigProxy(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
 
@@ -347,7 +349,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testGenerateSurveyModulesAcrossVersions(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
         StudyEnvironment studyEnv = bundle.getStudyEnv();
 
         Survey survey = surveyService.create(

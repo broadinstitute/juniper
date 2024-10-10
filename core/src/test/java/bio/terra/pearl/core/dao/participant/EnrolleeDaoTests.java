@@ -1,17 +1,15 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +36,13 @@ public class EnrolleeDaoTests extends BaseSpringBootTest {
     public void testFindUnassignedToTask(TestInfo testInfo) {
         String TASK_STABLE_ID = "testFindUnassignedToTask";
         // set up a sandbox and irb environment, with 2 enrollees in each
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
-        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
 
-        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
-        EnrolleeFactory.EnrolleeBundle irb1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle irb2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
+        EnrolleeBundle irb1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        EnrolleeBundle irb2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
 
         // returns both enrollees if no one is assigned any tasks
         List<Enrollee> unassignedEnrollees = enrolleeDao.findUnassignedToTask(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, null);
@@ -75,9 +73,9 @@ public class EnrolleeDaoTests extends BaseSpringBootTest {
     public void testFindUnassignedToTaskByVersion(TestInfo testInfo) {
         String TASK_STABLE_ID = "testFindUnassignedToTaskByVersion";
         // set up a sandbox and irb environment, with 2 enrollees in each
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
-        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
 
         // give the first enrollee v1 of the task, and the second enrollee v2
         participantTaskFactory.buildPersisted(sandbox1, ParticipantTaskFactory.DEFAULT_BUILDER

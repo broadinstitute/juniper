@@ -1,8 +1,11 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -11,7 +14,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -105,7 +107,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAutoAssign(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
                 .stableId("main")
                 .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
@@ -118,7 +120,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .autoAssign(false));
         surveyFactory.attachToEnv(followUpSurvey, sandboxBundle.getStudyEnv().getId(), true);
 
-        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo), sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
+        EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo), sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
 
         // confirm only the main survey is assigned automatically
         List<ParticipantTask> participantTasks = participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId());
@@ -135,10 +137,10 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAssign(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
-        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
         ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true );
@@ -150,9 +152,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAssignDoesntDuplicate(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
-        EnrolleeFactory.EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
         // the enrollee already has a task
@@ -181,16 +183,16 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAssignWithSearchExpression(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
                 .eligibilityRule("{profile.givenName} = 'John'"));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
-        EnrolleeFactory.EnrolleeBundle e1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Doe").build());
+        EnrolleeBundle e1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Doe").build());
         enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
         enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle e2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Smith").build());
+        EnrolleeBundle e2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Smith").build());
 
         surveyTaskDispatcher.assign(
                 new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false),
@@ -205,13 +207,13 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testDoesNotAssignToProxyByDefault(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
-        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeFactory.EnrolleeBundle normalEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle normalEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
 
         surveyTaskDispatcher.assign(
                 new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false),
@@ -227,7 +229,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAssignOnSurveyEvent(TestInfo testInfo) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
                         .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
@@ -240,7 +242,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .eligibilityRule("{answer.medForm.diagnosis} = 'sick'"));
         surveyFactory.attachToEnv(followUpSurvey, sandboxBundle.getStudyEnv().getId(), true);
 
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.enroll("healthy@test.com", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
+        EnrolleeBundle bundle = enrolleeFactory.enroll("healthy@test.com", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
 
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(bundle.enrollee().getId());
         // confirm the follow-up survey has not yet been assigned to the participant

@@ -160,9 +160,4 @@ public class EnrolleeFactory {
         HubResponse<Enrollee> response = enrollmentService.enroll(environmentName, studyShortcode, result.participantUser(), result.portalParticipantUser(), null);
         return new EnrolleeBundle(response.getEnrollee(), result.participantUser(), result.portalParticipantUser(), portal.getId());
     }
-
-
-    public record EnrolleeBundle(Enrollee enrollee, ParticipantUser participantUser, PortalParticipantUser portalParticipantUser, UUID portalId) {}
-
-    public record EnrolleeAndProxy(Enrollee governedEnrollee, Enrollee proxy, PortalParticipantUser proxyPpUser, PortalEnvironment portalEnv) {}
 }

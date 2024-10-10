@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
@@ -36,7 +37,7 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testNotificationConfigReplace(TestInfo testInfo) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
     Trigger oldConfig =
         triggerFactory.buildPersisted(
@@ -75,7 +76,7 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testDeleteNotificationConfigNotFound(TestInfo testInfo) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
     AdminUser user = AdminUser.builder().superuser(true).build();
@@ -95,7 +96,7 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testDeleteNotificationConfigMustBeAuthenticated(TestInfo testInfo) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
     Trigger config =
@@ -128,7 +129,7 @@ public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testDeleteNotificationConfig(TestInfo testInfo) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
     Trigger config =

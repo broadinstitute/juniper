@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.notification.SendgridEventDao;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.SendgridEvent;
@@ -33,8 +34,8 @@ class NotificationServiceTest extends BaseSpringBootTest {
     @Transactional
     void findAllByConfigId(TestInfo info) {
 
-        EnrolleeFactory.EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
-        EnrolleeFactory.EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Trigger trigger1 = triggerFactory.buildPersisted(getTestName(info));
         Trigger trigger2 = triggerFactory.buildPersisted(getTestName(info));
@@ -63,8 +64,8 @@ class NotificationServiceTest extends BaseSpringBootTest {
     @Transactional
     void findAllByConfigIdWithEnrollees(TestInfo info) {
 
-        EnrolleeFactory.EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
-        EnrolleeFactory.EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Trigger trigger1 = triggerFactory.buildPersisted(getTestName(info));
 
@@ -86,9 +87,9 @@ class NotificationServiceTest extends BaseSpringBootTest {
     @Transactional
     void findAllByConfigIdAttachSendgridEvents(TestInfo info) {
 
-        EnrolleeFactory.EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
-        EnrolleeFactory.EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
-        EnrolleeFactory.EnrolleeBundle bundle3 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle3 = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Trigger trigger1 = triggerFactory.buildPersisted(getTestName(info));
 
