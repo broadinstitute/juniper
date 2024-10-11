@@ -227,7 +227,7 @@
           },
           {
             "type": "radiogroup",
-            "name": "`hd_hd_preenroll_livesInUS`",
+            "name": "hd_hd_preenroll_livesInUS",
             "title": {
               "en": "I live in the United States.",
               "es": "Vivo en Estados Unidos.",
