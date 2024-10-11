@@ -21,6 +21,9 @@ import {
   log,
   logError
 } from 'util/loggingUtils'
+import { getTaskPath, isTaskActive } from '../hub/TaskLink'
+import { HubUpdate } from '../hub/hubUpdates'
+import { getNextTask, taskComparator } from '../hub/StudyResearchTasks'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -91,9 +94,34 @@ export const RedirectFromOAuth = () => {
 
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
-              const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState, i18n)
-              navigate('/hub', { replace: true, state: hubUpdate })
+              const hubResponse = await enrollCurrentUserInStudy(
+                defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState)
+
+              const sortedActiveConsentTasks = hubResponse.enrollee.participantTasks
+                .filter(task => task.taskType === 'CONSENT' && isTaskActive(task))
+                .sort(taskComparator)
+              // const hasActiveConsentTasks = sortedActiveConsentTasks.length > 0
+
+              const nextTask = getNextTask(hubResponse.enrollee, sortedActiveConsentTasks)
+
+
+              if (nextTask) {
+                const consentTaskPath = getTaskPath(
+                  nextTask, hubResponse.enrollee.shortcode, defaultEnrollStudy.shortcode)
+                navigate(`../hub/${consentTaskPath}`, { replace: true })
+              } else {
+                const hubUpdate: HubUpdate = {
+                  message: {
+                    title: i18n('hubUpdateWelcomeToStudyTitle', {
+                      substitutions: { studyName: defaultEnrollStudy.name }
+                    }),
+                    detail: i18n('hubUpdateWelcomeToStudyDetail'),
+                    type: 'INFO'
+                  }
+                }
+
+                navigate('/hub', { replace: true, state: hubUpdate })
+              }
             } else {
               navigate('/hub', { replace: true })
             }

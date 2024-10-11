@@ -125,7 +125,7 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
 }
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
-function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
+export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
   const nextTask = sortedTasks.find(task => isTaskAccessible(task, enrollee) && isTaskActive(task))
   return nextTask
 }
@@ -134,7 +134,7 @@ export const TASK_TYPE_ORDER = ['CONSENT', 'SURVEY']
 export const TASK_STATUS_ORDER = ['IN_PROGRESS', 'NEW', 'COMPLETE']
 
 /** Sorts tasks based on their types, then based on status, and then based on their internal ordering */
-function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
+export function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
   const typeOrder = TASK_TYPE_ORDER.indexOf(taskA.taskType) - TASK_TYPE_ORDER.indexOf(taskB.taskType)
   if (typeOrder != 0) {
     return typeOrder

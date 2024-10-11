@@ -152,10 +152,10 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         try {
           const hubUpdate = isProxyEnrollment
             ? await enrollProxyUserInStudy(
-              studyShortcode, studyName, preEnrollResponseId, ppUserId, refreshLoginState, i18n
+              studyShortcode, preEnrollResponseId, ppUserId, refreshLoginState
             )
             : await enrollCurrentUserInStudy(
-              studyShortcode, studyName, preEnrollResponseId, refreshLoginState, i18n
+              studyShortcode, preEnrollResponseId, refreshLoginState
             )
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
