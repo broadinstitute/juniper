@@ -1695,10 +1695,13 @@ export default {
     bearerToken = token
   },
 
-  getSystemStatus(): Promise<SystemStatus> {
-    const url = `http://localhost:8080/status`
-    return fetch(url, this.getGetInit())
-      .then(this.processJsonResponse)
+  async getSystemStatus(): Promise<SystemStatus> {
+    const url = `/status`
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
   }
 
 }

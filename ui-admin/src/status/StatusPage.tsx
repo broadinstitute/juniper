@@ -1,70 +1,66 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
-import Api from '../api/api'
+import Api from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 export const StatusPage = () => {
+  const [operational, setOperational] = useState<boolean>()
+
+  const loadSystemStatus = async () => {
+    const systemStatus = await Api.getSystemStatus()
+    setOperational(systemStatus.ok)
+  }
+
   useEffect(() => {
-    const foo = Api.getSystemStatus()
-    console.log(foo)
+    loadSystemStatus()
   }, [])
 
-
   return <div className="d-flex flex-column align-items-center justify-content-center vh-100">
-    <h3 className="mb-3">Juniper Status</h3>
-    <SystemStatus title="Admin" operational={true}/>
-    <SystemStatus title="Participant" operational={false}/>
+    {operational === undefined ?
+      <LoadingSpinner /> :
+      <SystemStatus operational={operational}/>
+    }
     <div className="text-center">
       <div className="text-muted">
-            Please contact <a href="mailto:support@juniper.terra.bio">
-          support@juniper.terra.bio
-        </a> for additional support.
+        Please contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a> for additional support.
       </div>
     </div>
   </div>
 }
 
 
-const SystemStatus = ({ title, operational }: {
-    title: string,
-    operational: boolean
-}) => {
-  if (!operational) {
-    return <div className="card mb-3" style={{ maxWidth: '500px' }}>
+const SystemStatus = ({ operational }: { operational: boolean }) => {
+  return (
+    <div className="card mb-3" style={{ maxWidth: '500px' }}>
       <div className="row g-0 align-items-center">
         <div className="col-md-4">
-          <FontAwesomeIcon icon={faExclamationCircle} className={'text-center fa-8x text-danger p-4'}/>
+          <FontAwesomeIcon
+            icon={operational ? faCheckCircle : faExclamationCircle}
+            className={`text-center fa-8x p-4 ${operational ? 'text-success' : 'text-danger'}`}
+          />
         </div>
         <div className="col-md-8">
           <div className="card-body">
-            <h5 className="card-title">Juniper {title} System</h5>
+            <h5 className="card-title">Juniper Status</h5>
             <p className="card-text">
-              Participants may experience
-              <span className="fw-bold text-danger"> degraded </span>
-              functionality while accessing their studies
+              {operational ? (
+                <>
+                  This system is
+                  <span className="fw-bold text-success mx-1">operational</span>
+                  and all systems are functioning normally
+                </>
+              ) : (
+                <>
+                  This system is currently experiencing
+                  <span className="fw-bold text-danger mx-1">degraded</span>
+                  functionality. Users may experience issues with some or all functionality
+                </>
+              )}
             </p>
           </div>
         </div>
       </div>
     </div>
-  }
-
-
-  return <div className="card mb-3" style={{ maxWidth: '500px' }}>
-    <div className="row g-0 align-items-center">
-      <div className="col-md-4">
-        <FontAwesomeIcon icon={faCheckCircle} className={'text-center fa-8x text-success p-4'}/>
-      </div>
-      <div className="col-md-8">
-        <div className="card-body">
-          <h5 className="card-title">Juniper {title} System</h5>
-          <p className="card-text">
-            This system is
-            <span className="fw-bold text-success"> operational </span>
-            and all systems are functioning normally
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+  )
 }
