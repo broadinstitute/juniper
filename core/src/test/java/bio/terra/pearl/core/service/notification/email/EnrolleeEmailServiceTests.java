@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.*;
@@ -155,7 +156,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEmailSendOrSkip(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
         Trigger config = triggerFactory.buildPersisted(Trigger.builder()
                 .emailTemplateId(emailTemplate.getId())
@@ -170,7 +171,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEmailSendOrSkipSolicit(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
         Trigger config = triggerFactory.buildPersisted(Trigger.builder()
                 .emailTemplateId(emailTemplate.getId())
@@ -183,7 +184,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         testDoNotSendSolicitProfile(enrolleeEmailService, enrolleeBundle, config);
     }
 
-    private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
+    private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
@@ -193,7 +194,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.FAILED));
     }
 
-    private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
+    private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
@@ -202,7 +203,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
     }
 
-    private void testDoNotSendSolicitProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
+    private void testDoNotSendSolicitProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(false).doNotEmailSolicit(true).build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);

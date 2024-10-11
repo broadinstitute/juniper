@@ -20,17 +20,17 @@ public class ParticipantTaskFactory {
           .targetName("test")
           .taskOrder(1);
 
-  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
-                                                             TaskStatus status, TaskType type) {
+  public ParticipantTask buildPersisted(EnrolleeBundle enrolleeBundle,
+                                        TaskStatus status, TaskType type) {
     return buildPersisted(enrolleeBundle, null, status, type);
   }
 
-  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
+  public ParticipantTask buildPersisted(EnrolleeBundle enrolleeBundle, String targetStableId,
                                         TaskStatus status, TaskType type) {
     return buildPersisted(enrolleeBundle, targetStableId, RandomStringUtils.randomAlphabetic(6), status, type);
   }
 
-  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
+  public ParticipantTask buildPersisted(EnrolleeBundle enrolleeBundle, String targetStableId,
                                         String targetName, TaskStatus status, TaskType type) {
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
             DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
@@ -48,7 +48,7 @@ public class ParticipantTaskFactory {
   }
 
   /** auto-sets the enrollee and environment-related fields, otherwise builds the task as provided */
-  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, ParticipantTask.ParticipantTaskBuilder builder) {
+  public ParticipantTask buildPersisted(EnrolleeBundle enrolleeBundle, ParticipantTask.ParticipantTaskBuilder builder) {
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
             DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
     ).build();

@@ -50,6 +50,10 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     }
 
+    public List<Answer> findByEnrollee(UUID enrolleeId) {
+        return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
     public List<Answer> findByEnrolleeAndSurvey(UUID enrolleeId, String surveyStableId) {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "survey_stable_id", surveyStableId);
     }

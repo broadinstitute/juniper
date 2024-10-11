@@ -63,15 +63,21 @@ export const doApiLoad = async (loadingFunc: () => Promise<unknown>,
   opts: {
         setIsLoading?: (isLoading: boolean) => void,
         setIsError?: (isError: boolean) => void,
-        customErrorMsg?: string
+        customErrorMsg?: string,
+        alertErrors?: boolean,
+        setError?: (error: string) => void
     } = {}) => {
+  if (opts.alertErrors === undefined) {
+    opts.alertErrors = true
+  }
   if (opts.setIsLoading) { opts.setIsLoading(true) }
   try {
     await loadingFunc()
     if (opts.setIsError) { opts.setIsError(false) }
   } catch (e) {
-    defaultApiErrorHandle(e as ApiErrorResponse, opts.customErrorMsg)
+    if (opts.alertErrors) { defaultApiErrorHandle(e as ApiErrorResponse, opts.customErrorMsg) }
     if (opts.setIsError) { opts.setIsError(true) }
+    if (opts.setError) { opts.setError((e as ApiErrorResponse).message) }
   }
   if (opts.setIsLoading) { opts.setIsLoading(false) }
 }

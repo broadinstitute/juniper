@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
@@ -51,7 +52,7 @@ class EnrollmentExtServiceTest extends BaseSpringBootTest {
     StudyEnvironment studyEnvironment =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
     // step 3: enroll a user with a proxy via factory
-    EnrolleeFactory.EnrolleeAndProxy bundle =
+    EnrolleeAndProxy bundle =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info), portalEnv, studyEnvironment);
     Enrollee proxyEnrollee = bundle.proxy();
@@ -93,7 +94,7 @@ class EnrollmentExtServiceTest extends BaseSpringBootTest {
     StudyEnvironment studyEnvironment2 =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
     // step 3: enroll a user with a proxy via factory
-    EnrolleeFactory.EnrolleeAndProxy bundle =
+    EnrolleeAndProxy bundle =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info), portalEnv, studyEnvironment1);
     Enrollee originalProxy = bundle.proxy();

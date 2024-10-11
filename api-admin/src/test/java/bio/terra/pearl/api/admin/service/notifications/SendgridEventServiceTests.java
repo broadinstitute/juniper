@@ -9,6 +9,7 @@ import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.notification.*;
@@ -56,7 +57,7 @@ public class SendgridEventServiceTests extends BaseSpringBootTest {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     StudyEnvironment studyEnv =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+    EnrolleeBundle enrolleeBundle =
         enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
     Trigger trigger =
@@ -88,7 +89,7 @@ public class SendgridEventServiceTests extends BaseSpringBootTest {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     StudyEnvironment studyEnv =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+    EnrolleeBundle enrolleeBundle =
         enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
     Trigger trigger =

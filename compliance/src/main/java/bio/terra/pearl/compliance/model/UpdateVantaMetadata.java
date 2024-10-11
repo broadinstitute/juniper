@@ -10,11 +10,13 @@ import java.util.List;
 @Getter @Setter @NoArgsConstructor
 public class UpdateVantaMetadata {
 
-    private boolean inScope;
+    private final List<SingleUpdate> updates = new ArrayList<>();
 
-    private final List<String> resourceIds = new ArrayList<>();
+    public void add(String resourceId, boolean inScope) {
+        updates.add(new SingleUpdate(resourceId, inScope));
+    }
 
-    public void addResourceId(String resourceId) {
-        this.resourceIds.add(resourceId);
+    public int size() {
+        return updates.size();
     }
 }

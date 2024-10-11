@@ -4,6 +4,7 @@ import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -44,7 +45,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateProfileForEnrolleeFailsIfAdminNotInPortal(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =
@@ -71,7 +72,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateProfileForEnrolleeFailsIfEnrolleeNotInPortal(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee wrongStudyEnv = enrolleeFactory.buildPersisted(getTestName(info));
@@ -96,7 +97,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateProfileForEnrolleeFailsIfWrongEnvironment(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =
@@ -123,7 +124,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateProfileForEnrolleeDoesNotUpdateWrongProfile(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =
@@ -132,7 +133,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
             studyEnvBundle.getStudyEnv(),
             Profile.builder().mailingAddress(MailingAddress.builder().build()).build());
 
-    StudyEnvironmentFactory.StudyEnvironmentBundle wrongStudyEnvBundle =
+    StudyEnvironmentBundle wrongStudyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee wrongStudyEnv =
@@ -184,7 +185,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUpdateProfileForEnrollee(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =

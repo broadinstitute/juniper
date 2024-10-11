@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -43,8 +44,7 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testSendAdHocNotification(TestInfo info) throws Exception {
     AdminUser user = AdminUser.builder().superuser(true).build();
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
-        enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
     Portal portal = portalService.find(enrolleeBundle.portalId()).get();
     Study study =
         studyService

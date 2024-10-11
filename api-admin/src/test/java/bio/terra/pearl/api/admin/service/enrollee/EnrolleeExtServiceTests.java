@@ -4,8 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -28,34 +30,50 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testFindById(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
     AdminUser operator =
         portalAdminUserFactory
             .buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()))
             .user();
-    EnrolleeFactory.EnrolleeBundle enrollee1 =
+    EnrolleeBundle enrollee1 =
         enrolleeFactory.buildWithPortalUser(
             getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 
+    String portalShortcode = bundle.getPortal().getShortcode();
+    String studyShortcode = bundle.getStudy().getShortcode();
+    EnvironmentName envName = bundle.getStudyEnv().getEnvironmentName();
+
     Enrollee loadedEnrollee =
-        enrolleeExtService.findWithAdminLoad(operator, enrollee1.enrollee().getShortcode());
+        enrolleeExtService.findWithAdminLoad(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            envName,
+            enrollee1.enrollee().getShortcode());
     assertThat(loadedEnrollee.getId(), equalTo(enrollee1.enrollee().getId()));
 
     loadedEnrollee =
-        enrolleeExtService.findWithAdminLoad(operator, enrollee1.enrollee().getId().toString());
+        enrolleeExtService.findWithAdminLoad(
+            operator,
+            portalShortcode,
+            studyShortcode,
+            envName,
+            enrollee1.enrollee().getId().toString());
     assertThat(loadedEnrollee.getId(), equalTo(enrollee1.enrollee().getId()));
 
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          enrolleeExtService.findWithAdminLoad(operator, UUID.randomUUID().toString());
+          enrolleeExtService.findWithAdminLoad(
+              operator, portalShortcode, studyShortcode, envName, UUID.randomUUID().toString());
         });
 
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          enrolleeExtService.findWithAdminLoad(operator, "BADCODE");
+          enrolleeExtService.findWithAdminLoad(
+              operator, portalShortcode, studyShortcode, envName, "BADCODE");
         });
   }
 }

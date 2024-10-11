@@ -10,7 +10,8 @@ public class RateLimitException extends RuntimeException {
     private final int retryAfterDelay;
 
     public RateLimitException(String message, int retryAfterDelay) {
-        super(message); this.retryAfterDelay = retryAfterDelay;
+        super(message);
+        this.retryAfterDelay = retryAfterDelay;
     }
 
     public Duration getRetryAfterDelayDuration() {

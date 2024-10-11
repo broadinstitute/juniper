@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.*;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -38,7 +39,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testEnforceEnrollee(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -59,7 +60,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testWrongEnvironmentThrows(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -87,7 +88,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testEnrolleeInDifferentPortalThrows(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -113,7 +114,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testAdminNotInPortal(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -140,7 +141,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testBasePermAdminInPortal(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -163,7 +164,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testAdminDoesNotHavePermission(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -193,7 +194,7 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testUserInPortalWithPermission(TestInfo info) {
-    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+    StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     String portalShortcode = bundle.getPortal().getShortcode();
@@ -210,7 +211,9 @@ public class EnforcePortalEnrolleePermissionTest extends BaseSpringBootTest {
     AdminUser operator = operatorBundle.user();
     UUID portalAdminUserId = operatorBundle.portalAdminUsers().get(0).getId();
 
-    Role role = roleFactory.buildPersisted(getTestName(info), List.of("participant_data_view"));
+    Role role =
+        roleFactory.buildPersistedCreatePermissions(
+            getTestName(info), List.of("participant_data_view"));
     DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
     portalAdminUserRoleService.create(
         PortalAdminUserRole.builder()

@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -35,11 +36,11 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testUpdateTaskStatus(TestInfo testInfo) {
         // simulate updating an survey task on completion of a kit request
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
+        EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(getTestName(testInfo));
         ParticipantTask task = createTask(enrolleeBundle, "exampleTask", TaskStatus.NEW);
         ParticipantTask otherTask = createTask(enrolleeBundle, "otherTask", TaskStatus.NEW);
-        EnrolleeFactory.EnrolleeBundle otherEnrollee = enrolleeFactory
+        EnrolleeBundle otherEnrollee = enrolleeFactory
                 .buildWithPortalUser(getTestName(testInfo));
         ParticipantTask otherEnrolleeTask = createTask(otherEnrollee, "exampleTask", TaskStatus.NEW);
 
@@ -62,7 +63,7 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         assertThat(otherEnrolleeTask.getStatus(), equalTo(TaskStatus.NEW));
     }
 
-    private ParticipantTask createTask(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String taskStableId, TaskStatus status ) {
+    private ParticipantTask createTask(EnrolleeBundle enrolleeBundle, String taskStableId, TaskStatus status ) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         ParticipantTask task = ParticipantTask.builder()
                 .enrolleeId(enrollee.getId())
@@ -76,7 +77,7 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         return task;
     }
 
-    private Trigger createStatusTrigger(EnrolleeFactory.EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
+    private Trigger createStatusTrigger(EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         Trigger config = Trigger.builder()
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
@@ -89,7 +90,7 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         return config;
     }
 
-    private KitRequest createKitRequest(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String testName) {
+    private KitRequest createKitRequest(EnrolleeBundle enrolleeBundle, String testName) {
         KitRequest kitRequest = KitRequest.builder()
                 .status(KitRequestStatus.SENT)
                 .enrolleeId(enrolleeBundle.enrollee().getId())
