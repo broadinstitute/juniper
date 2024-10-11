@@ -18,17 +18,17 @@ export default function KitInstructions() {
     <div className="row mx-0 justify-content-center">
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
         <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
-          <h1 className="pb-2">{i18n('inPersonKitsTitle')}</h1>
+          <h1 className="pb-2">{i18n('kitsInPersonTitle')}</h1>
           <div className="pb-3">
-            {i18n('inPersonKitsDescription')}
+            {i18n('kitsInPersonDescription')}
           </div>
           <div className="pb-4">
-            {i18n('inPersonKitsSubDescription')}
+            {i18n('kitsInPersonSubDescription')}
           </div>
           {activeEnrollee ?
             <KitContent enrollee={activeEnrollee}/> :
             <div className="text-danger">
-              {i18n('inPersonKitsError')}
+              {i18n('kitsInPersonError')}
             </div>
           }
         </div>
@@ -62,14 +62,14 @@ const UnconsentedKitView = () => {
   return (<>
     <h2 className="d-flex align-items-center mb-3">
       <FontAwesomeIcon className="text-danger me-2" icon={faCircleExclamation}/>
-      {i18n('inPersonKitsConsentRequiredTitle')}
+      {i18n('kitsInPersonConsentRequiredTitle')}
     </h2>
     <div className="pb-3">
-      {i18n('inPersonKitsConsentRequiredDescription')}
+      {i18n('kitsInPersonConsentRequiredDescription')}
     </div>
     <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
       <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-        {i18n('inPersonKitsStartConsent')}
+        {i18n('kitsInPersonStartConsent')}
       </Link>
     </div>
   </>
@@ -84,16 +84,16 @@ const NoActiveKitView = ({ enrollee }: { enrollee: Enrollee }) => {
         {i18n('kitsPageInPersonTitle')}
       </h3>
       <div>
-        {i18n('inPersonKitsNoKitInstructions')}
+        {i18n('kitsInPersonNoKitInstructions')}
       </div>
       <EnrolleeShortcodeQR shortcode={enrollee.shortcode}/>
       <div className="pb-3">
-        {i18n('inPersonKitsNoKitSubInstructions')}
+        {i18n('kitsInPersonNoKitSubInstructions')}
       </div>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <button className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
           onClick={() => window.location.reload()}>
-          <FontAwesomeIcon className={'me-2'} icon={faRefresh}/>{i18n('inPersonKitsRefreshPage')}
+          <FontAwesomeIcon className={'me-2'} icon={faRefresh}/>{i18n('kitsInPersonRefreshPage')}
         </button>
       </div>
     </>
@@ -105,17 +105,17 @@ const CollectedKitView = () => {
   return (
     <>
       <h2 className="d-flex align-items-center mb-2">
-        {i18n('inPersonKitsYourKitTitle')}
+        {i18n('kitsInPersonYourKitTitle')}
       </h2>
       <div className="mb-3">
-        {i18n('inPersonKitsCollectedDescription')}
+        {i18n('kitsInPersonCollectedDescription')}
       </div>
       <div className="mb-3">
-        {i18n('inPersonKitsCollectedThankYou')}
+        {i18n('kitsInPersonCollectedThankYou')}
       </div>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-          {i18n('inPersonKitsReturnToDashboard')}
+          {i18n('kitsInPersonReturnToDashboard')}
         </Link>
       </div>
     </>
@@ -127,12 +127,12 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
   return (
     <>
       <h2 className="d-flex align-items-center mb-2">
-        {i18n('inPersonKitsYourKitTitle')}
+        {i18n('kitsInPersonYourKitTitle')}
       </h2>
       <div className="mb-3">
-        {i18n('inPersonKitsYourKitDescription')}
+        {i18n('kitsInPersonYourKitDescription')}
       </div>
-      <label className="form-label fw-bold mb-0">{i18n('inPersonKitsYourKitIdentifier')}:</label>
+      <label className="form-label fw-bold mb-0">{i18n('kitsInPersonYourKitIdentifier')}:</label>
       <input
         className="mb-2 form-control bg-white"
         disabled={true}
@@ -140,12 +140,12 @@ const DistributedKitView = ({ enrollee, activeKit }: { enrollee: Enrollee, activ
         value={activeKit.kitLabel}>
       </input>
       <div className="mt-3">
-        {i18n('inPersonKitsYourKitInstructions')}
+        {i18n('kitsInPersonCreatedInstructions')}
       </div>
       <EnrolleeShortcodeQR shortcode={enrollee.shortcode}/>
       <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
         <Link to={'/hub'} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-          {i18n('inPersonKitsReturnToDashboard')}
+          {i18n('kitsInPersonReturnToDashboard')}
         </Link>
       </div>
     </>

@@ -31,8 +31,8 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('{inPersonKitsTitle}')).toBeInTheDocument()
-    expect(screen.queryByText('{inPersonKitsConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
     expect(screen.getByText('{kitsPageInPersonTitle}')).toBeInTheDocument()
     expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
@@ -57,9 +57,9 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('{inPersonKitsTitle}')).toBeInTheDocument()
-    expect(screen.queryByText('{inPersonKitsConsentRequiredTitle}')).not.toBeInTheDocument()
-    expect(screen.getByText('{inPersonKitsYourKitTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonYourKitTitle}')).toBeInTheDocument()
     expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
     expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
@@ -84,12 +84,12 @@ describe('KitInstructions', () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('{inPersonKitsTitle}')).toBeInTheDocument()
-    expect(screen.queryByText('{inPersonKitsConsentRequiredTitle}')).not.toBeInTheDocument()
-    expect(screen.getByText('{inPersonKitsYourKitTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonYourKitTitle}')).toBeInTheDocument()
     expect(screen.queryByDisplayValue('assigned-label')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
-    expect(screen.getByText('{inPersonKitsCollectedDescription}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonCollectedDescription}')).toBeInTheDocument()
   })
 
   it('renders Consent Required message if enrollee has not consented', () => {
@@ -110,8 +110,8 @@ describe('KitInstructions', () => {
       </MockI18nProvider>)
     render(RoutedComponent)
 
-    expect(screen.getByText('{inPersonKitsTitle}')).toBeInTheDocument()
-    expect(screen.getByText('{inPersonKitsConsentRequiredTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonConsentRequiredTitle}')).toBeInTheDocument()
     expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
   })
 })
