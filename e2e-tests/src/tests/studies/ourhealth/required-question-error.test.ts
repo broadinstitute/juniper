@@ -16,11 +16,11 @@ test.describe('Question validation', () => {
       const prequal = await goToOurhealthPreEnroll(page)
       await prequal.submit()
 
-      let question = new Question(page, { qText: data.QLabel.SouthAsianAncestry })
+      let question = new Question(page, { dataName: data.QLabel.SouthAsianAncestry })
       let err = await question.error()
       expect(err).toMatch(expErr)
 
-      question = new Question(page, { qText: data.QLabel.IsAdult })
+      question = new Question(page, { dataName: data.QLabel.IsAdult })
       err = await question.error()
       expect(err).toMatch(expErr)
     })
