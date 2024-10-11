@@ -37,6 +37,7 @@ import {
   enrollProxyUserInStudy
 } from 'util/enrolleeUtils'
 import { logError } from 'util/loggingUtils'
+import { getNextTask, getSortedActiveTasks, getTaskPath } from '../../hub/task/taskUtils'
 
 export type StudyEnrollContext = {
   user: ParticipantUser | null,
@@ -150,14 +151,36 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
-          const hubUpdate = isProxyEnrollment
+          const hubResponse = isProxyEnrollment
             ? await enrollProxyUserInStudy(
               studyShortcode, preEnrollResponseId, ppUserId, refreshLoginState
             )
             : await enrollCurrentUserInStudy(
               studyShortcode, preEnrollResponseId, refreshLoginState
             )
-          navigate('/hub', { replace: true, state: hubUpdate })
+
+          const sortedActiveConsentTasks = getSortedActiveTasks(hubResponse.enrollee.participantTasks, 'CONSENT')
+          const nextConsentTask = getNextTask(hubResponse.enrollee, sortedActiveConsentTasks)
+
+          if (nextConsentTask) {
+            //if there's a pending consent, navigate directly to the first one. note that we don't
+            //show the "Welcome to the study" banner in this case
+            const consentTaskPath = getTaskPath(
+              nextConsentTask, hubResponse.enrollee.shortcode, studyShortcode)
+            navigate(`../../hub/${consentTaskPath}`, { replace: true })
+          } else {
+            const hubUpdate: HubUpdate = {
+              message: {
+                title: i18n('hubUpdateWelcomeToStudyTitle', {
+                  substitutions: { studyName }
+                }),
+                detail: i18n('hubUpdateWelcomeToStudyDetail'),
+                type: 'INFO'
+              }
+            }
+
+            navigate('/hub', { replace: true, state: hubUpdate })
+          }
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)
           navigate('/hub', { replace: true })

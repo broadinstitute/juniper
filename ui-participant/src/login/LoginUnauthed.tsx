@@ -28,8 +28,7 @@ export default function LoginUnauthed() {
 
       // Enroll in the default study if not already enrolled in any study
       if (defaultEnrollStudy && !loginResult.enrollees.length) {
-        const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-          defaultEnrollStudy.name, null, refreshLoginState, i18n)
+        const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode, null, refreshLoginState)
         navigate('/hub', { replace: true, state: hubUpdate })
       }
     } catch (e) {
