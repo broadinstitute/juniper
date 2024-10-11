@@ -47,13 +47,13 @@ const SystemStatus = ({ operational }: { operational: boolean }) => {
               {operational ? (
                 <>
                   Juniper is
-                  <span className="fw-bold text-success mx-1">operational</span>
+                  <span className="fw-bold text-success"> operational </span>
                   and all systems are functioning normally
                 </>
               ) : (
                 <>
                   Juniper is currently experiencing
-                  <span className="fw-bold text-danger mx-1">degraded</span>
+                  <span className="fw-bold text-danger"> degraded </span>
                   functionality. Users may experience issues with some or all functionality
                 </>
               )}

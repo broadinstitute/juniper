@@ -34,7 +34,7 @@ import {
   AdminUserParams,
   Role
 } from './adminUser'
-import { SystemStatus } from '../status/status'
+import { SystemStatus } from 'status/status'
 
 export type {
   Answer,
