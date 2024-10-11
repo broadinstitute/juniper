@@ -80,7 +80,7 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
   })
   return <div className="container-fluid px-4 pt-4">
     <div className="d-flex align-items-center justify-content-between ">
-      {renderPageHeader('Participant List')}
+      {renderPageHeader('Withdrawn Enrollees')}
       <ParticipantListViewSwitcher
         studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
       />

@@ -46,7 +46,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     <div className="d-flex align-items-center justify-content-between ">
-      {renderPageHeader('Participant List')}
+      {renderPageHeader(groupByFamily ? 'Families' : 'Participants')}
       <ParticipantListViewSwitcher
         studyEnvConfig={currentEnv.studyEnvironmentConfig}
       />
