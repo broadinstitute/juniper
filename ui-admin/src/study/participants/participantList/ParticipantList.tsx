@@ -13,7 +13,7 @@ import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext, groupByFamily }:
-  {studyEnvContext: StudyEnvContextT, groupByFamily: boolean}) {
+  {studyEnvContext: StudyEnvContextT, groupByFamily?: boolean}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 

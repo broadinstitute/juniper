@@ -113,7 +113,7 @@ export default function PortalUserList({ studyEnvContext }:
   return <div className="container-fluid px-4 py-2">
     <NavBreadcrumb value={'participantUserList'}>Accounts</NavBreadcrumb>
     <div className="d-flex align-items-center justify-content-between ">
-      {renderPageHeader('Account List')}
+      {renderPageHeader('Accounts')}
       <ParticipantListViewSwitcher
         studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
       />

@@ -28,6 +28,7 @@ export const ParticipantListViewSwitcher = ({ studyEnvConfig }: {studyEnvConfig:
   return (
     <div className="btn-group border my-1">
       { availableViews.map(view => <NavLink to={`..${view.path}`}
+        key={view.name}
         end
         aria-label={`Switch to ${view.name} view`}
         title={`Switch to ${view.name} view`}
