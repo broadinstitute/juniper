@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
+import com.google.api.gax.rpc.UnimplementedException;
 import org.jooq.Condition;
 
 import java.util.List;
@@ -13,45 +15,43 @@ import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.DATE;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.INSTANT;
 
-/**
- * Allows searching on basic ParticipantUser properties, e.g. "lastLogin"
- */
-public class UserTerm implements SearchTerm {
+/** a term for the PortalParticipantUser (named PortalUser because the expression term is "portalUser") */
+public class PortalUserTerm implements SearchTerm {
 
     private final String field;
-    private final ParticipantUserDao participantUserDao;
+    private final PortalParticipantUserDao portalParticipantUserDao;
 
-    public UserTerm(ParticipantUserDao participantUserDao, String field) {
+    public PortalUserTerm(PortalParticipantUserDao portalParticipantUserDao, String field) {
         if (!FIELDS.containsKey(field)) {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
-
-        this.participantUserDao = participantUserDao;
+        this.portalParticipantUserDao = portalParticipantUserDao;
         this.field = field;
     }
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        Optional<ParticipantUser> user = participantUserDao.find(context.getEnrollee().getParticipantUserId());
-        if (user.isEmpty()) {
+        Optional<PortalParticipantUser> ppUser = portalParticipantUserDao.findByProfileId(context.getEnrollee().getProfileId());
+        if (ppUser.isEmpty()) {
             return new SearchValue();
         }
-        return SearchValue.ofNestedProperty(user.get(), field, FIELDS.get(field).getType());
+        return SearchValue.ofNestedProperty(ppUser.get(), field, FIELDS.get(field).getType());
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.JoinClause("participant_user", "participant_user", "participant_user.id = enrollee.participant_user_id")
+                new EnrolleeSearchQueryBuilder.JoinClause("portal_participant_user", "portalUser", "portalUser.profile_id = profile.id")
         );
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.SelectClause("participant_user", participantUserDao)
+                new EnrolleeSearchQueryBuilder.SelectClause("portalUser", portalParticipantUserDao)
         );
     }
 
@@ -62,7 +62,7 @@ public class UserTerm implements SearchTerm {
 
     @Override
     public String termClause() {
-        return "participant_user." + toSnakeCase(field);
+        return "portalUser." + toSnakeCase(field);
     }
 
     @Override
@@ -76,7 +76,6 @@ public class UserTerm implements SearchTerm {
     }
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
-            Map.entry("username", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
             Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()));
 

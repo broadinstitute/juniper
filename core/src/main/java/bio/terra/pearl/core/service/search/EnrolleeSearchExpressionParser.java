@@ -40,8 +40,9 @@ public class EnrolleeSearchExpressionParser {
     private final KitRequestDao kitRequestDao;
     private final FamilyDao familyDao;
     private final ParticipantUserDao participantUserDao;
+    private final PortalParticipantUserDao portalParticipantUserDao;
 
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao, ParticipantUserDao participantUserDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao, ParticipantUserDao participantUserDao, PortalParticipantUserDao portalParticipantUserDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
@@ -50,6 +51,7 @@ public class EnrolleeSearchExpressionParser {
         this.kitRequestDao = kitRequestDao;
         this.familyDao = familyDao;
         this.participantUserDao = participantUserDao;
+        this.portalParticipantUserDao = portalParticipantUserDao;
     }
 
 
@@ -191,44 +193,39 @@ public class EnrolleeSearchExpressionParser {
         switch (model) {
             case "profile":
                 String profileField = parseField(trimmedVar);
-
                 return new ProfileTerm(profileDao, mailingAddressDao, profileField);
             case "answer":
                 String[] answerFields = parseFields(trimmedVar);
                 if (answerFields.length != 2) {
                     throw new IllegalArgumentException("Invalid answer variable");
                 }
-
                 return new AnswerTerm(answerDao, answerFields[0], answerFields[1]);
             case "age":
                 if (!trimmedVar.equals(model)) {
                     throw new IllegalArgumentException("Invalid age variable");
                 }
-
                 return new AgeTerm(profileDao);
             case "enrollee":
                 String enrolleeField = parseField(trimmedVar);
-
                 return new EnrolleeTerm(enrolleeField);
             case "task":
                 String[] taskFields = parseFields(trimmedVar);
                 if (taskFields.length != 2) {
                     throw new IllegalArgumentException("Invalid answer variable");
                 }
-
                 return new TaskTerm(participantTaskDao, taskFields[0], taskFields[1]);
             case "latestKit":
                 String latestKitField = parseField(trimmedVar);
-
                 return new LatestKitTerm(kitRequestDao, latestKitField);
             case "family":
                 String familyField = parseField(trimmedVar);
-
                 return new FamilyTerm(familyDao, familyField);
             case "user":
                 String userField = parseField(trimmedVar);
-
                 return new UserTerm(participantUserDao, userField);
+            case "portalUser":
+                String portalUserField = parseField(trimmedVar);
+                return new PortalUserTerm(portalParticipantUserDao, portalUserField);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }

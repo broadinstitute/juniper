@@ -62,6 +62,7 @@ public class SearchValue {
             return switch (type) {
                 case STRING -> new SearchValue(objValue.toString());
                 case DATE -> new SearchValue((LocalDate) objValue);
+                case INSTANT -> new SearchValue((Instant) objValue);
                 case NUMBER -> new SearchValue((Double) objValue);
                 case BOOLEAN -> new SearchValue((Boolean) objValue);
                 default -> throw new IllegalArgumentException("Invalid field type: " + type);
