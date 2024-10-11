@@ -14,7 +14,6 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
-import bio.terra.pearl.core.service.study.StudyService;
 import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class PortalExtService {
   private final PortalService portalService;
   private final PortalEnvironmentService portalEnvironmentService;
   private final PortalEnvironmentConfigService portalEnvironmentConfigService;
-  private final StudyService studyService;
   private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
   private final AuthUtilService authUtilService;
 
@@ -32,13 +30,11 @@ public class PortalExtService {
       PortalService portalService,
       PortalEnvironmentService portalEnvironmentService,
       PortalEnvironmentConfigService portalEnvironmentConfigService,
-      StudyService studyService,
       PortalEnvironmentLanguageService portalEnvironmentLanguageService,
       AuthUtilService authUtilService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalEnvironmentConfigService = portalEnvironmentConfigService;
-    this.studyService = studyService;
     this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     this.authUtilService = authUtilService;
   }

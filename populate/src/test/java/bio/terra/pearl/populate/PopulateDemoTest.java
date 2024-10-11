@@ -54,7 +54,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(15, enrollees.size());
+        Assertions.assertEquals(16, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
@@ -200,7 +200,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId, enrolleeExportData);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(enrolleeExportData, moduleInfos);
 
-        assertThat(exportData, hasSize(13));
+        assertThat(exportData, hasSize(14));
         // confirm pre-enroll questions are included
         Map<String, String> salkMap = exportData.stream().filter(map -> "HDSALK".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
