@@ -34,6 +34,7 @@ import {
   AdminUserParams,
   Role
 } from './adminUser'
+import { SystemStatus } from '../status/status'
 
 export type {
   Answer,
@@ -1682,6 +1683,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getSystemStatus(): Promise<SystemStatus> {
+    const url = `/status`
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
@@ -1693,26 +1703,8 @@ export default {
 
   setBearerToken(token: string | null) {
     bearerToken = token
-  },
-
-  async getSystemStatus(): Promise<SystemStatus> {
-    const url = `/status`
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: this.getInitHeaders()
-    })
-    return await this.processJsonResponse(response)
   }
 
-}
-
-type SystemStatus = {
-  ok: boolean
-  systems: Record<string, SubsystemStatus>[]
-}
-
-type SubsystemStatus = {
-  ok: boolean
 }
 
 /** gets an image url for SiteMedia */
