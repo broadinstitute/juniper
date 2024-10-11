@@ -1,9 +1,6 @@
  {
   "PreEnroll": {
     "ProxyQuestion": "proxy_enrollment",
-    "ProxyQuestionChoices": {
-      "Yes": "yes"
-    },
     "ProxyGivenName": "proxy_given_name",
     "ProxyFamilyName": "proxy_family_name",
     "GivenName": "governed_given_name",
@@ -17,11 +14,6 @@
  "Consent": {
    "FullName": "hd_hd_consent_legalName",
    "Signature": "hd_hd_consent_signature",
-   "Initials": "initials",
-   "InitialsMatrix": {
-     "VoluntaryParticipation": "I understand that my participation is voluntary and I am free to withdraw at any time",
-     "PermissionToUseDNA": "I give permission for my saliva samples to be used to obtain DNA for use in this study",
-     "AgreeToContact": "I agree to be contacted by the research team to be invited to participate in future medical and health-related studies"
-   }
+   "Initials": "initials"
  }
 }
