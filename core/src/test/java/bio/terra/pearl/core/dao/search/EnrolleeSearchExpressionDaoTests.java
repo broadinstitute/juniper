@@ -539,7 +539,28 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                         enrollee.getStudyEnvironmentId());
 
         assertEquals(0, resultsCreated.size());
+    }
 
+    @Test
+    @Transactional
+    public void testPortalUser(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Instant loginTime = Instant.now();
+        bundle.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle.portalParticipantUser());
+
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        loginTime = Instant.now().minusSeconds(3600);
+        bundle2.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle2.portalParticipantUser());
+
+        EnrolleeSearchExpression nameExp = enrolleeSearchExpressionParser.parseRule("{portalUser.lastLogin} < {user.createdAt}");
+
+        List<EnrolleeSearchExpressionResult> resultsName = enrolleeSearchExpressionDao.executeSearch(nameExp, studyEnvBundle.getStudyEnv().getId());
+
+        Assertions.assertEquals(1, resultsName.size());
+        assertTrue(resultsName.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle2.enrollee().getId())));
     }
 
     @Test

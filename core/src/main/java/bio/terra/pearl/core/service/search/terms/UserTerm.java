@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.DATE;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
 
 /**
  * Allows searching on basic ParticipantUser properties, e.g. "lastLogin"
@@ -70,7 +70,8 @@ public class UserTerm implements SearchTerm {
     }
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
-            Map.entry("username", SearchValueTypeDefinition.builder().type(DATE).build()),
-            Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(DATE).build()));
+            Map.entry("username", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
+            Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()));
 
 }
