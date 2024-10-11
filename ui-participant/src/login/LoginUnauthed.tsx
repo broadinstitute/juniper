@@ -5,7 +5,6 @@ import { findDefaultEnrollmentStudy } from './RedirectFromOAuth'
 import { enrollCurrentUserInStudy } from '../util/enrolleeUtils'
 import { useNavigate } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
-import { useI18n } from '@juniper/ui-core'
 
 /** component for showing a login dialog that hides other content on the page */
 export default function LoginUnauthed() {
@@ -14,7 +13,6 @@ export default function LoginUnauthed() {
   const { loginUser, refreshLoginState } = useUser()
   const navigate = useNavigate()
   const { portal } = usePortalEnv()
-  const { i18n } = useI18n()
 
   const defaultEnrollStudy = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
