@@ -21,9 +21,8 @@ import {
   log,
   logError
 } from 'util/loggingUtils'
-import { getTaskPath, isTaskActive } from '../hub/TaskLink'
 import { HubUpdate } from '../hub/hubUpdates'
-import { getNextTask, taskComparator } from '../hub/StudyResearchTasks'
+import { getNextTask, getSortedActiveTasks, getTaskPath } from '../hub/task/taskUtils'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -97,17 +96,14 @@ export const RedirectFromOAuth = () => {
               const hubResponse = await enrollCurrentUserInStudy(
                 defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState)
 
-              const sortedActiveConsentTasks = hubResponse.enrollee.participantTasks
-                .filter(task => task.taskType === 'CONSENT' && isTaskActive(task))
-                .sort(taskComparator)
-              // const hasActiveConsentTasks = sortedActiveConsentTasks.length > 0
+              const sortedActiveConsentTasks = getSortedActiveTasks(hubResponse.enrollee.participantTasks, 'CONSENT')
+              const nextConsentTask = getNextTask(hubResponse.enrollee, sortedActiveConsentTasks)
 
-              const nextTask = getNextTask(hubResponse.enrollee, sortedActiveConsentTasks)
-
-
-              if (nextTask) {
+              if (nextConsentTask) {
+                //if there's a pending consent, navigate directly to the first one. note that we don't
+                //show the "Welcome to the study" banner in this case
                 const consentTaskPath = getTaskPath(
-                  nextTask, hubResponse.enrollee.shortcode, defaultEnrollStudy.shortcode)
+                  nextConsentTask, hubResponse.enrollee.shortcode, defaultEnrollStudy.shortcode)
                 navigate(`../hub/${consentTaskPath}`, { replace: true })
               } else {
                 const hubUpdate: HubUpdate = {
