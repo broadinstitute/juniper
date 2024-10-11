@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
@@ -32,7 +34,11 @@ public class UserTerm implements SearchTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        return SearchValue.ofNestedProperty(context.getEnrollee(), field, FIELDS.get(field).getType());
+        Optional<ParticipantUser> user = participantUserDao.find(context.getEnrollee().getParticipantUserId());
+        if (user.isEmpty()) {
+            return new SearchValue();
+        }
+        return SearchValue.ofNestedProperty(user.get(), field, FIELDS.get(field).getType());
     }
 
     @Override

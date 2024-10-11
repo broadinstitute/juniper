@@ -38,7 +38,7 @@ public class PortalUserTerm implements SearchTerm {
         if (ppUser.isEmpty()) {
             return new SearchValue();
         }
-        return SearchValue.ofNestedProperty(ppUser, field, FIELDS.get(field).getType());
+        return SearchValue.ofNestedProperty(ppUser.get(), field, FIELDS.get(field).getType());
     }
 
     @Override
