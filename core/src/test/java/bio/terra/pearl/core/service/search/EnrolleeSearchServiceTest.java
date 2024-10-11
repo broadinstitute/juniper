@@ -198,7 +198,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 .map(val -> new QuestionChoice(val.name(), val.name()))
                 .collect(Collectors.toList());
 
-        Assertions.assertEquals(28, results.size());
+        Assertions.assertEquals(30, results.size());
         Map.ofEntries(
                 Map.entry("profile.givenName", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("profile.familyName", SearchValueTypeDefinition.builder().type(STRING).build()),
@@ -231,6 +231,8 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("enrollee.subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("portalUser.createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
+                Map.entry("portalUser.lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()),
                 Map.entry("age", SearchValueTypeDefinition.builder().type(NUMBER).build()),
                 Map.entry("latestKit.status", SearchValueTypeDefinition.builder().type(STRING).choices(kitStatusChoices).build())
         ).forEach((key, value) -> {

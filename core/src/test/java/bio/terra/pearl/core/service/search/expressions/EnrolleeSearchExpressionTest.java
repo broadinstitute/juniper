@@ -12,21 +12,26 @@ import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,6 +64,8 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     FamilyFactory familyFactory;
     @Autowired
     EnrolleeContextService enrolleeContextService;
+    @Autowired
+    PortalParticipantUserService portalParticipantUserService;
 
     @Test
     @Transactional
@@ -419,6 +426,39 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                                         .build())
                                 .build()));
     }
+
+    @Test
+    @Transactional
+    public void testPortalUser(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Instant loginTime = Instant.now();
+        bundle.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle.portalParticipantUser());
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{portalUser.lastLogin} < {user.createdAt}")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(bundle.enrollee())
+                                .build()));
+
+
+        bundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        loginTime = Instant.now().minusSeconds(3600);
+        bundle.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle.portalParticipantUser());
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{portalUser.lastLogin} < {user.createdAt}")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(bundle.enrollee())
+                                .build()));
+    }
+
 
     @Test
     public void testContains() {

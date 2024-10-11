@@ -25,6 +25,12 @@ export type ParticipantUser = {
     lastLogin: number
 }
 
+export type PortalParticipantUser = {
+    id: string,
+    createdAt: string,
+    lastLogin: number
+}
+
 export type Enrollee = {
     id: string
     consented: boolean

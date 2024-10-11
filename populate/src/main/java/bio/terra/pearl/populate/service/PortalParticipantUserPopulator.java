@@ -15,6 +15,7 @@ import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,8 +56,10 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
                 .findOne(userDto.getUsername(), context.getEnvironmentName());
         ParticipantUser user = existingUserOpt.orElseGet(() -> participantUserService.create(userDto));
         if (userDto.getLastLoginHoursAgo() != null) {
-            user.setLastLogin(Instant.now().minusSeconds(userDto.getLastLoginHoursAgo() * 60 * 60));
+            Instant loginTime = Instant.now().minus(userDto.getLastLoginHoursAgo(), ChronoUnit.HOURS);
+            user.setLastLogin(loginTime);
             participantUserService.update(user);
+            popDto.setLastLogin(loginTime);
         }
         PortalEnvironment portalEnvironment = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();

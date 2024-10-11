@@ -47,6 +47,7 @@ public class EnrolleeSearchService {
         EnrolleeTerm.FIELDS.forEach((term, type) -> fields.put("enrollee." + term, type));
         // latest kit fields
         LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
+        PortalUserTerm.FIELDS.forEach((term, type) -> fields.put("portalUser." + term, type));
         // age
         fields.put("age", SearchValueTypeDefinition.builder().type(NUMBER).build());
         // answers
