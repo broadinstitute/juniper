@@ -44,16 +44,29 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     }
 
     public Optional<StudyEnvironment> findByStudy(String shortcode, EnvironmentName environmentName) {
-        List<String> primaryCols = getQueryColumns.stream().map(col -> "a." + col)
-                .collect(Collectors.toList());
         return jdbi.withHandle(handle ->
-                handle.createQuery("select " + StringUtils.join(primaryCols, ", ") + " from " + tableName
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
                         + " a join study on study_id = study.id"
                         + " where study.shortcode = :shortcode and environment_name = :environmentName")
                         .bind("shortcode", shortcode)
                         .bind("environmentName", environmentName)
                         .mapTo(clazz)
                         .findOne()
+        );
+    }
+
+    public List<StudyEnvironment> findAllByPortalAndEnvironment(UUID portalId, EnvironmentName environmentName) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                 select %s from %s a
+                                 join study on study_id = study.id
+                                 join portal_study on study.id = portal_study.study_id
+                                 where portal_study.portal_id = :portalId and environment_name = :environmentName
+                                 """.formatted(prefixedGetQueryColumns("a"), tableName))
+                        .bind("portalId", portalId)
+                        .bind("environmentName", environmentName)
+                        .mapTo(clazz)
+                        .list()
         );
     }
 

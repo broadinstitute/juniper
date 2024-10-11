@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
@@ -10,7 +11,6 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -30,7 +30,7 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testPersistsEnrolleeConsentEvent(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeConsentEvent(
                 bundle.enrollee(),
@@ -47,7 +47,7 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testPersistsEnrolleeCreationEvent() {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeCreationEvent");
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeCreationEvent");
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeCreationEvent(
                 bundle.enrollee(),
@@ -64,7 +64,7 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testPersistsEnrolleeSurveyEvent() {
 
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeSurveyEvent");
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeSurveyEvent");
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeSurveyEvent(
                 bundle.enrollee(),
@@ -83,7 +83,7 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testPersistsKitStatusEvent() {
 
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsKitStatusEvent");
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsKitStatusEvent");
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishKitStatusEvent(
                 KitRequest.builder().build(),
@@ -102,7 +102,7 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testPersistsPublishPortalRegistrationEvent(TestInfo info) {
 
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsPublishPortalRegistrationEvent");
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsPublishPortalRegistrationEvent");
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         Assertions.assertEquals(0, eventService.findAll().size());
 
@@ -121,7 +121,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(portalEnv.getId(), createdEvent.getPortalEnvironmentId());
     }
 
-    private void assertValidCreatedEventForEnrollee(Event created, EventClass eventClass, EnrolleeFactory.EnrolleeBundle bundle) {
+    private void assertValidCreatedEventForEnrollee(Event created, EventClass eventClass, EnrolleeBundle bundle) {
         Assertions.assertNotNull(created.getCreatedAt());
         Assertions.assertEquals(eventClass, created.getEventClass());
         Assertions.assertEquals(bundle.enrollee().getId(), created.getEnrolleeId());

@@ -7,6 +7,8 @@ import java.util.List;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -70,7 +72,7 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProfileAudit(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Profile profile = bundle.enrollee().getProfile();
 
@@ -100,7 +102,7 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProfileAuditContainsMailingList(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Profile profile = bundle.enrollee().getProfile();
 
@@ -159,7 +161,7 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProfileUpdateWithMailingAddress(TestInfo info) {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Profile profile = bundle.enrollee().getProfile();
 
@@ -186,7 +188,7 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserProfile(TestInfo testInfo){
-        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
+        EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
         Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
         Profile proxyUserProfile = profileService.find(proxyEnrollee.getProfileId()).get();
         List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY);

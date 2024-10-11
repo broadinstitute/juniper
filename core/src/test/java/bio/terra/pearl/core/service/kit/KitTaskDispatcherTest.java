@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -35,7 +36,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
     @Transactional
     void testKitSentEventHandler(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
         KitRequest kitRequest = buildKitRequest(enrolleeBundle);
         UUID kitRequestId = kitRequest.getId();
@@ -63,7 +64,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
     @Transactional
     void testKitReceivedEventHandler(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
         KitRequest kitRequest = buildKitRequest(enrolleeBundle);
         UUID kitRequestId = kitRequest.getId();
@@ -94,7 +95,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
     @Transactional
     void testKitSentEventHandlerWithReset(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
         KitRequest kitRequest = buildKitRequest(enrolleeBundle);
         UUID kitRequestId = kitRequest.getId();
@@ -120,7 +121,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
         verify(mockTaskService).update(any(ParticipantTask.class), any(DataAuditInfo.class));
     }
 
-    private KitRequest buildKitRequest(EnrolleeFactory.EnrolleeBundle enrolleeBundle) {
+    private KitRequest buildKitRequest(EnrolleeBundle enrolleeBundle) {
         UUID kitRequestId = UUID.randomUUID();
         return KitRequest.builder()
                 .id(kitRequestId)
@@ -129,7 +130,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
                 .build();
     }
 
-    private void verifyTask(ParticipantTask task, EnrolleeFactory.EnrolleeBundle enrolleeBundle, UUID kitRequestId) {
+    private void verifyTask(ParticipantTask task, EnrolleeBundle enrolleeBundle, UUID kitRequestId) {
         assertThat(task.getTaskType(), equalTo(TaskType.KIT_REQUEST));
         assertThat(task.getTargetName(), equalTo("Kit Request"));
         assertThat(task.getTargetStableId(), equalTo("kit_request"));

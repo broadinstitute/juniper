@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -21,7 +22,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEventTriggersNotificationCreation() {
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
+        EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser("notificationTriggers");
         Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.STUDY_ENROLLMENT);
 
@@ -33,7 +34,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Transactional
     void testKitSentEvent(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
+        EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(testName);
         Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_SENT);
         KitRequest kitRequest = KitRequest.builder()
@@ -51,7 +52,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Transactional
     void testKitReceivedEvent(TestInfo testInfo) {
         String testName = getTestName(testInfo);
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
+        EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(testName);
         Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_RECEIVED);
         KitRequest kitRequest = KitRequest.builder()
@@ -65,7 +66,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
         verifyNotification(config, enrolleeBundle);
     }
 
-    private Trigger createNotificationConfig(EnrolleeFactory.EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
+    private Trigger createNotificationConfig(EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         Trigger config = Trigger.builder()
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
@@ -79,7 +80,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     }
 
 
-    private void verifyNotification(Trigger config, EnrolleeFactory.EnrolleeBundle enrolleeBundle) {
+    private void verifyNotification(Trigger config, EnrolleeBundle enrolleeBundle) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
         assertThat(notifications, hasSize(1));

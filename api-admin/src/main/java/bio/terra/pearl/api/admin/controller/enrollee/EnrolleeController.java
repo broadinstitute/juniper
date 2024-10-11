@@ -40,7 +40,13 @@ public class EnrolleeController implements EnrolleeApi {
   public ResponseEntity<Object> find(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcodeOrId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    Enrollee enrollee = enrolleeExtService.findWithAdminLoad(adminUser, enrolleeShortcodeOrId);
+    Enrollee enrollee =
+        enrolleeExtService.findWithAdminLoad(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOf(envName),
+            enrolleeShortcodeOrId);
     return ResponseEntity.ok(enrollee);
   }
 

@@ -3,7 +3,9 @@ package bio.terra.pearl.api.participant.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -37,7 +39,7 @@ class SurveyResponseExtServiceTest extends BaseSpringBootTest {
   @Transactional
   public void testProxyProfileMapping(TestInfo info) {
 
-    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvironmentBundle =
+    StudyEnvironmentBundle studyEnvironmentBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     List<AnswerMapping> answerMappings =
@@ -60,7 +62,7 @@ class SurveyResponseExtServiceTest extends BaseSpringBootTest {
 
     surveyFactory.attachToEnv(survey, studyEnvironmentBundle.getStudyEnv().getId(), true);
 
-    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy =
+    EnrolleeAndProxy enrolleeAndProxy =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info),
             studyEnvironmentBundle.getPortalEnv(),

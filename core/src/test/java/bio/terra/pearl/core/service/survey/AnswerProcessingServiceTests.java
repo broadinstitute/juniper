@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
@@ -173,7 +175,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     public void testProfileUpdate(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
         Survey survey = surveyFactory.buildPersisted(getTestName(info));
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
@@ -227,7 +229,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     public void testProxyProfileUpdate(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), portalEnv, studyEnv);
+        EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), portalEnv, studyEnv);
         ParticipantUser pUser = participantUserService.find(enrolleeAndProxy.proxyPpUser().getParticipantUserId()).orElseThrow();
         Survey survey = surveyFactory.buildPersisted(getTestName(info));
 

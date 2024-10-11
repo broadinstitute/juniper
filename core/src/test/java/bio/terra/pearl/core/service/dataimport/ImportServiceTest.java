@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.dataimport;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -33,7 +34,7 @@ public class ImportServiceTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCrud(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
         Import dataImport = Import.builder()
                 .responsibleUserId(user.getId())

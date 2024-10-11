@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.notification;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.notification.NotificationDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
@@ -36,7 +37,7 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
   public void testConsentReminders(TestInfo info) {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-      EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+      EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
     ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
     Trigger config = Trigger.builder()

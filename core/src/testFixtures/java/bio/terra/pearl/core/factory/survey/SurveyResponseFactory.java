@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.factory.survey;
 
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -57,7 +58,7 @@ public class SurveyResponseFactory {
                                                           String questionStableId,
                                                           String answerValue,
                                                           boolean complete,
-                                                          EnrolleeFactory.EnrolleeBundle bundle,
+                                                          EnrolleeBundle bundle,
                                                           Portal portal) {
         SurveyResponse response = SurveyResponse.builder()
                 .answers(List.of(

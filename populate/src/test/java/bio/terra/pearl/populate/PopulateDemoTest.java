@@ -201,6 +201,12 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(enrolleeExportData, moduleInfos);
 
         assertThat(exportData, hasSize(13));
+        // confirm pre-enroll questions are included
+        Map<String, String> salkMap = exportData.stream().filter(map -> "HDSALK".equals(map.get("enrollee.shortcode")))
+                .findFirst().get();
+        assertThat(salkMap.get("hd_hd_preenroll.hd_hd_preenroll_livesInUS"), equalTo("Yes"));
+
+
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));

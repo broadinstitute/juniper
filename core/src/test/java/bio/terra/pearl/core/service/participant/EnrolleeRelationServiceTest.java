@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
@@ -50,11 +52,11 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
         StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
 
-        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         PortalParticipantUser proxyPpUser = proxyBundle.portalParticipantUser();
         Enrollee proxyEnrollee = proxyBundle.enrollee();
 
-        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee1 = targetBundle.enrollee();
         Enrollee targetEnrollee2 = enrolleeFactory.buildPersisted(
                 getTestName(info),
@@ -86,9 +88,9 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
     void testIsRelationshipValid(TestInfo info){
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee proxyEnrollee = proxyBundle.enrollee();
-        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee1 = targetBundle.enrollee();
         EnrolleeRelation enrolleeRelation = enrolleeRelationService.create(
                 EnrolleeRelation
@@ -118,11 +120,11 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
     public void testFindAllValidByTwoProperties(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee proxyEnrollee = proxyBundle.enrollee();
-        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee1 = targetBundle.enrollee();
-        EnrolleeFactory.EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee2 = targetBundle2.enrollee();
         Instant yesterday = Instant.now().minusSeconds(86400);
         Instant tomorrow = Instant.now().plusSeconds(86400);
@@ -164,11 +166,11 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
     public void testFindAllValidByOneProperty(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee proxyEnrollee = proxyBundle.enrollee();
-        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee1 = targetBundle.enrollee();
-        EnrolleeFactory.EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
         Enrollee targetEnrollee2 = targetBundle2.enrollee();
         Instant yesterday = Instant.now().minusSeconds(86400);
         Instant tomorrow = Instant.now().plusSeconds(86400);
@@ -209,7 +211,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void findExclusiveProxiedEnrolleesTest(TestInfo info){
-        EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
+        EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
         List<Enrollee> targetEnrollees = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId());
@@ -256,7 +258,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
     @Test
     @Transactional
     void testFindByTargetEnrolleeIdWithEnrolleesAndFamily(TestInfo info) {
-        EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
+        EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
 
