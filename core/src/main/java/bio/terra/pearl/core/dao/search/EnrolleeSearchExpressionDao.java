@@ -77,17 +77,12 @@ public class EnrolleeSearchExpressionDao {
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search, EnrolleeSearchOptions opts) {
         return jdbi.withHandle(handle -> {
             org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES), opts);
-
             Query query = jdbiFromJooq(jooqQuery, handle);
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
             var result = query
                     .registerRowMapper(Family.class, BeanMapper.of(Family.class, "family"))
                     .registerRowMapper(EnrolleeSearchExpressionResult.class, new EnrolleeSearchResultMapper())
                     .reduceRows(new EnrolleeSearchResultReducer())
                     .toList();
-            stopWatch.stop();
-            log.info("Search took {} ms", stopWatch.getTotalTimeMillis());
             return result;
         });
     }
