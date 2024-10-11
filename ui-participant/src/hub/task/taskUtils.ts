@@ -1,4 +1,4 @@
-import { Enrollee, ParticipantTask } from '@juniper/ui-core'
+import { Enrollee, HubResponse, ParticipantTask } from '@juniper/ui-core'
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
 export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
@@ -61,4 +61,9 @@ export function getSortedActiveTasks(tasks: ParticipantTask[], taskType: string)
   return tasks
     .filter(task => task.taskType === taskType && isTaskActive(task))
     .sort(taskComparator)
+}
+
+export function getNextConsentTask(hubResponse: HubResponse) {
+  const sortedActiveConsentTasks = getSortedActiveTasks(hubResponse.enrollee.participantTasks, 'CONSENT')
+  return getNextTask(hubResponse.enrollee, sortedActiveConsentTasks)
 }
