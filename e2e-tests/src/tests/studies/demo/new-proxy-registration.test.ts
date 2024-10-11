@@ -24,7 +24,9 @@ test.describe('Proxy', () => {
     await test.step('Answer "Yes" to all eligibility questions', async () => {
       const prequal = await goToDemoPreEnroll(page)
 
-      await prequal.getQuestion(data.PreEnroll.ProxyQuestion).select('I am enrolling on behalf of my child / my legal dependent.')
+      await prequal.getQuestion(data.PreEnroll.ProxyQuestion).select(
+        'I am enrolling on behalf of my child / my legal dependent.'
+      )
       await expect(await prequal.progress()).toHaveText('Answered 1/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.ProxyGivenName).fillIn('Jonas')
