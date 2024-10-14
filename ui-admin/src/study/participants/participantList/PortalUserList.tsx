@@ -114,6 +114,7 @@ export default function PortalUserList({ studyEnvContext }:
     <NavBreadcrumb value={'participantUserList'}>Accounts</NavBreadcrumb>
     <div className="d-flex align-items-center justify-content-between ">
       {renderPageHeader('Accounts')}
+      <Link to="merge">Merge</Link>
       <ParticipantListViewSwitcher
         studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
       />

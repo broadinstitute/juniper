@@ -396,6 +396,35 @@ export type ExportIntegrationJob = {
   systemProcess?: string
 }
 
+export type ParticipantUserMerge = {
+  users: MergeAction<ParticipantUser, object>
+  ppUsers: MergeAction<PortalParticipantUser, object>
+  enrollees: MergeAction<Enrollee, EnrolleeMergePlan>[]
+}
+
+export type MergeAction<T, MP> = {
+  pair: MergePair<T>
+  action: MergeActionAction
+  mergePlan: MP
+}
+
+export type EnrolleeMergePlan = {
+  tasks: MergeAction<ParticipantTask, object>[]
+  kits: MergeAction<KitRequest, object>[]
+}
+
+export type MergeActionAction =
+  'MOVE_SOURCE' | // no change to target, reassign source to target (not a delete/recreate, just a reassign)
+  'NO_ACTION' | // nothing
+  'MERGE' | // do some logic to reconcile source and target
+  'DELETE_SOURCE' | // delete the source, likely because it is empty or a pure dupe
+  'MOVE_SOURCE_DELETE_TARGET' // move source to target and delete target
+
+export type MergePair<T> = {
+  source?: T,
+  target?: T
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -776,6 +805,26 @@ export default {
   async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersWithEnrollees> {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers`,
       this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchMergePlan(portalShortcode: string, envName: string, sourceEmail: string, targetEmail: string):
+    Promise<ParticipantUserMerge> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/merge/plan`, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ sourceEmail, targetEmail })
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async executeMergePlan(portalShortcode: string, envName: string, mergePlan: ParticipantUserMerge):
+    Promise<ParticipantUserMerge> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/merge/execute`, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(mergePlan)
+    })
     return await this.processJsonResponse(response)
   },
 
