@@ -59,4 +59,8 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
     public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
         return dao.findOne(username, environmentName);
     }
+
+    public Optional<ParticipantUser> findByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrolleeId(enrolleeId);
+    }
 }
