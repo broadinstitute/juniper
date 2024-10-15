@@ -94,4 +94,8 @@ public class StudyService extends CrudService<Study, StudyDao> {
             }
         });
     }
+
+    public void attachEnvironments(Study study) {
+        study.setStudyEnvironments(studyEnvironmentService.findByStudy(study.getId()));
+    }
 }

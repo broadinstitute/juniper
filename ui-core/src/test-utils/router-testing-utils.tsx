@@ -12,8 +12,14 @@ type RoutableTestStruct = {
     router: RemixRouter
 }
 
-/** adapted from
- https://stackoverflow.com/questions/70313688/how-i-could-test-location-with-memoryrouter-on-react-router-dom-v6 */
+/**
+ * adapted from
+  * https://stackoverflow.com/questions/70313688/how-i-could-test-location-with-memoryrouter-on-react-router-dom-v6
+  * initialEntries is the array of paths representing the router history (where the user navigated to)
+ *   each path should start with a '/'
+ *   componentPath is the route to mount the component at, e.g. 'my-path/*'  it should almost always end with a '/*'
+ *   so that the component owns any child routes that are navigated to.
+ */
 export function setupRouterTest(ComponentToRender: ReactElement,
   initialEntries=['/'], componentPath = '*'): RoutableTestStruct {
   const routes = [{

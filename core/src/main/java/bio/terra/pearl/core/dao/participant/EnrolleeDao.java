@@ -6,7 +6,9 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
@@ -156,6 +158,27 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                 .bind("id", id)
                 .mapTo(clazz)
                 .list());
+    }
+
+
+    /** returns all the enrollees in the given portal and environment */
+    public List<Enrollee> findAllByPortalEnv(UUID portalId, EnvironmentName environmentName) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                        select e.* from enrollee e
+                        where e.study_environment_id in (
+                            select se.id from study_environment se
+                            where se.study_id in (
+                                select study_id from portal_study
+                                where portal_id = :portalId
+                            ) and se.environment_name = :environmentName
+                        )
+                        """)
+                        .bind("portalId", portalId)
+                        .bind("environmentName", environmentName)
+                        .mapTo(clazz)
+                        .list()
+        );
     }
 
     public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {

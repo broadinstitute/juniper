@@ -642,5 +642,5 @@ export const renderInPortalRouter = (portal: Portal,
         <ReactNotifications/>
       </UserContext.Provider>
     </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
-    ':portalShortcode/studies/:studyShortcode/:studyEnv')
+    ':portalShortcode/studies/:studyShortcode/:studyEnv/*')
 }

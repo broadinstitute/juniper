@@ -104,6 +104,7 @@
         "enrollees/dsalk.json",
         "enrollees/newEnrollee.json",
         "enrollees/consentedEnrollee.json",
+        "enrollees/consentedDupe.json",
         "enrollees/basicsDone.json",
         "enrollees/withdrawn.json",
         "enrollees/oldVersion.json",

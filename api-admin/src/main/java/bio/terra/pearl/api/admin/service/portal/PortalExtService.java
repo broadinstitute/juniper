@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
-import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
@@ -24,7 +23,6 @@ public class PortalExtService {
   private final PortalService portalService;
   private final PortalEnvironmentService portalEnvironmentService;
   private final PortalEnvironmentConfigService portalEnvironmentConfigService;
-  private final PortalAdminUserService portalAdminUserService;
   private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
   private final AuthUtilService authUtilService;
 
@@ -32,13 +30,11 @@ public class PortalExtService {
       PortalService portalService,
       PortalEnvironmentService portalEnvironmentService,
       PortalEnvironmentConfigService portalEnvironmentConfigService,
-      PortalAdminUserService portalAdminUserService,
       PortalEnvironmentLanguageService portalEnvironmentLanguageService,
       AuthUtilService authUtilService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalEnvironmentConfigService = portalEnvironmentConfigService;
-    this.portalAdminUserService = portalAdminUserService;
     this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     this.authUtilService = authUtilService;
   }

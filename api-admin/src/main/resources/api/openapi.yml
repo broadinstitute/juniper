@@ -365,6 +365,19 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies:
+    get:
+      summary: gets all the studies for the given portal
+      tags: [ study ]
+      operationId: getByPortalWithEnvs
+      parameters:
+        - *portalShortcodeParam
+        - { name: envName, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: new study object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
     post:
       summary: creates a new study for the given portal
       tags: [ study ]
@@ -508,6 +521,20 @@ paths:
       responses:
         '200':
           description: saved studyEnvironment object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers:
+    get:
+      summary: lists all the participant users for the given portal environment
+      tags: [ participantUser ]
+      operationId: list
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: list of participant users and list of enrollees
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
