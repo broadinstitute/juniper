@@ -50,8 +50,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -673,6 +672,46 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         }).collect(Collectors.toSet());
 
         assertEquals(Set.of("Peter", "Jonathan", "Jonas"), names);
+    }
+
+    @Test
+    public void testGroupByAccountProxies(TestInfo info) {
+        List<EnrolleeImportService.AccountImportData> accountImportData = enrolleeImportService.groupImportMapsByAccount(
+                List.of(
+                        Map.of("account.username", "proxy@test.com", "profile.givenName", "John"),
+                        Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Jane"),
+                        Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Jim"),
+                        Map.of("account.username", "normal_user@test.com", "profile.givenName", "Jack"),
+                        Map.of("proxy.username", "different_proxy@test.com", "profile.givenName", "Jill")
+                )
+        );
+
+        assertThat(accountImportData, hasSize(3));
+
+        EnrolleeImportService.AccountImportData proxy = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("proxy@test.com")).findFirst().orElseThrow();
+
+        assertEquals(proxy.getEnrolleeData().get("profile.givenName"), "John");
+
+        List<Map<String, String>> proxyData = proxy.getProxyData();
+        assertThat(proxyData, hasSize(2));
+
+        Set<String> names = proxyData.stream().map(data -> data.get("profile.givenName")).collect(Collectors.toSet());
+        assertEquals(Set.of("Jane", "Jim"), names);
+
+        EnrolleeImportService.AccountImportData normalUser = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("normal_user@test.com")).findFirst().orElseThrow();
+
+        assertEquals(normalUser.getEnrolleeData().get("profile.givenName"), "Jack");
+        assertEquals(0, normalUser.getProxyData().size());
+
+        EnrolleeImportService.AccountImportData diffProxyUser = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("different_proxy@test.com")).findFirst().orElseThrow();
+
+        assertNull(diffProxyUser.getEnrolleeData());
+
+        assertEquals(diffProxyUser.getProxyData().get(0).get("profile.givenName"), "Jill");
+
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,

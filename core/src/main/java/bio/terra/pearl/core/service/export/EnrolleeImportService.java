@@ -170,8 +170,12 @@ public class EnrolleeImportService {
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
             String email = enrolleeMap.get("account.username");
             String proxyEmail = enrolleeMap.get("proxy.username");
+            if (email == null || email.isBlank()) {
+                email = proxyEmail;
+            }
+
             AccountImportData existingAccount = findExistingAccount(accountData, email);
-            if (proxyEmail == null) {
+            if (proxyEmail == null || proxyEmail.isBlank()) {
                 if (existingAccount == null) {
                     AccountImportData newAccount = new AccountImportData();
                     newAccount.setEmail(email);
@@ -184,8 +188,7 @@ public class EnrolleeImportService {
                 if (existingAccount == null) {
                     AccountImportData newAccount = new AccountImportData();
                     newAccount.setEmail(email);
-                    newAccount.setEnrolleeData(enrolleeMap);
-                    newAccount.setProxyData(new ArrayList<>());
+                    newAccount.getProxyData().add(enrolleeMap);
                     accountData.add(newAccount);
                 } else {
                     existingAccount.getProxyData().add(enrolleeMap);
@@ -288,6 +291,7 @@ public class EnrolleeImportService {
                                 .enrolleeId(accountEnrollee.getId())
                                 .targetEnrolleeId(proxyEnrollee.getId())
                                 .relationshipType(RelationshipType.PROXY)
+                                .beginDate(Instant.now())
                                 .build(),
                         auditInfo
                 );
