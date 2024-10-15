@@ -83,6 +83,18 @@ public class SearchValue {
         }
     }
 
+    private Object getValue() {
+        return switch (this.searchValueType) {
+            case STRING -> this.stringValue;
+            case NUMBER -> this.numberValue;
+            case INSTANT -> this.instantValue;
+            case DATE -> this.dateValue;
+            case BOOLEAN -> this.booleanValue;
+            case ARRAY -> this.arrayValue;
+            default -> null;
+        };
+    }
+
     public boolean equals(SearchValue right) {
         if (!this.searchValueType.equals(SearchValueType.ARRAY) && right.searchValueType.equals(SearchValueType.ARRAY)) {
             // flip the comparison if the right side is an array so that we hit the array comparison logic
@@ -93,28 +105,35 @@ public class SearchValue {
             return false;
         }
 
-        return switch (this.searchValueType) {
-            case STRING -> this.stringValue.equals(right.stringValue);
-            case NUMBER -> this.numberValue.equals(right.numberValue);
-            case INSTANT -> this.instantValue.equals(right.instantValue);
-            case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
-            case DATE -> this.dateValue.equals(right.dateValue);
-            case ARRAY -> {
-                if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
-                    yield this.arrayValue.equals(right.arrayValue);
+        if (this.searchValueType.equals(SearchValueType.ARRAY)) {
+
+            if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
+                return this.arrayValue.equals(right.arrayValue);
                 }
                 // like SQL, we allow comparing a single value to an array
                 // by checking if the single value is in the array
-                yield this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
-            }
-            default -> false;
-        };
+            return this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
+        }
+
+        Object leftValue = this.getValue();
+        Object rightValue = right.getValue();
+
+        if (leftValue == null || rightValue == null) {
+            return leftValue == rightValue;
+        }
+
+        return leftValue.equals(rightValue);
     }
 
     public boolean greaterThan(SearchValue right) {
         if (this.searchValueType != right.searchValueType) {
             return false;
         }
+
+        if (this.getValue() == null || right.getValue() == null) {
+            return false;
+        }
+
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue > right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
@@ -126,6 +145,11 @@ public class SearchValue {
         if (this.searchValueType != right.searchValueType) {
             return false;
         }
+        
+        if (this.getValue() == null || right.getValue() == null) {
+            return false;
+        }
+
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue >= right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);
