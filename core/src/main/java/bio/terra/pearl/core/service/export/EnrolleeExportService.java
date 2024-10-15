@@ -150,9 +150,9 @@ public class EnrolleeExportService {
                 new EnrolleeFormatter(exportOptions),
                 new ParticipantUserFormatter(exportOptions),
                 new ProfileFormatter(exportOptions),
-                new KitRequestFormatter(),
-                new EnrolleeRelationFormatter(),
-                new FamilyFormatter());
+                new KitRequestFormatter(exportOptions),
+                new EnrolleeRelationFormatter(exportOptions),
+                new FamilyFormatter(exportOptions));
 
         List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
                 moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())

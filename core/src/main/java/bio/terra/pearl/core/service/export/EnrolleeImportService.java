@@ -231,7 +231,7 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email -- reload the profile since answermappings may have changed it */
+        /** restore email -- reload the pr5ofile since answermappings may have changed it */
         profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
@@ -239,7 +239,7 @@ public class EnrolleeImportService {
     }
 
     private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
-        new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
+        new KitRequestFormatter(new ExportOptions()).listFromStringMap(enrolleeMap).stream().map(
                 kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).toList();
     }
 

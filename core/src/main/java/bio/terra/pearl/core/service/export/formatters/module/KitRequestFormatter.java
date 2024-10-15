@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.item.KitTypeFormatter;
@@ -14,19 +15,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class KitRequestFormatter extends BeanListModuleFormatter<KitRequestDto> {
-    private static final String KIT_REQUEST_MODULE_NAME = "sample_kit";
     private static final List<String> KIT_REQUEST_INCLUDED_PROPERTIES =
             List.of("status", "sentToAddress", "sentAt", "receivedAt", "createdAt", "labeledAt",
                     "trackingNumber", "returnTrackingNumber", "skipAddressValidation");
 
-    public KitRequestFormatter() {
+    public KitRequestFormatter(ExportOptions options) {
+        super(options, "sample_kit", "Sample kit");
+    }
+
+    @Override
+    protected List<PropertyItemFormatter<KitRequestDto>> generateItemFormatters(ExportOptions options) {
         itemFormatters = KIT_REQUEST_INCLUDED_PROPERTIES.stream()
-                .map(propName -> new PropertyItemFormatter<KitRequestDto>(propName, KitRequestDto.class))
+                .map(propName -> new PropertyItemFormatter<>(propName, KitRequestDto.class))
                 .collect(Collectors.toList());
         // we have to handle kitType separately because we'll need to match it to the kitType name
         itemFormatters.add(new KitTypeFormatter());
-        moduleName = KIT_REQUEST_MODULE_NAME;
-        displayName = "Sample kit";
+        return itemFormatters;
     }
 
     @Override

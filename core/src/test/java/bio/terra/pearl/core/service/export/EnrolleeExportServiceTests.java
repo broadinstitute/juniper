@@ -99,6 +99,22 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testExportIncludeFields(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder()
+                .fileFormat(ExportFileFormat.TSV)
+                .includeFields(List.of("enrollee.shortcode", "profile.familyName")).build();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnv.getId(), stream);
+
+        assertThat(stream.toString(), startsWith("enrollee.shortcode\tprofile.familyName\nShortcode"));
+    }
+
+    @Test
+    @Transactional
     public void testExportWithProxies(TestInfo testInfo) {
         String testName = getTestName(testInfo);
         StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live);

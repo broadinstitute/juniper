@@ -272,7 +272,8 @@ export type ExportOptions = {
   includeSubHeaders?: boolean,
   excludeModules?: string[],
   filterString?: string,
-  rowLimit?: number
+  rowLimit?: number,
+  includeFields: string[]
 }
 
 export type ExportData = {
@@ -1101,25 +1102,23 @@ export default {
   exportEnrollees(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
     Promise<Response> {
-    const exportOptionsParams = exportOptions as Record<string, unknown>
-    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
-    url += queryString.stringify(exportOptionsParams)
-    return fetch(url, this.getGetInit())
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data`
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(exportOptions)
+    })
   },
 
   exportDictionary(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
     Promise<Response> {
-    const exportOptionsParams = exportOptions as Record<string, unknown>
-    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
-    const searchParams = new URLSearchParams()
-    for (const prop in exportOptionsParams) {
-      if (exportOptionsParams[prop] !== undefined) {
-        searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
-      }
-    }
-    url += searchParams.toString()
-    return fetch(url, this.getGetInit())
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary`
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(exportOptions)
+    })
   },
 
   async fetchExportIntegrations(studyEnvParams: StudyEnvParams): Promise<ExportIntegration[]> {

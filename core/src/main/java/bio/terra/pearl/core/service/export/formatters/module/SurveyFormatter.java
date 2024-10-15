@@ -38,18 +38,25 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
                            List<SurveyQuestionDefinition> questionDefs,
                            List<EnrolleeExportData> data,
                            ObjectMapper objectMapper) {
+        super(exportOptions,
+                stableId,
+                // get the most recent survey by sorting in descending version order
+                surveys.stream().sorted(Comparator.comparingInt(Survey::getVersion).reversed()).findFirst().get().getName());
         this.objectMapper = objectMapper;
-        itemFormatters.add(new PropertyItemFormatter("lastUpdatedAt", SurveyResponse.class));
-        itemFormatters.add(new PropertyItemFormatter("complete", SurveyResponse.class));
-
-        buildItemFormatters(exportOptions, questionDefs, data);
-        // get the most recent survey by sorting in descending version order
-        Survey latestSurvey = surveys.stream().sorted(Comparator.comparingInt(Survey::getVersion).reversed()).findFirst().get();
-        displayName = latestSurvey.getName();
-        moduleName = stableId;
+        generateAnswerItemFormatters(exportOptions, questionDefs, data);
+        filterItemFormatters(exportOptions);
     }
 
-    private void buildItemFormatters(
+    @Override
+    protected List<ItemFormatter<SurveyResponse>> generateItemFormatters(ExportOptions options) {
+        // Note that we generate and add answer formatters to this list later in the constructor
+        List<ItemFormatter<SurveyResponse>> formatters = new ArrayList<>();
+        formatters.add(new PropertyItemFormatter<>("lastUpdatedAt", SurveyResponse.class));
+        formatters.add(new PropertyItemFormatter<>("complete", SurveyResponse.class));
+        return formatters;
+    }
+
+    private void generateAnswerItemFormatters(
             ExportOptions exportOptions,
             List<SurveyQuestionDefinition> questionDefs,
             List<EnrolleeExportData> data) {

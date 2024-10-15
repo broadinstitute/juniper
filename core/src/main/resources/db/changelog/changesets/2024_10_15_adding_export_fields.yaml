@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: "export_options_include_fields"
+      author: dbush
+      changes:
+        - sql:
+            sql: ALTER TABLE export_options ADD COLUMN include_fields text[];
