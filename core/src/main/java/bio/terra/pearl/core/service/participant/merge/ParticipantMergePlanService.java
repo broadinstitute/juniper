@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -65,7 +66,6 @@ public class ParticipantMergePlanService {
         this.mergeDao = mergeDao;
     }
 
-    @Transactional
     public ParticipantUserMerge planMerge(ParticipantUser participantUser, ParticipantUser mergeTarget, Portal portal) {
         if (!participantUser.getEnvironmentName().equals(mergeTarget.getEnvironmentName())) {
             throw new IllegalArgumentException("ParticipantUsers must be in the same environment to merge");
@@ -134,8 +134,8 @@ public class ParticipantMergePlanService {
                     // if no target data, just drop the target task
                     enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MOVE_SOURCE_DELETE_TARGET));
                 } else {
-                    // otherwise, we need to merge the tasks
-                    enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MERGE,
+                    // otherwise, we need to keep both  (eventually we might want to merge, but for now, keep everything)
+                    enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MOVE_SOURCE,
                             null));
                 }
             }

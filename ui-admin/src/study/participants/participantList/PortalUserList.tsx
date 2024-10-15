@@ -14,14 +14,19 @@ import {
 import { Enrollee, instantToDefaultString, ParticipantUser, instantToDateString } from '@juniper/ui-core'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { StudyEnvContextT, studyEnvPath } from '../../StudyEnvironmentRouter'
-import { Link } from 'react-router-dom'
-import { renderPageHeader } from '../../../util/pageUtils'
-import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { renderPageHeader } from 'util/pageUtils'
 import _uniq from 'lodash/uniq'
+import _groupBy from 'lodash/groupBy'
+import { tabLinkStyle } from 'util/subNavStyles'
+import ParticipantMergeView from '../merge/ParticipantMergeView'
+import ParticipantDupeView, { DupeType, UserDupe } from '../merge/ParticipantDupeView'
+import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
-type ParticipantUserWithEnrollees = ParticipantUser & {
+export type ParticipantUserWithEnrollees = ParticipantUser & {
   enrollees: Enrollee[]
 }
+
 
 /**
  * show a list of withdrawn enrollees with account information
@@ -34,8 +39,9 @@ export default function PortalUserList({ studyEnvContext }:
     'email': false
   })
   const [envMap, setEnvMap] = useState<Record<string, Study>>({})
+  const [possibleDupes, setPossibleDupes] = useState<UserDupe[]>()
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const studies = await Api.fetchStudiesWithEnvs(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
     setEnvMap(studies.reduce((acc, study) => {
@@ -49,6 +55,7 @@ export default function PortalUserList({ studyEnvContext }:
       enrollees: result.enrollees.filter(enrollee => enrollee.participantUserId === user.id)
     }))
     setUsers(mappedResult)
+    setPossibleDupes(identifyDupes(mappedResult))
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const columns: ColumnDef<ParticipantUserWithEnrollees>[] = useMemo(() => {
@@ -110,22 +117,86 @@ export default function PortalUserList({ studyEnvContext }:
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
+
+  const tabs = [
+    {
+      name: 'All', path: 'all', component: <div>
+        <div className="d-flex justify-content-end">
+          <ColumnVisibilityControl table={table}/>
+        </div>
+        <div className="d-flex align-items-center justify-content-between">
+          { basicTableLayout(table) }
+        </div>
+      </div>
+    },
+    {
+      name: `Possible Duplicates ${possibleDupes ? `(${possibleDupes.length})` : ''}`, path: 'dupes',
+      component: <ParticipantDupeView possibleDupes={possibleDupes || []} studyEnvContext={studyEnvContext}
+        onUpdate={reload}/>
+    },
+    {
+      name: 'Merge form', path: 'merge', component: <ParticipantMergeView studyEnvContext={studyEnvContext}
+        onUpdate={reload}/>
+    }
+  ]
+
   return <div className="container-fluid px-4 py-2">
-    <NavBreadcrumb value={'participantUserList'}>Accounts</NavBreadcrumb>
+    <NavBreadcrumb value={'participantUserList'}>accounts</NavBreadcrumb>
     <div className="d-flex align-items-center justify-content-between ">
       {renderPageHeader('Accounts')}
-      <Link to="merge">Merge</Link>
+
       <ParticipantListViewSwitcher
         studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
       />
     </div>
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex justify-content-end">
-        <ColumnVisibilityControl table={table}/>
+      <div className="d-flex mb-2">
+        { tabs.map(tab => {
+          return <NavLink key={tab.path} to={tab.path} style={tabLinkStyle}>
+            <div className="py-2 px-4">
+              {tab.name}
+            </div>
+          </NavLink>
+        })}
       </div>
-      <div className="d-flex align-items-center justify-content-between">
-        { basicTableLayout(table) }
-      </div>
+      <Routes>
+        <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
+        { tabs.map(tab => <Route path={tab.path} key={tab.path} element={tab.component}/>)}
+      </Routes>
+
     </LoadingSpinner>
   </div>
 }
+
+
+const NO_DATA = 'no_data'
+const DUPE_FUNCTIONS: {type: DupeType, func: (user: ParticipantUserWithEnrollees) => string}[] = [
+  { type: 'username', func: (user: ParticipantUserWithEnrollees) => user.username.toLowerCase() },
+  {
+    type: 'name', func: (user: ParticipantUserWithEnrollees) => {
+      if (user.enrollees.length === 0 ||
+        !user.enrollees[0].profile.givenName && !user.enrollees[0].profile.familyName) {
+        return NO_DATA
+      }
+      return `${user.enrollees[0].profile.givenName?.toLowerCase()} 
+          ${user.enrollees[0].profile.familyName?.toLowerCase()}`
+    }
+  }
+]
+
+function identifyDupes(users: ParticipantUserWithEnrollees[]) {
+  const possibleDupes: UserDupe[] = []
+  DUPE_FUNCTIONS.forEach(dupeFunc => {
+    const dupeGroups = _groupBy(users, dupeFunc.func)
+    Object.keys(dupeGroups).forEach(dupeKey => {
+      if (dupeGroups[dupeKey].length > 1 && dupeKey !== NO_DATA) {
+        possibleDupes.push({
+          users: dupeGroups[dupeKey],
+          dupeType: dupeFunc.type
+        })
+      }
+    })
+  })
+  return possibleDupes
+}
+

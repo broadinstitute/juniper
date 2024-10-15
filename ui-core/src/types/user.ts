@@ -23,6 +23,7 @@ export type ParticipantUser = {
     shortcode: string
     token: string
     lastLogin: number
+    createdAt: number
 }
 
 export type PortalParticipantUser = {
