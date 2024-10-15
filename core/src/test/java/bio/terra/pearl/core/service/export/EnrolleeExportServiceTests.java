@@ -25,6 +25,7 @@ import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -72,6 +73,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
+    private ParticipantUserService participantUserService;
+    @Autowired
     private AnswerFactory answerFactory;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
@@ -103,8 +106,15 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live);
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
+        config.setAcceptingProxyEnrollment(true);
+        studyEnvironmentConfigService.update(config);
+
         EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        ParticipantUser proxyUser = participantUserService.findByEnrolleeId(enrolleeWithProxy.proxy().getId()).get();
 
         List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
         List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
@@ -122,13 +132,15 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         assertThat(exportMapsWithProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
         assertThat(exportMapsWithProxies.get(0).get("enrollee.subject"), equalTo("true"));
+        assertThat(exportMapsWithProxies.get(1).get("proxy.username"), equalTo(proxyUser.getUsername()));
 
         assertThat(exportMapsWithProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
         assertThat(exportMapsWithProxies.get(1).get("enrollee.subject"), equalTo("true"));
+        assertThat(exportMapsWithProxies.get(1).get("proxy.username"), equalTo(proxyUser.getUsername()));
 
         assertThat(exportMapsWithProxies.get(2).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.proxy().getShortcode()));
         assertThat(exportMapsWithProxies.get(2).get("enrollee.subject"), equalTo("false"));
-
+        assertThat(exportMapsWithProxies.get(2).get("proxy.username"), equalTo(null));
 
         List<EnrolleeExportData> exportDataNoProxies = enrolleeExportService.loadEnrolleeExportData(
                 studyEnv.getId(),
