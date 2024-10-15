@@ -101,6 +101,13 @@ public class SearchValue {
             return right.equals(this);
         }
 
+        Object leftValue = this.getValue();
+        Object rightValue = right.getValue();
+
+        if (leftValue == null || rightValue == null) {
+            return leftValue == rightValue;
+        }
+
         if (this.searchValueType != right.searchValueType && !this.searchValueType.equals(SearchValueType.ARRAY)) {
             return false;
         }
@@ -113,13 +120,6 @@ public class SearchValue {
                 // like SQL, we allow comparing a single value to an array
                 // by checking if the single value is in the array
             return this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
-        }
-
-        Object leftValue = this.getValue();
-        Object rightValue = right.getValue();
-
-        if (leftValue == null || rightValue == null) {
-            return leftValue == rightValue;
         }
 
         return leftValue.equals(rightValue);
@@ -145,7 +145,7 @@ public class SearchValue {
         if (this.searchValueType != right.searchValueType) {
             return false;
         }
-        
+
         if (this.getValue() == null || right.getValue() == null) {
             return false;
         }
