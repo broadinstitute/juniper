@@ -135,7 +135,7 @@ export default function PortalUserList({ studyEnvContext }:
         onUpdate={reload}/>
     },
     {
-      name: 'Merge form', path: 'merge', component: <ParticipantMergeView studyEnvContext={studyEnvContext}
+      name: 'Account merging', path: 'merge', component: <ParticipantMergeView studyEnvContext={studyEnvContext}
         onUpdate={reload}/>
     }
   ]
@@ -160,8 +160,8 @@ export default function PortalUserList({ studyEnvContext }:
         })}
       </div>
       <Routes>
-        <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
         { tabs.map(tab => <Route path={tab.path} key={tab.path} element={tab.component}/>)}
+        <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
       </Routes>
 
     </LoadingSpinner>

@@ -21,9 +21,11 @@ export default function ParticipantDupeView({ possibleDupes, studyEnvContext, on
   return <div>
     <table>
       <thead>
-        <th>usernames</th>
-        <th className="px-5">names</th>
-        <th></th>
+        <tr>
+          <th>usernames</th>
+          <th className="px-5">names</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         { possibleDupes?.map(dupe => <tr key={`${dupe.users[0].id}${dupe.dupeType}`}
@@ -46,7 +48,7 @@ export default function ParticipantDupeView({ possibleDupes, studyEnvContext, on
               setSourceUsername(dupe.users[0].username)
               setTargetUsername(dupe.users[1].username)
               setShowMergeModal(true)
-            }}>Plan merge</Button>
+            }}>Preview Merge</Button>
           </td>
         </tr>) }
       </tbody>
@@ -59,7 +61,7 @@ export default function ParticipantDupeView({ possibleDupes, studyEnvContext, on
       </Modal.Header>
       <Modal.Body>
         <ParticipantMergeView studyEnvContext={studyEnvContext} source={sourceUsername} target={targetUsername}
-         onUpdate={onUpdate}/>
+          onUpdate={onUpdate}/>
       </Modal.Body>
     </Modal> }
   </div>
