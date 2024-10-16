@@ -122,6 +122,18 @@ public class EnrollmentService {
                                         PortalParticipantUser ppUser,
                                         UUID preEnrollResponseId,
                                         boolean isSubject) {
+        return enroll(operator, envName, studyShortcode, user, ppUser, preEnrollResponseId, isSubject, EnrolleeSourceType.PARTICIPANT);
+    }
+
+    @Transactional
+    public HubResponse<Enrollee> enroll(PortalParticipantUser operator,
+                                        EnvironmentName envName,
+                                        String studyShortcode,
+                                        ParticipantUser user,
+                                        PortalParticipantUser ppUser,
+                                        UUID preEnrollResponseId,
+                                        boolean isSubject,
+                                        EnrolleeSourceType source) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
@@ -134,7 +146,7 @@ public class EnrollmentService {
 
         // if the user is signed up, but not a subject, we can just return the existing enrollee,
         // otherwise create a new one for them
-        Enrollee enrollee = findOrCreateEnrolleeForEnrollment(user, ppUser, studyEnv, studyShortcode, preEnrollResponseId, isSubject);
+        Enrollee enrollee = findOrCreateEnrolleeForEnrollment(user, ppUser, studyEnv, studyShortcode, preEnrollResponseId, isSubject, source);
 
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
@@ -152,7 +164,9 @@ public class EnrollmentService {
         return hubResponse;
     }
 
-    private Enrollee findOrCreateEnrolleeForEnrollment(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironment studyEnv, String studyShortcode, UUID preEnrollResponseId, boolean isSubjectEnrollment) {
+    private Enrollee findOrCreateEnrolleeForEnrollment(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironment studyEnv,
+                                                       String studyShortcode, UUID preEnrollResponseId, boolean isSubjectEnrollment,
+                                                       EnrolleeSourceType source) {
         return enrolleeService
                 .findByParticipantUserIdAndStudyEnv(user.getId(), studyShortcode, studyEnv.getEnvironmentName())
                 .filter(e -> {
@@ -175,6 +189,7 @@ public class EnrollmentService {
                             .profileId(ppUser.getProfileId())
                             .preEnrollmentResponseId(preEnrollResponseId)
                             .subject(isSubjectEnrollment)
+                            .source(source)
                             .build();
                     return enrolleeService.create(newEnrollee);
                 });
@@ -217,7 +232,7 @@ public class EnrollmentService {
                 .surveyId(preEnrollResponse.getSurveyId())
                 .portalParticipantUserId(ppUser.getId())
                 .build();
-        
+
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(
                 enrollee,

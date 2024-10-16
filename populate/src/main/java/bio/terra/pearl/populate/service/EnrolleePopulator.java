@@ -13,10 +13,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
@@ -358,8 +355,14 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Enrollee enrollee;
         List<ParticipantTask> tasks;
         if (popDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee> hubResponse = enrollmentService.enroll(ppUser, environmentName, context.getStudyShortcode(),
-                    attachedUser, ppUser, popDto.getPreEnrollmentResponseId(), true);
+            HubResponse<Enrollee> hubResponse = enrollmentService.enroll(ppUser,
+                    environmentName,
+                    context.getStudyShortcode(),
+                    attachedUser,
+                    ppUser,
+                    popDto.getPreEnrollmentResponseId(),
+                    true,
+                    popDto.getSource() == null ? EnrolleeSourceType.PARTICIPANT : popDto.getSource());
             enrollee = hubResponse.getEnrollee();
             tasks = hubResponse.getTasks();
             // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually
