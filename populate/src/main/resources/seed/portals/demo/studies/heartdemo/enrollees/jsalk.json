@@ -56,7 +56,8 @@
         {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Jonas", "viewedLanguage": "en"},
         {"questionStableId": "hd_hd_basic_lastName", "stringValue": "Salk", "viewedLanguage": "en"},
         {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "1223 Walnut Street", "viewedLanguage": "es"},
-        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes", "viewedLanguage": "es"}
+        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes", "viewedLanguage": "es"},
+        {"questionStableId": "hd_hd_basic_languages", "objectValue": "[{\"language\": \"English\", \"proficiency\": \"native\", \"workUse\": [\"yes\"]}, {\"language\": \"Dutch\", \"proficiency\": \"fluent\", \"workUse\": []}]", "viewedLanguage": "es"}
       ],
       "currentPageNo": 1,
       "complete": true,
@@ -66,18 +67,6 @@
       "surveyVersion": 1,
       "answerPopDtos": [
         {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street", "viewedLanguage": "es"}
-      ],
-      "justification":  "User entered the incorrect mailing address.",
-      "creatingAdminUsername":  "heartdemostaff@gmail.com",
-      "currentPageNo": 1,
-      "complete": true,
-      "submittedHoursAgo": 48
-    }, {
-      "surveyStableId": "hd_hd_medList",
-      "surveyVersion": 1,
-      "answerPopDtos": [
-        {"questionStableId": "medicationsPanel", "objectValue": "[{\"medication\":[\"abacavir sulfate\",\"abacavir sulfate, dolutegravir sodium, lamivudine\"],\"medicationStartMonth\":\"february\",\"medicationStartYear\":\"2023\",\"medicationStopMonth\":\"february\",\"medicationStopYear\":\"2024\",\"clinicalTrial\":[\"yes\"]}]",
-          "viewedLanguage": "en"}
       ],
       "justification":  "User entered the incorrect mailing address.",
       "creatingAdminUsername":  "heartdemostaff@gmail.com",
