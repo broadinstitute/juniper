@@ -99,7 +99,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testExportIncludeFields(TestInfo testInfo) throws Exception {
+    public void testExportIncludeFields(TestInfo testInfo) {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
@@ -111,6 +111,23 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         enrolleeExportService.export(opts, studyEnv.getId(), stream);
 
         assertThat(stream.toString(), startsWith("enrollee.shortcode\tprofile.familyName\nShortcode"));
+    }
+
+    @Test
+    @Transactional
+    public void testExportStudyShortcode(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, bundle.getStudyEnv(), new Profile());
+
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder().rowLimit(2).build();
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(bundle.getStudyEnv().getId(), opts);
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(opts, bundle.getStudyEnv().getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
+
+        // confirm enrollees are in reverse order of creation
+        assertThat(exportMaps.get(0).get("study.shortcode"), equalTo(bundle.getStudy().getShortcode()));
     }
 
     @Test
