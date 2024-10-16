@@ -1153,6 +1153,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async saveExportIntegration(studyEnvParams: StudyEnvParams, integration: ExportIntegration):
+    Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${integration.id}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(integration)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchExportIntegrationJobs(studyEnvParams: StudyEnvParams): Promise<ExportIntegrationJob[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrationJobs`
     const response = await fetch(url, this.getGetInit())

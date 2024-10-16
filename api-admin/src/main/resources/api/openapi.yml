@@ -1241,6 +1241,24 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: saves an exportIntegration
+      tags: [ exportIntegration ]
+      operationId: save
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/exportIntegrations/{id}/run:
     post:
       summary: runs the exportIntegration by id

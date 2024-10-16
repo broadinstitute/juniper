@@ -108,7 +108,7 @@ export function ExportOptionsForm({ exportOptions, setExportOptions }:
     !exportOptions.filterString?.includes('{enrollee.subject} = true')
 
 
-  return <form onSubmit={e => e.preventDefault()}>
+  return <div>
     <div className="py-2">
       <p className="fw-bold mb-1">
         Data format
@@ -246,7 +246,7 @@ export function ExportOptionsForm({ exportOptions, setExportOptions }:
       see the <Link to="https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123" target="_blank">
       help page</Link>.
     </div>
-  </form>
+  </div>
 }
 
 export default ExportDataModal
