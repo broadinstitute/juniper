@@ -13,12 +13,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.reducing;
 
 /**
  * See https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123-Participant-List-Export-details
@@ -320,7 +322,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             // if the question is a child of a parent question, then the answer value is
             // the parent's json object value, so we need to extract the value of this
             // child's stable id from it
-            return extractChildValue(itemFormatter, answer, choices, stableIdForOptions, objectMapper);
+            answer = extractChildAnswer(itemFormatter, answer, choices, stableIdForOptions, objectMapper);
         }
 
         if (answer.getStringValue() != null) {
@@ -335,33 +337,47 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return "";
     }
 
-    protected static String extractChildValue(AnswerItemFormatter itemFormatter, Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
+    protected static Answer extractChildAnswer(AnswerItemFormatter itemFormatter, Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         Integer repeatIndex = itemFormatter.getRepeatIndex();
+        Answer childAnswer = new Answer();
+        BeanUtils.copyProperties(answer, childAnswer, "objectValue", "stringValue");
 
         try {
-            JsonNode answerNode = objectMapper.readTree(answer.valueAsString());
+            if (answer.getParsedObjectValue() == null) {
+                answer.setParsedObjectValue(objectMapper.readTree(answer.getObjectValue()));
+            }
+            JsonNode answerNode = answer.getParsedObjectValue();
             if (Objects.nonNull(repeatIndex)) {
                 if (!answerNode.has(repeatIndex)) {
-                    return "";
+                    return childAnswer;
                 }
                 answerNode = answerNode.get(repeatIndex);
             }
 
             if (!answerNode.has(itemFormatter.getQuestionStableId())) {
-                return "";
+                return childAnswer;
             }
             answerNode = answerNode.get(itemFormatter.getQuestionStableId());
 
             if (answerNode == null) {
-                return "";
+                return childAnswer;
             }
+            if (answerNode.isArray()) {
+                childAnswer.setObjectValue(answerNode.toString());
 
-            return formatStringValue(answerNode.asText(), choices, stableIdForOptions, answer);
+            } else if (answerNode.isBoolean()) {
+                childAnswer.setBooleanValue(answerNode.asBoolean());
+
+            } else if (answerNode.isNumber()) {
+                childAnswer.setNumberValue(answerNode.asDouble());
+            } else if (answerNode.isTextual()) {
+                childAnswer.setStringValue(answerNode.asText());
+            }
         } catch (Exception e) {
             log.warn("Failed to parse parent answer for child question - enrollee: {}, question: {}, answer: {}",
                     answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
         }
-        return "";
+        return childAnswer;
     }
 
     /**

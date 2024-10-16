@@ -2,6 +2,7 @@
   "linkedUsernameKey": "invited",
   "shortcode": "HDINVI",
   "simulateSubmissions": true,
+  "submittedHoursAgo": 100,
   "surveyResponseDtos": [
     {
       "surveyStableId": "hd_hd_basicInfo",
