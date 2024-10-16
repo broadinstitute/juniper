@@ -24,6 +24,8 @@ public class ExportIntegrationExtServiceTests extends BaseSpringBootTest {
             AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
             "create",
             AuthAnnotationSpec.withPortalStudyEnvPerm("export_integration"),
+            "save",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("export_integration"),
             "listJobs",
             AuthAnnotationSpec.withPortalStudyEnvPerm("BASE")));
   }
