@@ -78,8 +78,8 @@ export default function ParticipantMergeView({ source, target, studyEnvContext, 
 
     <div className="d-flex">
       <div className="container">
-        <h5>Duplicate email</h5>
-        <input type="text" className="form-control" id="source"
+        <label htmlFor="sourceEmail">Duplicate email</label>
+        <input type="text" className="form-control" id="sourceEmail"
           onChange={e => setSourceEmail(e.target.value)} value={sourceEmail}/>
         <p className="text-muted fst-italic">The account to delete/merge.</p>
       </div>
@@ -87,8 +87,8 @@ export default function ParticipantMergeView({ source, target, studyEnvContext, 
         <FontAwesomeIcon icon={faExchange}/>
       </Button>
       <div className="container">
-        <h5>Original email</h5>
-        <input type="text" className="form-control" id="target" size={20}
+        <label htmlFor="targetEmail">Original email</label>
+        <input type="text" className="form-control" id="targetEmail" size={20}
           onChange={e => setTargetEmail(e.target.value)} value={targetEmail}/>
         <p className="text-muted fst-italic">The account to keep.</p>
       </div>

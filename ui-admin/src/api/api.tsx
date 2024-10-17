@@ -82,7 +82,7 @@ export type EnrolleeSearchExpressionResult = {
   portalParticipantUser?: PortalParticipantUser
 }
 
-export type ParticipantUsersWithEnrollees = {
+export type ParticipantUsersAndEnrollees = {
   participantUsers: ParticipantUser[],
   enrollees: Enrollee[]
 }
@@ -802,7 +802,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersWithEnrollees> {
+  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersAndEnrollees> {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers`,
       this.getGetInit())
     return await this.processJsonResponse(response)

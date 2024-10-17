@@ -17,10 +17,9 @@ import { StudyEnvContextT, studyEnvPath } from '../../StudyEnvironmentRouter'
 import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import { renderPageHeader } from 'util/pageUtils'
 import _uniq from 'lodash/uniq'
-import _groupBy from 'lodash/groupBy'
 import { tabLinkStyle } from 'util/subNavStyles'
 import ParticipantMergeView from '../merge/ParticipantMergeView'
-import ParticipantDupeView, { DupeType, UserDupe } from '../merge/ParticipantDupeView'
+import useParticipantDupeTab from '../merge/UseParticipantDupeTab'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 export type ParticipantUserWithEnrollees = ParticipantUser & {
@@ -39,23 +38,24 @@ export default function PortalUserList({ studyEnvContext }:
     'email': false
   })
   const [envMap, setEnvMap] = useState<Record<string, Study>>({})
-  const [possibleDupes, setPossibleDupes] = useState<UserDupe[]>()
 
   const { isLoading, reload } = useLoadingEffect(async () => {
+    // first get all the studyenvironments for this portal -- that will be needed to determine column headers
     const studies = await Api.fetchStudiesWithEnvs(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
+    // map the studies by their studyEnvironmentId
     setEnvMap(studies.reduce((acc, study) => {
       (acc as Record<string, Study>)[study.studyEnvironments[0].id] = study
       return acc
     }, {}))
     const result = await Api.fetchParticipantUsers(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
+    // convert the independent lists of users and enrollees into a single list of users with enrollees
     const mappedResult = result.participantUsers.map(user => ({
       ...user,
       enrollees: result.enrollees.filter(enrollee => enrollee.participantUserId === user.id)
     }))
     setUsers(mappedResult)
-    setPossibleDupes(identifyDupes(mappedResult))
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const columns: ColumnDef<ParticipantUserWithEnrollees>[] = useMemo(() => {
@@ -130,9 +130,8 @@ export default function PortalUserList({ studyEnvContext }:
       </div>
     },
     {
-      name: `Possible Duplicates ${possibleDupes ? `(${possibleDupes.length})` : ''}`, path: 'dupes',
-      component: <ParticipantDupeView possibleDupes={possibleDupes || []} studyEnvContext={studyEnvContext}
-        onUpdate={reload}/>
+      ...useParticipantDupeTab({ users, studyEnvContext, onUpdate: reload }),
+      path: 'dupes'
     },
     {
       name: 'Account merging', path: 'merge', component: <ParticipantMergeView studyEnvContext={studyEnvContext}
@@ -166,37 +165,5 @@ export default function PortalUserList({ studyEnvContext }:
 
     </LoadingSpinner>
   </div>
-}
-
-
-const NO_DATA = 'no_data'
-const DUPE_FUNCTIONS: {type: DupeType, func: (user: ParticipantUserWithEnrollees) => string}[] = [
-  { type: 'username', func: (user: ParticipantUserWithEnrollees) => user.username.toLowerCase() },
-  {
-    type: 'name', func: (user: ParticipantUserWithEnrollees) => {
-      if (user.enrollees.length === 0 ||
-        !user.enrollees[0].profile.givenName && !user.enrollees[0].profile.familyName) {
-        return NO_DATA
-      }
-      return `${user.enrollees[0].profile.givenName?.toLowerCase()} 
-          ${user.enrollees[0].profile.familyName?.toLowerCase()}`
-    }
-  }
-]
-
-function identifyDupes(users: ParticipantUserWithEnrollees[]) {
-  const possibleDupes: UserDupe[] = []
-  DUPE_FUNCTIONS.forEach(dupeFunc => {
-    const dupeGroups = _groupBy(users, dupeFunc.func)
-    Object.keys(dupeGroups).forEach(dupeKey => {
-      if (dupeGroups[dupeKey].length > 1 && dupeKey !== NO_DATA) {
-        possibleDupes.push({
-          users: dupeGroups[dupeKey],
-          dupeType: dupeFunc.type
-        })
-      }
-    })
-  })
-  return possibleDupes
 }
 
