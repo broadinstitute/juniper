@@ -1,0 +1,18 @@
+adminUrl: ""
+portals:
+  - name: ""
+    customDomain: ""
+gcpProject: ""
+gcpRegion: ""
+appVersion: 1.4.0
+b2c:
+  admin:
+    clientId: ""
+    policyName: ""
+    tenantName: ""
+  portals:
+    portalName:
+      tenantName: ""
+      policyName: ""
+      clientId: ""
+      changePasswordPolicyName: ""
