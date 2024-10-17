@@ -98,7 +98,7 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
                 {
                     "event": "$mp_web_page_view",
                     "properties": {
-                        "$current_url": "https://sandbox.demo.localhost:3001/?referrer=google.com&language=en",
+                        "$current_url": "https://sandbox.demo.localhost:3001/?referrer=google.com&language=en&timestamp=1112223333",
                         "current_url_search": "?referrer=google.com&language=en"
                     }
                 }
