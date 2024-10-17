@@ -65,6 +65,20 @@ public class ExportIntegrationExtService {
     return exportIntegrationService.create(exportIntegration);
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "export_integration")
+  public ExportIntegration save(
+      PortalStudyEnvAuthContext authContext, ExportIntegration exportIntegration) {
+    ExportIntegration loadedIntegration =
+        exportIntegrationService
+            .find(exportIntegration.getId())
+            .orElseThrow(() -> new NotFoundException("Export Integration not found"));
+    if (!loadedIntegration.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())
+        || !loadedIntegration.getExportOptionsId().equals(exportIntegration.getExportOptionsId())) {
+      throw new NotFoundException("Export Integration not found");
+    }
+    return exportIntegrationService.update(exportIntegration);
+  }
+
   @EnforcePortalStudyEnvPermission(permission = "BASE")
   public List<ExportIntegrationJob> listJobs(PortalStudyEnvAuthContext authContext) {
     return exportIntegrationJobService.findByStudyEnvironment(

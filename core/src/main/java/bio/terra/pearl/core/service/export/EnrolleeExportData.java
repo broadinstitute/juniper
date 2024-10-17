@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Getter @Setter @Builder @AllArgsConstructor
 public class EnrolleeExportData {
+    private Study study;
     private Enrollee enrollee;
     private ParticipantUser participantUser;
     private Profile profile;

@@ -36,10 +36,12 @@ public class EnrolleeContextService {
     /**
      * useful for bulk-fetching enrollees for processing
      * this isn't terribly optimized -- we could do the join in the DB.  But this is assuming that the number of enrollees
-     *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 4 total DB roundtrips
+     *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 4 total DB roundtrips.
+     *
+     *  This returns the context for each enrollee in the order of the input list
      */
     public List<EnrolleeContext> fetchData(List<UUID> enrolleeIds) {
-        List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
+        List<Enrollee> enrollees = enrolleeService.findAllPreserveOrder(enrolleeIds);
         List<Profile> profiles = profileService.findAllWithMailingAddressPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
         List<EnrolleeContext> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->

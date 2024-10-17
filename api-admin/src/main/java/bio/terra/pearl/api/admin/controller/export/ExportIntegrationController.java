@@ -86,6 +86,23 @@ public class ExportIntegrationController implements ExportIntegrationApi {
   }
 
   @Override
+  public ResponseEntity<Object> save(
+      String portalShortcode, String studyShortcode, String envName, UUID id, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    ExportIntegration integration = objectMapper.convertValue(body, ExportIntegration.class);
+    if (!id.equals(integration.getId())) {
+      throw new IllegalArgumentException("ID in URL does not match ID in body");
+    }
+    integration =
+        exportIntegrationExtService.save(
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName),
+            integration);
+    return ResponseEntity.ok(integration);
+  }
+
+  @Override
   public ResponseEntity<Object> findJobsByStudy(
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser operator = authUtilService.requireAdminUser(request);

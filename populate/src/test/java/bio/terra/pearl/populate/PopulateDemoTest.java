@@ -106,6 +106,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     private void checkKeyedEnrollee(List<Enrollee> sandboxEnrollees) {
         Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDINVI".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
+        assertThat(enrollee.getSource(), equalTo(EnrolleeSourceType.IMPORT));
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         assertThat(user.getUsername().contains("+invited-"), equalTo(true));
         assertThat(user.getUsername(), endsWith("broadinstitute.org"));

@@ -1,6 +1,7 @@
 {
   "linkedUsernameKey": "invited",
   "shortcode": "HDINVI",
+  "source": "IMPORT",
   "simulateSubmissions": true,
   "surveyResponseDtos": [
     {

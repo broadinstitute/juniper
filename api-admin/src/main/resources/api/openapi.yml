@@ -1185,7 +1185,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/data:
-    get:
+    post:
       summary: Gets the export data in the specified format
       tags: [ export ]
       operationId: exportData
@@ -1193,14 +1193,9 @@ paths:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeSubheaders, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: excludeModules, in: query, required: false, schema: { type: array, items: { type: string } } }
-        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
-        - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
-        - { name: rowLimit, in: query, required: false, schema: { type: integer } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: export data
@@ -1208,7 +1203,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/dictionary:
-    get:
+    post:
       summary: Gets the export data dictionary
       tags: [ export ]
       operationId: exportDictionary
@@ -1216,11 +1211,9 @@ paths:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
-        - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: export data
@@ -1269,6 +1262,24 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: saves an exportIntegration
+      tags: [ exportIntegration ]
+      operationId: save
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: The exportIntegration

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters;
 
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
@@ -23,7 +24,7 @@ public class KitRequestFormatterTests {
             KitType.builder().id(UUID.randomUUID()).name("type1").build(),
             KitType.builder().id(UUID.randomUUID()).name("type2").build()
         );
-        KitRequestFormatter moduleFormatter = new KitRequestFormatter();
+        KitRequestFormatter moduleFormatter = new KitRequestFormatter(new ExportOptions());
         String sentDate = "2023-11-17T14:57:59.548Z";
         List<KitRequestDto> kitRequests = List.of(
             KitRequestDto.builder()
@@ -38,7 +39,7 @@ public class KitRequestFormatterTests {
                 .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))
                 .build()
         );
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, kitRequests, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, null, kitRequests, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);
 
         // the older kit should be first

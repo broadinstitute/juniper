@@ -44,12 +44,23 @@ export default function ExportIntegrationView({ studyEnvContext }: { studyEnvCon
     })
   }
 
+  const saveIntegration = async () => {
+    if (!integration) {
+      return
+    }
+    doApiLoad(async () => {
+      const savedIntegration = await Api.saveExportIntegration(paramsFromContext(studyEnvContext), integration)
+      Store.addNotification(successNotification(`Saved`))
+      setIntegration(savedIntegration)
+    })
+  }
+
   return <div className="container-fluid p-4">
     {renderPageHeader('Export Integration')}
     <LoadingSpinner isLoading={isLoading}>
       { integration && <ExportIntegrationForm integration={integration} setIntegration={setIntegration} /> }
       <div className="mt-5">
-        <Button variant="primary" onClick={() => {}} className="me-3">Save</Button>
+        <Button variant="primary" onClick={saveIntegration} className="me-3">Save</Button>
         <Button variant="secondary" outline={true} className="me-5"
           onClick={() => navigate(studyEnvExportIntegrationJobsPath(paramsFromContext(studyEnvContext)))}>
           View run history
