@@ -35,7 +35,7 @@ public class Enrollee extends BaseEntity {
     private boolean subject = true; // whether this Enrollee is a primary subject of the study (as opposed to just a proxy or family member)
     private boolean consented;
     @Builder.Default
-    private EnrolleeSourceType source = EnrolleeSourceType.PARTICIPANT;
+    private EnrolleeSourceType source = EnrolleeSourceType.PORTAL_SITE;
 
     @Builder.Default
     private List<FamilyEnrollee> familyEnrollees = new ArrayList<>();

@@ -122,7 +122,7 @@ public class EnrollmentService {
                                         PortalParticipantUser ppUser,
                                         UUID preEnrollResponseId,
                                         boolean isSubject) {
-        return enroll(operator, envName, studyShortcode, user, ppUser, preEnrollResponseId, isSubject, EnrolleeSourceType.PARTICIPANT);
+        return enroll(operator, envName, studyShortcode, user, ppUser, preEnrollResponseId, isSubject, EnrolleeSourceType.PORTAL_SITE);
     }
 
     @Transactional
