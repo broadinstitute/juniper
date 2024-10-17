@@ -8,14 +8,13 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  * Aspect to enforce portal permissions on methods annotated with EnforcePortalStudyEnvPermission.
@@ -62,13 +61,11 @@ public class EnforcePortalEnrolleePermissionAspect
     String enrolleeShortcode = authContext.getEnrolleeShortcodeOrId();
     if (enrolleeShortcode != null && enrolleeShortcode.length() > 16) {
       // it's an id, not a shortcode
-      enrolleeShortcode = enrolleeService
-                      .find(UUID.fromString(enrolleeShortcode))
-                      .orElseThrow(
-                              () ->
-                                      new NotFoundException(
-                                              "Enrollee not found"))
-                      .getShortcode();
+      enrolleeShortcode =
+          enrolleeService
+              .find(UUID.fromString(enrolleeShortcode))
+              .orElseThrow(() -> new NotFoundException("Enrollee not found"))
+              .getShortcode();
     }
     Enrollee enrollee =
         enrolleeService

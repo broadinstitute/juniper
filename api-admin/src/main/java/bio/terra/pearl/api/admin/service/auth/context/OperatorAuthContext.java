@@ -17,7 +17,6 @@ public class OperatorAuthContext {
   }
 
   public DataAuditInfo dataAuditInfo() {
-    return DataAuditInfo.builder()
-            .responsibleAdminUserId(getOperator().getId()).build();
+    return DataAuditInfo.builder().responsibleAdminUserId(getOperator().getId()).build();
   }
 }

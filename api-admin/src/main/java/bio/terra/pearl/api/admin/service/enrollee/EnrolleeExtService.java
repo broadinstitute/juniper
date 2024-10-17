@@ -5,23 +5,16 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,7 +40,8 @@ public class EnrolleeExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public List<Enrollee> findForKitManagement(PortalStudyEnvAuthContext authContext) {
-    return enrolleeService.findForKitManagement(authContext.getStudyShortcode(), authContext.getEnvironmentName());
+    return enrolleeService.findForKitManagement(
+        authContext.getStudyShortcode(), authContext.getEnvironmentName());
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
@@ -57,7 +51,7 @@ public class EnrolleeExtService {
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public List<ParticipantDataChange> findDataChangeRecords(
-          PortalEnrolleeAuthContext authContext, String modelName) {
+      PortalEnrolleeAuthContext authContext, String modelName) {
     if (modelName != null) {
       return participantDataChangeService.findAllRecordsForEnrolleeAndModelName(
           authContext.getEnrollee(), modelName);
@@ -66,9 +60,10 @@ public class EnrolleeExtService {
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")
-  public WithdrawnEnrollee withdrawEnrollee(PortalEnrolleeAuthContext authContext, EnrolleeWithdrawalReason reason)
+  public WithdrawnEnrollee withdrawEnrollee(
+      PortalEnrolleeAuthContext authContext, EnrolleeWithdrawalReason reason, String note)
       throws JsonProcessingException {
     return withdrawnEnrolleeService.withdrawEnrollee(
-            authContext.getEnrollee(), reason, authContext.dataAuditInfo());
+        authContext.getEnrollee(), reason, note, authContext.dataAuditInfo());
   }
 }

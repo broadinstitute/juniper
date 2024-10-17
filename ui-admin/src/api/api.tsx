@@ -373,6 +373,8 @@ export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string
   userData: string
+  reason: 'PARTICIPANT_REQUEST' | 'TESTING' | 'DUPLICATE'
+  note: string
 }
 
 export type ExportIntegration = {
@@ -883,10 +885,14 @@ export default {
   },
 
   async withdrawEnrollee(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<object> {
+    enrolleeShortcode: string, withdrawParams: {reason: string, note: string}): Promise<object> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
     }/enrollees/${enrolleeShortcode}/withdraw`
-    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(withdrawParams)
+    })
     return await this.processJsonResponse(response)
   },
 

@@ -44,9 +44,13 @@ public class EnrolleeController implements EnrolleeApi {
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcodeOrId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     Enrollee enrollee =
-        enrolleeExtService.findWithAdminLoad(PortalEnrolleeAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName), enrolleeShortcodeOrId
-        ));
+        enrolleeExtService.findWithAdminLoad(
+            PortalEnrolleeAuthContext.of(
+                adminUser,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOf(envName),
+                enrolleeShortcodeOrId));
     return ResponseEntity.ok(enrollee);
   }
 
@@ -59,21 +63,37 @@ public class EnrolleeController implements EnrolleeApi {
       String modelName) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<ParticipantDataChange> records =
-        enrolleeExtService.findDataChangeRecords(PortalEnrolleeAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName), enrolleeShortcode
-        ), modelName);
+        enrolleeExtService.findDataChangeRecords(
+            PortalEnrolleeAuthContext.of(
+                adminUser,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOf(envName),
+                enrolleeShortcode),
+            modelName);
     return ResponseEntity.ok(records);
   }
 
   @Override
   public ResponseEntity<Object> withdraw(
-      String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode, String reason) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
+    WithdrawalParams params = objectMapper.convertValue(body, WithdrawalParams.class);
     try {
       WithdrawnEnrollee withdrawn =
-          enrolleeExtService.withdrawEnrollee(PortalEnrolleeAuthContext.of(
-                  adminUser, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName), enrolleeShortcode),
-                  EnrolleeWithdrawalReason.valueOf(reason));
+          enrolleeExtService.withdrawEnrollee(
+              PortalEnrolleeAuthContext.of(
+                  adminUser,
+                  portalShortcode,
+                  studyShortcode,
+                  EnvironmentName.valueOf(envName),
+                  enrolleeShortcode),
+              params.reason,
+              params.note);
       return ResponseEntity.ok(new WithdrawnResponse(withdrawn.getId()));
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
@@ -87,11 +107,13 @@ public class EnrolleeController implements EnrolleeApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     List<Enrollee> enrollees =
-        enrolleeExtService.findForKitManagement(PortalStudyEnvAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, environmentName
-        ));
+        enrolleeExtService.findForKitManagement(
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName));
     return ResponseEntity.ok(enrollees);
   }
 
   public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}
+
+  public record WithdrawalParams(EnrolleeWithdrawalReason reason, String note) {}
 }

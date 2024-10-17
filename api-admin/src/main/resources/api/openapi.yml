@@ -698,7 +698,10 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - *enrolleeShortcodeParam
-        - { name: reason, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: withdrawal params
+        content: *jsonContent
       responses:
         '200':
           description: withdrawnEnrollee id

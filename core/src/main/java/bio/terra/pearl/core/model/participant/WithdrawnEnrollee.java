@@ -22,5 +22,6 @@ public class WithdrawnEnrollee extends BaseEntity {
   private String enrolleeData;
   /** JSON of the ParticipantUser object needed to be saved for compliance */
   private String userData;
-  private EnrolleeWithdrawalReason withdrawalReason;
+  private EnrolleeWithdrawalReason reason;
+  private String note;
 }
