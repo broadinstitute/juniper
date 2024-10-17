@@ -1,11 +1,11 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { asMockedFn, KitRequest, KitRequestStatus, setupRouterTest } from '@juniper/ui-core'
+import { asMockedFn, KitRequest, KitRequestStatus, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import KitsPage from './KitsPage'
 import { mockEnrollee, mockPortalParticipantUser, mockProfile } from 'test-utils/test-participant-factory'
 import { useActiveUser } from 'providers/ActiveUserProvider'
-import { usePortalEnv } from '../../providers/PortalProvider'
-import { mockUsePortalEnv } from '../../test-utils/test-portal-factory'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -68,11 +68,11 @@ const inPersonKitStatusToTestIdMap: { [key in KitRequestStatus]: string[] } = {
 describe('KitsPage', () => {
   it('should render a message when there are no kits for an enrollee', () => {
     asMockedFn(useActiveUser).mockReturnValue(mockActiveUserWithKits([]))
-    const { RoutedComponent } = setupRouterTest(<KitsPage/>)
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><KitsPage/></MockI18nProvider>)
     render(RoutedComponent)
-    expect(screen.getByText('Sample collection kits')).toBeInTheDocument()
-    expect(screen.getByText('Your kits (0)')).toBeInTheDocument()
-    expect(screen.getByText('You do not have any sample collection kits at this time.')).toBeInTheDocument()
+    expect(screen.getByText('{kitsPageTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsPageYourKitsTitle} (0)')).toBeInTheDocument()
+    expect(screen.getByText('{kitsPageNoKits}')).toBeInTheDocument()
   })
 
   mailedKitStatuses.forEach(status => {
@@ -93,9 +93,9 @@ describe('KitsPage', () => {
           skipAddressValidation: false
         }
       ]))
-      const { RoutedComponent } = setupRouterTest(<KitsPage/>)
+      const { RoutedComponent } = setupRouterTest(<MockI18nProvider><KitsPage/></MockI18nProvider>)
       render(RoutedComponent)
-      expect(screen.getByText('Sample collection kits')).toBeInTheDocument()
+      expect(screen.getByText('{kitsPageTitle}')).toBeInTheDocument()
 
       const expectedTestIds = mailedKitStatusToTestIdMap[status]
       expectedTestIds.forEach(testId => {
@@ -122,9 +122,9 @@ describe('KitsPage', () => {
           skipAddressValidation: false
         }
       ]))
-      const { RoutedComponent } = setupRouterTest(<KitsPage/>)
+      const { RoutedComponent } = setupRouterTest(<MockI18nProvider><KitsPage/></MockI18nProvider>)
       render(RoutedComponent)
-      expect(screen.getByText('Sample collection kits')).toBeInTheDocument()
+      expect(screen.getByText('{kitsPageTitle}')).toBeInTheDocument()
 
       const expectedTestIds = inPersonKitStatusToTestIdMap[status]
       expectedTestIds.forEach(testId => {

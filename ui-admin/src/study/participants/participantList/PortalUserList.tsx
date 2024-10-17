@@ -26,7 +26,6 @@ export type ParticipantUserWithEnrollees = ParticipantUser & {
   enrollees: Enrollee[]
 }
 
-
 /**
  * show a list of withdrawn enrollees with account information
  */
@@ -50,6 +49,7 @@ export default function PortalUserList({ studyEnvContext }:
     }, {}))
     const result = await Api.fetchParticipantUsers(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
+
     // convert the independent lists of users and enrollees into a single list of users with enrollees
     const mappedResult = result.participantUsers.map(user => ({
       ...user,
@@ -166,4 +166,3 @@ export default function PortalUserList({ studyEnvContext }:
     </LoadingSpinner>
   </div>
 }
-

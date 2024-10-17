@@ -109,8 +109,6 @@ export default function ParticipantMergeView({ source, target, studyEnvContext, 
           </div>
           <div>
             { mergePlan.enrollees.map((merge, index) => <EnrolleeMergePlanView
-              sourceName={mergePlan.users.pair.source!.username}
-              targetName={mergePlan.users.pair.target!.username}
               enrolleeMerge={merge} key={index} studyEnvParams={paramsFromContext(studyEnvContext)}/>) }
           </div>
           <Button variant="primary" onClick={executeMerge} className="mt-3">Execute Merge</Button>
@@ -120,9 +118,8 @@ export default function ParticipantMergeView({ source, target, studyEnvContext, 
   </div>
 }
 
-function EnrolleeMergePlanView({ enrolleeMerge, sourceName, targetName,  studyEnvParams }:
-  {enrolleeMerge: MergeAction<Enrollee, EnrolleeMergePlan>, sourceName: string, targetName: string,
-    studyEnvParams: StudyEnvParams }) {
+function EnrolleeMergePlanView({ enrolleeMerge,  studyEnvParams }:
+  {enrolleeMerge: MergeAction<Enrollee, EnrolleeMergePlan>, studyEnvParams: StudyEnvParams }) {
   const sortedTasks = enrolleeMerge.mergePlan.tasks.sort((a, b) =>
     taskComparator(a.pair.source ?? a.pair.target, b.pair.source ?? b.pair.target))
   return <div className="mx-4">
@@ -138,10 +135,12 @@ function EnrolleeMergePlanView({ enrolleeMerge, sourceName, targetName,  studyEn
       </Link> }
     <table>
       <thead>
-        <th>task</th>
-        <th className="px-2">duplicate</th>
-        <th className="px-2">original</th>
-        <th className="px-2">Merge result</th>
+        <tr>
+          <th>task</th>
+          <th className="px-2">duplicate</th>
+          <th className="px-2">original</th>
+          <th className="px-2">Merge result</th>
+        </tr>
       </thead>
       <tbody>
         { sortedTasks.map((taskMerge, index) =>
