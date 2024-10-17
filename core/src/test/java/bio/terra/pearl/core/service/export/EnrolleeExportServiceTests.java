@@ -29,6 +29,7 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +69,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
-    private StudyEnvironmentService studyEnvironmentService;
-    @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
-    private AnswerFactory answerFactory;
+    private ObjectMapper objectMapper;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
 
@@ -445,7 +444,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testDynamicPanelExport(TestInfo testInfo) {
+    public void testDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey survey = surveyService.create(
@@ -473,22 +472,22 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee1,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
                 enrollee2,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"Jonas","lastName":"Salk"},
                                      {"firstName":"Peter","lastName":"Salk"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
@@ -557,7 +556,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) {
+    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey surveyV1 = surveyService.create(
@@ -591,12 +590,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee,
                 surveyV1,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
 
