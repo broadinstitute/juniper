@@ -35,6 +35,7 @@ import {
   AdminUserParams,
   Role
 } from './adminUser'
+import { SystemStatus } from 'status/status'
 
 export type {
   Answer,
@@ -1698,6 +1699,15 @@ export default {
     const params = queryString.stringify({ eventTypes: eventTypes.join(','), days, limit })
     const url = `${API_ROOT}/logEvents?${params}`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getSystemStatus(): Promise<SystemStatus> {
+    const url = `/status`
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 
