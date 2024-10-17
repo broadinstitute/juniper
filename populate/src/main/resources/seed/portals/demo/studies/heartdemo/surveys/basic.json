@@ -1586,7 +1586,21 @@
                   {"value": "proficient", "text": {"en": "Proficient", "es": "Competente", "dev": "DEV_Proficient"}},
                   {"value": "basic", "text": {"en": "Basic", "es": "Básico", "dev": "DEV_Basic"}}
                 ]
+              },
+              {
+                "type": "checkbox",
+                "name": "workUse",
+                "title": "I also use this language at work",
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": "Yes",
+                    "value": "yes"
+                  }
+                ]
               }
+
             ]
           }
         ]
