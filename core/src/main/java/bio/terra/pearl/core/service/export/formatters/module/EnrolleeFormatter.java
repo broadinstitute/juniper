@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class EnrolleeFormatter extends BeanModuleFormatter<Enrollee> {
     public static final List<String> INCLUDED_PROPERTIES = List.of(
-            "shortcode", "consented", "createdAt", "subject"
+            "shortcode", "consented", "createdAt", "subject", "source"
     );
 
     public EnrolleeFormatter(ExportOptions exportOptions) {
