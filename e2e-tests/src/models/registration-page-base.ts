@@ -1,4 +1,9 @@
-import { expect, Locator, Page, Response } from '@playwright/test'
+import {
+  expect,
+  Locator,
+  Page,
+  Response
+} from '@playwright/test'
 import JuniperPageBase from 'src/models/juniper-page-base'
 import { RegistrationPageInterface } from 'src/models/registration-page-interface'
 import Question, { QuestionOpts } from 'src/page-components/question'
@@ -8,8 +13,8 @@ export default abstract class RegistrationPageBase extends JuniperPageBase imple
     super(page)
   }
 
-  getQuestion(qText: string, opts?: QuestionOpts): Question {
-    return new Question(this.page, { ...opts, qText })
+  getQuestion(dataName: string, opts?: QuestionOpts): Question {
+    return new Question(this.page, { ...opts, dataName })
   }
 
   /** Click +/- icon to expand or collapse hidden texts */
@@ -35,7 +40,7 @@ export default abstract class RegistrationPageBase extends JuniperPageBase imple
   }
 
   async drawSignature(question: string): Promise<this> {
-    const q = new Question(this.page, { qText: question })
+    const q = new Question(this.page, { dataName: question })
     const canvas = q.locator.locator('canvas')
     await canvas.scrollIntoViewIfNeeded()
     const box = await canvas.boundingBox()
@@ -63,8 +68,8 @@ export default abstract class RegistrationPageBase extends JuniperPageBase imple
     return typeof resp === 'object' ? resp : null
   }
 
-  async progress(): Promise<string> {
-    return await this.formProgress.locator('.sd-progress__text:visible').innerText()
+  async progress(): Promise<Locator> {
+    return await this.formProgress
   }
 
   /**
@@ -74,7 +79,7 @@ export default abstract class RegistrationPageBase extends JuniperPageBase imple
    */
   async agree(yes = true): Promise<this> {
     const label = yes ? 'I agree' : 'I do not agree'
-    await this.page.locator(`label[aria-label="${label}"]`).click()
+    await this.page.getByText(label, { exact: true }).click()
     return this
   }
 
@@ -91,7 +96,7 @@ export default abstract class RegistrationPageBase extends JuniperPageBase imple
   }
 
   protected get formProgress(): Locator {
-    return this.page.locator('.sd-progress')
+    return this.page.getByLabel('progress')
   }
 
   protected get formActionbar(): Locator {

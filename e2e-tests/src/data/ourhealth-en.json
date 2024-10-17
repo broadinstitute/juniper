@@ -1,11 +1,11 @@
  {
   "QLabel": {
-    "SouthAsianAncestry": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
-    "FullName": "Full legal name",
-    "IsAdult": "I am 18 years old or older.",
-    "LiveInUS": "I live in the United States.",
-    "Signature": "Signature of Subject",
-    "UnderstandEnglish": "I am comfortable reading or speaking English."
+    "SouthAsianAncestry": "oh_oh_preenroll_southAsianAncestry",
+    "FullName": "oh_oh_consent_legalName",
+    "IsAdult": "oh_oh_preenroll_isAdult",
+    "LiveInUS": "oh_oh_preenroll_livesInUS",
+    "Signature": "oh_oh_consent_signature",
+    "UnderstandEnglish": "oh_oh_preenroll_understandsEnglish"
   },
   "FAQ": {
     "HelpUsUnderstand": "Help us understand cardiovascular disease risk among South Asian populations.",

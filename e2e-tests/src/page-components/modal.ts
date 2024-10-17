@@ -1,4 +1,7 @@
-import { Locator, Page } from '@playwright/test'
+import {
+  Locator,
+  Page
+} from '@playwright/test'
 import WebComponentBase from 'src/page-components/web-component-base'
 
 export default class Modal extends WebComponentBase {
@@ -17,8 +20,8 @@ export default class Modal extends WebComponentBase {
     await this.locator.getByRole('button', { name: 'Close' }).click()
   }
 
-  async fillIn(label: string, value: string): Promise<this> {
-    await super.fillIn(label, value, this.locator)
+  async fillIn(value: string): Promise<this> {
+    await super.fillIn(value, this.locator)
     return this
   }
 }

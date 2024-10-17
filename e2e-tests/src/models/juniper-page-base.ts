@@ -1,4 +1,9 @@
-import { expect, Locator, Page, Response } from '@playwright/test'
+import {
+  expect,
+  Locator,
+  Page,
+  Response
+} from '@playwright/test'
 import { JuniperPageInterface } from 'src/models/juniper-page-interface'
 import Textbox from 'src/page-components/textbox'
 
@@ -39,8 +44,8 @@ export default abstract class JuniperPageBase implements JuniperPageInterface {
     return this
   }
 
-  async fillIn(name: string, value: string, parent?: Locator): Promise<this> {
-    const textbox = new Textbox(this.page, { name, parent })
+  async fillIn(value: string, parent: Locator): Promise<this> {
+    const textbox = new Textbox(this.page, { parent })
     await textbox.fill(value)
     return this
   }

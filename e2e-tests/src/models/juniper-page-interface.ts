@@ -5,5 +5,6 @@ export interface JuniperPageInterface extends WebPageInterface {
   title: string
   clickByRole(role: string, name: string): Promise<this>
   clickByName(name: string): Promise<this>
-  fillIn(name: string, value: string, parent?: Locator): Promise<this>
+
+  fillIn(value: string, parent?: Locator): Promise<this>
 }

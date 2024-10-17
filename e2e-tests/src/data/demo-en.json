@@ -1,22 +1,19 @@
  {
   "PreEnroll": {
-    "ProxyQuestion": "Who are you enrolling in the study?",
-    "ProxyAnswerYes": "I am enrolling on behalf of my child / my legal dependent.",
-    "ProxyGivenName": "Proxy User Given Name",
-    "ProxyFamilyName": "Proxy User Family Name",
-    "GivenName": "Given Name",
-    "FamilyName": "Family Name",
-    "IsAdult": "I am 18 years old or older.",
-    "LiveInUS": "I live in the United States.",
-    "marketing": "I would like to receive marketing communications to the email address that I provide during registration.",
-    "UnderstandEnglish": "I am comfortable reading or speaking English.",
-    "SouthAsianAncestry": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka."
+    "ProxyQuestion": "proxy_enrollment",
+    "ProxyGivenName": "proxy_given_name",
+    "ProxyFamilyName": "proxy_family_name",
+    "GivenName": "governed_given_name",
+    "FamilyName": "governed_family_name",
+    "IsAdult": "hd_hd_preenroll_isAdult",
+    "LiveInUS": "hd_hd_preenroll_livesInUS",
+    "marketing": "do_not_email_solicit",
+    "UnderstandEnglish": "hd_hd_preenroll_understandsEnglish",
+    "SouthAsianAncestry": "hd_hd_preenroll_southAsianAncestry"
   },
  "Consent": {
-   "FullName": "Full legal name",
-   "Signature": "Signature of Subject",
-   "VoluntaryParticipation": "I understand that my participation is voluntary and I am free to withdraw at any time",
-   "PermissionToUseDNA": "I give permission for my saliva samples to be used to obtain DNA for use in this study",
-   "AgreeToContact": "I agree to be contacted by the research team to be invited to participate in future medical and health-related studies"
+   "FullName": "hd_hd_consent_legalName",
+   "Signature": "hd_hd_consent_signature",
+   "Initials": "initials"
  }
 }
