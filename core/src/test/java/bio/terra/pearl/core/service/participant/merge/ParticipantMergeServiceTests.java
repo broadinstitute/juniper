@@ -10,6 +10,7 @@ import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -99,6 +100,8 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         List<WithdrawnEnrollee> withdrawnUsers = withdrawnEnrolleeService.findByStudyEnvironmentIdNoData(studyEnvBundle.getStudyEnv().getId());
         assertThat(withdrawnUsers, hasSize(1));
         assertThat(withdrawnUsers.get(0).getShortcode(), equalTo(sourceBundle.enrollee().getShortcode()));
+        assertThat(withdrawnUsers.get(0).getReason(), equalTo(EnrolleeWithdrawalReason.DUPLICATE));
+
     }
 
     /** test merge of two participants who have enrolled in a combination of studies within a portal */
@@ -148,6 +151,7 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         List<WithdrawnEnrollee> withdrawnEnrollees = withdrawnEnrolleeService.findByStudyEnvironmentIdNoData(studyEnvBundle1.getStudyEnv().getId());
         assertThat(withdrawnEnrollees, hasSize(1));
         assertThat(withdrawnEnrollees.get(0).getShortcode(), equalTo(sourceEnrollee1.getEnrollee().getShortcode()));
+        assertThat(withdrawnEnrollees.get(0).getReason(), equalTo(EnrolleeWithdrawalReason.DUPLICATE));
         // confirm target enrollee 3 remains
         assertThat(enrolleeService.findOneByShortcode(targetEnrollee3.getEnrollee().getShortcode()).isPresent(), equalTo(true));
         // confirm source participant user is gone
