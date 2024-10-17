@@ -37,7 +37,7 @@ export default class StudyDashboard extends OurHealthPageBase {
   get activity() {
     const page = this.page
     const parent = this.locator
-    const states = ['Not Started', 'Locked', 'Completed']
+    const states = ['Not Started', 'Locked', 'Completed', 'Print OurHealth Consent']
 
     return new class {
       async status(name: string | RegExp): Promise<string> {
