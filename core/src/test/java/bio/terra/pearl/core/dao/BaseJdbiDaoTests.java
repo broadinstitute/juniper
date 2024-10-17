@@ -42,8 +42,9 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     public void testGenerateInsertFields() {
         SimpleModelDao testDao = new SimpleModelDao(null);
         List<String> fields = testDao.insertFields;
+        // 'id','relatedStudy', and 'surveyList' should not be included
         String[] expectedFields = new String[]{"createdAt", "lastUpdatedAt", "boolField",
-                "intField", "doubleField", "stringField", "uuidField", "instantField"};
+                "intField", "doubleField", "stringField", "uuidField", "instantField", "stringList"};
         assertThat(fields.toString(), fields, containsInAnyOrder(expectedFields));
     }
 
@@ -56,6 +57,8 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         private UUID uuidField;
         private Instant instantField;
         private Study relatedStudy;
+        private List<String> stringList;
+        private List<Survey> surveyList;
     }
 
     private class SimpleModelDao extends BaseJdbiDao<SimpleModel> {

@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: "enrollee_source"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column: { name: source, type: text }
+        - sql:
+            sql: "UPDATE enrollee SET source = 'PORTAL_SITE';"
+        - sql:
+            sql: "UPDATE enrollee SET source = 'IMPORT' from import_item where created_enrollee_id = enrollee.id;"
+        - addNotNullConstraint:
+            tableName: enrollee
+            columnName: source

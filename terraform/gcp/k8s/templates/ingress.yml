@@ -1,0 +1,35 @@
+{{- define "customer-certs" -}}
+{{- range $idx, $val := $.Values.portals -}}
+{{- if $idx }}
+{{- print ","  -}}
+{{- end -}}
+{{- $val.name -}}-admin-subdomain-cert{{if $val.customDomain}},{{- $val.name -}}-public-url-cert{{end}}
+{{- end -}}
+{{- end -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: juniper-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: admin-ip
+    networking.gke.io/managed-certificates: "admin-cert,{{ template "customer-certs" . }}"
+    # If the class annotation is not specified it defaults to "gce".
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - host: "juniper-cmi.dev"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-service
+                port:
+                  number: 80
+  defaultBackend:
+    service:
+      name: participant-service
+      port:
+        number: 80

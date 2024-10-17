@@ -7,10 +7,7 @@ import bio.terra.pearl.core.model.dataimport.*;
 import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -231,7 +228,7 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email -- reload the profile since answermappings may have changed it */
+        /** restore email -- reload the pr5ofile since answermappings may have changed it */
         profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
@@ -239,7 +236,7 @@ public class EnrolleeImportService {
     }
 
     private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
-        new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
+        new KitRequestFormatter(new ExportOptions()).listFromStringMap(enrolleeMap).stream().map(
                 kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).toList();
     }
 
@@ -288,10 +285,11 @@ public class EnrolleeImportService {
             profileService.update(regResult.profile(), auditInfo);
 
             HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(),
-                    studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrolleeInfo.isSubject());
+                    studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(),
+                    null, enrolleeInfo.isSubject(), EnrolleeSourceType.IMPORT);
             Enrollee newEnrollee = response.getEnrollee();
             //update createdAt
-            if (newEnrollee.getCreatedAt() != null) {
+            if (enrolleeInfo.getCreatedAt() != null) {
                 timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrolleeInfo.getCreatedAt());
             }
             if (regResult.participantUser().getCreatedAt() != null) {

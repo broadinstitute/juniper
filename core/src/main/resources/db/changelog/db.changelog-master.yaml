@@ -336,6 +336,12 @@ databaseChangeLog:
       file: changesets/2024_10_08_portal_last_login.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_10_15_adding_export_fields.yaml
+      relativeToChangelogFile: true
+  - include:
+        file: changesets/2024_10_16_enrollee_source.yaml
+        relativeToChangelogFile: true
+  - include:
       file: changesets/2024_10_17_withdrawal_reason.yaml
       relativeToChangelogFile: true
 

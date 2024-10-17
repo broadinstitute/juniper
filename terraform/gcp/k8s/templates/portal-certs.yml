@@ -1,0 +1,26 @@
+{{$adminUrl := .Values.adminUrl}}
+{{range .Values.portals}}
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{.name}}-admin-subdomain-cert
+spec:
+  domains:
+      - {{.name}}.{{$adminUrl}}
+      - sandbox.{{.name}}.{{$adminUrl}}
+      - irb.{{.name}}.{{$adminUrl}}
+---
+{{ if .customDomain }}
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{.name}}-public-url-cert
+spec:
+  domains:
+      - {{.customDomain}}
+      - sandbox.{{.customDomain}}
+      - irb.{{.customDomain}}
+---
+{{ end }}
+
+{{end}}

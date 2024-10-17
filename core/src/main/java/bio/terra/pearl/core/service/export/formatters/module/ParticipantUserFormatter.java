@@ -9,14 +9,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUser> {
-    public static final String PARTICIPANT_USER_MODULE_NAME = "account";
     public static final List<String> INCLUDED_PROPERTIES = List.of("shortcode", "username", "createdAt");
 
     public ParticipantUserFormatter(ExportOptions exportOptions) {
-        itemFormatters = INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<ParticipantUser>(propName, ParticipantUser.class))
+        super(exportOptions, "account", "Account");
+    }
+
+    @Override
+    protected List<PropertyItemFormatter<ParticipantUser>> generateItemFormatters(ExportOptions options) {
+        return INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<>(propName, ParticipantUser.class))
                 .collect(Collectors.toList());
-        moduleName = PARTICIPANT_USER_MODULE_NAME;
-        displayName = "Account";
     }
 
     @Override
