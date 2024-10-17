@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
@@ -46,11 +47,11 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
 
     Enrollee loadedEnrollee =
         enrolleeExtService.findWithAdminLoad(
-            operator,
-            portalShortcode,
-            studyShortcode,
-            envName,
-            enrollee1.enrollee().getShortcode());
+                PortalEnrolleeAuthContext.of(
+                        operator,  portalShortcode,
+                        studyShortcode,
+                        envName,
+                        enrollee1.enrollee().getShortcode()));
     assertThat(loadedEnrollee.getId(), equalTo(enrollee1.enrollee().getId()));
 
     loadedEnrollee =

@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 public class PortalEnrolleeAuthContext extends PortalStudyEnvAuthContext
     implements EnvironmentAwareAuthContext {
-  String enrolleeShortcode;
+  String enrolleeShortcodeOrId;
   Enrollee enrollee;
 
   public static PortalEnrolleeAuthContext of(
@@ -20,13 +20,13 @@ public class PortalEnrolleeAuthContext extends PortalStudyEnvAuthContext
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
-      String enrolleeShortcode) {
+      String enrolleeShortcodeOrId) {
     return PortalEnrolleeAuthContext.builder()
         .operator(operator)
         .portalShortcode(portalShortcode)
         .studyShortcode(studyShortcode)
         .environmentName(environmentName)
-        .enrolleeShortcode(enrolleeShortcode)
+        .enrolleeShortcodeOrId(enrolleeShortcodeOrId)
         .build();
   }
 }

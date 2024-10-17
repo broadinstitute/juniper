@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: "survey_assign_rename"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: withdrawn_enrollee
+            columns:
+              - column: { name: reason, type: text }
+        - sql:
+            sql: update withdrawn_enrollee set reason = 'TESTING'; # as of now, no enrollees have requested to be withdrawn
+        - addNotNullConstraint:
+            tableName: withdrawn_enrollee
+            columnName: reason
+        - dropColumn:  # closing the loop on the column rename from 2024_09_18_survey_assign_rename.yaml
+            tableName: survey
+            columnName: assign_to_all_new_enrollees

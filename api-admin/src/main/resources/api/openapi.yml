@@ -698,6 +698,7 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - *enrolleeShortcodeParam
+        - { name: reason, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: withdrawnEnrollee id
@@ -710,9 +711,9 @@ paths:
       tags: [ withdrawnEnrollee ]
       operationId: getAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: withdrawnEnrollee list

@@ -70,7 +70,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
      * an irreversible operation.
      */
     @Transactional
-    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, DataAuditInfo dataAuditInfo) {
+    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, EnrolleeWithdrawalReason reason, DataAuditInfo dataAuditInfo) {
         dao.loadForWithdrawalPreservation(enrollee);
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         try {
@@ -79,6 +79,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
                     .studyEnvironmentId(enrollee.getStudyEnvironmentId())
                     .enrolleeData(objectMapper.writeValueAsString(enrollee))
                     .userData(objectMapper.writeValueAsString(user))
+                    .withdrawalReason(reason)
                     .build();
             withdrawnEnrollee = create(withdrawnEnrollee);
             // if a governed user is being withdrawn, we should withdraw the proxies that are only proxying this user.
@@ -97,7 +98,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
                 if (proxy.isSubject()) {
                     continue; // don't withdraw proxies that are also subjects; if they want to withdraw, they should do so separately.
                 }
-                withdrawEnrollee(proxy, dataAuditInfo);
+                withdrawEnrollee(proxy, reason, dataAuditInfo);
             }
 
             if (!relations.isEmpty()) {
