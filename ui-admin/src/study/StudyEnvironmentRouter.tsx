@@ -49,10 +49,10 @@ import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 import FamilyRouter from './families/FamilyRouter'
 import { KitScanner } from './kits/kitcollection/KitScanner'
-import { LoadedSettingsView } from 'study/settings/SettingsView'
 import ExportIntegrationList from './export/integrations/ExportIntegrationList'
 import ExportIntegrationView from './export/integrations/ExportIntegrationView'
 import ExportIntegrationJobList from './export/integrations/ExportIntegrationJobList'
+import LoadedSettingsView from './settings/SettingsView'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -126,7 +126,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalEnv={portalEnv}/>}/>
           <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
           <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="settings/*" element={<LoadedSettingsView key={currentEnv.environmentName}
+          <Route path="settings/*" element={<LoadedSettingsView
             studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}
           />
