@@ -28,7 +28,7 @@ import { doApiLoad } from 'api/api-utils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { withResetOnEnvChange } from '../../util/withResetOnEnvChange'
+import { withResetOnEnvChange } from 'util/withResetOnEnvChange'
 
 
 /** shows a url-routable settings page for both the portal and the selected study */

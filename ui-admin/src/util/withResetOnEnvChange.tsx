@@ -10,11 +10,11 @@ export const withResetOnEnvChange = <T, >(WrappedComponent: ComponentType<T>) =>
       setKey(studyEnvContext.currentEnvPath)
     }, [studyEnvContext.currentEnvPath])
 
-    return <WrappedComponent key={key} {...(props as T)} />
+    return <WrappedComponent key={key} {...props} />
   }
 
-  WithResetOnEnvChange.displayName = `
-    WithResetOnEnvChange(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
+  WithResetOnEnvChange.displayName =
+    `WithResetOnEnvChange(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
 
   return WithResetOnEnvChange
 }
