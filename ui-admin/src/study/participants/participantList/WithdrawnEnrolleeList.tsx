@@ -63,6 +63,12 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
       columnType: 'instant'
     },
     cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: 'Reason',
+    accessorKey: 'reason'
+  }, {
+    header: 'Note',
+    accessorKey: 'note'
   }]
 
   const table = useReactTable({

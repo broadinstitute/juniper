@@ -12,8 +12,7 @@ test('disables withdraw unless specific confirmation', async () => {
   render(RoutedComponent)
   expect(screen.getByText('Withdraw')).toBeInTheDocument()
   expect(screen.getByText('Withdraw')).toHaveAttribute('aria-disabled', 'true')
-
-  await userEvent.type(screen.getByRole('textbox'),
+  await userEvent.type(screen.queryAllByRole('textbox')[1],
         `withdraw ${enrollee.profile.givenName} ${enrollee.profile.familyName}`)
   expect(screen.getByText('Withdraw')).toHaveAttribute('aria-disabled', 'false')
 })

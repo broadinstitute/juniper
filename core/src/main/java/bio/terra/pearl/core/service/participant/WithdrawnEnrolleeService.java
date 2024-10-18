@@ -13,7 +13,6 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.With;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,13 +63,18 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
         return dao.isWithdrawn(shortcode);
     }
 
+    @Transactional
+    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, EnrolleeWithdrawalReason reason, DataAuditInfo dataAuditInfo) {
+        return withdrawEnrollee(enrollee, reason, null, dataAuditInfo);
+    }
+
     /**
      * creates a WithdrawnEnrollee for the passed-in enrollee, and DELETES THE ENROLLEE.
      * Although the WithdrawnEnrollee record may contain much of the enrollee's data, this should be assumed to be
      * an irreversible operation.
      */
     @Transactional
-    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, DataAuditInfo dataAuditInfo) {
+    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, EnrolleeWithdrawalReason reason, String note, DataAuditInfo dataAuditInfo) {
         dao.loadForWithdrawalPreservation(enrollee);
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         try {
@@ -79,6 +83,8 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
                     .studyEnvironmentId(enrollee.getStudyEnvironmentId())
                     .enrolleeData(objectMapper.writeValueAsString(enrollee))
                     .userData(objectMapper.writeValueAsString(user))
+                    .note(note)
+                    .reason(reason)
                     .build();
             withdrawnEnrollee = create(withdrawnEnrollee);
             // if a governed user is being withdrawn, we should withdraw the proxies that are only proxying this user.
@@ -97,7 +103,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
                 if (proxy.isSubject()) {
                     continue; // don't withdraw proxies that are also subjects; if they want to withdraw, they should do so separately.
                 }
-                withdrawEnrollee(proxy, dataAuditInfo);
+                withdrawEnrollee(proxy, reason, dataAuditInfo);
             }
 
             if (!relations.isEmpty()) {

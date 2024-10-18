@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -99,7 +100,7 @@ public class ParticipantMergeService {
     }
 
     protected void deleteMergedEnrollee(Enrollee enrollee, DataAuditInfo auditInfo) {
-        withdrawnEnrolleeService.withdrawEnrollee(enrollee, auditInfo);
+        withdrawnEnrolleeService.withdrawEnrollee(enrollee, EnrolleeWithdrawalReason.DUPLICATE, auditInfo);
     }
 
     /** merges data from one enrollee into another.  Does not delete the source enrollee */
