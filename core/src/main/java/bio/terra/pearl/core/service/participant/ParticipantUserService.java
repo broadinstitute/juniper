@@ -37,7 +37,7 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
     }
 
     public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
-        return dao.findByProperty("shortcode", shortcode);
+        return dao.findOneByShortcode(shortcode);
     }
 
     @Transactional @Override

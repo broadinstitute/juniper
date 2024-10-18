@@ -3,12 +3,12 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Component
-public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
+public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEnvAttachedDao<Enrollee> {
     private final KitRequestDao kitRequestDao;
     private final KitTypeDao kitTypeDao;
     private final ParticipantTaskDao participantTaskDao;
@@ -54,10 +54,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return findByProperty("shortcode", shortcode);
-    }
-
-    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
@@ -102,13 +98,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
-    }
-
-    public int countByStudyEnvironment(UUID studyEnvironmentId) {
-        return countByProperty("study_environment_id", studyEnvironmentId);
-    }
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        deleteByProperty("study_environment_id", studyEnvironmentId);
     }
 
     /** updates the global consent status of the enrollee */

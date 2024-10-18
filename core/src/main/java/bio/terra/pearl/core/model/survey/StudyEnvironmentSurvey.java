@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.survey;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.UUID;
 /** Includes a survey in an environment and configures scheduling and who can take it */
 @Getter
 @Setter @SuperBuilder @NoArgsConstructor
-public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntityConfig {
+public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntityConfig, StudyEnvAttached {
     private UUID studyEnvironmentId;
     private UUID surveyId;
     @Builder.Default

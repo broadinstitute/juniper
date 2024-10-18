@@ -193,7 +193,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     }
 
     public int countByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return dao.countByStudyEnvironment(studyEnvironmentId);
+        return dao.countByStudyEnvironmentId(studyEnvironmentId);
     }
 
     @Override

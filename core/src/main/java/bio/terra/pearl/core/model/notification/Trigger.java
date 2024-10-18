@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.notification;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import java.time.Duration;
@@ -23,7 +24,7 @@ import lombok.experimental.SuperBuilder;
  * originating configuration. To make changes, the previous config should be deactivated, and a new one created
  */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class Trigger extends BaseEntity implements VersionedEntityConfig {
+public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyEnvAttached {
     private UUID studyEnvironmentId;
     private UUID portalEnvironmentId;
     @Builder.Default

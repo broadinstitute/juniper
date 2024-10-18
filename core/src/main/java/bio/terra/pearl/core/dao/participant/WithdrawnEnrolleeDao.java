@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 
 @Component
-public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
+public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> implements StudyEnvAttachedDao<WithdrawnEnrollee> {
   private final ProfileDao profileDao;
   private final SurveyResponseDao surveyResponseDao;
   private final ParticipantTaskDao participantTaskDao;
@@ -52,17 +53,9 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     );
   }
 
-  public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-    deleteByProperty("study_environment_id", studyEnvironmentId);
-  }
-
   /** checks whether a withdrawal record exists for the given enrollee shortcode.  */
   public boolean isWithdrawn(String shortcode) {
     return countByProperty("shortcode", shortcode) == 1;
-  }
-
-  public int countByStudyEnvironmentId(UUID studyEnvId) {
-    return countByProperty("study_environment_id", studyEnvId);
   }
 
   /**

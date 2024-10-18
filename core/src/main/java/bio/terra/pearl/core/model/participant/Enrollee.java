@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -23,7 +24,7 @@ import java.util.UUID;
  */
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class Enrollee extends BaseEntity {
+public class Enrollee extends BaseEntity implements StudyEnvAttached {
     private UUID participantUserId;
     private UUID profileId;
     private Profile profile;
