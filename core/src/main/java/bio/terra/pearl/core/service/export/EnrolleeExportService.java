@@ -101,7 +101,7 @@ public class EnrolleeExportService {
 
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId, enrolleeExportData);
         List<Map<String, String>> enrolleeMaps = generateExportMaps(enrolleeExportData, moduleFormatters);
-        BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
+        BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps, exportOptions.getIncludeFields());
         exporter.export(os, exportOptions.isIncludeSubHeaders());
     }
 
@@ -263,13 +263,13 @@ public class EnrolleeExportService {
     }
 
     protected BaseExporter getExporter(ExportFileFormat fileFormat, List<ModuleFormatter> moduleFormatters,
-                                       List<Map<String, String>> enrolleeMaps) {
+                                       List<Map<String, String>> enrolleeMaps, List<String> columnSorting) {
         if (fileFormat.equals(ExportFileFormat.JSON)) {
-            return new JsonExporter(moduleFormatters, enrolleeMaps, objectMapper);
+            return new JsonExporter(moduleFormatters, enrolleeMaps, columnSorting, objectMapper);
         } else if (fileFormat.equals(ExportFileFormat.EXCEL)) {
-            return new ExcelExporter(moduleFormatters, enrolleeMaps);
+            return new ExcelExporter(moduleFormatters, enrolleeMaps, columnSorting);
         }
-        return new TsvExporter(moduleFormatters, enrolleeMaps, fileFormat);
+        return new TsvExporter(moduleFormatters, enrolleeMaps, fileFormat, columnSorting);
     }
 
 

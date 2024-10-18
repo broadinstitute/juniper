@@ -14,8 +14,9 @@ import java.util.Map;
 public class TsvExporter extends BaseExporter {
     private final ExportFileFormat fileFormat;
 
-    public TsvExporter(List<ModuleFormatter> moduleExportInfos, List<Map<String, String>> enrolleeMaps, ExportFileFormat fileFormat) {
-        super(moduleExportInfos, enrolleeMaps);
+    public TsvExporter(List<ModuleFormatter> moduleExportInfos, List<Map<String, String>> enrolleeMaps, ExportFileFormat fileFormat,
+                       List<String> columnSorting) {
+        super(moduleExportInfos, enrolleeMaps, columnSorting);
         if (!List.of(ExportFileFormat.CSV, ExportFileFormat.TSV).contains(fileFormat)) {
             throw new IllegalArgumentException("Invalid file format for TsvExporter: " + fileFormat);
         }
@@ -23,7 +24,7 @@ public class TsvExporter extends BaseExporter {
     }
 
     public TsvExporter(List<ModuleFormatter> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
-        this(moduleExportInfos, enrolleeMaps, ExportFileFormat.TSV);
+        this(moduleExportInfos, enrolleeMaps, ExportFileFormat.TSV, null);
     }
 
     /**

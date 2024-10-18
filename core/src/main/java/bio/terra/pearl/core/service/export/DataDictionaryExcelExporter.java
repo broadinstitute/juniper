@@ -48,7 +48,7 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
      * initializes the dictionary and internal spreadsheet
      */
     public DataDictionaryExcelExporter(List<ModuleFormatter> moduleFormatters, ObjectMapper objectMapper) {
-        super(moduleFormatters, null);
+        super(moduleFormatters, null, null);
         wrapStyle = workbook.createCellStyle();
         wrapStyle.setWrapText(true);
         boldStyle = workbook.createCellStyle();
