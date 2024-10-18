@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.export;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ExportIntegration extends BaseEntity {
+public class ExportIntegration extends BaseEntity implements StudyEnvAttached {
     private String name;
     private UUID studyEnvironmentId;
     private boolean enabled = true;

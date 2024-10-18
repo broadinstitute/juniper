@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public abstract class BaseJdbiDao<T extends BaseEntity> {
+public abstract class BaseJdbiDao<T extends BaseEntity> implements JdbiDao<T> {
     protected Jdbi jdbi;
     protected List<String> insertFields;
     protected List<String> insertFieldSymbols;
@@ -291,7 +291,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
 
-    public List<T> findAllByProperty(String columnName, Object columnValue) {
+    protected List<T> findAllByProperty(String columnName, Object columnValue) {
         if(columnValue == null) {
             return jdbi.withHandle(handle ->
                     handle.createQuery("select * from " + tableName + " where " + columnName + " is null;")
@@ -608,4 +608,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return copy;
     }
 
+    public BaseJdbiDao<T> getDao() {
+        return this;
+    }
 }
