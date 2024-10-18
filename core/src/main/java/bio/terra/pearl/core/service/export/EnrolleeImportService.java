@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.*;
@@ -78,7 +78,7 @@ public class EnrolleeImportService {
     private final ParticipantUserService participantUserService;
     private final PortalService portalService;
     private final PortalParticipantUserService portalParticipantUserService;
-    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final TimeShiftDao timeShiftDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
     private final KitRequestService kitRequestService;
@@ -89,7 +89,7 @@ public class EnrolleeImportService {
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
-                                 TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
+                                 TimeShiftDao timeShiftDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
                                  PortalParticipantUserService portalParticipantUserService, KitRequestService kitRequestService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
@@ -101,7 +101,7 @@ public class EnrolleeImportService {
         this.importService = importService;
         this.importItemService = importItemService;
         this.surveyTaskDispatcher = surveyTaskDispatcher;
-        this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.timeShiftDao = timeShiftDao;
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -290,10 +290,10 @@ public class EnrolleeImportService {
             Enrollee newEnrollee = response.getEnrollee();
             //update createdAt
             if (enrolleeInfo.getCreatedAt() != null) {
-                timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrolleeInfo.getCreatedAt());
+                timeShiftDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrolleeInfo.getCreatedAt());
             }
             if (regResult.participantUser().getCreatedAt() != null) {
-                timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUserInfo.getCreatedAt());
+                timeShiftDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUserInfo.getCreatedAt());
             }
             return newEnrollee;
         });

@@ -41,6 +41,9 @@ public class EnrolleeContextService {
      *  This returns the context for each enrollee in the order of the input list
      */
     public List<EnrolleeContext> fetchData(List<UUID> enrolleeIds) {
+        if (enrolleeIds.isEmpty()) {
+            return List.of();
+        }
         List<Enrollee> enrollees = enrolleeService.findAllPreserveOrder(enrolleeIds);
         List<Profile> profiles = profileService.findAllWithMailingAddressPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());

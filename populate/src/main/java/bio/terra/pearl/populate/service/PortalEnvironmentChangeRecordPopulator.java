@@ -1,6 +1,6 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -18,15 +18,15 @@ import java.util.Optional;
 public class PortalEnvironmentChangeRecordPopulator extends BasePopulator<PortalEnvironmentChangeRecord, PortalEnvironmentChangeRecordPopDto, PortalPopulateContext> {
     private final PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService;
     private final AdminUserService adminUserService;
-    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final TimeShiftDao timeShiftDao;
     private final PortalService portalService;
 
     public PortalEnvironmentChangeRecordPopulator(PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService,
-                                                  AdminUserService adminUserService, TimeShiftPopulateDao timeShiftPopulateDao,
+                                                  AdminUserService adminUserService, TimeShiftDao timeShiftDao,
                                                   PortalService portalService) {
         this.portalEnvironmentChangeRecordService = portalEnvironmentChangeRecordService;
         this.adminUserService = adminUserService;
-        this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.timeShiftDao = timeShiftDao;
         this.portalService = portalService;
     }
 
@@ -69,7 +69,7 @@ public class PortalEnvironmentChangeRecordPopulator extends BasePopulator<Portal
     public PortalEnvironmentChangeRecord createNew(PortalEnvironmentChangeRecordPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         PortalEnvironmentChangeRecord changeRecord = portalEnvironmentChangeRecordService.create(popDto);
         if (popDto.isTimeShifted()) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(changeRecord.getId(), popDto.shiftedInstant());
+            timeShiftDao.changeEnrolleeCreationTime(changeRecord.getId(), popDto.shiftedInstant());
         }
         return changeRecord;
     }

@@ -40,6 +40,7 @@ export type Survey = VersionedForm & {
   autoUpdateTaskAssignments: boolean
   recur: boolean
   recurrenceIntervalDays: number
+  daysAfterEligible?: number
   allowAdminEdit: boolean
   allowParticipantStart: boolean
   allowParticipantReedit: boolean

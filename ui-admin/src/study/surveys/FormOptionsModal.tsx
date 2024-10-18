@@ -15,6 +15,7 @@ import {
 import InfoPopup from 'components/forms/InfoPopup'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+import { TextInput } from '../../components/forms/TextInput'
 
 
 /** component for selecting versions of a form */
@@ -111,6 +112,43 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Allow study staff to edit participant responses
             </label>}
+            <label className="form-label d-flex align-items-center">
+              <label className="form-label pe-2">
+                <input type="checkbox" checked={!!workingForm.daysAfterEligible}
+                  onChange={e => updateWorkingForm({
+                    ...workingForm,
+                    daysAfterEligible: e.target.checked ? 365 : undefined
+                  })}
+                /> Delay assigning this survey
+              </label>
+              <label className="form-label d-flex align-items-center">
+                <TextInput value={workingForm.daysAfterEligible} type="number" min={1} max={9999}
+                  className="mx-2"
+                  onChange={val => updateWorkingForm({
+                    ...workingForm, daysAfterEligible: parseInt(val)
+                  })}
+                /> <span className="text-nowrap">days after enrollment</span>
+              </label>
+            </label>
+            <div className="d-flex align-items-center">
+              <label className="form-label pe-2">
+                <input type="checkbox" checked={workingForm.recur}
+                  onChange={e => updateWorkingForm({
+                    ...workingForm,
+                    recur: e.target.checked,
+                    recurrenceIntervalDays: e.target.checked ? workingForm.recurrenceIntervalDays : undefined
+                  })}
+                /> This survey recurs
+              </label>
+              <label className="form-label d-flex align-items-center">
+                every <TextInput value={workingForm.recurrenceIntervalDays} type="number" min={1} max={9999}
+                  className="mx-2"
+                  onChange={val => updateWorkingForm({
+                    ...workingForm, recurrenceIntervalDays: parseInt(val), recur: true
+                  })}
+                /> days
+              </label>
+            </div>
             <h3 className="h6 mt-4">Eligibility Rule</h3>
             <div className="mb-2">
               <LazySearchQueryBuilder

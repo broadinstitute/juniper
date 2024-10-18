@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
@@ -23,16 +23,16 @@ public class ParticipantNotePopulator {
     private final PortalParticipantUserService portalParticipantUserService;
     private final AdminUserDao adminUserDao;
     private final ParticipantNoteService participantNoteService;
-    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final TimeShiftDao timeShiftDao;
 
     public ParticipantNotePopulator(AdminUserDao adminUserDao,
                                     ParticipantNoteService participantNoteService,
-                                    TimeShiftPopulateDao timeShiftPopulateDao,
+                                    TimeShiftDao timeShiftDao,
                                     ParticipantTaskService participantTaskService,
                                     PortalParticipantUserService portalParticipantUserService) {
         this.adminUserDao = adminUserDao;
         this.participantNoteService = participantNoteService;
-        this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.timeShiftDao = timeShiftDao;
         this.participantTaskService = participantTaskService;
         this.portalParticipantUserService = portalParticipantUserService;
     }
@@ -52,7 +52,7 @@ public class ParticipantNotePopulator {
                 .build();
         participantNote = participantNoteService.create(participantNote);
         if (notePopDto.isTimeShifted()) {
-            timeShiftPopulateDao.changeParticipantNoteTime(participantNote.getId(), notePopDto.shiftedInstant());
+            timeShiftDao.changeParticipantNoteTime(participantNote.getId(), notePopDto.shiftedInstant());
         }
 
         if (notePopDto.getTask() != null) {
@@ -73,10 +73,10 @@ public class ParticipantNotePopulator {
                     .build();
             adminTask = participantTaskService.create(adminTask, null);
             if (notePopDto.isTimeShifted() && !taskDto.isTimeShifted()) {
-                timeShiftPopulateDao.changeAdminTaskCreationTime(participantNote.getId(), notePopDto.shiftedInstant());
+                timeShiftDao.changeAdminTaskCreationTime(participantNote.getId(), notePopDto.shiftedInstant());
             }
             if (taskDto.isTimeShifted()) {
-                timeShiftPopulateDao.changeAdminTaskCreationTime(adminTask.getId(), taskDto.shiftedInstant());
+                timeShiftDao.changeAdminTaskCreationTime(adminTask.getId(), taskDto.shiftedInstant());
             }
         }
         return participantNote;

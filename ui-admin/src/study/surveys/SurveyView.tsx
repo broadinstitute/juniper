@@ -24,6 +24,9 @@ export type SaveableFormProps = {
   autoAssign?: boolean
   assignToExistingEnrollees?: boolean
   rule?: string
+  recur: boolean
+  recurrenceIntervalDays?: number
+  daysAfterEligible?: number
   allowAdminEdit?: boolean
   allowParticipantStart?: boolean
   autoUpdateTaskAssignments?: boolean
