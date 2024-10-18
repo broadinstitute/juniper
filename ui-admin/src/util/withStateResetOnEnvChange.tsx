@@ -1,8 +1,8 @@
 import React, { ComponentType, useEffect, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
-export const withResetOnEnvChange = <T, >(WrappedComponent: ComponentType<T>) => {
-  const WithResetOnEnvChange = (props: T & { studyEnvContext: StudyEnvContextT }) => {
+export const withStateResetOnEnvChange = <T, >(WrappedComponent: ComponentType<T>) => {
+  const WithStateResetOnEnvChange = (props: T & { studyEnvContext: StudyEnvContextT }) => {
     const { studyEnvContext } = props
     const [key, setKey] = useState(studyEnvContext.currentEnvPath)
 
@@ -13,8 +13,8 @@ export const withResetOnEnvChange = <T, >(WrappedComponent: ComponentType<T>) =>
     return <WrappedComponent key={key} {...props} />
   }
 
-  WithResetOnEnvChange.displayName =
-    `WithResetOnEnvChange(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
+  WithStateResetOnEnvChange.displayName =
+    `WithStateResetOnEnvChange(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
 
-  return WithResetOnEnvChange
+  return WithStateResetOnEnvChange
 }
