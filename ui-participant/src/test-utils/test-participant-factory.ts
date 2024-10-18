@@ -8,7 +8,7 @@ import {
 import {
   defaultSurvey,
   Enrollee,
-  HubResponse, KitRequest,
+  HubResponse, KitRequest, KitRequestStatus,
   ParticipantUser,
   Profile
 } from '@juniper/ui-core'
@@ -105,7 +105,7 @@ export const mockSurvey = (stableId: string): Survey => {
 }
 
 /** mock a kit request */
-export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest => {
+export const mockKitRequest = (kitStatus: KitRequestStatus, kitType: string): KitRequest => {
   const now = new Date().getTime() * 1000
   return {
     id: 'kitRequest1',
@@ -120,7 +120,7 @@ export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest =
   }
 }
 
-export const mockAssignedKitRequest = (kitStatus: string, kitType: string): KitRequest => {
+export const mockAssignedKitRequest = (kitStatus: KitRequestStatus, kitType: string): KitRequest => {
   return {
     ...mockKitRequest(kitStatus, kitType),
     distributionMethod: 'IN_PERSON',
@@ -144,7 +144,13 @@ export const mockHubResponse = (): HubResponse => {
   return {
     enrollee: mockEnrollee(),
     tasks: [],
-    response: {},
+    response: {
+      resumeData: '',
+      enrolleeId: 'enrollee1',
+      surveyId: 'survey1',
+      complete: true,
+      answers: []
+    },
     profile: mockProfile()
   }
 }

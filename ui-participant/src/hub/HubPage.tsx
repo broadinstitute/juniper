@@ -8,7 +8,6 @@ import Api, {
   Portal,
   Study
 } from 'api/api'
-import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import {
@@ -29,6 +28,7 @@ import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import ParticipantSelector from '../participant/ParticipantSelector'
 import { Link } from 'react-router-dom'
+import { isTaskActive } from './task/taskUtils'
 
 
 /** renders the logged-in hub page */

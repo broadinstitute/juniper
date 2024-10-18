@@ -41,26 +41,6 @@ test.describe('Home page', () => {
       await createAcct.clickByRole('button', 'Complete')
     })
 
-    const dashboard = await test.step('Landing on Dashboard for the first time', async (): Promise<StudyDashboard> => {
-      const dashboard = new StudyDashboard(page)
-      await dashboard.waitReady()
-
-      // activities are visible and match expected initial status
-      for (const name of Object.values(Activities)) {
-        const dashboardActivity = dashboard.activity
-        const isVisible = await dashboardActivity.isVisible(name)
-        expect(isVisible, `"${name}" activity is not visible in Dashboard`).toBe(true)
-        if (name === 'OurHealth Consent') {
-          expect(await dashboardActivity.status(name)).toStrictEqual('Not Started')
-        } else {
-          expect(await dashboardActivity.status(name)).toStrictEqual('Locked')
-        }
-      }
-
-      await dashboard.clickByRole('link', 'Start Consent')
-      return dashboard
-    })
-
     /* NOTE: text contents on each page ARE NOT verified */
     await test.step('Step 1: Start Consent', async () => {
       const consent = new StudyConsent(page)
@@ -81,6 +61,26 @@ test.describe('Home page', () => {
       await consent.drawSignature(data.QLabel.Signature)
 
       await consent.clickByRole('button', 'Complete')
+    })
+
+    const dashboard = await test.step('Landing on Dashboard for the first time', async (): Promise<StudyDashboard> => {
+      const dashboard = new StudyDashboard(page)
+      await dashboard.waitReady()
+
+      // activities are visible and match expected initial status
+      for (const name of Object.values(Activities)) {
+        const dashboardActivity = dashboard.activity
+        const isVisible = await dashboardActivity.isVisible(name)
+        expect(isVisible, `"${name}" activity is not visible in Dashboard`).toBe(true)
+        if (name === 'OurHealth Consent') {
+          expect(await dashboardActivity.status(name)).toStrictEqual('Print OurHealth Consent')
+        } else if (name === 'The Basics') {
+          expect(await dashboardActivity.status(name)).toStrictEqual('Not Started')
+        } else {
+          expect(await dashboardActivity.status(name)).toStrictEqual('Locked')
+        }
+      }
+      return dashboard
     })
 
     await test.step('Step 2: Start Surveys', async () => {

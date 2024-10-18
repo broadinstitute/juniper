@@ -1,7 +1,7 @@
 import { ParticipantTask } from 'api/api'
 
-import { isTaskAccessible } from './TaskLink'
 import { Enrollee } from '@juniper/ui-core'
+import { isTaskAccessible } from './task/taskUtils'
 
 describe('isTaskAccessible', () => {
   it('returns true for completed tasks when another task blocks hub', () => {
