@@ -3,6 +3,7 @@ package bio.terra.pearl.core.dao;
 import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
@@ -15,6 +16,8 @@ import org.springframework.beans.PropertyAccessorFactory;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
@@ -49,11 +52,16 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return Arrays.asList("id");
     }
 
-    protected boolean isSimpleFieldType(Class fieldType) {
-        return Enum.class.isAssignableFrom(fieldType) ||
+    protected boolean isSimpleFieldType(Field field) {
+        // true if it's an enum (these get stored as strings)
+        return Enum.class.isAssignableFrom(field.getType()) ||
+                // true if it's a simple type
                 Arrays.asList(String.class, Instant.class, LocalDate.class, Boolean.class, boolean.class,
                                 Integer.class, Double.class, int.class, UUID.class, byte[].class)
-                        .contains(fieldType);
+                        .contains(field.getType()) ||
+                // true if it's a list of strings (these get stored as text[])
+                field.getType().equals(List.class) &&
+                        ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].equals(String.class);
     }
 
     /**
@@ -68,14 +76,13 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected List<String> generateGetFields(Class<T> clazz) {
         try {
-            BeanInfo info = Introspector.getBeanInfo(clazz);
-            List<String> allSimpleProperties = Arrays.asList(info.getPropertyDescriptors()).stream()
-                    .filter(descriptor -> isSimpleFieldType(descriptor.getPropertyType()))
-                    .map(descriptor -> descriptor.getName())
-                    .filter(name -> !name.equals("class"))
+            Field[] fields = FieldUtils.getAllFields(clazz);
+            List<String> allSimpleProperties = Arrays.asList(fields).stream()
+                    .filter(field -> isSimpleFieldType(field))
+                    .map(field -> field.getName())
                     .collect(Collectors.toList());
             return allSimpleProperties;
-        } catch (IntrospectionException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Unable to introspect " + getClazz().getName());
         }
     }

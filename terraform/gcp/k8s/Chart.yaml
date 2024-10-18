@@ -1,0 +1,6 @@
+apiVersion: v2
+name: juniper
+description: Juniper Helm chart
+type: application
+# this is the chart version, increment with each change
+version: 0.0.1

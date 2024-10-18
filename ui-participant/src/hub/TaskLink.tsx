@@ -6,6 +6,7 @@ import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
 import { Enrollee, useI18n } from '@juniper/ui-core'
+import { getTaskPath, isTaskAccessible } from './task/taskUtils'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -82,39 +83,4 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       </div>
     </div>
   )
-}
-
-/** returns a string for including in a <Link to={}> link to be navigated by the participant */
-export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string,
-  studyShortcode: string, isPrint = false): string {
-  const url = `study/${studyShortcode}/enrollee/${enrolleeShortcode}/${task.taskType.toLowerCase()}`
-  +  `/${task.targetStableId}/${task.targetAssignedVersion}${isPrint ? '/print' : ''}?taskId=${task.id}`
-  return url
-}
-
-/** is the task actionable by the user? the rules are:
- * consent forms are always actionable.
- * nothing else is actionable until consent
- * required tasks must be done in-order
- * non-required tasks are not actionable until all required tasks are cleared */
-export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
-  if (task.taskType === 'CONSENT' || task.status === 'COMPLETE') {
-    return true
-  }
-  const openConsents = enrollee.participantTasks
-    .filter(task => task.taskType === 'CONSENT' && task.status !== 'COMPLETE')
-  if (openConsents.length) {
-    return false
-  }
-  const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
-    .sort((a, b) => a.taskOrder - b.taskOrder)
-  if (openRequiredTasks.length) {
-    return task.id === openRequiredTasks[0].id
-  }
-  return true
-}
-
-/** is the task ready to be worked on (not done or rejected) */
-export function isTaskActive(task: ParticipantTask) {
-  return ['NEW', 'VIEWED', 'IN_PROGRESS'].includes(task.status)
 }

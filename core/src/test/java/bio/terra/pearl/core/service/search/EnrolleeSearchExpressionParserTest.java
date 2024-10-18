@@ -24,58 +24,68 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.consented as enrollee_consented, " +
-                        "enrollee.created_at as enrollee_created_at, " +
-                        "enrollee.id as enrollee_id, " +
-                        "enrollee.last_updated_at as enrollee_last_updated_at, " +
-                        "enrollee.participant_user_id as enrollee_participant_user_id, " +
-                        "enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, " +
-                        "enrollee.profile_id as enrollee_profile_id, enrollee.shortcode as enrollee_shortcode, " +
-                        "enrollee.study_environment_id as enrollee_study_environment_id, " +
-                        "enrollee.subject as enrollee_subject, profile.birth_date as profile_birth_date, " +
-                        "profile.contact_email as profile_contact_email, profile.created_at as profile_created_at, " +
-                        "profile.do_not_email as profile_do_not_email, " +
-                        "profile.do_not_email_solicit as profile_do_not_email_solicit, " +
-                        "profile.family_name as profile_family_name, profile.given_name as profile_given_name, " +
-                        "profile.id as profile_id, profile.last_updated_at as profile_last_updated_at, " +
-                        "profile.mailing_address_id as profile_mailing_address_id, " +
-                        "profile.phone_number as profile_phone_number, " +
-                        "profile.preferred_language as profile_preferred_language, " +
-                        "profile.sex_at_birth as profile_sex_at_birth, " +
-                        "answer_diagnosis.answer_type as answer_diagnosis_answer_type, " +
-                        "answer_diagnosis.boolean_value as answer_diagnosis_boolean_value, " +
-                        "answer_diagnosis.created_at as answer_diagnosis_created_at, " +
-                        "answer_diagnosis.creating_admin_user_id as answer_diagnosis_creating_admin_user_id, " +
-                        "answer_diagnosis.creating_participant_user_id as answer_diagnosis_creating_participant_user_id, " +
-                        "answer_diagnosis.enrollee_id as answer_diagnosis_enrollee_id, " +
-                        "answer_diagnosis.id as answer_diagnosis_id, " +
-                        "answer_diagnosis.last_updated_at as answer_diagnosis_last_updated_at, " +
-                        "answer_diagnosis.number_value as answer_diagnosis_number_value, " +
-                        "answer_diagnosis.object_value as answer_diagnosis_object_value, " +
-                        "answer_diagnosis.other_description as answer_diagnosis_other_description, " +
-                        "answer_diagnosis.question_stable_id as answer_diagnosis_question_stable_id, " +
-                        "answer_diagnosis.string_value as answer_diagnosis_string_value, " +
-                        "answer_diagnosis.survey_response_id as answer_diagnosis_survey_response_id, " +
-                        "answer_diagnosis.survey_stable_id as answer_diagnosis_survey_stable_id, " +
-                        "answer_diagnosis.survey_version as answer_diagnosis_survey_version, " +
-                        "answer_diagnosis.viewed_language as answer_diagnosis_viewed_language, " +
-                        "mailing_address.city as mailing_address_city, " +
-                        "mailing_address.country as mailing_address_country, " +
-                        "mailing_address.created_at as mailing_address_created_at, " +
-                        "mailing_address.id as mailing_address_id, " +
-                        "mailing_address.last_updated_at as mailing_address_last_updated_at, " +
-                        "mailing_address.postal_code as mailing_address_postal_code, " +
-                        "mailing_address.state as mailing_address_state, " +
-                        "mailing_address.street1 as mailing_address_street1, " +
-                        "mailing_address.street2 as mailing_address_street2 " +
-                        "from enrollee enrollee " +
-                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "left outer join answer answer_diagnosis on (enrollee.id = answer_diagnosis.enrollee_id) " +
-                        "left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) " +
-                        "where (((mailing_address.country = ?) or (mailing_address.country = ?)) " +
-                        "and (answer_diagnosis.survey_stable_id = ? AND answer_diagnosis.question_stable_id = ?) " +
-                        "and (answer_diagnosis.string_value = ?) and (EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) " +
-                        "and (enrollee.study_environment_id = ?))",
+        assertEquals("""
+                        select enrollee.participant_user_id as enrollee_participant_user_id, \
+                        enrollee.profile_id as enrollee_profile_id, \
+                        enrollee.study_environment_id as enrollee_study_environment_id, \
+                        enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, \
+                        enrollee.shortcode as enrollee_shortcode, \
+                        enrollee.subject as enrollee_subject, \
+                        enrollee.consented as enrollee_consented, \
+                        enrollee.source as enrollee_source, \
+                        enrollee.id as enrollee_id, \
+                        enrollee.created_at as enrollee_created_at, \
+                        enrollee.last_updated_at as enrollee_last_updated_at, \
+                        profile.given_name as profile_given_name, \
+                        profile.family_name as profile_family_name, \
+                        profile.mailing_address_id as profile_mailing_address_id, \
+                        profile.preferred_language as profile_preferred_language, \
+                        profile.contact_email as profile_contact_email, \
+                        profile.do_not_email as profile_do_not_email, \
+                        profile.do_not_email_solicit as profile_do_not_email_solicit, \
+                        profile.birth_date as profile_birth_date, \
+                        profile.phone_number as profile_phone_number, \
+                        profile.sex_at_birth as profile_sex_at_birth, \
+                        profile.id as profile_id, \
+                        profile.created_at as profile_created_at, \
+                        profile.last_updated_at as profile_last_updated_at, \
+                        answer_diagnosis.creating_admin_user_id as answer_diagnosis_creating_admin_user_id, \
+                        answer_diagnosis.creating_participant_user_id as answer_diagnosis_creating_participant_user_id, \
+                        answer_diagnosis.survey_response_id as answer_diagnosis_survey_response_id, \
+                        answer_diagnosis.enrollee_id as answer_diagnosis_enrollee_id, \
+                        answer_diagnosis.question_stable_id as answer_diagnosis_question_stable_id, \
+                        answer_diagnosis.survey_stable_id as answer_diagnosis_survey_stable_id, \
+                        answer_diagnosis.other_description as answer_diagnosis_other_description, \
+                        answer_diagnosis.survey_version as answer_diagnosis_survey_version, \
+                        answer_diagnosis.viewed_language as answer_diagnosis_viewed_language, \
+                        answer_diagnosis.answer_type as answer_diagnosis_answer_type, \
+                        answer_diagnosis.string_value as answer_diagnosis_string_value, \
+                        answer_diagnosis.object_value as answer_diagnosis_object_value, \
+                        answer_diagnosis.number_value as answer_diagnosis_number_value, \
+                        answer_diagnosis.boolean_value as answer_diagnosis_boolean_value, \
+                        answer_diagnosis.id as answer_diagnosis_id, \
+                        answer_diagnosis.created_at as answer_diagnosis_created_at, \
+                        answer_diagnosis.last_updated_at as answer_diagnosis_last_updated_at, \
+                        mailing_address.street1 as mailing_address_street1, \
+                        mailing_address.street2 as mailing_address_street2, \
+                        mailing_address.state as mailing_address_state, \
+                        mailing_address.country as mailing_address_country, \
+                        mailing_address.city as mailing_address_city, \
+                        mailing_address.postal_code as mailing_address_postal_code, \
+                        mailing_address.id as mailing_address_id, \
+                        mailing_address.created_at as mailing_address_created_at, \
+                        mailing_address.last_updated_at as mailing_address_last_updated_at \
+                        from enrollee enrollee \
+                        left outer join profile profile on (enrollee.profile_id = profile.id) \
+                        left outer join answer answer_diagnosis on (enrollee.id = answer_diagnosis.enrollee_id) \
+                        left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) \
+                        where (((mailing_address.country = ?) or (mailing_address.country = ?)) \
+                        and (answer_diagnosis.survey_stable_id = ? \
+                        AND answer_diagnosis.question_stable_id = ?) \
+                        and (answer_diagnosis.string_value = ?) \
+                        and (EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) \
+                        and (enrollee.study_environment_id = ?))\
+                        """,
                 query.getSQL());
 
         assertEquals(7, query.getBindValues().size());

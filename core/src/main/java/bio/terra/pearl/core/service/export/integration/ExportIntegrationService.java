@@ -47,6 +47,13 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
         return newIntegration;
     }
 
+    public ExportIntegration update(ExportIntegration integration) {
+        ExportOptions updatedOpts = exportOptionsDao.update(integration.getExportOptions());
+        ExportIntegration newIntegration = super.update(integration);
+        newIntegration.setExportOptions(updatedOpts);
+        return newIntegration;
+    }
+
     public ExportIntegrationJob doExport(ExportIntegration integration, ResponsibleEntity operator) {
         ExternalExporter exporter = externalExporters.get(integration.getDestinationType());
         return doExport(exporter, integration, operator);

@@ -4,6 +4,6 @@ metadata:
   name: admin-cert
 spec:
   domains:
-    - juniper-cmi.dev
-    - www.juniper-cmi.dev
+    - {{ .Values.adminUrl }}
+    - www.{{ .Values.adminUrl }}
 

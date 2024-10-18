@@ -82,11 +82,4 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
     protected Class<Survey> getClazz() {
         return Survey.class;
     }
-
-    @Override
-    protected List<String> generateGetFields(Class<Survey> clazz) {
-        List<String> getFields = super.generateGetFields(clazz);
-        getFields.add("referencedQuestions");
-        return getFields;
-    }
 }

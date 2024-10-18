@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: d2p-oauth2-configmap
+data:
+  oauth2.conf: >
+    OAuth2Cache shm max_val_size=16384
+
+    OAuth2TokenVerify metadata
+    https://{{ .Values.b2c.admin.tenantName }}.b2clogin.com/{{ .Values.b2c.admin.tenantName }}.onmicrosoft.com/v2.0/.well-known/openid-configuration?p={{ .Values.b2c.admin.policyName }}
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    {{ range $portal, $config := .Values.b2c.portals }}
+    OAuth2TokenVerify metadata
+    https://{{ $config.tenantName }}.b2clogin.com/{{ $config.tenantName }}.onmicrosoft.com/v2.0/.well-known/openid-configuration?p={{ $config.policyName }}
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+    {{ end }}
+
+    OAuth2TokenVerify metadata
+    https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    OAuth2TokenVerify metadata
+    https://accounts.google.com/.well-known/openid-configuration
+    metadata.ssl_verify=true&verify.exp=required&verify.iat=skip
+
+    OAuth2TokenVerify introspect https://127.0.0.1/introspect/
+    introspect.ssl_verify=false&verify.exp=required&verify.iat=skip

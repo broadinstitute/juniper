@@ -17,6 +17,7 @@ import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeSourceType;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.*;
@@ -577,6 +578,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(user.getUsername(), equalTo(userExpected.getUsername()));
         assertThat(user.getCreatedAt(), equalTo(userExpected.getCreatedAt()));
         assertThat(enrollee.getCreatedAt(), equalTo(enrolleeExpected.getCreatedAt()));
+        assertThat(enrollee.getSource(), equalTo(EnrolleeSourceType.IMPORT));
 
         //load profile
         Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();

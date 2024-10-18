@@ -6,7 +6,6 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.export.EnrolleeExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptionsWithExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
@@ -49,30 +48,16 @@ public class ExportController implements ExportApi {
   /** just gets the export as a row TSV string, with no accompanying data dictionary */
   @Override
   public ResponseEntity<Resource> exportData(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      Boolean splitOptionsIntoColumns,
-      Boolean stableIdsForOptions,
-      Boolean includeOnlyMostRecent,
-      Boolean includeSubheaders,
-      List<String> excludeModules,
-      String searchExpression,
-      String fileFormat,
-      Integer rowLimit) {
+      String portalShortcode, String studyShortcode, String envName, Object body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
     ExportOptionsWithExpression exportOptions =
-        optionsFromParams(
-            searchExpression,
-            fileFormat,
-            rowLimit,
-            splitOptionsIntoColumns,
-            stableIdsForOptions,
-            includeOnlyMostRecent,
-            includeSubheaders,
-            excludeModules);
+        objectMapper.convertValue(body, ExportOptionsWithExpression.class);
+    exportOptions.setFilterExpression(
+        !StringUtils.isBlank(exportOptions.getFilterString())
+            ? enrolleeSearchExpressionParser.parseRule(exportOptions.getFilterString())
+            : null);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.export(
@@ -85,27 +70,15 @@ public class ExportController implements ExportApi {
   /** gets a data dictionary for the environment */
   @Override
   public ResponseEntity<Resource> exportDictionary(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      Boolean splitOptionsIntoColumns,
-      Boolean stableIdsForOptions,
-      Boolean includeOnlyMostRecent,
-      String searchExpression,
-      String fileFormat) {
-
+      String portalShortcode, String studyShortcode, String envName, Object body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
-    ExportOptions exportOptions =
-        optionsFromParams(
-            searchExpression,
-            fileFormat,
-            null,
-            splitOptionsIntoColumns,
-            stableIdsForOptions,
-            includeOnlyMostRecent,
-            true,
-            List.of());
+    ExportOptionsWithExpression exportOptions =
+        objectMapper.convertValue(body, ExportOptionsWithExpression.class);
+    exportOptions.setFilterExpression(
+        !StringUtils.isBlank(exportOptions.getFilterString())
+            ? enrolleeSearchExpressionParser.parseRule(exportOptions.getFilterString())
+            : null);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.exportDictionary(

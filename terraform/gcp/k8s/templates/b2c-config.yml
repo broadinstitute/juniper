@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-b2c-configmap
+data:
+  portalB2CConfig.yaml: |
+    b2c:
+      {{range $key, $value := .Values.b2c.portals}}
+      {{$key}}:
+          tenantName: {{$value.tenantName}}
+          policyName: {{$value.policyName}}
+          clientId: {{$value.clientId}}
+          changePasswordPolicyName: {{$value.changePasswordPolicyName}}
+      {{end}}
