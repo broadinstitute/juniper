@@ -58,10 +58,6 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> impleme
     return countByProperty("shortcode", shortcode) == 1;
   }
 
-  public int countByStudyEnvironmentId(UUID studyEnvId) {
-    return countByProperty("study_environment_id", studyEnvId);
-  }
-
   /**
    * gets everything we need to save for compliance reasons even after a participant withdraws.
    *  For now, we're playing it safe and getting pretty much everything,

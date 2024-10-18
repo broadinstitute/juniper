@@ -100,10 +100,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
         return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
     }
 
-    public int countByStudyEnvironment(UUID studyEnvironmentId) {
-        return countByProperty("study_environment_id", studyEnvironmentId);
-    }
-
     /** updates the global consent status of the enrollee */
     public void updateConsented(UUID enrolleeId, boolean consented) {
         updateProperty(enrolleeId, "consented", consented);
