@@ -14,12 +14,15 @@ import {
 import { Enrollee, instantToDefaultString, ParticipantUser, instantToDateString } from '@juniper/ui-core'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { StudyEnvContextT, studyEnvPath } from '../../StudyEnvironmentRouter'
-import { Link } from 'react-router-dom'
-import { renderPageHeader } from '../../../util/pageUtils'
-import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { renderPageHeader } from 'util/pageUtils'
 import _uniq from 'lodash/uniq'
+import { tabLinkStyle } from 'util/subNavStyles'
+import ParticipantMergeView from '../merge/ParticipantMergeView'
+import useParticipantDupeTab from '../merge/UseParticipantDupeTab'
+import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
-type ParticipantUserWithEnrollees = ParticipantUser & {
+export type ParticipantUserWithEnrollees = ParticipantUser & {
   enrollees: Enrollee[]
 }
 
@@ -35,15 +38,19 @@ export default function PortalUserList({ studyEnvContext }:
   })
   const [envMap, setEnvMap] = useState<Record<string, Study>>({})
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    // first get all the studyenvironments for this portal -- that will be needed to determine column headers
     const studies = await Api.fetchStudiesWithEnvs(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
+    // map the studies by their studyEnvironmentId
     setEnvMap(studies.reduce((acc, study) => {
       (acc as Record<string, Study>)[study.studyEnvironments[0].id] = study
       return acc
     }, {}))
     const result = await Api.fetchParticipantUsers(studyEnvContext.portal.shortcode,
       studyEnvContext.currentEnv.environmentName)
+
+    // convert the independent lists of users and enrollees into a single list of users with enrollees
     const mappedResult = result.participantUsers.map(user => ({
       ...user,
       enrollees: result.enrollees.filter(enrollee => enrollee.participantUserId === user.id)
@@ -110,21 +117,52 @@ export default function PortalUserList({ studyEnvContext }:
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
+
+  const tabs = [
+    {
+      name: 'All', path: 'all', component: <div>
+        <div className="d-flex justify-content-end">
+          <ColumnVisibilityControl table={table}/>
+        </div>
+        <div className="d-flex align-items-center justify-content-between">
+          { basicTableLayout(table) }
+        </div>
+      </div>
+    },
+    {
+      ...useParticipantDupeTab({ users, studyEnvContext, onUpdate: reload }),
+      path: 'dupes'
+    },
+    {
+      name: 'Account merging', path: 'merge', component: <ParticipantMergeView studyEnvContext={studyEnvContext}
+        onUpdate={reload}/>
+    }
+  ]
+
   return <div className="container-fluid px-4 py-2">
-    <NavBreadcrumb value={'participantUserList'}>Accounts</NavBreadcrumb>
+    <NavBreadcrumb value={'participantUserList'}>accounts</NavBreadcrumb>
     <div className="d-flex align-items-center justify-content-between ">
       {renderPageHeader('Accounts')}
+
       <ParticipantListViewSwitcher
         studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
       />
     </div>
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex justify-content-end">
-        <ColumnVisibilityControl table={table}/>
+      <div className="d-flex mb-2">
+        { tabs.map(tab => {
+          return <NavLink key={tab.path} to={tab.path} style={tabLinkStyle}>
+            <div className="py-2 px-4">
+              {tab.name}
+            </div>
+          </NavLink>
+        })}
       </div>
-      <div className="d-flex align-items-center justify-content-between">
-        { basicTableLayout(table) }
-      </div>
+      <Routes>
+        { tabs.map(tab => <Route path={tab.path} key={tab.path} element={tab.component}/>)}
+        <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
+      </Routes>
+
     </LoadingSpinner>
   </div>
 }

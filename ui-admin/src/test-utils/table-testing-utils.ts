@@ -6,6 +6,9 @@
 export function getTableCell(table: HTMLTableElement, rowHeader: string, colHeader: string, rowHeaderIndex = 0) {
   const colIndex = Array.from(table.rows[0].cells).findIndex(cell => cell.textContent === colHeader)
   const rowIndex = Array.from(table.rows).findIndex(row => row.cells[rowHeaderIndex].textContent === rowHeader)
+  if (colIndex === -1 || rowIndex === -1) {
+    throw new Error(`Could not find cell at the intersection of row ${rowHeader} and column ${colHeader}`)
+  }
   return table.rows[rowIndex].cells[colIndex]
 }
 

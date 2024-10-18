@@ -1,4 +1,4 @@
-databaseChangeLog:  # This script is DEPRECATED -- it has been replaced by RolePopulator.  This has been removed from the changelog
+databaseChangeLog:
   - changeSet:
       id: "portal_user_login"
       author: dbush

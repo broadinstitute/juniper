@@ -21,7 +21,8 @@ export const mockParticipantUser: () => ParticipantUser = () => {
     username: 'mockUser1@mock.com',
     shortcode: 'ACC_fakeShortcode',
     token: 'fakeToken',
-    lastLogin: 0
+    lastLogin: 0,
+    createdAt: 0
   }
 }
 

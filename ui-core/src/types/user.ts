@@ -18,17 +18,19 @@ export type ParticipantNote = {
 }
 
 export type ParticipantUser = {
-    id: string,
-    username: string,
-    shortcode: string,
-    token: string,
+    id: string
+    username: string
+    shortcode: string
+    token: string
     lastLogin: number
+    createdAt: number
 }
 
 export type PortalParticipantUser = {
-    id: string,
-    createdAt: string,
+    id: string
+    createdAt: string
     lastLogin: number
+    profile?: Profile
 }
 
 export type Enrollee = {

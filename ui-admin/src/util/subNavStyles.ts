@@ -15,3 +15,8 @@ export  const navLinkStyleFunc = ({ isActive }: {isActive: boolean}) => {
 
 /** style for containing div of the whole subnav menu */
 export const navDivStyle = { minWidth: '290px', maxWidth: '290px' }
+
+export const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
+  borderBottom: isActive ? '2px solid #708DBC': '',
+  background: isActive ? '#E1E8F7' : ''
+})

@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ParticipantMergePlanService {
@@ -64,7 +66,6 @@ public class ParticipantMergePlanService {
         this.mergeDao = mergeDao;
     }
 
-    @Transactional
     public ParticipantUserMerge planMerge(ParticipantUser participantUser, ParticipantUser mergeTarget, Portal portal) {
         if (!participantUser.getEnvironmentName().equals(mergeTarget.getEnvironmentName())) {
             throw new IllegalArgumentException("ParticipantUsers must be in the same environment to merge");
@@ -78,6 +79,7 @@ public class ParticipantMergePlanService {
                 .orElseThrow(() -> new IllegalArgumentException("ParticipantUser not found in portal"));
         PortalParticipantUser ppMergeTarget = portalParticipantUserService.findOne(mergeTarget.getId(), portal.getShortcode())
                 .orElseThrow(() -> new IllegalArgumentException("ParticipantUser not found in portal"));
+        portalParticipantUserService.attachProfiles(List.of(ppUser, ppMergeTarget));
 
         mergePlan.setPpUsers(new MergeAction(new MergePair<>(ppUser, ppMergeTarget), MergeAction.Action.DELETE_SOURCE));
 
@@ -111,13 +113,13 @@ public class ParticipantMergePlanService {
     }
 
     protected EnrolleeMerge planMergeEnrollees(Enrollee source, Enrollee target) {
-        EnrolleeMerge enrolleeMerge = EnrolleeMerge.builder()
-                .build();
+        EnrolleeMerge enrolleeMerge = new EnrolleeMerge();
         List<ParticipantTask> sourceTasks = participantTaskService.findByEnrolleeId(source.getId());
         List<ParticipantTask> targetTasks = participantTaskService.findByEnrolleeId(target.getId());
 
         List<MergePair<ParticipantTask>> taskPairs = MergePair.pairLists(sourceTasks, targetTasks,
-                (t1, t2) -> t1.getTargetStableId().equals(t2.getTargetStableId()));
+                (t1, t2) -> Objects.equals(t1.getTaskType(), t2.getTaskType()) &&
+                        Objects.equals(t1.getTargetStableId(), t2.getTargetStableId()));
         for (MergePair<ParticipantTask> taskPair : taskPairs) {
             if (taskPair.getPairType().equals(MergePair.PairType.TARGET_ONLY)) {
                 enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.NO_ACTION));
@@ -132,8 +134,8 @@ public class ParticipantMergePlanService {
                     // if no target data, just drop the target task
                     enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MOVE_SOURCE_DELETE_TARGET));
                 } else {
-                    // otherwise, we need to merge the tasks
-                    enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MERGE,
+                    // otherwise, we need to keep both  (eventually we might want to merge, but for now, keep everything)
+                    enrolleeMerge.getTasks().add(new MergeAction<>(taskPair, MergeAction.Action.MOVE_SOURCE,
                             null));
                 }
             }

@@ -94,7 +94,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
     ...portalContext, portalEnv
   }
 
-  return <div className="StudyView d-flex flex-column flex-grow-1">
+  return <div className="StudyView d-flex flex-column flex-grow-1" key={studyEnvContext.currentEnvPath}>
     <NavBreadcrumb value={currentEnvPath}>
       <Select options={envOpts}
         value={envOpts.find(opt => opt.value === envName)}
@@ -191,6 +191,10 @@ export const useStudyEnvParamsFromPath = () => {
 /** helper for participant list path */
 export const participantListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
+}
+
+export const participantAccountsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants/accounts`
 }
 
 /** root study environment path */

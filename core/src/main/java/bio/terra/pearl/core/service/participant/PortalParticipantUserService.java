@@ -84,6 +84,10 @@ public class PortalParticipantUserService extends CrudService<PortalParticipantU
         return dao.findOne(participantUserId, portalShortcode);
     }
 
+    public void attachProfiles(List<PortalParticipantUser> portalParticipantUsers) {
+        dao.attachProfiles(portalParticipantUsers);
+    }
+
     public List<PortalParticipantUser> findByPortalEnvironmentId(UUID portalId) {
         return dao.findByPortalEnvironmentId(portalId);
     }

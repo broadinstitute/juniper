@@ -30,11 +30,23 @@ public class MergeDao {
         );
     }
 
-    public void reassignEnrolleeNotifications(UUID sourceEnrolleeId, UUID targetEnrolleeId) {
-        // reassign all events from source to target
+    public void reassignEnrolleeNotifications(UUID sourceEnrolleeId, UUID targetEnrolleeId, UUID targetParticipantUserId) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("""
-                        update notification set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
+                        update notification set enrollee_id = :targetEnrolleeId,
+                         participant_user_id = :targetParticipantUserId where enrollee_id = :sourceEnrolleeId;
+                        """)
+                        .bind("sourceEnrolleeId", sourceEnrolleeId)
+                        .bind("targetEnrolleeId", targetEnrolleeId)
+                        .bind("targetParticipantUserId", targetParticipantUserId)
+                        .execute()
+        );
+    }
+
+    public void reassignParticipantNotes(UUID sourceEnrolleeId, UUID targetEnrolleeId) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        update participant_note set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
                         """)
                         .bind("sourceEnrolleeId", sourceEnrolleeId)
                         .bind("targetEnrolleeId", targetEnrolleeId)
@@ -42,8 +54,43 @@ public class MergeDao {
         );
     }
 
+    public void reassignFamily(UUID sourceEnrolleeId, UUID targetEnrolleeId) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        update family set proband_enrollee_id = :targetEnrolleeId where proband_enrollee_id = :sourceEnrolleeId;
+                        """)
+                        .bind("sourceEnrolleeId", sourceEnrolleeId)
+                        .bind("targetEnrolleeId", targetEnrolleeId)
+                        .execute()
+        );
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        update family_enrollee set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
+                        """)
+                        .bind("sourceEnrolleeId", sourceEnrolleeId)
+                        .bind("targetEnrolleeId", targetEnrolleeId)
+                        .execute()
+        );
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        update enrollee_relation set enrollee_id = :targetEnrolleeId where enrollee_id = :sourceEnrolleeId;
+                        """)
+                        .bind("sourceEnrolleeId", sourceEnrolleeId)
+                        .bind("targetEnrolleeId", targetEnrolleeId)
+                        .execute()
+        );
+        jdbi.withHandle(handle ->
+                handle.createUpdate("""
+                        update enrollee_relation set target_enrollee_id = :targetEnrolleeId where target_enrollee_id = :sourceEnrolleeId;
+                        """)
+                        .bind("sourceEnrolleeId", sourceEnrolleeId)
+                        .bind("targetEnrolleeId", targetEnrolleeId)
+                        .execute()
+        );
+
+    }
+
     public void updateParticipantDataChange(ParticipantDataChange change) {
-        // reassign all events from source to target
         jdbi.withHandle(handle ->
                 handle.createUpdate("""
                         update participant_data_change set responsible_user_id = :responsibleUserId,

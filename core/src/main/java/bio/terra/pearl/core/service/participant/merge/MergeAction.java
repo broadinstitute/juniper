@@ -3,11 +3,13 @@ package bio.terra.pearl.core.service.participant.merge;
 import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
 public class MergeAction<T extends BaseEntity, MP> {
     private MergePair<T> pair;
     private Action action;
@@ -42,10 +44,10 @@ public class MergeAction<T extends BaseEntity, MP> {
     }
 
     public enum Action {
-        MOVE_SOURCE,
-        NO_ACTION,
-        MERGE,
-        DELETE_SOURCE,
-        MOVE_SOURCE_DELETE_TARGET
+        MOVE_SOURCE, // no change to target, reassign source to target (not a delete/recreate, just a reassign)
+        NO_ACTION, // nothing
+        MERGE, // do some logic to reconcile source and target
+        DELETE_SOURCE, // delete the source, likely because it is empty or a pure dupe
+        MOVE_SOURCE_DELETE_TARGET // move source to target and delete target
     }
 }

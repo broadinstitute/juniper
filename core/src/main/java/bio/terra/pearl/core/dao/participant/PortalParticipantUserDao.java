@@ -7,6 +7,8 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.participant.Profile;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -77,8 +79,13 @@ public class PortalParticipantUserDao extends BaseMutableJdbiDao<PortalParticipa
     /**
      * loads the user along with their profile
      * */
-    public Optional<PortalParticipantUser> getWithProfile(UUID portalParticipantUserId) {
-        return findWithChild(portalParticipantUserId, "profileId", "profile", profileDao);
+    public void attachProfiles(List<PortalParticipantUser> portalParticipantUsers) {
+        List<Profile> profiles = profileDao.findAllPreserveOrder(portalParticipantUsers.stream()
+                .map(PortalParticipantUser::getProfileId)
+                .toList());
+        for (int i = 0; i < portalParticipantUsers.size(); i++) {
+            portalParticipantUsers.get(i).setProfile(profiles.get(i));
+        }
     }
 
 
