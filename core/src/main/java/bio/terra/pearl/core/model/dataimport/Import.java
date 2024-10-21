@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.dataimport;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class Import extends BaseEntity {
+public class Import extends BaseEntity implements StudyEnvAttached {
     private UUID responsibleUserId;
     private UUID studyEnvironmentId;
     private ImportType importType;

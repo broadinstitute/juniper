@@ -33,6 +33,10 @@ public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
         );
     }
 
+    public Optional<SendgridEvent> findByNotificationId(UUID notificationId) {
+        return findByProperty("notification_id", notificationId);
+    }
+
     public void deleteByNotificationId(UUID notificationId) {
         deleteByProperty("notification_id", notificationId);
     }

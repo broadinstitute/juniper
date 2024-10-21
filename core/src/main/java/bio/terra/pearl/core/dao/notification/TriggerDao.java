@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.notification;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TriggerDao extends BaseMutableJdbiDao<Trigger> {
+public class TriggerDao extends BaseMutableJdbiDao<Trigger> implements StudyEnvAttachedDao<Trigger> {
     private EmailTemplateDao emailTemplateDao;
     public TriggerDao(Jdbi jdbi, EmailTemplateDao emailTemplateDao) {
         super(jdbi);
@@ -20,10 +21,6 @@ public class TriggerDao extends BaseMutableJdbiDao<Trigger> {
     @Override
     protected Class<Trigger> getClazz() {
         return Trigger.class;
-    }
-
-    public List<Trigger> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public List<Trigger> findByStudyEnvironmentId(UUID studyEnvironmentId, boolean active) {
@@ -53,10 +50,6 @@ public class TriggerDao extends BaseMutableJdbiDao<Trigger> {
                     .findFirst().orElse(null)
             );
         }
-    }
-
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        deleteByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public void deleteByPortalEnvironmentId(UUID studyEnvironmentId) {

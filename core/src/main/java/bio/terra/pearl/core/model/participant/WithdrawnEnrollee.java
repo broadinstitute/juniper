@@ -2,6 +2,8 @@ package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class WithdrawnEnrollee extends BaseEntity {
+public class WithdrawnEnrollee extends BaseEntity implements StudyEnvAttached {
   private String shortcode;
   private UUID studyEnvironmentId;
   /** JSON of the Enrollee object and children that need to e saved for compliance */

@@ -46,7 +46,7 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     }
 
     public void attachSendgridEvent(Notification notification) {
-        Optional<SendgridEvent> sendgridEvent = sendgridEventDao.findByProperty("notification_id", notification.getId());
+        Optional<SendgridEvent> sendgridEvent = sendgridEventDao.findByNotificationId(notification.getId());
         sendgridEvent.ifPresent(notification::setEventDetails);
     }
 
