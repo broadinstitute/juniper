@@ -79,4 +79,125 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         verify(spyMixpanelService, times(1)).deliverEvents(any());
     }
 
+    @Test
+    public void testFilterEventDataMatchesNoPatterns() {
+        String originalData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?referrer=google.com&language=en&timestamp=1112223333",
+                        "current_url_search": "?referrer=google.com&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String expectedData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?referrer=google.com&language=en&timestamp=1112223333",
+                        "current_url_search": "?referrer=google.com&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String result = mixpanelService.filterEventData(originalData);
+        assertEquals(expectedData, result);
+    }
+
+    @Test
+    public void testFilterEventDataMatchesEmailPattern() {
+        String originalData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?email=jsalk@test.com&language=en",
+                        "current_url_search": "?email=jsalk@test.com&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String expectedData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?email={REDACTED_EMAIL}&language=en",
+                        "current_url_search": "?email={REDACTED_EMAIL}&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String result = mixpanelService.filterEventData(originalData);
+        assertEquals(expectedData, result);
+    }
+
+    @Test
+    public void testFilterEventDataMatchesPhonePattern() {
+        String originalData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?phoneNumber=555-555-1234&secondPhoneNumber=(111)-111-1111&language=en",
+                        "current_url_search": "?phoneNumber=555-555-1234&secondPhoneNumber=(111)-111-1111&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String expectedData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?phoneNumber={REDACTED_PHONE_NUMBER}&secondPhoneNumber={REDACTED_PHONE_NUMBER}&language=en",
+                        "current_url_search": "?phoneNumber={REDACTED_PHONE_NUMBER}&secondPhoneNumber={REDACTED_PHONE_NUMBER}&language=en"
+                    }
+                }
+            ]
+            """;
+
+        String result = mixpanelService.filterEventData(originalData);
+        assertEquals(expectedData, result);
+    }
+
+    @Test
+    public void testFilterEventDataMatchesMultiplePatterns() {
+        String originalData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?email=jsalk@test.com&phoneNumber=111-222-3333",
+                        "current_url_search": "?email=jsalk@test.com&phoneNumber=111-222-3333"
+                    }
+                }
+            ]
+            """;
+
+        String expectedData = """
+            [
+                {
+                    "event": "$mp_web_page_view",
+                    "properties": {
+                        "$current_url": "https://sandbox.demo.localhost:3001/?email={REDACTED_EMAIL}&phoneNumber={REDACTED_PHONE_NUMBER}",
+                        "current_url_search": "?email={REDACTED_EMAIL}&phoneNumber={REDACTED_PHONE_NUMBER}"
+                    }
+                }
+            ]
+            """;
+        String result = mixpanelService.filterEventData(originalData);
+        assertEquals(expectedData, result);
+    }
+
+
+
 }
