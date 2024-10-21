@@ -21,6 +21,7 @@ import {
   log,
   logError
 } from 'util/loggingUtils'
+import { handleNewStudyEnroll } from '../studies/enroll/StudyEnrollRouter'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -91,9 +92,10 @@ export const RedirectFromOAuth = () => {
 
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
-              const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState, i18n)
-              navigate('/hub', { replace: true, state: hubUpdate })
+              const hubResponse = await enrollCurrentUserInStudy(
+                defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState)
+
+              handleNewStudyEnroll(hubResponse, defaultEnrollStudy.shortcode, navigate, i18n, defaultEnrollStudy.name)
             } else {
               navigate('/hub', { replace: true })
             }

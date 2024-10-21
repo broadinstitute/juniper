@@ -2,10 +2,8 @@ import Api, {
   PortalParticipantUser,
   Study
 } from 'api/api'
-import { HubUpdate } from 'hub/hubUpdates'
 import {
-  Enrollee,
-  I18nOptions,
+  Enrollee, HubResponse,
   useI18n
 } from '@juniper/ui-core'
 import { useUser } from '../providers/UserProvider'
@@ -22,24 +20,15 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 /** enrolls the user and displays a welcome banner on the dashboard */
 export async function enrollCurrentUserInStudy(
   studyShortcode: string,
-  studyName: string,
   preEnrollResponseId: string | null,
-  refreshLogin: () => Promise<void>,
-  i18n: (key: string, options?: I18nOptions) => string
-) {
-  await Api.createEnrollee({
+  refreshLogin: () => Promise<void>
+): Promise<HubResponse> {
+  const hubResponse = await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
   })
-  const hubUpdate: HubUpdate = {
-    message: {
-      title: i18n('hubUpdateWelcomeToStudyTitle', { substitutions: { studyName } }),
-      detail: i18n('hubUpdateWelcomeToStudyDetail'),
-      type: 'INFO'
-    }
-  }
   await refreshLogin()
-  return hubUpdate
+  return hubResponse
 }
 
 /**
@@ -48,26 +37,17 @@ export async function enrollCurrentUserInStudy(
  */
 export async function enrollProxyUserInStudy(
   studyShortcode: string,
-  studyName: string,
   preEnrollResponseId: string | null,
   governedPpUserId: string | null,
-  refreshLogin: () => Promise<void>,
-  i18n: (key: string, options?: I18nOptions) => string
-) {
-  await Api.createGovernedEnrollee({
+  refreshLogin: () => Promise<void>
+): Promise<HubResponse> {
+  const hubResponse = await Api.createGovernedEnrollee({
     studyShortcode,
     preEnrollResponseId,
     governedPpUserId
   })
-  const hubUpdate: HubUpdate = {
-    message: {
-      title: i18n('hubUpdateWelcomeToStudyTitle', { substitutions: { studyName } }),
-      detail: i18n('hubUpdateWelcomeToStudyDetail'),
-      type: 'INFO'
-    }
-  }
   await refreshLogin()
-  return hubUpdate
+  return hubResponse
 }
 
 /**

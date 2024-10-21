@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Api, { ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api/api'
-import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { Enrollee, EnvironmentName, useI18n, useTaskIdParam } from '@juniper/ui-core'
 import { usePortalEnv } from '../providers/PortalProvider'
+import { getTaskPath } from './task/taskUtils'
 
 type OutreachParams = {
     enrolleeShortcode?: string,

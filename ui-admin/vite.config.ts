@@ -32,7 +32,8 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': 'http://localhost:8080',
-      '/config': 'http://localhost:8080'
+      '/config': 'http://localhost:8080',
+      '/status': 'http://localhost:8080'
     }
   },
   resolve: {

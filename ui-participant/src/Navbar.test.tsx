@@ -5,7 +5,6 @@ import {
 import React from 'react'
 
 import {
-  HtmlPage,
   NavbarItemExternal,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
@@ -52,10 +51,7 @@ describe('CustomNavLink', () => {
       itemType: 'INTERNAL',
       text: 'Internal link',
       itemOrder: 1,
-      internalPath: 'testPage',
-      htmlPage: {
-        path: 'testPage'
-      } as HtmlPage
+      internalPath: 'testPage'
     }
 
     const { RoutedComponent } = setupRouterTest(<CustomNavLink navLink={navbarItem} />)

@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -26,6 +27,7 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -57,6 +59,7 @@ public class EnrolleeExportService {
     private final FamilyService familyService;
     private final EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
+    private final StudyService studyService;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
@@ -69,7 +72,9 @@ public class EnrolleeExportService {
                                  EnrolleeRelationService enrolleeRelationService,
                                  ObjectMapper objectMapper,
                                  FamilyService familyService,
-                                 EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, StudyEnvironmentConfigService studyEnvironmentConfigService) {
+                                 EnrolleeSearchExpressionDao enrolleeSearchExpressionDao,
+                                 StudyEnvironmentConfigService studyEnvironmentConfigService,
+                                 StudyService studyService) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
@@ -85,6 +90,7 @@ public class EnrolleeExportService {
         this.familyService = familyService;
         this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
+        this.studyService = studyService;
     }
 
     /**
@@ -102,7 +108,9 @@ public class EnrolleeExportService {
     }
 
     public List<EnrolleeExportData> loadEnrolleeExportData(UUID studyEnvironmentId, ExportOptionsWithExpression exportOptions) {
+        Study study = studyService.findByStudyEnvironmentId(studyEnvironmentId).orElseThrow();
         return loadEnrolleesForExport(
+                study,
                 studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId),
                 loadEnrollees(studyEnvironmentId, exportOptions.getFilterExpression(), exportOptions.getRowLimit()));
     }
@@ -150,12 +158,13 @@ public class EnrolleeExportService {
     public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
         List<ModuleFormatter> allSimpleFormatters = List.of(
                 new EnrolleeFormatter(exportOptions),
+                new StudyFormatter(exportOptions),
                 new ParticipantUserFormatter(exportOptions),
                 new ProfileFormatter(exportOptions),
-                new KitRequestFormatter(),
-                new EnrolleeRelationFormatter(),
-                new FamilyFormatter(),
-                new ProxyFormatter());
+                new KitRequestFormatter(exportOptions),
+                new EnrolleeRelationFormatter(exportOptions),
+                new FamilyFormatter(exportOptions),
+                new ProxyFormatter(exportOptions));
 
         List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
                 moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())
@@ -217,22 +226,23 @@ public class EnrolleeExportService {
         return moduleFormatters;
     }
 
-    protected List<EnrolleeExportData> loadEnrolleesForExport(StudyEnvironmentConfig config,
+    protected List<EnrolleeExportData> loadEnrolleesForExport(Study study,
+                                                              StudyEnvironmentConfig config,
                                                               List<Enrollee> enrollees) {
-
         // for now, load each enrollee individually.  Later we'll want more sophisticated batching strategies
         return enrollees
                 .stream()
-                .map(enrollee -> loadEnrolleeData(config, enrollee))
+                .map(enrollee -> loadEnrolleeData(study, config, enrollee))
                 .toList();
     }
 
-    protected EnrolleeExportData loadEnrolleeData(StudyEnvironmentConfig config,
+    protected EnrolleeExportData loadEnrolleeData(Study study, StudyEnvironmentConfig config,
                                                   Enrollee enrollee) {
 
         List<EnrolleeRelation> relations = loadRelations(config, enrollee);
         List<ParticipantUser> proxies = loadProxyUsers(config, relations);
         return new EnrolleeExportData(
+                study,
                 enrollee,
                 participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(),
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).get(),

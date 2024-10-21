@@ -30,4 +30,6 @@ public class ExportOptions extends BaseEntity {
     private boolean includeSubHeaders = true;
     @Builder.Default
     private List<String> excludeModules = new ArrayList<>();
+    @Builder.Default
+    private List<String> includeFields = new ArrayList<>();
 }

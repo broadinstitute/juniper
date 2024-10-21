@@ -35,6 +35,7 @@ import {
   AdminUserParams,
   Role
 } from './adminUser'
+import { SystemStatus } from 'status/status'
 
 export type {
   Answer,
@@ -80,6 +81,11 @@ export type EnrolleeSearchExpressionResult = {
   families: Family[]
   participantUser?: ParticipantUser
   portalParticipantUser?: PortalParticipantUser
+}
+
+export type ParticipantUsersWithEnrollees = {
+  participantUsers: ParticipantUser[],
+  enrollees: Enrollee[]
 }
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
@@ -272,7 +278,8 @@ export type ExportOptions = {
   includeSubHeaders?: boolean,
   excludeModules?: string[],
   filterString?: string,
-  rowLimit?: number
+  rowLimit?: number,
+  includeFields: string[]
 }
 
 export type ExportData = {
@@ -503,6 +510,12 @@ export default {
 
   async getPortal(portalShortcode: string): Promise<Portal> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchStudiesWithEnvs(portalShortcode: string, envName: string): Promise<Study[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/studies?envName=${envName}`,
+      this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -758,6 +771,12 @@ export default {
 
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersWithEnrollees> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers`,
       this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1101,25 +1120,23 @@ export default {
   exportEnrollees(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
     Promise<Response> {
-    const exportOptionsParams = exportOptions as Record<string, unknown>
-    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
-    url += queryString.stringify(exportOptionsParams)
-    return fetch(url, this.getGetInit())
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data`
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(exportOptions)
+    })
   },
 
   exportDictionary(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
     Promise<Response> {
-    const exportOptionsParams = exportOptions as Record<string, unknown>
-    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
-    const searchParams = new URLSearchParams()
-    for (const prop in exportOptionsParams) {
-      if (exportOptionsParams[prop] !== undefined) {
-        searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
-      }
-    }
-    url += searchParams.toString()
-    return fetch(url, this.getGetInit())
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary`
+    return fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(exportOptions)
+    })
   },
 
   async fetchExportIntegrations(studyEnvParams: StudyEnvParams): Promise<ExportIntegration[]> {
@@ -1150,6 +1167,17 @@ export default {
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async saveExportIntegration(studyEnvParams: StudyEnvParams, integration: ExportIntegration):
+    Promise<ExportIntegration> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/exportIntegrations/${integration.id}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(integration)
     })
     return await this.processJsonResponse(response)
   },
@@ -1681,6 +1709,15 @@ export default {
     const params = queryString.stringify({ eventTypes: eventTypes.join(','), days, limit })
     const url = `${API_ROOT}/logEvents?${params}`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getSystemStatus(): Promise<SystemStatus> {
+    const url = `/status`
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 

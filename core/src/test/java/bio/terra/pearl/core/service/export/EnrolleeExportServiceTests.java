@@ -28,8 +28,8 @@ import bio.terra.pearl.core.service.participant.FamilyService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,13 +69,13 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
-    private StudyEnvironmentService studyEnvironmentService;
-    @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
     private AnswerFactory answerFactory;
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
 
@@ -98,6 +98,39 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         // confirm enrollees are in reverse order of creation
         assertThat(exportMaps.get(0).get("enrollee.shortcode"), equalTo(enrollee3.getShortcode()));
         assertThat(exportMaps.get(1).get("enrollee.shortcode"), equalTo(enrollee2.getShortcode()));
+    }
+
+    @Test
+    @Transactional
+    public void testExportIncludeFields(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder()
+                .fileFormat(ExportFileFormat.TSV)
+                .includeFields(List.of("enrollee.shortcode", "profile.familyName")).build();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnv.getId(), stream);
+
+        assertThat(stream.toString(), startsWith("enrollee.shortcode\tprofile.familyName\nShortcode"));
+    }
+
+    @Test
+    @Transactional
+    public void testExportStudyShortcode(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, bundle.getStudyEnv(), new Profile());
+
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder().rowLimit(2).build();
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(bundle.getStudyEnv().getId(), opts);
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(opts, bundle.getStudyEnv().getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, exportModuleInfo);
+
+        // confirm enrollees are in reverse order of creation
+        assertThat(exportMaps.get(0).get("study.shortcode"), equalTo(bundle.getStudy().getShortcode()));
     }
 
     @Test
@@ -457,7 +490,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testDynamicPanelExport(TestInfo testInfo) {
+    public void testDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey survey = surveyService.create(
@@ -485,22 +518,22 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee1,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
                 enrollee2,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"Jonas","lastName":"Salk"},
                                      {"firstName":"Peter","lastName":"Salk"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
@@ -569,7 +602,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) {
+    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey surveyV1 = surveyService.create(
@@ -603,12 +636,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee,
                 surveyV1,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
 

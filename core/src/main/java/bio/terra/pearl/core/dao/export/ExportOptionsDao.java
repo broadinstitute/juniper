@@ -17,11 +17,4 @@ public class ExportOptionsDao extends BaseMutableJdbiDao<ExportOptions> {
     protected Class<ExportOptions> getClazz() {
         return ExportOptions.class;
     }
-
-    @Override
-    protected List<String> generateGetFields(Class<ExportOptions> clazz) {
-        List<String> getFields = super.generateGetFields(clazz);
-        getFields.add("excludeModules");
-        return getFields;
-    }
 }

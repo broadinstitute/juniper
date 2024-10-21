@@ -2,6 +2,8 @@ package bio.terra.pearl.api.admin.service.study;
 
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -86,6 +88,21 @@ public class StudyExtService {
     }
 
     return newStudy;
+  }
+
+  /** gets all the studies for a portal, with the environments attached */
+  @EnforcePortalPermission(permission = "BASE")
+  public List<Study> getStudiesWithEnvs(PortalAuthContext authContext, EnvironmentName envName) {
+    List<Study> studies = studyService.findByPortalId(authContext.getPortal().getId());
+    studies.forEach(
+        study -> {
+          studyService.attachEnvironments(study);
+          study.setStudyEnvironments(
+              study.getStudyEnvironments().stream()
+                  .filter(env -> envName == null || env.getEnvironmentName().equals(envName))
+                  .toList());
+        });
+    return studies;
   }
 
   private void fillInWithTemplate(

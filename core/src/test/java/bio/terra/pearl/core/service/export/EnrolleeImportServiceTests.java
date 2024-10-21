@@ -14,10 +14,7 @@ import bio.terra.pearl.core.model.dataimport.*;
 import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -390,6 +387,51 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
     }
 
+    @Test
+    @Transactional
+    public void testImportPreEnroll(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        Survey preEnroll = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("preEnroll")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"name\",\"title\":\"What is your name?\"}]}]}")
+                .portalId(bundle.getPortal().getId()));
+
+        surveyFactory.attachToEnv(preEnroll, bundle.getStudyEnv().getId(), true);
+
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "preEnroll.name", "Alex",
+                "profile.givenName", "Alex",
+                "profile.birthDate", "1998-05-14",
+                "profile.doNotEmailSolicit", "true",
+                "profile.mailingAddress.street1", "105 Broadway",
+                "profile.mailingAddress.postalCode", "45455");
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(responses, hasSize(1));
+        SurveyResponse response = responses.get(0);
+
+        assertThat(response.getSurveyId(), equalTo(preEnroll.getId()));
+
+        List<Answer> answers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), preEnroll.getStableId());
+        assertThat(answers, hasSize(1));
+
+        Answer answer = answers.getFirst();
+        assertThat(answer.getQuestionStableId(), equalTo("name"));
+        assertThat(answer.getStringValue(), equalTo("Alex"));
+
+    }
+
 
     /** check that imports won't overwrite previously entered profiles in a multi-study setting */
     @Test
@@ -723,6 +765,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(user.getUsername(), equalTo(userExpected.getUsername()));
         assertThat(user.getCreatedAt(), equalTo(userExpected.getCreatedAt()));
         assertThat(enrollee.getCreatedAt(), equalTo(enrolleeExpected.getCreatedAt()));
+        assertThat(enrollee.getSource(), equalTo(EnrolleeSourceType.IMPORT));
 
         //load profile
         Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();

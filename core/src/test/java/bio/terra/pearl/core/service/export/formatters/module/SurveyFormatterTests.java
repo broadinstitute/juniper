@@ -43,7 +43,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .surveyResponseId(testResponse.getId())
                 .stringValue("easyValue")
                 .build();
-        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null,
+        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null,
                 List.of(answer), null, List.of(testResponse), null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
@@ -157,6 +157,48 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void testAddAnswerToMapChildObject() throws Exception {
+        SurveyQuestionDefinition childChoiceQ = SurveyQuestionDefinition.builder()
+                .questionStableId("childChoiceQ")
+                .questionType("checkbox")
+                .exportOrder(2)
+                .parentStableId("parentQ")
+                .allowMultiple(true)
+                .choices("""
+                        [{"stableId":"yes","text":"Yes"},{"stableId":"No","text":"no"}]
+                        """)
+                .build();
+        SurveyQuestionDefinition childTextQ = SurveyQuestionDefinition.builder()
+                .questionStableId("childTextQ")
+                .questionType("text")
+                .exportOrder(3)
+                .parentStableId("parentQ")
+                .build();
+        SurveyQuestionDefinition parentQ = SurveyQuestionDefinition.builder()
+                .questionStableId("parentQ")
+                .questionType("paneldynamic")
+                .exportOrder(1)
+                .allowMultiple(true)
+                .repeatable(true)
+                .build();
+        Answer answer = Answer.builder()
+                .questionStableId("parentQ")
+                .surveyStableId("oh_surveyA")
+                .surveyVersion(1)
+                .objectValue("""
+                        [{"childChoiceQ":["yes"], "childTextQ": "someVal"}]
+                        """).build();
+        ExportOptions exportOptions = new ExportOptions();
+        Map<String, String> valueMap = generateAnswerMap(childTextQ, answer, exportOptions, parentQ);
+        assertThat(valueMap.get("oh_surveyA.parentQ.childTextQ[0]"), equalTo("someVal"));
+
+        valueMap = generateAnswerMap(childChoiceQ, answer, exportOptions, parentQ);
+        assertThat(valueMap.get("oh_surveyA.parentQ.childChoiceQ[0]"), equalTo("Yes"));
+
+
+    }
+
+    @Test
     public void testStripStudyAndSurveyPrefixes() {
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("oh_oh_famHx_someQuestion"), equalTo("someQuestion"));
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("oh_oh_famHx_someQuestion_suffix"), equalTo("someQuestion_suffix"));
@@ -190,17 +232,32 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
      * helper for testing generation of answer maps values for a single question-answer pair
      */
     private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions) throws JsonProcessingException {
+        return generateAnswerMap(question, answer, exportOptions, null);
+    }
+
+    /**
+     * helper for testing generation of answer maps values for a single question-answer pair
+     */
+    private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions, SurveyQuestionDefinition parent) throws JsonProcessingException {
         Map<String, String> valueMap = new HashMap<>();
         Survey testSurvey = Survey.builder()
                 .id(UUID.randomUUID())
                 .stableId("oh_surveyA")
                 .version(1)
                 .build();
-        SurveyFormatter moduleFormatter = new SurveyFormatter(exportOptions, "oh_surveyA", List.of(testSurvey), List.of(question), List.of(), objectMapper);
+        List<SurveyQuestionDefinition> questions = List.of(question);
+        String mapStableId = question.getQuestionStableId();
+        if (parent != null) {
+            questions = List.of(question, parent);
+            mapStableId = parent.getQuestionStableId();
+        }
+        SurveyFormatter moduleFormatter = new SurveyFormatter(exportOptions, "oh_surveyA", List.of(testSurvey), questions, List.of(), objectMapper);
         AnswerItemFormatter itemFormatter = (AnswerItemFormatter) moduleFormatter.getItemFormatters().stream().filter(
-                        itemInfo -> itemInfo instanceof AnswerItemFormatter)
+                        itemInfo -> itemInfo instanceof AnswerItemFormatter &&
+                                ((AnswerItemFormatter) itemInfo).getQuestionStableId().equals(question.getQuestionStableId()))
                 .findFirst().orElseThrow(() -> new IllegalStateException("formatter did not produce an AnswerItemFormatter"));
-        Map<String, List<Answer>> answerMap = Map.of(question.getQuestionStableId(), List.of(answer));
+
+        Map<String, List<Answer>> answerMap = Map.of(mapStableId, List.of(answer));
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);
         return valueMap;
     }

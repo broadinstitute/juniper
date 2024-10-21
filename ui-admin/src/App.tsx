@@ -31,6 +31,7 @@ import AdminUserRouter from './user/AdminUserRouter'
 import LogEventViewer from './health/LogEventViewer'
 import { initializeMixpanel } from '@juniper/ui-core'
 import mixpanel from 'mixpanel-browser'
+import { StatusPage } from './status/StatusPage'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -61,6 +62,7 @@ function App() {
                   <ScrollToTop/>
                   <Routes>
                     <Route path="/">
+                      <Route path="/system/status" element={<StatusPage/>}/>
                       <Route element={<ProtectedRoute>
                         <NavContextProvider><PageFrame config={config}/></NavContextProvider>
                       </ProtectedRoute>}>
