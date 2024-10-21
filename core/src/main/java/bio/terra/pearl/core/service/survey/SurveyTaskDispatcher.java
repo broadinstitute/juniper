@@ -288,7 +288,7 @@ public class SurveyTaskDispatcher {
         // TODO JN-977: this logic will need to change because we will need to support surveys for proxies
         return enrolleeContext.getEnrollee().isSubject() &&
                 (survey.getDaysAfterEligible() == null ||
-                        enrolleeContext.getEnrollee().getCreatedAt().minus(survey.getDaysAfterEligible(), ChronoUnit.DAYS).isBefore(Instant.now())) &&
+                        enrolleeContext.getEnrollee().getCreatedAt().plus(survey.getDaysAfterEligible(), ChronoUnit.DAYS).isBefore(Instant.now())) &&
                 enrolleeSearchExpressionParser
                 .parseRule(survey.getEligibilityRule())
                 .evaluate(new EnrolleeSearchContext(enrolleeContext.getEnrollee(), enrolleeContext.getProfile()));
@@ -343,7 +343,7 @@ public class SurveyTaskDispatcher {
      * a new one
      */
     public static boolean isRecurrenceWindowOpen(StudyEnvironmentSurvey studySurvey, ParticipantTask pastTask) {
-        if (studySurvey.getSurvey().getRecurrenceType() != RecurrenceType.NONE) {
+        if (studySurvey.getSurvey().getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
