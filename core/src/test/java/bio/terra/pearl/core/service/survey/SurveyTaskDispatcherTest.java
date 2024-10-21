@@ -284,5 +284,21 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(tasks.stream().map(ParticipantTask::getTargetStableId).toList(), containsInAnyOrder("medForm", "followUp"));
     }
 
+    @Test
+    @Transactional
+    public void testAssign(TestInfo testInfo) {
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+        ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true );
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+        List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
+        assertThat(participantTasks, hasSize(2));
+    }
+
+
 
 }

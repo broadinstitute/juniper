@@ -38,7 +38,7 @@ export type Survey = VersionedForm & {
   autoAssign: boolean
   assignToExistingEnrollees: boolean
   autoUpdateTaskAssignments: boolean
-  recur: boolean
+  recurrenceType: 'NONE' | 'LONGITUDINAL' | 'UPDATE'
   recurrenceIntervalDays: number
   daysAfterEligible?: number
   allowAdminEdit: boolean

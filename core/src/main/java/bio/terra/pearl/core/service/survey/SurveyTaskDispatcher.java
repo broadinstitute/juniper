@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.RecurrenceType;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
@@ -74,7 +75,7 @@ public class SurveyTaskDispatcher {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurveyNoContent(studyEnv.getId(), true);
         for (StudyEnvironmentSurvey studyEnvSurvey : studyEnvSurveys) {
             Survey survey = studyEnvSurvey.getSurvey();
-            if (survey.isRecur() && survey.getRecurrenceIntervalDays() != null) {
+            if (survey.getRecurrenceType() != RecurrenceType.NONE && survey.getRecurrenceIntervalDays() != null) {
                 assignRecurringSurvey(studyEnvSurvey);
             }
             if (survey.getDaysAfterEligible() != null && survey.getDaysAfterEligible() > 0) {
@@ -83,6 +84,7 @@ public class SurveyTaskDispatcher {
         }
     }
 
+    /** will assign a recurringsurvey to enrollees who have already taken it at least once, but are due to take it again */
     public void assignRecurringSurvey(StudyEnvironmentSurvey studyEnvSurvey) {
         List<Enrollee> enrollees = enrolleeService.findWithTaskInPast(
                 studyEnvSurvey.getStudyEnvironmentId(),
@@ -91,6 +93,7 @@ public class SurveyTaskDispatcher {
         assign(enrollees, studyEnvSurvey, false, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignRecurringSurvey")));
     }
 
+    /** will assign a delayed survey to enrollees who have never taken it, but are due to take it now */
     public void assignDelayedSurvey(StudyEnvironmentSurvey studyEnvSurvey) {
         List<Enrollee> enrollees = enrolleeService.findUnassignedToTask(studyEnvSurvey.getStudyEnvironmentId(), studyEnvSurvey.getSurvey().getStableId(), null);
         enrollees = enrollees.stream().filter(enrollee ->
@@ -123,28 +126,44 @@ public class SurveyTaskDispatcher {
         UUID auditOperationId = UUID.randomUUID();
         List<ParticipantTask> createdTasks = new ArrayList<>();
         for (int i = 0; i < enrollees.size(); i++) {
+            List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
             Optional<ParticipantTask> taskOpt;
             if (overrideEligibility) {
                 taskOpt = Optional.of(buildTask(enrollees.get(i), ppUsers.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
             } else {
-                List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
                 taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleData.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
             }
             if (taskOpt.isPresent()) {
+                ParticipantTask task = taskOpt.get();
+                copyForwardResponseIfApplicable(task, studyEnvironmentSurvey.getSurvey(), existingTasks);
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
                 auditInfo.setResponsibleEntity(operator);
-                ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
+
+                task = participantTaskService.create(task, auditInfo);
                 log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
                         task.getTaskType(), task.getTargetStableId());
                 createdTasks.add(task);
             }
         }
         return createdTasks;
+    }
+
+    /**
+     * depending on recurrence type, will copy forward a past response so that updates are merged.
+     * If we later support the 'prepopulate' option, this would be where would we clone the prior response
+     * */
+    protected void copyForwardResponseIfApplicable(ParticipantTask task, Survey survey, List<ParticipantTask> existingTasks) {
+        if (survey.getRecurrenceType().equals(RecurrenceType.UPDATE)) {
+            Optional<ParticipantTask> existingTask = existingTasks.stream()
+                    .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .max(Comparator.comparing(ParticipantTask::getCreatedAt));
+            existingTask.ifPresent(participantTask -> task.setSurveyResponseId(participantTask.getSurveyResponseId()));
+        }
     }
 
     protected List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
