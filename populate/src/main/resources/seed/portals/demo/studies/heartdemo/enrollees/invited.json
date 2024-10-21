@@ -3,6 +3,7 @@
   "shortcode": "HDINVI",
   "source": "IMPORT",
   "simulateSubmissions": true,
+  "submittedHoursAgo": 100,
   "surveyResponseDtos": [
     {
       "surveyStableId": "hd_hd_basicInfo",

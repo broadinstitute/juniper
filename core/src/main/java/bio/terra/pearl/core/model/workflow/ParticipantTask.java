@@ -3,6 +3,8 @@ package bio.terra.pearl.core.model.workflow;
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ParticipantTask extends BaseEntity {
+public class ParticipantTask extends BaseEntity implements StudyEnvAttached {
     private Instant completedAt;
     private TaskStatus status;
     private TaskType taskType;

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.study;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironmentSurvey> {
+public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironmentSurvey> implements StudyEnvAttachedDao<StudyEnvironmentSurvey> {
     private SurveyDao surveyDao;
     private StudyEnvironmentDao studyEnvironmentDao;
     public StudyEnvironmentSurveyDao(Jdbi jdbi, SurveyDao surveyDao, @Lazy StudyEnvironmentDao studyEnvironmentDao) {
@@ -26,10 +27,6 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     @Override
     protected Class<StudyEnvironmentSurvey> getClazz() {
         return StudyEnvironmentSurvey.class;
-    }
-
-    public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        deleteByProperty("study_environment_id", studyEnvId);
     }
 
     public List<StudyEnvironmentSurvey> findBySurveyId(UUID surveyId) {

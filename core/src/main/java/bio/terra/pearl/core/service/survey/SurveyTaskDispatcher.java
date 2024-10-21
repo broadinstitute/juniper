@@ -343,18 +343,12 @@ public class SurveyTaskDispatcher {
      * a new one
      */
     public static boolean isRecurrenceWindowOpen(StudyEnvironmentSurvey studySurvey, ParticipantTask pastTask) {
-        if (!studySurvey.getSurvey().isRecur()) {
+        if (studySurvey.getSurvey().getRecurrenceType() != RecurrenceType.NONE) {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
+                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays()).toInstant();
         return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 
-    /**
-     * this is a fudge factor in our logic to prevent duplicate survey assignments -- we don't want to
-     * allow duplicate tasks assigned, but we don't want to prevent tasks from being assigned just because
-     * of time zone fuzziness, leap years, etc...
-     */
-    public static final int RECUR_TASK_BUFFER_DAYS = 3;
 }

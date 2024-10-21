@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -29,6 +30,7 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +70,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
-    private StudyEnvironmentService studyEnvironmentService;
-    @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
-    private AnswerFactory answerFactory;
+    private ObjectMapper objectMapper;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
 
@@ -111,6 +111,33 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         enrolleeExportService.export(opts, studyEnv.getId(), stream);
 
         assertThat(stream.toString(), startsWith("enrollee.shortcode\tprofile.familyName\nShortcode"));
+    }
+
+    @Test
+    @Transactional
+    public void testExportIncludeFieldsSorted(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder()
+                .fileFormat(ExportFileFormat.TSV)
+                .includeFields(List.of("profile.familyName", "enrollee.shortcode", "account.username" )).build();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnvBundle.getStudyEnv().getId(), stream);
+
+        assertThat(stream.toString(), startsWith("profile.familyName\tenrollee.shortcode\taccount.username\nFamily Name"));
+        // fun fact -- empty strings are typically left blank, but TSV export will quote the first column for safety if it's empty.
+        assertThat(stream.toString(), endsWith("\n\"\"\t%s\t%s\n".formatted(enrolleeBundle.enrollee().getShortcode(), enrolleeBundle.participantUser().getUsername())));
+
+        opts = ExportOptionsWithExpression.builder()
+                .fileFormat(ExportFileFormat.TSV)
+                .includeFields(List.of("account.username", "profile.familyName", "enrollee.shortcode")).build();
+        stream = new ByteArrayOutputStream();
+        enrolleeExportService.export(opts, studyEnvBundle.getStudyEnv().getId(), stream);
+
+        assertThat(stream.toString(), startsWith("account.username\tprofile.familyName\tenrollee.shortcode\nUsername"));
+        assertThat(stream.toString(), endsWith("\n%s\t\t%s\n".formatted(enrolleeBundle.participantUser().getUsername(), enrolleeBundle.enrollee().getShortcode())));
     }
 
     @Test
@@ -478,7 +505,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testDynamicPanelExport(TestInfo testInfo) {
+    public void testDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey survey = surveyService.create(
@@ -506,22 +533,22 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee1,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
                 enrollee2,
                 survey,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"Jonas","lastName":"Salk"},
                                      {"firstName":"Peter","lastName":"Salk"}]
-                                """
+                                """)
                 )
         );
         surveyResponseFactory.buildWithAnswers(
@@ -578,7 +605,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
 
-        BaseExporter exporter = enrolleeExportService.getExporter(ExportFileFormat.CSV, moduleFormatters, exportMaps);
+        BaseExporter exporter = enrolleeExportService.getExporter(ExportFileFormat.CSV, moduleFormatters, exportMaps, null);
         List<String> columnKeys = exporter.getColumnKeys();
         List<String> columnHeaders = exporter.getHeaderRow();
 
@@ -590,7 +617,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) {
+    public void testMultiVersionDynamicPanelExport(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Survey surveyV1 = surveyService.create(
@@ -624,12 +651,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 enrollee,
                 surveyV1,
                 Map.of(
-                        "examplePanel", """
+                        "examplePanel", objectMapper.readTree("""
                                     [{"firstName":"John","lastName":"Doe"},
                                      {"firstName":"Jane","lastName":"Doe"},
                                      {"firstName":"Jim","lastName":"Doe"},
                                      {"firstName":"Jill","lastName":"Doe"}]
-                                """
+                                """)
                 )
         );
 

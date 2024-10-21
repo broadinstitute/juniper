@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class Family extends BaseEntity {
+public class Family extends BaseEntity implements StudyEnvAttached {
     private UUID probandEnrolleeId;
     private UUID studyEnvironmentId;
     private String shortcode;

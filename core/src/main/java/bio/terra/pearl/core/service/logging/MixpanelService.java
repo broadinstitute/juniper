@@ -10,6 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -20,13 +22,38 @@ public class MixpanelService {
         this.env = env;
     }
 
+    private Map<String, String> getRedactionPatterns() {
+        Map<String, String> patterns = new HashMap<>();
+        patterns.put("([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})", "{REDACTED_EMAIL}");
+        // This pattern matches phone numbers in the format (123)-456-7890 or 123-456-7890
+        // It does not match phone numbers in the format 1234567890, as this unfortunately
+        // would require more sophistication to avoid redacting timestamps
+        patterns.put("\\(?[0-9]{3}\\)?-[0-9]{3}-[0-9]{4}", "{REDACTED_PHONE_NUMBER}");
+        return patterns;
+    }
+
+    // This method is used to redact any sensitive information from the event data
+    // before sending it to Mixpanel. Currently, this only redacts email addresses
+    // and phone numbers, but can be expanded to redact other sensitive information
+    public String filterEventData(String data) {
+        String filteredData = data;
+        for (Map.Entry<String, String> entry : getRedactionPatterns().entrySet()) {
+            filteredData = filteredData.replaceAll(entry.getKey(), entry.getValue());
+        }
+        return filteredData;
+    }
+
     public void logEvent(String data) {
         if(!Boolean.parseBoolean(env.getProperty("env.mixpanel.enabled"))) {
             return;
         }
+
+        // Filter all the incoming events in one pass, so we don't have
+        // to unpack the JSONObject and repack it for each individual event
+        String filteredData = filterEventData(data);
         
         //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
-        JSONArray events = new JSONArray(data);
+        JSONArray events = new JSONArray(filteredData);
 
         ClientDelivery delivery = new ClientDelivery();
 
