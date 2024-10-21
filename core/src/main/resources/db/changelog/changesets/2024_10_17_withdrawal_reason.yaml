@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: "survey_assign_rename"
+      id: "withdrawal_reason"
       author: dbush
       changes:
         - addColumn:
@@ -16,6 +16,4 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: withdrawn_enrollee
             columnName: reason
-        - dropColumn:  # closing the loop on the column rename from 2024_09_18_survey_assign_rename.yaml
-            tableName: survey
-            columnName: assign_to_all_new_enrollees
+
