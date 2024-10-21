@@ -71,9 +71,17 @@ class SearchValueTest extends BaseSpringBootTest {
         assertFalse(arrayVal.equals(new SearchValue(4.0)));
         assertFalse(arrayVal.equals(new SearchValue("asdf")));
 
+        // works reversed
         assertTrue(new SearchValue(2.0).equals(arrayVal));
         assertFalse(new SearchValue(4.0).equals(arrayVal));
 
+        // compares two arrays element-wise
+        SearchValue diffArrayVal = new SearchValue(List.of(new SearchValue(65.0), new SearchValue(2.0), new SearchValue(3.0)));
+        SearchValue arrayCopy = new SearchValue(List.of(new SearchValue(1.0), new SearchValue(2.0), new SearchValue(3.0)));
+        SearchValue wrongOrder = new SearchValue(List.of(new SearchValue(2.0), new SearchValue(1.0), new SearchValue(3.0)));
+        assertTrue(arrayVal.equals(arrayCopy));
+        assertFalse(arrayVal.equals(diffArrayVal));
+        assertFalse(arrayVal.equals(wrongOrder));
     }
 
 }

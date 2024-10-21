@@ -96,33 +96,60 @@ public class SearchValue {
     }
 
     public boolean equals(SearchValue right) {
-        if (!this.searchValueType.equals(SearchValueType.ARRAY) && right.searchValueType.equals(SearchValueType.ARRAY)) {
-            // flip the comparison if the right side is an array so that we hit the array comparison logic
-            return right.equals(this);
+        if (this.isArray() || right.isArray()) {
+            return arrayEquals(right);
         }
 
         Object leftValue = this.getValue();
         Object rightValue = right.getValue();
 
         if (leftValue == null || rightValue == null) {
-            return leftValue == rightValue;
+            return leftValue == null && rightValue == null;
         }
 
-        if (this.searchValueType != right.searchValueType && !this.searchValueType.equals(SearchValueType.ARRAY)) {
+        if (this.searchValueType != right.searchValueType) {
             return false;
         }
 
-        if (this.searchValueType.equals(SearchValueType.ARRAY)) {
+        return leftValue.equals(rightValue);
+    }
 
-            if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
-                return this.arrayValue.equals(right.arrayValue);
-                }
-                // like SQL, we allow comparing a single value to an array
-                // by checking if the single value is in the array
-            return this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
+    private boolean isArray() {
+        return this.searchValueType.equals(SearchValueType.ARRAY);
+    }
+
+    private boolean arrayEquals(SearchValue right) {
+        if (!this.isArray() && !right.isArray()) {
+            return false;
         }
 
-        return leftValue.equals(rightValue);
+        // if both are arrays, compare the arrays
+        if (this.isArray() && right.isArray()) {
+            if (this.arrayValue.size() != right.arrayValue.size()) {
+                return false;
+            }
+
+            for (int i = 0; i < this.arrayValue.size(); i++) {
+                if (!this.arrayValue.get(i).equals(right.arrayValue.get(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // if one is an array and the other is not, compare
+        // like SQL by checking if the single value is in the array
+
+        // either left or right value could be the array, so check both
+        SearchValue singleValue = !this.isArray() ? this : right;
+        List<SearchValue> array = this.isArray() ? this.arrayValue : right.arrayValue;
+
+        if (singleValue.getValue() == null || array == null) {
+            return false;
+        }
+
+        return array.stream().anyMatch(innerVal -> innerVal.equals(singleValue));
     }
 
     public boolean greaterThan(SearchValue right) {
