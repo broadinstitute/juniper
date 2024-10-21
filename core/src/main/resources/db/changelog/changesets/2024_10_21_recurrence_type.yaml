@@ -6,4 +6,4 @@ databaseChangeLog:
         - addColumn:
             tableName: survey
             columns:
-              - column: { name: recurrence_type, type: text }
+              - column: { name: recurrence_type, type: text, constraints: { nullable: false }, defaultValue: 'NONE'}
