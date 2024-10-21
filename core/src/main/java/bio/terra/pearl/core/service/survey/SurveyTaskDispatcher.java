@@ -62,7 +62,9 @@ public class SurveyTaskDispatcher {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
-                        .stream().findFirst().orElseThrow(() -> new NotFoundException("Could not find active survey to assign tasks"));
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Could not find active survey to assign tasks"));
         List<UUID> profileIds = enrollees.stream().map(Enrollee::getProfileId).toList();
         List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByProfileIds(profileIds);
         if (ppUsers.size() != enrollees.size()) {
