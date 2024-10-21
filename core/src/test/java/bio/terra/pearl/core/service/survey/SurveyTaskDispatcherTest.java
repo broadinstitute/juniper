@@ -286,13 +286,18 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAssign(TestInfo testInfo) {
+    public void testDelayAssign(TestInfo testInfo) {
         StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
-        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
-        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        Survey survey = surveyFactory.builder(getTestName(testInfo)).daysAfterEligible(1).build();
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo), sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox2 = enrolleeFactory.enroll(getTestName(testInfo), sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+
+        List<ParticipantTask> tasks = participantTaskService.f
+
+
         ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true );
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
