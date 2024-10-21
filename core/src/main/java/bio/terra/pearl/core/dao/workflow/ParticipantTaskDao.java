@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -20,7 +21,7 @@ import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
+public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> implements StudyEnvAttachedDao<ParticipantTask> {
     public ParticipantTaskDao(Jdbi jdbi) {
         super(jdbi);
     }
@@ -32,10 +33,6 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
-    }
-
-    public List<ParticipantTask> findByStudyEnvironmentId(UUID studyEnvId) {
-        return findAllByProperty("study_environment_id", studyEnvId);
     }
 
     public List<ParticipantTask> findByStudyEnvironmentIdAndTaskType(UUID studyEnvId, List<TaskType> taskTypes) {

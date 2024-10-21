@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.dataimport;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.model.dataimport.Import;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Component
 @Slf4j
-public class ImportDao extends BaseMutableJdbiDao<Import> {
+public class ImportDao extends BaseMutableJdbiDao<Import> implements StudyEnvAttachedDao<Import> {
 
     public ImportDao(Jdbi jdbi) {
         super(jdbi);
@@ -21,13 +22,4 @@ public class ImportDao extends BaseMutableJdbiDao<Import> {
     protected Class<Import> getClazz() {
         return Import.class;
     }
-
-    public List<Import> findAllByStudyEnv(UUID studyEnvId) {
-        return findAllByProperty("study_environment_id", studyEnvId);
-    }
-
-    public void deleteByStudyEnvId(UUID studyEnvId) {
-        deleteByProperty("study_environment_id", studyEnvId);
-    }
-
 }
