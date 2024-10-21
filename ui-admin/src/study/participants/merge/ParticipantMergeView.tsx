@@ -2,34 +2,22 @@ import React, { useEffect, useState } from 'react'
 import 'react-querybuilder/dist/query-builder.scss'
 import { doApiLoad } from 'api/api-utils'
 import Api, { EnrolleeMergePlan, MergeAction, ParticipantTask, ParticipantUserMerge } from 'api/api'
-import { Enrollee, instantToDateString, ParticipantTaskStatus, StudyEnvParams } from '@juniper/ui-core'
+import { Enrollee, instantToDateString, StudyEnvParams } from '@juniper/ui-core'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowRight,
-  faBatteryHalf,
-  faCheck,
-  faExchange,
-  faMinus,
-  faTimes
+  faExchange
 } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Link, useNavigate } from 'react-router-dom'
 import { paramsFromContext, participantAccountsPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { studyEnvParticipantPath } from '../ParticipantsRouter'
+import { statusDisplayMap } from '../enrolleeView/EnrolleeView'
 
 const mergeArrow = <FontAwesomeIcon icon={faArrowRight} className="px-2"/>
-
-
-const TASK_STATUS_ICONS: Record<ParticipantTaskStatus, React.ReactNode> = {
-  'COMPLETE': <FontAwesomeIcon icon={faCheck}/>,
-  'IN_PROGRESS': <FontAwesomeIcon icon={faBatteryHalf}/>,
-  'NEW': <FontAwesomeIcon icon={faMinus}/>,
-  'REJECTED': <FontAwesomeIcon icon={faTimes}/>,
-  'VIEWED': <FontAwesomeIcon icon={faMinus}/>
-}
 
 /**
  * Returns a cohort builder modal
@@ -166,7 +154,7 @@ function renderTaskSummary(task?: ParticipantTask) {
     return <span className="text-muted fst-italic">n/a</span>
   }
   return <Button variant="secondary" tooltip={`assigned ${instantToDateString(task.createdAt)}`}>
-    {TASK_STATUS_ICONS[task.status]}
+    {statusDisplayMap[task.status]}
   </Button>
 }
 
@@ -177,9 +165,9 @@ function renderResultSummary(taskMerge: MergeAction<ParticipantTask, object>) {
     } else if (taskMerge.action === 'MERGE') {
       return <span>merge</span>
     } else if (taskMerge.action === 'MOVE_SOURCE_DELETE_TARGET') {
-      return <span>keep duplicate, delete original</span>
+      return <span>keep duplicate only</span>
     } else if (taskMerge.action === 'DELETE_SOURCE') {
-      return <span>keep original, delete duplicate</span>
+      return <span>keep original only</span>
     }
   } else if (taskMerge.pair.source && !taskMerge.pair.target) {
     if (taskMerge.action === 'MOVE_SOURCE') {

@@ -551,7 +551,7 @@ paths:
         content: *jsonContent
       responses:
         '200':
-          description: list of participant users and list of enrollees
+          description: the merge plan
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
@@ -568,7 +568,7 @@ paths:
         content: *jsonContent
       responses:
         '200':
-          description: list of participant users and list of enrollees
+          description: the merge plan
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
