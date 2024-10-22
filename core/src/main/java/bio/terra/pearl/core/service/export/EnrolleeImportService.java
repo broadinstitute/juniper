@@ -36,6 +36,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -182,28 +183,26 @@ public class EnrolleeImportService {
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
             String email = enrolleeMap.get("account.username");
             String proxyEmail = enrolleeMap.get("proxy.username");
-            if (email == null || email.isBlank()) {
+            if (StringUtils.isBlank(email)) {
                 email = proxyEmail;
             }
 
-            AccountImportData existingAccount = findExistingAccount(accountData, email);
-            if (proxyEmail == null || proxyEmail.isBlank()) {
-                if (existingAccount == null) {
-                    AccountImportData newAccount = new AccountImportData();
-                    newAccount.setEmail(email);
+            AccountImportData account = findAccount(accountData, email);
+
+            if (account == null) {
+                AccountImportData newAccount = new AccountImportData();
+                newAccount.setEmail(email);
+                if (StringUtils.isBlank(proxyEmail)) {
                     newAccount.setEnrolleeData(enrolleeMap);
-                    accountData.add(newAccount);
                 } else {
-                    existingAccount.setEnrolleeData(enrolleeMap);
-                }
-            } else {
-                if (existingAccount == null) {
-                    AccountImportData newAccount = new AccountImportData();
-                    newAccount.setEmail(email);
                     newAccount.getProxyData().add(enrolleeMap);
-                    accountData.add(newAccount);
+                }
+                accountData.add(newAccount);
+            } else {
+                if (StringUtils.isBlank(proxyEmail)) {
+                    account.setEnrolleeData(enrolleeMap);
                 } else {
-                    existingAccount.getProxyData().add(enrolleeMap);
+                    account.getProxyData().add(enrolleeMap);
                 }
             }
         }
@@ -211,7 +210,7 @@ public class EnrolleeImportService {
         return accountData;
     }
 
-    AccountImportData findExistingAccount(List<AccountImportData> accountData, String email) {
+    AccountImportData findAccount(List<AccountImportData> accountData, String email) {
         for (AccountImportData account : accountData) {
             if (account.getEmail().equals(email)) {
                 return account;
