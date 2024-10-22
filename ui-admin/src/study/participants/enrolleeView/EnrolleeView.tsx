@@ -290,7 +290,7 @@ export const enrolleeKitRequestPath = (currentEnvPath: string, enrolleeShortcode
 }
 
 
-const statusDisplayMap: Record<ParticipantTaskStatus, React.ReactNode> = {
+export const statusDisplayMap: Record<ParticipantTaskStatus, React.ReactNode> = {
   'COMPLETE': <FontAwesomeIcon icon={faCircleCheck} style={{ color: '#888' }} title="Complete"/>,
   'IN_PROGRESS': <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: '#888' }} title="In Progress"/>,
   'NEW': <FontAwesomeIcon icon={faEmptyCircle} style={{ color: '#888' }} title="No response"/>,

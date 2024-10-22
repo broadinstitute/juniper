@@ -24,4 +24,6 @@ public class WithdrawnEnrollee extends BaseEntity implements StudyEnvAttached {
   private String enrolleeData;
   /** JSON of the ParticipantUser object needed to be saved for compliance */
   private String userData;
+  private EnrolleeWithdrawalReason reason;
+  private String note;
 }

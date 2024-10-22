@@ -22,9 +22,7 @@ export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext
     <Routes>
       <Route path="families" element={<ParticipantList studyEnvContext={studyEnvContext} groupByFamily={true}/>} />
       <Route path="withdrawn" element={<WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>} />
-      <Route path="accounts" element={<PortalUserList
-        studyEnvContext={studyEnvContext}
-      />} />
+      <Route path="accounts/*" element={<PortalUserList studyEnvContext={studyEnvContext}/>} />
       <Route path=":enrolleeShortcodeOrId/*" element={<EnrolleeView studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<ParticipantList studyEnvContext={studyEnvContext}  groupByFamily={false}/>}/>
     </Routes>
