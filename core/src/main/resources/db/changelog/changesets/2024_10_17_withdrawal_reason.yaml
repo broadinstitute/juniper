@@ -12,7 +12,7 @@ databaseChangeLog:
             columns:
               - column: { name: note, type: text }
         - sql:
-            sql: update withdrawn_enrollee set reason = 'TESTING'; # as of now, no enrollees have requested to be withdrawn
+            sql: update withdrawn_enrollee set reason = 'PARTICIPANT_REQUEST'; # as of now, no enrollees have requested to be withdrawn
         - addNotNullConstraint:
             tableName: withdrawn_enrollee
             columnName: reason
