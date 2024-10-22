@@ -11,10 +11,8 @@ import { StudyParams } from 'study/StudyRouter'
 import {
   Route,
   Routes,
-  useNavigate,
   useParams
 } from 'react-router-dom'
-import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import {
   LoadedPortalContextT,
   PortalContext,
@@ -30,9 +28,7 @@ import ExportDataBrowser from './export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
 import DatasetDashboard from './export/datarepo/DatasetDashboard'
 import DatasetList from './export/datarepo/DatasetList'
-import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
-import { ENVIRONMENT_ICON_MAP } from './publishing/PortalPublishingView'
 import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
@@ -53,6 +49,7 @@ import ExportIntegrationList from './export/integrations/ExportIntegrationList'
 import ExportIntegrationView from './export/integrations/ExportIntegrationView'
 import ExportIntegrationJobList from './export/integrations/ExportIntegrationJobList'
 import LoadedSettingsView from './settings/SettingsView'
+import { StudyEnvironmentSwitcher } from './StudyEnvironmentSwitcher'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -62,17 +59,6 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
   const envName: string | undefined = params.studyEnv
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
   const portal = portalContext.portal
-  const navigate = useNavigate()
-
-  const changeEnv = (newEnv?: string) => {
-    if (!newEnv) {
-      return
-    }
-    const currentPath = window.location.pathname
-    const newPath = currentPath
-      .replace(`/env/${envName}`, `/env/${newEnv}`)
-    navigate(newPath)
-  }
 
   if (!envName) {
     return <span>no environment selected</span>
@@ -81,11 +67,6 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
   if (!currentEnv) {
     return <span>invalid environment {envName}</span>
   }
-  const envOpts = ['live', 'irb', 'sandbox'].map(env => ({
-    label: <span>
-      {ENVIRONMENT_ICON_MAP[env]} &nbsp; {env}
-    </span>, value: env
-  }))
   const currentEnvPath = studyEnvPath(portal.shortcode, study.shortcode, currentEnv.environmentName)
   const portalEnv = portal.portalEnvironments
     .find(env => env.environmentName === currentEnv.environmentName) as PortalEnvironment
@@ -95,19 +76,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
   }
 
   return <div className="StudyView d-flex flex-column flex-grow-1">
-    <NavBreadcrumb value={currentEnvPath}>
-      <Select options={envOpts}
-        value={envOpts.find(opt => opt.value === envName)}
-        className="me-2"
-        styles={{
-          control: baseStyles => ({
-            ...baseStyles,
-            minWidth: '9em'
-          })
-        }}
-        onChange={opt => changeEnv(opt?.value)}
-      />
-    </NavBreadcrumb>
+    <StudyEnvironmentSwitcher currentEnvPath={currentEnvPath} envName={envName}/>
     <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
       <I18nProvider defaultLanguage={'en'} portalShortcode={portal.shortcode}>
         <Routes>

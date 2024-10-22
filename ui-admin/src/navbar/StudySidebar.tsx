@@ -1,4 +1,4 @@
-import { Portal, Study } from '@juniper/ui-core'
+import { EnvironmentName, Portal, Study } from '@juniper/ui-core'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { studyKitsPath, studyParticipantsPath } from 'portal/PortalRouter'
 import StudySelector from './StudySelector'
@@ -14,11 +14,12 @@ import {
   studyEnvNotificationsPath,
   studyEnvSiteContentPath,
   studyEnvSiteSettingsPath
-} from '../study/StudyEnvironmentRouter'
+} from 'study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
 import { userHasPermission, useUser } from 'user/UserProvider'
-import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
+import { studyPublishingPath, studyUsersPath } from 'study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
+import { usePinnedEnv } from 'study/usePinnedEnv'
 
 
 /** shows menu options related to the current study */
@@ -46,57 +47,60 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
     <div className="text-white">
       <CollapsableMenu header={'Research Coordination'} content={<ul className="list-unstyled">
         <li className="mb-2">
-          <NavLink to={studyParticipantsPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyParticipantsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Participant List</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyKitsPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyKitsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Kits</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={adminTasksPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={adminTasksPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Tasks</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('sandbox'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
         <li className="mb-2">
-          <NavLink to={studyEnvMetricsPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyEnvMetricsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Participant Analytics</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
         </li>
         { portalId && userHasPermission(user.user, portalId, 'export_integration') && <li className="mb-2">
-          <NavLink to={studyEnvExportIntegrationsPath({ ...studyParams, envName: 'live' })}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Export Integrations</NavLink>
+          <NavLink to={studyEnvExportIntegrationsPath({
+            ...studyParams,
+            envName: getPinnedOrDefaultEnv('live') as EnvironmentName
+          })}
+          className={sidebarNavLinkClasses} style={navStyleFunc}>Export Integrations</NavLink>
         </li>
         }
         { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
-          <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>
         </li>
         }
       </ul>}/>
       <CollapsableMenu header={'Design & Build'} content={<ul className="list-unstyled">
         <li className="mb-2">
-          <NavLink to={studyEnvSiteContentPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvSiteContentPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('sandbox'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Website</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('sandbox'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Forms &amp; Surveys</NavLink>
         </li>
         <li className="mb-2">
-          <NavLink to={studyEnvNotificationsPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvNotificationsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('sandbox'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Emails &amp; Notifications</NavLink>
         </li>
       </ul>}/>
@@ -106,7 +110,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
             className={sidebarNavLinkClasses} style={navStyleFunc}>Publish Content</NavLink>
         </li>
         <li>
-          <NavLink to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, 'live')}
+          <NavLink to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, getPinnedOrDefaultEnv('live'))}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Site Settings</NavLink>
         </li>
       </ul>}/>
@@ -119,4 +123,9 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
 
     </div>
   </div>
+}
+
+const getPinnedOrDefaultEnv = (defaultEnv: string) => {
+  const { pinnedEnv } = usePinnedEnv()
+  return pinnedEnv || defaultEnv
 }

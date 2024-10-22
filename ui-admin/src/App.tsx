@@ -32,6 +32,7 @@ import LogEventViewer from './health/LogEventViewer'
 import { initializeMixpanel } from '@juniper/ui-core'
 import mixpanel from 'mixpanel-browser'
 import { StatusPage } from './status/StatusPage'
+import { PinnedEnvProvider } from './study/usePinnedEnv'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -64,7 +65,9 @@ function App() {
                     <Route path="/">
                       <Route path="/system/status" element={<StatusPage/>}/>
                       <Route element={<ProtectedRoute>
-                        <NavContextProvider><PageFrame config={config}/></NavContextProvider>
+                        <PinnedEnvProvider>
+                          <NavContextProvider><PageFrame config={config}/></NavContextProvider>
+                        </PinnedEnvProvider>
                       </ProtectedRoute>}>
                         <Route path="populate/*" element={<PopulateRouteSelect/>}/>
                         <Route path="logEvents/*" element={<LogEventViewer/>}/>
