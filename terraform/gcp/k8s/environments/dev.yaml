@@ -4,7 +4,7 @@ adminUrl: juniper-cmi.dev
 # "portals" adds certificates for each portal - both for the juniper-cmi.dev subdomains and the custom domain
 portals:
   - name: demo
-  # customDomain: juniper-demostudy.org <-- add once we purchase this domain
+    customDomain: juniperdemostudy.dev
   - name: hearthive
   - name: ourhealth
   - name: cmi

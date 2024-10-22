@@ -10,23 +10,10 @@ portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi"]
 infra_project = "broad-juniper-eng-infra"
 infra_region = "us-central1"
 
-# authorize access only to broad networks
-authorized_networks = [
-  "69.173.64.0/19",
-  "69.173.96.0/24",
-  "69.173.97.0/25",
-  "69.173.97.128/26",
-  "69.173.97.192/27",
-  "69.173.98.0/23",
-  "69.173.100.0/22",
-  "69.173.104.0/22",
-  "69.173.108.0/22",
-  "69.173.112.0/21",
-  "69.173.120.0/22",
-  "69.173.124.0/23",
-  "69.173.126.0/24",
-  "69.173.127.0/25",
-  "69.173.127.128/26",
-  "69.173.127.192/27",
-  "69.173.127.240/28"
-]
+# creates DNS records for these customer URLs
+customer_urls = {
+  demo = {
+    url    = "juniperdemostudy.dev"
+    dnssec = "off"
+  }
+}
