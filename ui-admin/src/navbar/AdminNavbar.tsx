@@ -87,7 +87,9 @@ function AdminNavbar() {
  * This component does not render anything directly, but is still structured as a component rather than a pure hook
  * so that order rendering will be in-order rather than reversed.  See https://github.com/facebook/react/issues/15281
  * */
-export function NavBreadcrumb({ value, children }: {value: string, children: React.ReactNode}) {
+export function NavBreadcrumb({ value, children }: {
+  value: string, children: React.ReactNode
+}) {
   const { setBreadCrumbs } = useNavContext()
   useEffect(() => {
     /** use the setState arg that takes a function to avoid race conditions */
