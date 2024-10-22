@@ -211,12 +211,7 @@ public class EnrolleeImportService {
     }
 
     AccountImportData findAccount(List<AccountImportData> accountData, String email) {
-        for (AccountImportData account : accountData) {
-            if (account.getEmail().equals(email)) {
-                return account;
-            }
-        }
-        return null;
+        return accountData.stream().filter(account -> account.getEmail().equals(email)).findFirst().orElse(null);
     }
 
     /**
