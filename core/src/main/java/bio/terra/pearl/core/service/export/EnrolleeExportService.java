@@ -6,6 +6,8 @@ import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -161,7 +163,8 @@ public class EnrolleeExportService {
                 new ProfileFormatter(exportOptions),
                 new KitRequestFormatter(exportOptions),
                 new EnrolleeRelationFormatter(exportOptions),
-                new FamilyFormatter(exportOptions));
+                new FamilyFormatter(exportOptions),
+                new ProxyFormatter(exportOptions));
 
         List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
                 moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())
@@ -235,6 +238,9 @@ public class EnrolleeExportService {
 
     protected EnrolleeExportData loadEnrolleeData(Study study, StudyEnvironmentConfig config,
                                                   Enrollee enrollee) {
+
+        List<EnrolleeRelation> relations = loadRelations(config, enrollee);
+        List<ParticipantUser> proxies = loadProxyUsers(config, relations);
         return new EnrolleeExportData(
                 study,
                 enrollee,
@@ -244,9 +250,21 @@ public class EnrolleeExportService {
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId()),
                 kitRequestService.findByEnrollee(enrollee),
-                loadRelations(config, enrollee),
-                config.isEnableFamilyLinkage() ? familyService.findByEnrolleeIdWithProband(enrollee.getId()) : Collections.emptyList()
+                relations,
+                config.isEnableFamilyLinkage() ? familyService.findByEnrolleeIdWithProband(enrollee.getId()) : Collections.emptyList(),
+                proxies
         );
+    }
+
+    private List<ParticipantUser> loadProxyUsers(StudyEnvironmentConfig config, List<EnrolleeRelation> relations) {
+        if (config.isAcceptingProxyEnrollment()) {
+            return relations.stream()
+                    .filter(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY))
+                    .map(relation -> participantUserService.findByEnrolleeId(relation.getEnrolleeId()).orElseThrow())
+                    .toList();
+        }
+
+        return Collections.emptyList();
     }
 
     private List<EnrolleeRelation> loadRelations(StudyEnvironmentConfig config, Enrollee enrollee) {

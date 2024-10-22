@@ -1,9 +1,9 @@
 package bio.terra.pearl.core.service.export.formatters;
 
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class ProfileFormatterTests {
                         .build())
                 .build();
         ProfileFormatter moduleFormatter = new ProfileFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, profile, null, null, null, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, profile, null, null, null, null, null, null, null);
         Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.get("profile.familyName"), equalTo("Tester"));
@@ -42,7 +42,7 @@ public class ProfileFormatterTests {
                 .familyName("Tester")
                 .build();
         ProfileFormatter moduleFormatter = new ProfileFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, profile, null, null, null, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, profile, null, null, null, null, null, null, null);
         Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.get("profile.familyName"), equalTo("Tester"));
