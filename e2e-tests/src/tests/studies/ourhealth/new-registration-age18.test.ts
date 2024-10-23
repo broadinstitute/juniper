@@ -4,7 +4,10 @@ import * as process from 'process'
 import StudyConsent from 'pages/ourhealth/study-consent'
 import StudyCreateAcct from 'pages/ourhealth/study-create-acct'
 import StudyDashboard, { Activities } from 'pages/ourhealth/study-dashboard'
-import { emailAlias, goToOurhealthPreEnroll } from 'tests/e2e-utils'
+import {
+  emailAlias,
+  goToOurhealthPreEnroll
+} from 'tests/e2e-utils'
 import data from 'src/data/ourhealth-en.json'
 
 const { PARTICIPANT_EMAIL_1 } = process.env
@@ -21,16 +24,16 @@ test.describe('Home page', () => {
       const prequal = await goToOurhealthPreEnroll(page)
 
       await prequal.getQuestion(data.QLabel.SouthAsianAncestry).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 1/4 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 1/4 questions')
 
       await prequal.getQuestion(data.QLabel.UnderstandEnglish).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 2/4 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 2/4 questions')
 
       await prequal.getQuestion(data.QLabel.IsAdult).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 3/4 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 3/4 questions')
 
       await prequal.getQuestion(data.QLabel.LiveInUS).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 4/4 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 4/4 questions')
 
       await prequal.submit()
     })
@@ -46,18 +49,18 @@ test.describe('Home page', () => {
       const consent = new StudyConsent(page)
 
       let progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 1 of 3')
+      await expect(progress).toHaveText('Page 1 of 3')
       await consent.clickByRole('button', 'Next')
 
       progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 2 of 3')
+      await expect(progress).toHaveText('Page 2 of 3')
       await consent.agree()
       await consent.clickByRole('button', 'Next')
 
 
       progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 3 of 3')
-      await consent.fillIn(data.QLabel.FullName, 'Tony Junior Stark', page.locator('body')) // TODO randomize
+      await expect(progress).toHaveText('Page 3 of 3')
+      await page.locator('body').getByLabel('Full legal name *').fill('Tony Junior Stark')
       await consent.drawSignature(data.QLabel.Signature)
 
       await consent.clickByRole('button', 'Complete')

@@ -4,7 +4,10 @@ import * as process from 'process'
 import StudyConsent from 'pages/demo/study-consent'
 import StudyCreateAcct from 'pages/demo/study-create-acct'
 import StudyDashboard, { Activities } from 'pages/demo/study-dashboard'
-import { emailAlias, goToDemoPreEnroll } from 'tests/e2e-utils'
+import {
+  emailAlias,
+  goToDemoPreEnroll
+} from 'tests/e2e-utils'
 import data from 'src/data/demo-en.json'
 import StudyEligibilityDemo from 'pages/demo/study-eligibility'
 
@@ -21,34 +24,36 @@ test.describe('Proxy', () => {
     await test.step('Answer "Yes" to all eligibility questions', async () => {
       const prequal = await goToDemoPreEnroll(page)
 
-      await prequal.getQuestion(data.PreEnroll.ProxyQuestion).select(data.PreEnroll.ProxyAnswerYes)
-      expect(await prequal.progress()).toMatch('Answered 1/10 questions')
+      await prequal.getQuestion(data.PreEnroll.ProxyQuestion).select(
+        'I am enrolling on behalf of my child / my legal dependent.'
+      )
+      await expect(await prequal.progress()).toHaveText('Answered 1/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.ProxyGivenName).fillIn('Jonas')
-      expect(await prequal.progress()).toMatch('Answered 2/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 2/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.ProxyFamilyName).fillIn('Salk')
-      expect(await prequal.progress()).toMatch('Answered 3/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 3/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.GivenName, { exact: true }).fillIn('Peter')
-      expect(await prequal.progress()).toMatch('Answered 4/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 4/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.FamilyName, { exact: true }).fillIn('Salk')
-      expect(await prequal.progress()).toMatch('Answered 5/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 5/10 questions')
 
       await prequal.clickByRole('button', 'Next')
 
       await prequal.getQuestion(data.PreEnroll.SouthAsianAncestry).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 6/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 6/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.UnderstandEnglish).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 7/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 7/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.IsAdult).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 8/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 8/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.LiveInUS).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 9/10 questions')
+      await expect(await prequal.progress()).toHaveText('Answered 9/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.marketing).select('Yes')
 
@@ -78,6 +83,8 @@ test.describe('Proxy', () => {
       }
 
       await dashboard.clickByRole('link', 'Start Consent')
+
+      return dashboard
     })
 
     /* NOTE: text contents on each page ARE NOT verified */
@@ -85,21 +92,20 @@ test.describe('Proxy', () => {
       const consent = new StudyConsent(page)
 
       let progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 1 of 3')
+      await expect(progress).toHaveText('Page 1 of 3')
       await consent.clickByRole('button', 'Next')
 
       progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 2 of 3')
+      await expect(progress).toHaveText('Page 2 of 3')
       await consent.agree()
-      await consent.getQuestion(data.Consent.VoluntaryParticipation).fillIn('JS')
-      await consent.getQuestion(data.Consent.PermissionToUseDNA).fillIn('JS')
-      await consent.getQuestion(data.Consent.AgreeToContact).fillIn('JS')
+      const matrix = await consent.getQuestion(data.Consent.Initials)
+      await matrix.fillAllInWith('JS')
       await consent.clickByRole('button', 'Next')
 
 
       progress = await consent.progress()
-      expect(progress).toStrictEqual('Page 3 of 3')
-      await consent.fillIn(data.Consent.FullName, 'Peter Salk', page.locator('body'))
+      await expect(progress).toHaveText('Page 3 of 3')
+      await page.locator('body').getByLabel('Full legal name *').fill('Peter Salk')
       await consent.drawSignature(data.Consent.Signature)
 
       await consent.clickByRole('button', 'Complete')

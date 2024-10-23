@@ -1,4 +1,8 @@
-import { expect, Locator, Page } from '@playwright/test'
+import {
+  expect,
+  Locator,
+  Page
+} from '@playwright/test'
 import WebComponentBase from 'src/page-components/web-component-base'
 import Radiogroup from 'src/page-components/radiogroup'
 import Textbox from 'src/page-components/textbox'
@@ -20,31 +24,11 @@ export default class Question extends WebComponentBase {
   constructor(page: Page, opts: QuestionOpts = {}) {
     super(page)
 
-    const { parent, qText, dataName } = opts
-    const defaultRoot = 'form .sd-page__row > [data-key] > [id][role]'
+    const { dataName } = opts
+    const defaultRoot = '.sd-page'
 
-    if (dataName) {
-      // If the data-name attribute is used, we don't have to check other parameters because
-      // it should be a unique value like the id attribute. But unlike the id attribute, data-name is static.
-      this.root = this.page.locator(defaultRoot).filter({ has: this.page.locator(`[data-name="${dataName}"]`) })
-      return
-    }
-
-    this.root = parent
-      ? this.page.locator(parent).locator(defaultRoot)
-      : this.page.locator(defaultRoot)
-
-    if (qText) {
-      const xpath = opts.exact
-        ? `//*[contains(@class, "sv-string-viewer") and normalize-space() = "${qText}"]`
-        : `//*[contains(@class, "sv-string-viewer") and contains(normalize-space(), "${qText}")]`
-      this.root = typeof qText === 'string'
-        ? this.root.filter({
-          has: this.page.locator(
-              `xpath=${xpath}`)
-        })
-        : this.root.filter({ has: this.page.locator('.sv-string-viewer', { hasText: qText }) })
-    }
+    this.root = this.page.locator(defaultRoot).locator(`[data-name="${dataName}"]`)
+    return
   }
 
   async error(): Promise<string | null> {
@@ -69,39 +53,24 @@ export default class Question extends WebComponentBase {
     return attr ? attr === 'true' : false
   }
 
-  async select(value: string): Promise<this> {
-    const qRole = await this.role()
-    switch (qRole) {
-      case 'radiogroup':
-        await new Radiogroup(this.page, this).select(value)
-        break
-      default:
-        break
-    }
+  async select(label: string): Promise<this> {
+    await new Radiogroup(this.page, this).select(label)
     return this
   }
 
   async fillIn(value: string): Promise<this> {
-    const qRole = await this.role()
-    switch (qRole) {
-      case 'textbox':
-        await new Textbox(this.page, { parent: this.locator }).fill(value)
-        break
-      default:
-        throw new Error(`undefined case: ${qRole}`)
-    }
+    await new Textbox(this.page, { parent: this.locator }).fill(value)
     return this
   }
 
-  /**
-   * Gets value in role attribute
-   * @returns {Promise<string>} radiogroup, textbox, etc.
-   */
-  private async role(): Promise<string> {
-    const role = await this.locator.getAttribute('role')
-    if (role) {
-      return role
+
+  async fillAllInWith(value: string): Promise<this> {
+    const allInputs = await this.locator.locator('input').all()
+
+    for (const input of allInputs) {
+      await input.fill(value)
     }
-    throw new Error(`Unable to get attribute: "role" for question. ${this.locator}`)
+
+    return this
   }
 }

@@ -6,7 +6,10 @@ import {
   isNil,
   set
 } from 'lodash'
-import { SurveyModel } from 'survey-core'
+import {
+  SurveyModel,
+  TextMarkdownEvent
+} from 'survey-core'
 
 import {
   Answer,
@@ -32,6 +35,7 @@ import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { EnvironmentName } from './types/study'
 import { Profile } from 'src/types/user'
+import { DefaultLight } from 'survey-core/themes'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -57,6 +61,8 @@ const applyDefaultSurveyConfig = (surveyModel: SurveyModel): void => {
   surveyModel.focusFirstQuestionAutomatic = false
   surveyModel.showTitle = false
   surveyModel.widthMode = 'static'
+
+  surveyModel.applyTheme(DefaultLight)
 }
 
 /** Create a SurveyJS SurveyModel from a Juniper FormContent object. */
@@ -389,7 +395,7 @@ export function useSurveyJSModel(
 }
 
 /** apply markdown to the given surveyJS entity */
-export const applyMarkdown = (survey: object, options: { text: string, html: string }) => {
+export const applyMarkdown = (sender: SurveyModel, options: TextMarkdownEvent) => {
   const markdownText = micromark(options.text)
   // chop off <p> tags.
   // See https://surveyjs.io/form-library/examples/edit-survey-questions-markdown/reactjs#content-code
