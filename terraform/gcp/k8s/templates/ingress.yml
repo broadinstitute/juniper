@@ -14,6 +14,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: admin-ip
     networking.gke.io/managed-certificates: "admin-cert,{{ template "customer-certs" . }}"
+    networking.gke.io/v1beta1.FrontendConfig: "juniper-frontend-config"
     # If the class annotation is not specified it defaults to "gce".
     kubernetes.io/ingress.class: "gce"
 spec:
