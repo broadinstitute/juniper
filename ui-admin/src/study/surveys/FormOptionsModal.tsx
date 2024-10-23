@@ -74,7 +74,11 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                                 updateWorkingForm: (props: SaveableFormProps) => void
                               }) => {
   const workingForm = initialWorkingForm as Survey
-  const { onChange, options, selectedOption, selectInputId } =
+  const {
+    onChange: onRecurrenceTypeChange,
+    options: recurrenceOpts,
+    selectedOption: selectedRecurrenceType, selectInputId: recurrenceSelectInputId
+  } =
     useNonNullReactSingleSelect(RECURRENCE_OPTS.map(opt => opt.value),
       val => RECURRENCE_OPTS.find(opt => opt.value === val)!,
       (val: string) => updateWorkingForm({
@@ -152,18 +156,18 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
               </label>
             </label>
             <div className="d-flex align-items-center mb-4">
-              <label className="pe-2" htmlFor={selectInputId}>
+              <label className="pe-2" htmlFor={recurrenceSelectInputId}>
                 Recurrence:
               </label>
-              <Select inputId={selectInputId}
+              <Select inputId={recurrenceSelectInputId}
                 styles={{
                   control: baseStyles => ({
                     ...baseStyles,
                     minWidth: '13em'
                   })
                 }}
-                options={options} onChange={onChange}
-                value={selectedOption}/>
+                options={recurrenceOpts} onChange={onRecurrenceTypeChange}
+                value={selectedRecurrenceType}/>
               <label className="d-flex align-items-center ms-3">
                 every <TextInput value={workingForm.recurrenceIntervalDays} type="number" min={1} max={9999}
                   className="mx-2"
