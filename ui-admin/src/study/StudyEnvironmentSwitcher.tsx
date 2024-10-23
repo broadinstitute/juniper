@@ -15,7 +15,6 @@ const envOpts = ['live', 'irb', 'sandbox'].map(env => ({
 interface StudyEnvironmentSwitcherProps {
   currentEnvPath: string
   envName: string
-  changeEnv: (newEnv?: string) => void
 }
 
 export const StudyEnvironmentSwitcher = ({
@@ -32,6 +31,10 @@ export const StudyEnvironmentSwitcher = ({
     const currentPath = window.location.pathname
     const newPath = currentPath
       .replace(`/env/${envName}`, `/env/${newEnv}`)
+
+    // reset the pinned env
+    setPinnedEnv(undefined)
+
     navigate(newPath)
   }
 
