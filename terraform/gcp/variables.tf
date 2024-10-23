@@ -48,6 +48,14 @@ variable "portals" {
   description = "Portals"
 }
 
+variable "customer_urls" {
+  type = map(object({
+    url = string
+    dnssec = string
+  }))
+  description = "Customer URLs"
+}
+
 variable "infra_project" {
   type = string
   description = "Infra project"
@@ -56,9 +64,4 @@ variable "infra_project" {
 variable "infra_region" {
   type = string
   description = "Infra region"
-}
-
-variable "authorized_networks" {
-  type = set(string)
-  description = "Authorized networks that can access the cluster"
 }
