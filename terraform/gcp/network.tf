@@ -68,3 +68,50 @@ module "cloud-nat" {
   name                               = "juniper-nat-config"
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
+
+resource "google_compute_security_policy" "juniper-cloud-armor-policy" {
+  name = "juniper-cloud-armor-policy"
+
+  rule {
+    action   = "allow"
+    description = "Default rule: allow all"
+    priority = 2147483647
+
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+  }
+
+  rule {
+    action = "deny(502)"
+    priority = 7555
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('rce-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('rfi-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('sessionfixation-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('xss-v33-stable', {'sensitivity':1})"
+      }
+    }
+  }
+
+  rule {
+    action = "deny(502)"
+    priority = 7444
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('java-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('lfi-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('nodejs-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('php-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('protocolattack-v33-stable', {'sensitivity':1})"
+      }
+    }
+  }
+
+  rule {
+    action = "deny(502)"
+    priority = 7111
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('cve-canary', {'sensitivity':1}) || evaluatePreconfiguredWaf('rfi-v33-stable', {'sensitivity':1}) || evaluatePreconfiguredWaf('scannerdetection-v33-stable', {'sensitivity':1})"
+      }
+    }
+  }
+}
