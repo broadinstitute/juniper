@@ -1,3 +1,26 @@
+locals {
+  # authorize access only to broad networks
+  authorized_networks = [
+    "69.173.64.0/19",
+    "69.173.96.0/24",
+    "69.173.97.0/25",
+    "69.173.97.128/26",
+    "69.173.97.192/27",
+    "69.173.98.0/23",
+    "69.173.100.0/22",
+    "69.173.104.0/22",
+    "69.173.108.0/22",
+    "69.173.112.0/21",
+    "69.173.120.0/22",
+    "69.173.124.0/23",
+    "69.173.126.0/24",
+    "69.173.127.0/25",
+    "69.173.127.128/26",
+    "69.173.127.192/27",
+    "69.173.127.240/28"
+  ]
+}
+
 resource "google_container_cluster" "juniper_cluster" {
   name = "juniper-cluster"
 
@@ -28,7 +51,7 @@ resource "google_container_cluster" "juniper_cluster" {
 
   master_authorized_networks_config {
     dynamic "cidr_blocks" {
-      for_each = var.authorized_networks
+      for_each = local.authorized_networks
       content {
         cidr_block   = cidr_blocks.value
         display_name = cidr_blocks.value
