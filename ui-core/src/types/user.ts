@@ -28,7 +28,7 @@ export type ParticipantUser = {
 
 export type PortalParticipantUser = {
     id: string
-    createdAt: string
+    createdAt: number
     lastLogin: number
     profile?: Profile
 }

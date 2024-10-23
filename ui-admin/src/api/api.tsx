@@ -409,7 +409,7 @@ export type ParticipantUserMerge = {
 export type MergeAction<T, MP> = {
   pair: MergePair<T>
   action: MergeActionAction
-  mergePlan: MP
+  mergePlan?: MP
 }
 
 export type EnrolleeMergePlan = {
