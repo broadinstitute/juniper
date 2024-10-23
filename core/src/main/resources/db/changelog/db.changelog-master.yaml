@@ -339,14 +339,17 @@ databaseChangeLog:
       file: changesets/2024_10_15_adding_export_fields.yaml
       relativeToChangelogFile: true
   - include:
-        file: changesets/2024_10_16_enrollee_source.yaml
-        relativeToChangelogFile: true
+      file: changesets/2024_10_16_enrollee_source.yaml
+      relativeToChangelogFile: true
   - include:
       file: changesets/2024_10_17_withdrawal_reason.yaml
       relativeToChangelogFile: true
   - include:
-        file: changesets/2024_10_21_survey_assign_rename.yaml
-        relativeToChangelogFile: true
+      file: changesets/2024_10_21_survey_assign_rename.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_10_21_recurrence_type.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

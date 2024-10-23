@@ -37,12 +37,12 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private List<String> referencedQuestions = new ArrayList<>();
 
     @Builder.Default
-    private boolean recur = false;
+    private RecurrenceType recurrenceType = RecurrenceType.NONE;
     @Builder.Default
     private boolean required = false; // whether this is required before other non-required surveys can be taken
     // how many days between offerings of this survey (e.g. 365 for one year)
     private Integer recurrenceIntervalDays;
-    // how many days after being eligible (e.g. after consent, or rule triggering) to offer the survey
+    // how many days after enrollment this survey is first offered
     private Integer daysAfterEligible;
     private String eligibilityRule;
     @Builder.Default

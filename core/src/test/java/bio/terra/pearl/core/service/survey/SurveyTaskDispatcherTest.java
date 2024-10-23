@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
@@ -12,8 +13,10 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.survey.RecurrenceType;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -26,6 +29,8 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,11 +55,13 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     private AdminUserFactory adminUserFactory;
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
+    @Autowired
+    private TimeShiftDao timeShiftDao;
 
 
     @Test
     void testIsDuplicateTask() {
-        Survey survey = Survey.builder().recur(false).build();
+        Survey survey = Survey.builder().recurrenceType(RecurrenceType.NONE).build();
         StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
                 .survey(survey)
                 .build();
@@ -85,7 +92,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
     @Test
     void testIsDuplicateForTaskTypes() {
-        Survey survey = Survey.builder().recur(false).build();
+        Survey survey = Survey.builder().recurrenceType(RecurrenceType.NONE).build();
         StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
                 .survey(survey)
                 .build();
@@ -284,5 +291,68 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(tasks.stream().map(ParticipantTask::getTargetStableId).toList(), containsInAnyOrder("medForm", "followUp"));
     }
 
+    @Test
+    @Transactional
+    public void testDelayAssign(TestInfo testInfo) {
+        // create a 1-day delayed survey, confirm it doesn't get assigned until the delay has passed
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                        .portalId(sandboxBundle.getPortal().getId())
+                .daysAfterEligible(1));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
+        EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo) + "1", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox2 = enrolleeFactory.enroll(getTestName(testInfo) + "2", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+
+        List<ParticipantTask> tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        assertThat(tasks, hasSize(0));
+        timeShiftDao.changeEnrolleeCreationTime(sandbox1.enrollee().getId(), Instant.now().minus(3, ChronoUnit.DAYS));
+
+        // should assign to sandbox1 since it was created more than 1 day ago
+        surveyTaskDispatcher.assignScheduledSurveys();
+        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getEnrolleeId(), equalTo(sandbox1.enrollee().getId()));
+        assertThat(tasks.get(0).getTargetStableId(), equalTo(survey.getStableId()));
+
+        // task will not get assigned twice to the same enrollee
+        surveyTaskDispatcher.assignScheduledSurveys();
+        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        assertThat(tasks, hasSize(1));
+    }
+
+    @Test
+    @Transactional
+    public void testRecurringAssign(TestInfo testInfo) {
+        // create a 7-day recurring survey, confirm it gets reassigned
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .portalId(sandboxBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurrenceIntervalDays(7));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo) + "1", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox2 = enrolleeFactory.enroll(getTestName(testInfo) + "2", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox3 = enrolleeFactory.enroll(getTestName(testInfo) + "3", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+
+        List<ParticipantTask> tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        // task should be assigned to all enrollees on creation
+        assertThat(tasks, hasSize(3));
+
+        // delete the first enrollee's task
+        participantTaskService.delete(tasks.stream().filter(task ->
+                task.getEnrolleeId().equals(sandbox1.enrollee().getId())).findFirst().get().getId(), DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
+        // change the second enrollee's task time to 8 days ago
+        timeShiftDao.changeTaskCreationTime(tasks.stream().filter(task ->
+                task.getEnrolleeId().equals(sandbox2.enrollee().getId())).findFirst().get().getId(), Instant.now().minus(8, ChronoUnit.DAYS));
+
+        // this should not assign to 1 (since it has no prior task) or 3 (since its task was assigned recently)
+        surveyTaskDispatcher.assignScheduledSurveys();
+        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        assertThat(tasks, hasSize(3));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId()), hasSize(0));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox2.enrollee().getId()), hasSize(2));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox3.enrollee().getId()), hasSize(1));
+    }
 }

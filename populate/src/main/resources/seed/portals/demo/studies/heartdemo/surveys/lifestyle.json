@@ -3,6 +3,7 @@
   "version": 1,
   "name": "Lifestyle",
   "footer": "Resources used for this survey:\n * Tobacco Use Supplement to the Current Population Survey (TUS&#8209;CPS)\n * American Thoracic Society Division of Lung Disease questionnaire (ATS&nbsp;&#8209;&nbsp;DLD&nbsp;&#8209;&nbsp;78)\n * Million Veterans Program\n * Prostate, Lung, Colorectal, and Ovarian (PLCO) Cancer Screening Trial\n * Population Assessment of Tobacco and Health (PATH)\n * National Epidemiologic Survey on Alcohol and Related Conditions (NESARC)\n * Alcohol Use Disorders Identification Test (AUDIT&#8209;C)\n * NM ASSIST (NIDA-Modified Alcohol, Smoking, and Substance Involvement Screening Test)",
+  "recurrenceIntervalDays": 7,
   "jsonContent": {
     "title": {
       "en": "Lifestyle",

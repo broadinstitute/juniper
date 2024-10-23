@@ -10,10 +10,10 @@ import java.util.UUID;
  * collection of methods for timeshifting records in otherwise unpermissible ways
  */
 @Component
-public class TimeShiftPopulateDao {
+public class TimeShiftDao {
     private Jdbi jdbi;
 
-    public TimeShiftPopulateDao(Jdbi jdbi) {
+    public TimeShiftDao(Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
@@ -56,6 +56,15 @@ public class TimeShiftPopulateDao {
                 handle.createUpdate("update participant_task set completed_at = :completionTime where id = :taskId;")
                         .bind("taskId", taskId)
                         .bind("completionTime", completionTime)
+                        .execute()
+        );
+    }
+
+    public void changeTaskCreationTime(UUID taskId, Instant creationTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update participant_task set created_at = :creationTime where id = :taskId;")
+                        .bind("taskId", taskId)
+                        .bind("creationTime", creationTime)
                         .execute()
         );
     }

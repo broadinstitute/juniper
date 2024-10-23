@@ -14,6 +14,8 @@ import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,35 +107,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
         updateProperty(enrolleeId, "consented", consented);
     }
 
-    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
-                                         String targetStableId,
-                                         Integer targetAssignedVersion) {
-
-        return jdbi.withHandle(handle -> {
-            String versionWhereClause = "";
-            if (targetAssignedVersion != null) {
-                versionWhereClause = " and target_assigned_version = :targetAssignedVersion";
-            }
-            Query query = handle.createQuery("""
-                                    select * from enrollee
-                                     where id 
-                                     not in
-                                     (select distinct enrollee_id from participant_task 
-                                        where study_environment_id = :studyEnvironmentId
-                                        and participant_task.target_stable_id = :targetStableId
-                                        %s
-                                     )
-                                     and study_environment_id = :studyEnvironmentId;
-                            """.formatted(versionWhereClause))
-                    .bind("targetStableId", targetStableId)
-                    .bind("studyEnvironmentId", studyEnvironmentId);
-            if (targetAssignedVersion != null) {
-                query = query.bind("targetAssignedVersion", targetAssignedVersion);
-            }
-            return query.mapTo(clazz).list();
-        });
-    }
-
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
         return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);
     }
@@ -173,4 +146,57 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
     public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {
         return findByTwoProperties("shortcode", enrolleeShortcode, "study_environment_id", studyEnvId);
     }
+
+
+    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
+                                               String targetStableId,
+                                               Integer targetAssignedVersion) {
+
+        return jdbi.withHandle(handle -> {
+            String versionWhereClause = "";
+            if (targetAssignedVersion != null) {
+                versionWhereClause = " and target_assigned_version = :targetAssignedVersion";
+            }
+            Query query = handle.createQuery("""
+                            select enrollee.* from enrollee  
+                            left join participant_task 
+                            on (enrollee.id = participant_task.enrollee_id 
+                                 and participant_task.target_stable_id = :targetStableId
+                                 %s
+                                 )              
+                             where enrollee.study_environment_id = :studyEnvironmentId                         
+                             and participant_task.id IS NULL                                                                   
+                        """.formatted(versionWhereClause))
+                    .bind("targetStableId", targetStableId)
+                    .bind("studyEnvironmentId", studyEnvironmentId);
+            if (targetAssignedVersion != null) {
+                query = query.bind("targetAssignedVersion", targetAssignedVersion);
+            }
+            return query.mapTo(clazz).list();
+        });
+    }
+
+
+    /** returns enrollees who were assigned a tasks with the given target stable id in the past */
+    public List<Enrollee> findWithTaskInPast(UUID studyEnvironmentId,
+                                              String taskTargetStableId,
+                                              Duration minTimeSinceMostRecent) {
+        Instant minTimeSinceMostRecentInstant = Instant.now().minus(minTimeSinceMostRecent);
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                        with enrollee_times as (select enrollee_id as task_enrollee_id, MAX(created_at) as most_recent_task_time
+                          from participant_task where target_stable_id = :taskTargetStableId group by enrollee_id)
+                        select enrollee.* from enrollee 
+                        join enrollee_times on enrollee.id = task_enrollee_id
+                        where study_environment_id = :studyEnvironmentId
+                        and most_recent_task_time < :minTimeSinceCreationInstant
+                        """)
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .bind("taskTargetStableId", taskTargetStableId)
+                        .bind("minTimeSinceCreationInstant", minTimeSinceMostRecentInstant)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
 }

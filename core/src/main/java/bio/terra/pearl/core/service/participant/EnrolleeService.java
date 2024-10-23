@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -257,6 +258,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                                      String targetStableId,
                                      Integer targetAssignedVersion) {
         return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
+    }
+
+    public List<Enrollee> findWithTaskInPast(UUID studyEnvId, String taskTargetStableId, Duration minTimeSinceMostRecent ) {
+        return dao.findWithTaskInPast(studyEnvId, taskTargetStableId, minTimeSinceMostRecent);
     }
 
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {

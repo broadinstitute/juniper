@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,9 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -93,6 +97,47 @@ public class EnrolleeDaoTests extends BaseSpringBootTest {
         unassignedEnrollees = enrolleeDao.findUnassignedToTask(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, 2);
         assertThat(unassignedEnrollees, containsInAnyOrder(sandbox1.enrollee()));
     }
+
+
+    @Test
+    @Transactional
+    public void testFindWithTaskInPast(TestInfo testInfo) {
+        String TASK_STABLE_ID = "testFindWithTaskInPast";
+        // set up a sandbox and irb environment, with 2 enrollees in each
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+
+        StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
+        EnrolleeBundle irb1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        EnrolleeBundle irb2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+
+        Duration oneDay = Duration.of(1, ChronoUnit.DAYS);
+        // returns no enrollees if no one is assigned any tasks
+        List<Enrollee> enrolleesWithTask = enrolleeDao.findWithTaskInPast(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, oneDay);
+        assertThat(enrolleesWithTask, hasSize(0));
+
+        // still returns no enrollees if someone from another environment is assigned
+        participantTaskFactory.buildPersisted(irb1, ParticipantTaskFactory.DEFAULT_BUILDER.targetStableId(TASK_STABLE_ID), Instant.now().minus(2, ChronoUnit.DAYS));
+        enrolleesWithTask = enrolleeDao.findWithTaskInPast(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, oneDay);
+        assertThat(enrolleesWithTask, hasSize(0));
+
+        // still returns no enrollees if someone from this environment is assigned less than a day ago
+        participantTaskFactory.buildPersisted(sandbox1, ParticipantTaskFactory.DEFAULT_BUILDER.targetStableId(TASK_STABLE_ID), Instant.now().minus(1, ChronoUnit.HOURS));
+        enrolleesWithTask = enrolleeDao.findWithTaskInPast(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, oneDay);
+        assertThat(enrolleesWithTask, hasSize(0));
+
+        // returns an enrollee who was assigned the task more than a day ago
+        participantTaskFactory.buildPersisted(sandbox2, ParticipantTaskFactory.DEFAULT_BUILDER.targetStableId(TASK_STABLE_ID), Instant.now().minus(2, ChronoUnit.DAYS));
+        enrolleesWithTask = enrolleeDao.findWithTaskInPast(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, oneDay);
+        assertThat(enrolleesWithTask, containsInAnyOrder(sandbox2.enrollee()));
+
+        // still only returns that enrollee if another enrollee was assigned a different task more than a day ago
+        participantTaskFactory.buildPersisted(sandbox1, ParticipantTaskFactory.DEFAULT_BUILDER.targetStableId("SOMETHING_ELSE"), Instant.now().minus(2, ChronoUnit.DAYS));
+        enrolleesWithTask = enrolleeDao.findWithTaskInPast(sandboxBundle.getStudyEnv().getId(), TASK_STABLE_ID, oneDay);
+        assertThat(enrolleesWithTask, containsInAnyOrder(sandbox2.enrollee()));
+    }
+
 
     @Test
     @Transactional
