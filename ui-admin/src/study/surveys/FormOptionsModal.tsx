@@ -15,6 +15,9 @@ import {
 import InfoPopup from 'components/forms/InfoPopup'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+import { TextInput } from '../../components/forms/TextInput'
+import { useNonNullReactSingleSelect } from '../../util/react-select-utils'
+import Select from 'react-select'
 
 
 /** component for selecting versions of a form */
@@ -50,6 +53,17 @@ export default function FormOptionsModal({
   </Modal>
 }
 
+const RECURRENCE_OPTS: {label: string, value: string}[] = [{
+  value: 'NONE',
+  label: 'None'
+}, {
+  value: 'LONGITUDINAL',
+  label: 'Longitudinal'
+}, {
+  value: 'UPDATE',
+  label: 'Update in-place'
+}]
+
 /**
  * Renders the 'options' for a form, e.g. who is allowed to take it, if it's required, how it's assigned, etc...
  */
@@ -60,7 +74,19 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                                 updateWorkingForm: (props: SaveableFormProps) => void
                               }) => {
   const workingForm = initialWorkingForm as Survey
-
+  const {
+    onChange: onRecurrenceTypeChange,
+    options: recurrenceOpts,
+    selectedOption: selectedRecurrenceType, selectInputId: recurrenceSelectInputId
+  } =
+    useNonNullReactSingleSelect(RECURRENCE_OPTS.map(opt => opt.value),
+      val => RECURRENCE_OPTS.find(opt => opt.value === val)!,
+      (val: string) => updateWorkingForm({
+        ...workingForm,
+        recurrenceType: val,
+        recurrenceIntervalDays: val === 'NONE' ? undefined : workingForm.recurrenceIntervalDays || 365
+      }),
+      workingForm.recurrenceType || 'NONE')
   return <>
     {(workingForm && !!workingForm.surveyType) &&
         <div>
@@ -111,6 +137,48 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Allow study staff to edit participant responses
             </label>}
+            <label className="form-label d-flex align-items-center mt-4">
+              <label className="pe-2">
+                <input type="checkbox" checked={!!workingForm.daysAfterEligible}
+                  onChange={e => updateWorkingForm({
+                    ...workingForm,
+                    daysAfterEligible: e.target.checked ? 365 : undefined
+                  })}
+                /> Delay assigning this survey
+              </label>
+              <label className="d-flex align-items-center">
+                <TextInput value={workingForm.daysAfterEligible} type="number" min={1} max={9999}
+                  className="mx-2"
+                  onChange={val => updateWorkingForm({
+                    ...workingForm, daysAfterEligible: parseInt(val)
+                  })}
+                /> <span className="text-nowrap">days after enrollment</span>
+              </label>
+            </label>
+            <div className="d-flex align-items-center mb-4">
+              <label className="pe-2" htmlFor={recurrenceSelectInputId}>
+                Recurrence:
+              </label>
+              <Select inputId={recurrenceSelectInputId}
+                styles={{
+                  control: baseStyles => ({
+                    ...baseStyles,
+                    minWidth: '13em'
+                  })
+                }}
+                options={recurrenceOpts} onChange={onRecurrenceTypeChange}
+                value={selectedRecurrenceType}/>
+              <label className="d-flex align-items-center ms-3">
+                every <TextInput value={workingForm.recurrenceIntervalDays} type="number" min={1} max={9999}
+                  className="mx-2"
+                  onChange={val => updateWorkingForm({
+                    ...workingForm,
+                    recurrenceIntervalDays: parseInt(val),
+                    recurrenceType: workingForm.recurrenceType === 'NONE' ? 'LONGITUDINAL' : workingForm.recurrenceType
+                  })}
+                /> days
+              </label>
+            </div>
             <h3 className="h6 mt-4">Eligibility Rule</h3>
             <div className="mb-2">
               <LazySearchQueryBuilder

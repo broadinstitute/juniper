@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
@@ -81,7 +81,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
                              WithdrawnEnrolleeService withdrawnEnrolleeService,
-                             TimeShiftPopulateDao timeShiftPopulateDao,
+                             TimeShiftDao timeShiftDao,
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
                              ParticipantNotePopulator participantNotePopulator,
                              ParticipantUserPopulateDao participantUserPopulateDao, PortalParticipantUserPopulator portalParticipantUserPopulator, ObjectMapper objectMapper, PortalService portalService,
@@ -101,7 +101,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.participantNotePopulator = participantNotePopulator;
-        this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.timeShiftDao = timeShiftDao;
         this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
@@ -170,9 +170,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                     .updateResponse(response, responsibleUser, responsePopDto.getJustification(), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
-                timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
+                timeShiftDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
                 if (responsePopDto.isComplete()) {
-                    timeShiftPopulateDao.changeTaskCompleteTime(task.getId(), responsePopDto.shiftedInstant());
+                    timeShiftDao.changeTaskCompleteTime(task.getId(), responsePopDto.shiftedInstant());
                 }
             }
         } else {
@@ -255,7 +255,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
         if (kitRequestPopDto.getCreatedAt() != null) {
-            timeShiftPopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
+            timeShiftDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
         }
         enrollee.getKitRequests().add(
                 new KitRequestDto(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
@@ -428,7 +428,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             participantNotePopulator.populate(enrollee, notePopDto);
         }
         if (popDto.isTimeShifted()) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
+            timeShiftDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
         if (popDto.isWithdrawn()) {
             withdrawnEnrolleeService.withdrawEnrollee(enrollee, EnrolleeWithdrawalReason.PARTICIPANT_REQUEST, DataAuditInfo.builder().systemProcess("populateEnrolleeData").build());
@@ -627,7 +627,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private final EnrollmentService enrollmentService;
     private final ProfileService profileService;
     private final WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final TimeShiftDao timeShiftDao;
     private final KitRequestService kitRequestService;
     private final KitTypeDao kitTypeDao;
     private final AdminUserDao adminUserDao;

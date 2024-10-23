@@ -4,6 +4,8 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.RecurrenceType;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
@@ -17,6 +19,7 @@ import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
@@ -26,34 +29,77 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
 @Slf4j
 public class SurveyTaskDispatcher {
-    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private ParticipantTaskService participantTaskService;
-    private EnrolleeService enrolleeService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private EnrolleeContextService enrolleeContextService;
-    private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final ParticipantTaskService participantTaskService;
+    private final EnrolleeService enrolleeService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final EnrolleeContextService enrolleeContextService;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                ParticipantTaskService participantTaskService,
+                                StudyEnvironmentService studyEnvironmentService, ParticipantTaskService participantTaskService,
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
-                                EnrolleeContextService enrolleeContextService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
+                                EnrolleeContextService enrolleeContextService,
+                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
+        this.studyEnvironmentService = studyEnvironmentService;
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.enrolleeContextService = enrolleeContextService;
         this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
+    }
+
+    public void assignScheduledSurveys() {
+        List<StudyEnvironment> studyEnvironments = studyEnvironmentService.findAll();
+        for (StudyEnvironment studyEnv : studyEnvironments) {
+            assignScheduledSurveys(studyEnv);
+        }
+    }
+
+    public void assignScheduledSurveys(StudyEnvironment studyEnv) {
+        List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurveyNoContent(studyEnv.getId(), true);
+        for (StudyEnvironmentSurvey studyEnvSurvey : studyEnvSurveys) {
+            Survey survey = studyEnvSurvey.getSurvey();
+            if (survey.getRecurrenceType() != RecurrenceType.NONE && survey.getRecurrenceIntervalDays() != null) {
+                assignRecurringSurvey(studyEnvSurvey);
+            }
+            if (survey.getDaysAfterEligible() != null && survey.getDaysAfterEligible() > 0) {
+                assignDelayedSurvey(studyEnvSurvey);
+            }
+        }
+    }
+
+    /** will assign a recurringsurvey to enrollees who have already taken it at least once, but are due to take it again */
+    public void assignRecurringSurvey(StudyEnvironmentSurvey studyEnvSurvey) {
+        List<Enrollee> enrollees = enrolleeService.findWithTaskInPast(
+                studyEnvSurvey.getStudyEnvironmentId(),
+                studyEnvSurvey.getSurvey().getStableId(),
+                Duration.of(studyEnvSurvey.getSurvey().getRecurrenceIntervalDays(), ChronoUnit.DAYS));
+        assign(enrollees, studyEnvSurvey, false, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignRecurringSurvey")));
+    }
+
+    /** will assign a delayed survey to enrollees who have never taken it, but are due to take it now */
+    public void assignDelayedSurvey(StudyEnvironmentSurvey studyEnvSurvey) {
+        List<Enrollee> enrollees = enrolleeService.findUnassignedToTask(studyEnvSurvey.getStudyEnvironmentId(), studyEnvSurvey.getSurvey().getStableId(), null);
+        enrollees = enrollees.stream().filter(enrollee ->
+                enrollee.getCreatedAt().plus(studyEnvSurvey.getSurvey().getDaysAfterEligible(), ChronoUnit.DAYS)
+                        .isBefore(Instant.now())).toList();
+        assign(enrollees, studyEnvSurvey, false, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignDelayedSurvey")));
     }
 
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
@@ -62,9 +108,14 @@ public class SurveyTaskDispatcher {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Could not find active survey to assign tasks"));
+                .stream().findFirst().orElseThrow(() -> new NotFoundException("Could not find active survey to assign tasks"));
+        return assign(enrollees, studyEnvironmentSurvey, assignDto.overrideEligibility(), operator);
+    }
+
+    public List<ParticipantTask> assign(List<Enrollee> enrollees,
+                                        StudyEnvironmentSurvey studyEnvironmentSurvey,
+                                        boolean overrideEligibility,
+                                        ResponsibleEntity operator) {
         List<UUID> profileIds = enrollees.stream().map(Enrollee::getProfileId).toList();
         List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByProfileIds(profileIds);
         if (ppUsers.size() != enrollees.size()) {
@@ -75,28 +126,44 @@ public class SurveyTaskDispatcher {
         UUID auditOperationId = UUID.randomUUID();
         List<ParticipantTask> createdTasks = new ArrayList<>();
         for (int i = 0; i < enrollees.size(); i++) {
+            List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
             Optional<ParticipantTask> taskOpt;
-            if (assignDto.overrideEligibility()) {
+            if (overrideEligibility) {
                 taskOpt = Optional.of(buildTask(enrollees.get(i), ppUsers.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
             } else {
-                List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
                 taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleData.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
             }
             if (taskOpt.isPresent()) {
+                ParticipantTask task = taskOpt.get();
+                copyForwardResponseIfApplicable(task, studyEnvironmentSurvey.getSurvey(), existingTasks);
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
                 auditInfo.setResponsibleEntity(operator);
-                ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
+
+                task = participantTaskService.create(task, auditInfo);
                 log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
                         task.getTaskType(), task.getTargetStableId());
                 createdTasks.add(task);
             }
         }
         return createdTasks;
+    }
+
+    /**
+     * depending on recurrence type, will copy forward a past response so that updates are merged.
+     * If we later support the 'prepopulate' option, this would be where would we clone the prior response
+     * */
+    protected void copyForwardResponseIfApplicable(ParticipantTask task, Survey survey, List<ParticipantTask> existingTasks) {
+        if (survey.getRecurrenceType().equals(RecurrenceType.UPDATE)) {
+            Optional<ParticipantTask> existingTask = existingTasks.stream()
+                    .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .max(Comparator.comparing(ParticipantTask::getCreatedAt));
+            existingTask.ifPresent(participantTask -> task.setSurveyResponseId(participantTask.getSurveyResponseId()));
+        }
     }
 
     protected List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
@@ -204,7 +271,7 @@ public class SurveyTaskDispatcher {
                                                       PortalParticipantUser portalParticipantUser,
                                                            EnrolleeContext enrolleeContext,
                                                       StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
-        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeContext)) {
+        if (isEligibleForSurvey(survey, enrolleeContext)) {
             ParticipantTask task = buildTask(enrollee, portalParticipantUser, studyEnvSurvey, studyEnvSurvey.getSurvey());
             if (!isDuplicateTask(studyEnvSurvey, task, existingEnrolleeTasks)) {
                 return Optional.of(task);
@@ -213,10 +280,17 @@ public class SurveyTaskDispatcher {
         return Optional.empty();
     }
 
-    public boolean isEligibleForSurvey(String eligibilityRule, EnrolleeContext enrolleeContext) {
+    public boolean isEligibleForSurvey(Survey survey, EnrolleeContext enrolleeContext) {
+        /**
+         * eligible if the enrollee is a subject, the survey is not restricted by time, and the enrollee meets the rule
+         * note that this does not include a duplicate task check -- that is done elsewhere
+         */
         // TODO JN-977: this logic will need to change because we will need to support surveys for proxies
-        return enrolleeContext.getEnrollee().isSubject() && enrolleeSearchExpressionParser
-                .parseRule(eligibilityRule)
+        return enrolleeContext.getEnrollee().isSubject() &&
+                (survey.getDaysAfterEligible() == null ||
+                        enrolleeContext.getEnrollee().getCreatedAt().plus(survey.getDaysAfterEligible(), ChronoUnit.DAYS).isBefore(Instant.now())) &&
+                enrolleeSearchExpressionParser
+                .parseRule(survey.getEligibilityRule())
                 .evaluate(new EnrolleeSearchContext(enrolleeContext.getEnrollee(), enrolleeContext.getProfile()));
     }
 
@@ -269,18 +343,12 @@ public class SurveyTaskDispatcher {
      * a new one
      */
     public static boolean isRecurrenceWindowOpen(StudyEnvironmentSurvey studySurvey, ParticipantTask pastTask) {
-        if (!studySurvey.getSurvey().isRecur()) {
+        if (studySurvey.getSurvey().getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
+                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays()).toInstant();
         return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 
-    /**
-     * this is a fudge factor in our logic to prevent duplicate survey assignments -- we don't want to
-     * allow duplicate tasks assigned, but we don't want to prevent tasks from being assigned just because
-     * of time zone fuzziness, leap years, etc...
-     */
-    public static final int RECUR_TASK_BUFFER_DAYS = 3;
 }

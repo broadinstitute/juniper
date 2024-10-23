@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "recurrence_type"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: recurrence_type, type: text, constraints: { nullable: false }, defaultValue: 'NONE'}

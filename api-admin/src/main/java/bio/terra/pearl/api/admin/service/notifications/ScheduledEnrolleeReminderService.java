@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ScheduledEnrolleeReminderService {
-  private EnrolleeReminderService enrolleeReminderService;
+  private final EnrolleeReminderService enrolleeReminderService;
 
   public ScheduledEnrolleeReminderService(EnrolleeReminderService enrolleeReminderService) {
     this.enrolleeReminderService = enrolleeReminderService;
