@@ -108,20 +108,11 @@ export default function ParticipantMergeView({ source, target, studyEnvContext, 
 
 function EnrolleeMergePlanView({ enrolleeMerge,  studyEnvParams }:
   {enrolleeMerge: MergeAction<Enrollee, EnrolleeMergePlan>, studyEnvParams: StudyEnvParams }) {
-  const sortedTasks = enrolleeMerge.mergePlan.tasks.sort((a, b) =>
-    taskComparator(a.pair.source ?? a.pair.target, b.pair.source ?? b.pair.target))
-  return <div className="mx-4">
-    { enrolleeMerge.pair.source &&
-      <Link to={studyEnvParticipantPath(studyEnvParams, enrolleeMerge.pair.source.shortcode)}>
-        { enrolleeMerge.pair.source.shortcode }
-      </Link> }
-
-    {mergeArrow}
-    { enrolleeMerge.pair.target &&
-      <Link to={studyEnvParticipantPath(studyEnvParams, enrolleeMerge.pair.target.shortcode)}>
-        { enrolleeMerge.pair.target.shortcode }
-      </Link> }
-    <table>
+  let taskTable = <span></span>
+  if (enrolleeMerge.mergePlan?.tasks) {
+    const sortedTasks = enrolleeMerge.mergePlan.tasks.sort((a, b) =>
+      taskComparator(a.pair.source ?? a.pair.target, b.pair.source ?? b.pair.target))
+    taskTable = <table>
       <thead>
         <tr>
           <th>task</th>
@@ -135,6 +126,19 @@ function EnrolleeMergePlanView({ enrolleeMerge,  studyEnvParams }:
           <MergeTaskView taskMerge={taskMerge} key={index}/>) }
       </tbody>
     </table>
+  }
+
+  return <div className="mx-4">
+    { enrolleeMerge.pair.source &&
+      <Link to={studyEnvParticipantPath(studyEnvParams, enrolleeMerge.pair.source.shortcode)}>
+        { enrolleeMerge.pair.source.shortcode }
+      </Link> }
+    {mergeArrow}
+    { enrolleeMerge.pair.target &&
+      <Link to={studyEnvParticipantPath(studyEnvParams, enrolleeMerge.pair.target.shortcode)}>
+        { enrolleeMerge.pair.target.shortcode }
+      </Link> }
+    {taskTable}
   </div>
 }
 

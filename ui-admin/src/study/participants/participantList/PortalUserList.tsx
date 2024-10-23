@@ -21,6 +21,7 @@ import { tabLinkStyle } from 'util/subNavStyles'
 import ParticipantMergeView from '../merge/ParticipantMergeView'
 import useParticipantDupeTab from '../merge/UseParticipantDupeTab'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
+import ErrorBoundary from '../../../util/ErrorBoundary'
 
 export type ParticipantUserWithEnrollees = ParticipantUser & {
   enrollees: Enrollee[]
@@ -158,11 +159,12 @@ export default function PortalUserList({ studyEnvContext }:
           </NavLink>
         })}
       </div>
-      <Routes>
-        { tabs.map(tab => <Route path={tab.path} key={tab.path} element={tab.component}/>)}
-        <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
-      </Routes>
-
+      <ErrorBoundary>
+        <Routes>
+          { tabs.map(tab => <Route path={tab.path} key={tab.path} element={tab.component}/>)}
+          <Route index element={<Navigate to={tabs[0].path} replace={true}/>}/>
+        </Routes>
+      </ErrorBoundary>
     </LoadingSpinner>
   </div>
 }

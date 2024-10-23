@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.participant.merge;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,12 @@ public class MergeAction<T extends BaseEntity, MP> {
         this.mergePlan = mergePlan;
     }
 
+    @JsonIgnore
     public T getSource() {
         return pair.getSource();
     }
 
+    @JsonIgnore
     public T getTarget() {
         return pair.getTarget();
     }
