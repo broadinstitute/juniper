@@ -62,6 +62,7 @@ public class SearchValue {
             return switch (type) {
                 case STRING -> new SearchValue(objValue.toString());
                 case DATE -> new SearchValue((LocalDate) objValue);
+                case INSTANT -> new SearchValue((Instant) objValue);
                 case NUMBER -> new SearchValue((Double) objValue);
                 case BOOLEAN -> new SearchValue((Boolean) objValue);
                 default -> throw new IllegalArgumentException("Invalid field type: " + type);
@@ -82,38 +83,84 @@ public class SearchValue {
         }
     }
 
+    private Object getValue() {
+        return switch (this.searchValueType) {
+            case STRING -> this.stringValue;
+            case NUMBER -> this.numberValue;
+            case INSTANT -> this.instantValue;
+            case DATE -> this.dateValue;
+            case BOOLEAN -> this.booleanValue;
+            case ARRAY -> this.arrayValue;
+            default -> null;
+        };
+    }
+
     public boolean equals(SearchValue right) {
-        if (!this.searchValueType.equals(SearchValueType.ARRAY) && right.searchValueType.equals(SearchValueType.ARRAY)) {
-            // flip the comparison if the right side is an array so that we hit the array comparison logic
-            return right.equals(this);
+        if (this.isArray() || right.isArray()) {
+            return arrayEquals(right);
         }
 
-        if (this.searchValueType != right.searchValueType && !this.searchValueType.equals(SearchValueType.ARRAY)) {
+        Object leftValue = this.getValue();
+        Object rightValue = right.getValue();
+
+        if (leftValue == null || rightValue == null) {
+            return leftValue == null && rightValue == null;
+        }
+
+        if (this.searchValueType != right.searchValueType) {
             return false;
         }
 
-        return switch (this.searchValueType) {
-            case STRING -> this.stringValue.equals(right.stringValue);
-            case NUMBER -> this.numberValue.equals(right.numberValue);
-            case INSTANT -> this.instantValue.equals(right.instantValue);
-            case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
-            case DATE -> this.dateValue.equals(right.dateValue);
-            case ARRAY -> {
-                if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
-                    yield this.arrayValue.equals(right.arrayValue);
-                }
-                // like SQL, we allow comparing a single value to an array
-                // by checking if the single value is in the array
-                yield this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
+        return leftValue.equals(rightValue);
+    }
+
+    private boolean isArray() {
+        return this.searchValueType.equals(SearchValueType.ARRAY);
+    }
+
+    private boolean arrayEquals(SearchValue right) {
+        if (!this.isArray() && !right.isArray()) {
+            return false;
+        }
+
+        // if both are arrays, compare the arrays
+        if (this.isArray() && right.isArray()) {
+            if (this.arrayValue.size() != right.arrayValue.size()) {
+                return false;
             }
-            default -> false;
-        };
+
+            for (int i = 0; i < this.arrayValue.size(); i++) {
+                if (!this.arrayValue.get(i).equals(right.arrayValue.get(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // if one is an array and the other is not, compare
+        // like SQL by checking if the single value is in the array
+
+        // either left or right value could be the array, so check both
+        SearchValue singleValue = !this.isArray() ? this : right;
+        List<SearchValue> array = this.isArray() ? this.arrayValue : right.arrayValue;
+
+        if (singleValue.getValue() == null || array == null) {
+            return false;
+        }
+
+        return array.stream().anyMatch(innerVal -> innerVal.equals(singleValue));
     }
 
     public boolean greaterThan(SearchValue right) {
         if (this.searchValueType != right.searchValueType) {
             return false;
         }
+
+        if (this.getValue() == null || right.getValue() == null) {
+            return false;
+        }
+
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue > right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
@@ -125,6 +172,11 @@ public class SearchValue {
         if (this.searchValueType != right.searchValueType) {
             return false;
         }
+
+        if (this.getValue() == null || right.getValue() == null) {
+            return false;
+        }
+
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue >= right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);

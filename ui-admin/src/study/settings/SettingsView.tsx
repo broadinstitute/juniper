@@ -28,10 +28,11 @@ import { doApiLoad } from 'api/api-utils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { withStateResetOnEnvChange } from 'util/withStateResetOnEnvChange'
 
 
 /** shows a url-routable settings page for both the portal and the selected study */
-export function LoadedSettingsView(
+function LoadedSettingsView(
   {
     studyEnvContext,
     portalContext
@@ -214,6 +215,8 @@ export function LoadedSettingsView(
     </div>
   </div>
 }
+
+export default withStateResetOnEnvChange(LoadedSettingsView)
 
 /** gets classes to apply to nav links */
 function getLinkCssClasses({ isActive }: { isActive: boolean }) {

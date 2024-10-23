@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
@@ -11,10 +13,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.DATE;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
 
 /**
- * Allows searching on basic user properties, e.g. "lastLogin"
+ * Allows searching on basic ParticipantUser properties, e.g. "lastLogin"
  */
 public class UserTerm implements SearchTerm {
 
@@ -32,7 +34,11 @@ public class UserTerm implements SearchTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        return SearchValue.ofNestedProperty(context.getEnrollee(), field, FIELDS.get(field).getType());
+        Optional<ParticipantUser> user = participantUserDao.find(context.getEnrollee().getParticipantUserId());
+        if (user.isEmpty()) {
+            return new SearchValue();
+        }
+        return SearchValue.ofNestedProperty(user.get(), field, FIELDS.get(field).getType());
     }
 
     @Override
@@ -70,6 +76,8 @@ public class UserTerm implements SearchTerm {
     }
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
-            Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(DATE).build()));
+            Map.entry("username", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
+            Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()));
 
 }

@@ -1,16 +1,19 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.participant.Profile;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser> {
+public class PortalParticipantUserDao extends BaseMutableJdbiDao<PortalParticipantUser> {
     private ProfileDao profileDao;
     public PortalParticipantUserDao(Jdbi jdbi, ProfileDao profileDao) {
         super(jdbi);
@@ -76,8 +79,13 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
     /**
      * loads the user along with their profile
      * */
-    public Optional<PortalParticipantUser> getWithProfile(UUID portalParticipantUserId) {
-        return findWithChild(portalParticipantUserId, "profileId", "profile", profileDao);
+    public void attachProfiles(List<PortalParticipantUser> portalParticipantUsers) {
+        List<Profile> profiles = profileDao.findAllPreserveOrder(portalParticipantUsers.stream()
+                .map(PortalParticipantUser::getProfileId)
+                .toList());
+        for (int i = 0; i < portalParticipantUsers.size(); i++) {
+            portalParticipantUsers.get(i).setProfile(profiles.get(i));
+        }
     }
 
 

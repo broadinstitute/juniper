@@ -17,6 +17,8 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { renderPageHeader } from '../../../util/pageUtils'
+import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 type WithdrawnEnrolleeExtract = WithdrawnEnrollee & {
   userDataObj: { username: string, createdAt: number }
@@ -61,6 +63,12 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
       columnType: 'instant'
     },
     cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: 'Reason',
+    accessorKey: 'reason'
+  }, {
+    header: 'Note',
+    accessorKey: 'note'
   }]
 
   const table = useReactTable({
@@ -77,6 +85,12 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
     getSortedRowModel: getSortedRowModel()
   })
   return <div className="container-fluid px-4 pt-4">
+    <div className="d-flex align-items-center justify-content-between ">
+      {renderPageHeader('Withdrawn Enrollees')}
+      <ParticipantListViewSwitcher
+        studyEnvConfig={studyEnvContext.currentEnv.studyEnvironmentConfig}
+      />
+    </div>
     <NavBreadcrumb value={'withdrawnList'}>Withdrawn</NavBreadcrumb>
     <FontAwesomeIcon icon={faInfoCircle}/> More information about the
     <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.

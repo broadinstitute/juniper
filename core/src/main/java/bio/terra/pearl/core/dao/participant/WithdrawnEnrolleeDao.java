@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
@@ -13,10 +14,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Component
-public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
+public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> implements StudyEnvAttachedDao<WithdrawnEnrollee> {
   private final ProfileDao profileDao;
   private final SurveyResponseDao surveyResponseDao;
   private final ParticipantTaskDao participantTaskDao;
@@ -42,27 +44,21 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
 
   /** exclude the enrolleeData, as that could be multiple MB of data */
   public List<WithdrawnEnrollee> findByStudyEnvironmentIdNoData(UUID studyEnvironmentId) {
+    String colsNoDataString = getGetQueryColumns().stream().filter(col -> !col.equals("enrollee_data"))
+            .collect(Collectors.joining(", "));
     return jdbi.withHandle(handle ->
             handle.createQuery("""
-                    select id, created_at, last_updated_at, shortcode, user_data from %s where study_environment_id = :studyEnvironmentId;
-                    """.formatted(tableName))
+                    select %s from %s where study_environment_id = :studyEnvironmentId;
+                    """.formatted(colsNoDataString, tableName))
                     .bind("studyEnvironmentId", studyEnvironmentId)
                     .mapTo(clazz)
                     .list()
     );
   }
 
-  public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-    deleteByProperty("study_environment_id", studyEnvironmentId);
-  }
-
   /** checks whether a withdrawal record exists for the given enrollee shortcode.  */
   public boolean isWithdrawn(String shortcode) {
     return countByProperty("shortcode", shortcode) == 1;
-  }
-
-  public int countByStudyEnvironmentId(UUID studyEnvId) {
-    return countByProperty("study_environment_id", studyEnvId);
   }
 
   /**

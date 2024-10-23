@@ -35,7 +35,7 @@ public class ImportService extends CrudService<Import, ImportDao> {
     }
 
     public List<Import> findByStudyEnvWithItems(UUID studyEnvId) {
-        List<Import> imports = dao.findAllByStudyEnv(studyEnvId);
+        List<Import> imports = dao.findByStudyEnvironmentId(studyEnvId);
         //load ImportItems
         imports.forEach(anImport -> importItemService.attachImportItems(anImport));
         return imports;
@@ -64,9 +64,9 @@ public class ImportService extends CrudService<Import, ImportDao> {
 
     @Transactional
     public void deleteByStudyEnvId(UUID studyEnvironmentId) {
-        List<Import> imports = dao.findAllByStudyEnv(studyEnvironmentId);
+        List<Import> imports = dao.findByStudyEnvironmentId(studyEnvironmentId);
         imports.forEach(dataImport -> importItemService.deleteByImportId(dataImport.getId()));
-        dao.deleteByStudyEnvId(studyEnvironmentId);
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 
 }

@@ -1,8 +1,9 @@
-import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { ParticipantTask } from 'api/api'
 import { Enrollee, useI18n } from '@juniper/ui-core'
+import { getNextTask, getTaskPath, isTaskAccessible, isTaskActive, taskComparator } from './task/taskUtils'
+import TaskLink from './TaskLink'
 
 
 const taskTypeMap: Record<string, string> = {
@@ -122,26 +123,4 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
       </ol>
     </>
   )
-}
-
-/** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
-function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
-  const nextTask = sortedTasks.find(task => isTaskAccessible(task, enrollee) && isTaskActive(task))
-  return nextTask
-}
-
-export const TASK_TYPE_ORDER = ['CONSENT', 'SURVEY']
-export const TASK_STATUS_ORDER = ['IN_PROGRESS', 'NEW', 'COMPLETE']
-
-/** Sorts tasks based on their types, then based on status, and then based on their internal ordering */
-function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
-  const typeOrder = TASK_TYPE_ORDER.indexOf(taskA.taskType) - TASK_TYPE_ORDER.indexOf(taskB.taskType)
-  if (typeOrder != 0) {
-    return typeOrder
-  }
-  const statusOrder = TASK_STATUS_ORDER.indexOf(taskA.status) - TASK_STATUS_ORDER.indexOf(taskB.status)
-  if (statusOrder != 0) {
-    return statusOrder
-  }
-  return taskA.taskOrder - taskB.taskOrder
 }

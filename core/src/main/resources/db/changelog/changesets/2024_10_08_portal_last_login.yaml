@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "portal_user_login"
+      author: dbush
+      changes:
+        - renameColumn:
+            tableName: portal_participant_user
+            oldColumnName: lastLogin
+            newColumnName: last_login
+        - sql: # since our portals are geographically distinct right now, we can assume that the last login time is the same as the last login time of the participant_user
+            sql: update portal_participant_user set last_login = p.last_login from participant_user p where portal_participant_user.participant_user_id = p.id;

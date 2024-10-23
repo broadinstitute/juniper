@@ -365,6 +365,19 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies:
+    get:
+      summary: gets all the studies for the given portal
+      tags: [ study ]
+      operationId: getByPortalWithEnvs
+      parameters:
+        - *portalShortcodeParam
+        - { name: envName, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: new study object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
     post:
       summary: creates a new study for the given portal
       tags: [ study ]
@@ -511,6 +524,54 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers:
+    get:
+      summary: lists all the participant users for the given portal environment
+      tags: [ participantUser ]
+      operationId: list
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: list of participant users and list of enrollees
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/plan:
+    post:
+      summary: gets a merge plan for the given participant users. This does not perform the merge.
+      tags: [ participantMerge ]
+      operationId: plan
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: the merge plan
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/execute:
+    post:
+      summary: executes a merge plan
+      tags: [ participantMerge ]
+      operationId: execute
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: the merge plan
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
       summary: Gets all of the possible fields which can be searched on within the provided portal.
@@ -637,6 +698,10 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - *enrolleeShortcodeParam
+      requestBody:
+        required: true
+        description: withdrawal params
+        content: *jsonContent
       responses:
         '200':
           description: withdrawnEnrollee id
@@ -649,9 +714,9 @@ paths:
       tags: [ withdrawnEnrollee ]
       operationId: getAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: withdrawnEnrollee list
@@ -1158,7 +1223,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/data:
-    get:
+    post:
       summary: Gets the export data in the specified format
       tags: [ export ]
       operationId: exportData
@@ -1166,14 +1231,9 @@ paths:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeSubheaders, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: excludeModules, in: query, required: false, schema: { type: array, items: { type: string } } }
-        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
-        - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
-        - { name: rowLimit, in: query, required: false, schema: { type: integer } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: export data
@@ -1181,7 +1241,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/dictionary:
-    get:
+    post:
       summary: Gets the export data dictionary
       tags: [ export ]
       operationId: exportDictionary
@@ -1189,11 +1249,9 @@ paths:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
-        - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
-        - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: export data
@@ -1242,6 +1300,24 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: The exportIntegration
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: saves an exportIntegration
+      tags: [ exportIntegration ]
+      operationId: save
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: *jsonContent
       responses:
         '200':
           description: The exportIntegration

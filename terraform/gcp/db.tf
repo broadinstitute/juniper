@@ -51,7 +51,7 @@ resource "google_sql_database_instance" "d2p" {
     }
     database_flags {
       name  = "pgaudit.log"
-      value = "'all'"
+      value = "all"
     }
 
     backup_configuration {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import KitInstructions from './KitInstructions'
-import { asMockedFn, setupRouterTest } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'
 import { mockAssignedKitRequest, mockEnrollee } from 'test-utils/test-participant-factory'
@@ -24,14 +24,16 @@ describe('KitInstructions', () => {
     })
 
     const { RoutedComponent } = setupRouterTest(
-      <KitInstructions/>)
+      <MockI18nProvider>
+        <KitInstructions/>
+      </MockI18nProvider>)
     await act(async () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
-    expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Provide a sample in-person')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsPageInPersonTitle}')).toBeInTheDocument()
     expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
 
@@ -48,14 +50,16 @@ describe('KitInstructions', () => {
     })
 
     const { RoutedComponent } = setupRouterTest(
-      <KitInstructions/>)
+      <MockI18nProvider>
+        <KitInstructions/>
+      </MockI18nProvider>)
     await act(async () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
-    expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonYourKitTitle}')).toBeInTheDocument()
     expect(screen.getByDisplayValue('assigned-label')).toBeInTheDocument()
     expect(screen.getByLabelText('shortcode-qr')).toBeInTheDocument()
   })
@@ -73,18 +77,19 @@ describe('KitInstructions', () => {
     })
 
     const { RoutedComponent } = setupRouterTest(
-      <KitInstructions/>)
+      <MockI18nProvider>
+        <KitInstructions/>
+      </MockI18nProvider>)
     await act(async () => {
       render(RoutedComponent)
     })
 
-    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
-    expect(screen.queryByText('Consent Required')).not.toBeInTheDocument()
-    expect(screen.getByText('Your sample collection kit')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.queryByText('{kitsInPersonConsentRequiredTitle}')).not.toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonYourKitTitle}')).toBeInTheDocument()
     expect(screen.queryByDisplayValue('assigned-label')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
-    expect(screen.getByText('A member of the study team has received your sample collection kit.',
-      { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonCollectedDescription}')).toBeInTheDocument()
   })
 
   it('renders Consent Required message if enrollee has not consented', () => {
@@ -100,11 +105,13 @@ describe('KitInstructions', () => {
     })
 
     const { RoutedComponent } = setupRouterTest(
-      <KitInstructions/>)
+      <MockI18nProvider>
+        <KitInstructions/>
+      </MockI18nProvider>)
     render(RoutedComponent)
 
-    expect(screen.getByText('Sample kit instructions')).toBeInTheDocument()
-    expect(screen.getByText('Consent Required')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonTitle}')).toBeInTheDocument()
+    expect(screen.getByText('{kitsInPersonConsentRequiredTitle}')).toBeInTheDocument()
     expect(screen.queryByLabelText('shortcode-qr')).not.toBeInTheDocument()
   })
 })

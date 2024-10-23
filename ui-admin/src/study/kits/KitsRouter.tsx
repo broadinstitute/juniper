@@ -6,6 +6,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import KitEnrolleeSelection from './KitEnrolleeSelection'
 import KitList from './KitList'
 import { renderPageHeader } from 'util/pageUtils'
+import { tabLinkStyle } from '../../util/subNavStyles'
 
 /** Router for kit management screens. */
 export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -14,11 +15,6 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     currentEnv: { environmentName },
     study: { shortcode: studyShortcode }
   } = studyEnvContext
-
-  const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
-    borderBottom: isActive ? '3px solid #333': '',
-    background: isActive ? '#E1E8F7' : '#F5F8FF'
-  })
 
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>

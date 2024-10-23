@@ -22,8 +22,8 @@ public class ExcelExporter extends BaseExporter {
     protected final SXSSFSheet sheet;
     private static final String SHEET_NAME = "Participants";
 
-    public ExcelExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps) {
-        super(moduleFormatters, enrolleeMaps);
+    public ExcelExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps, List<String> columnSorting) {
+        super(moduleFormatters, enrolleeMaps, columnSorting);
         workbook = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
         sheet = workbook.createSheet(getSheetName());
         sheet.trackAllColumnsForAutoSizing();

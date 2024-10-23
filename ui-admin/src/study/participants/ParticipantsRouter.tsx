@@ -10,6 +10,7 @@ import EnrolleeView from './enrolleeView/EnrolleeView'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { StudyEnvParams } from '@juniper/ui-core'
 import WithdrawnEnrolleeList from './participantList/WithdrawnEnrolleeList'
+import PortalUserList from './participantList/PortalUserList'
 
 /** routes to list or individual enrollee view as appropriate */
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -19,10 +20,11 @@ export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext
           participants</Link>
     </NavBreadcrumb>
     <Routes>
-      <Route path="withdrawn" element={<WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>}/>
+      <Route path="families" element={<ParticipantList studyEnvContext={studyEnvContext} groupByFamily={true}/>} />
+      <Route path="withdrawn" element={<WithdrawnEnrolleeList studyEnvContext={studyEnvContext}/>} />
+      <Route path="accounts/*" element={<PortalUserList studyEnvContext={studyEnvContext}/>} />
       <Route path=":enrolleeShortcodeOrId/*" element={<EnrolleeView studyEnvContext={studyEnvContext}/>}/>
-      <Route index element={<ParticipantList studyEnvContext={studyEnvContext}/>}/>
-      <Route path="*" element={<div>Unknown participant page</div>}/>
+      <Route path="*" element={<ParticipantList studyEnvContext={studyEnvContext}  groupByFamily={false}/>}/>
     </Routes>
   </>
 }

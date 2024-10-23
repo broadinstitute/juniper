@@ -30,7 +30,7 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
      * this avoids N+1 querying, but is otherwise unoptimized. It grabs all the responses, then all the answers
      */
     public List<SurveyResponse> findByEnrolleeIdWithAnswers(UUID enrolleeId) {
-        List<SurveyResponse> responses = findAllByProperty("enrollee_id", enrolleeId);
+        List<SurveyResponse> responses = findByEnrolleeId(enrolleeId);
         List<Answer> answers = answerDao.findByEnrolleeId(enrolleeId);
         // build a map of id -> response for more efficient assignment of answers
         Map<UUID, SurveyResponse> responseById = new HashMap<>();

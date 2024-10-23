@@ -3,9 +3,11 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
@@ -18,7 +20,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Component
-public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
+public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEnvAttachedDao<Enrollee> {
     private final KitRequestDao kitRequestDao;
     private final KitTypeDao kitTypeDao;
     private final ParticipantTaskDao participantTaskDao;
@@ -52,10 +54,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return findByProperty("shortcode", shortcode);
-    }
-
-    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
@@ -100,13 +98,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
-    }
-
-    public int countByStudyEnvironment(UUID studyEnvironmentId) {
-        return countByProperty("study_environment_id", studyEnvironmentId);
-    }
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        deleteByProperty("study_environment_id", studyEnvironmentId);
     }
 
     /** updates the global consent status of the enrollee */
@@ -156,6 +147,27 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                 .bind("id", id)
                 .mapTo(clazz)
                 .list());
+    }
+
+
+    /** returns all the enrollees in the given portal and environment */
+    public List<Enrollee> findAllByPortalEnv(UUID portalId, EnvironmentName environmentName) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                        select e.* from enrollee e
+                        where e.study_environment_id in (
+                            select se.id from study_environment se
+                            where se.study_id in (
+                                select study_id from portal_study
+                                where portal_id = :portalId
+                            ) and se.environment_name = :environmentName
+                        )
+                        """)
+                        .bind("portalId", portalId)
+                        .bind("environmentName", environmentName)
+                        .mapTo(clazz)
+                        .list()
+        );
     }
 
     public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {

@@ -63,7 +63,8 @@ public class PortalController implements PortalApi {
         "https://hearthivedev.b2clogin.com", // HeartHive (demo)
         "https://hearthive.b2clogin.com", // HeartHive (prod)
         "https://gvascdev.b2clogin.com", // gVASC (demo)
-        "https://gvascprod.b2clogin.com" // gVASC (prod)
+        "https://gvascprod.b2clogin.com", // gVASC (prod)
+        "https://juniperatcpdev.b2clogin.com", // ATCP (demo)
       },
       maxAge = 3600,
       methods = {RequestMethod.GET, RequestMethod.OPTIONS})

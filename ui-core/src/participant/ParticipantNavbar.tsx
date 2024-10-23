@@ -408,7 +408,7 @@ export const AccountOptionsDropdown = (
           { studyEnv && studyEnv.kitTypes.length > 0 &&
               <NavLink to="/hub/kits">
                 <button className="dropdown-item" aria-label="sample kits">
-                  Sample Kits
+                  {i18n('navbarSampleKits')}
                 </button>
               </NavLink>
           }

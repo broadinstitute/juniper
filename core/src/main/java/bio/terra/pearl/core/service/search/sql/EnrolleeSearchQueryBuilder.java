@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search.sql;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import lombok.Getter;

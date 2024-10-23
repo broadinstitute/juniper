@@ -29,6 +29,7 @@ import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
 import { prettifyString, KitRequestDetails } from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { tabLinkStyle } from '../../util/subNavStyles'
 
 type KitStatusTabConfig = {
   statuses: string[],
@@ -145,11 +146,6 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 
   const kitsByTabKey = _groupBy(kits, kit => {
     return statusTabs.find(tab => tab.statuses.includes(kit.status))?.key || 'issues'
-  })
-
-  const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
-    borderBottom: isActive ? '2px solid #708DBC': '',
-    background: isActive ? '#E1E8F7' : ''
   })
 
   const refreshStatuses = async () => {

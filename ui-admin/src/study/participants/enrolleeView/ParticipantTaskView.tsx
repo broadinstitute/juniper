@@ -3,13 +3,12 @@ import { ParticipantTask } from 'api/api'
 
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { tableHeader } from 'util/tableUtils'
+import { basicTableLayout } from 'util/tableUtils'
 import {
   Enrollee,
   instantToDefaultString
@@ -59,30 +58,7 @@ const ParticipantTaskView = ({ enrollee }: {enrollee: Enrollee}) => {
 
   return <div className="container p-3">
     <h1 className="h4">Tasks </h1>
-    <table className="table table-striped">
-      <thead>
-        <tr>
-          {table
-            .getFlatHeaders()
-            .map(header => tableHeader(header, { sortable: true }))}
-        </tr>
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map(row => {
-          return (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => {
-                return (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                )
-              })}
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    { basicTableLayout(table) }
   </div>
 }
 

@@ -37,7 +37,7 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
     }
 
     public Optional<ParticipantUser> findOneByShortcode(String shortcode) {
-        return dao.findByProperty("shortcode", shortcode);
+        return dao.findOneByShortcode(shortcode);
     }
 
     @Transactional @Override
@@ -58,5 +58,13 @@ public class ParticipantUserService extends CrudService<ParticipantUser, Partici
 
     public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
         return dao.findOne(username, environmentName);
+    }
+
+    public Optional<ParticipantUser> findByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrolleeId(enrolleeId);
+    }
+
+    public List<ParticipantUser> findAllByPortalEnv(UUID portalId, EnvironmentName envName) {
+        return dao.findAllByPortalEnv(portalId, envName);
     }
 }

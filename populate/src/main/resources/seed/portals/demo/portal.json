@@ -37,6 +37,7 @@
         "participants/dsalk.json",
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json",
+        "participants/consentedDupe.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
         "participants/oldVersion.json",

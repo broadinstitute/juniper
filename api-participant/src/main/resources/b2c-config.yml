@@ -30,7 +30,7 @@ b2c:
     policyName: B2C_1A_ddp_participant_signup_signin_rgp-dev
     changePasswordPolicyName: B2C_1A_ddp_participant_change_password_rgp-dev
   atcp:
-    tenantName: none
-    clientId: none
-    policyName: none
-    changePasswordPolicyName: none
+    tenantName: juniperatcpdev
+    clientId: 2408089d-2dc5-46f6-bfdd-cb0c8c4c13d1
+    policyName: B2C_1A_ddp_participant_signup_signin_atcp-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_atcp-dev

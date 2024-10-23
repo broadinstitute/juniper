@@ -1,8 +1,9 @@
 import argparse
 import csv
+import json
 import os.path
 import re
-from copy import copy
+from copy import copy, deepcopy
 from datetime import datetime
 from typing import Any, Union
 
@@ -10,8 +11,6 @@ from openpyxl import load_workbook
 
 
 # todo s:
-#       - figure out _DETAIL questions on the import side
-#       - check multi-select options match?
 #       - for each survey, also map `.COMPLETEDAT` to `lastUpdatedAt` and `completed` on the juniper side
 #       - create export rows for non-subject users that are proxies of a governed user
 #       - export enrollee.subject=true for all subjects (how to track?)
@@ -312,7 +311,7 @@ def parse_translation_override(filepath: str) -> list[TranslationOverride]:
 
     with open(filepath, 'r') as f:
         for row in csv.reader(f):
-            out.append(TranslationOverride(row[0], row[1]))
+            out.append(TranslationOverride(row[0], row[1], value_if_present=row[2] if len(row) > 0 else None))
 
     return out
 
@@ -336,14 +335,13 @@ class Translation:
 
 default_translation_overrides = [
     TranslationOverride('PROFILE.EMAIL', 'profile.contactEmail'),
-    TranslationOverride('PROFILE.EMAIL', 'account.username'),
     # if the user doesn't have an email, it usually means their proxy does, so check there
     # as well
     TranslationOverride('PROFILE.PROXY.EMAIL', 'account.username'),
+    TranslationOverride('PROFILE.EMAIL', 'account.username'),
     TranslationOverride('PROFILE.FIRSTNAME', 'profile.givenName'),
     TranslationOverride('PROFILE.LASTNAME', 'profile.familyName'),
     TranslationOverride(None, 'enrollee.subject', constant_value='true'),
-    TranslationOverride('CONSENT.CREATEDAT', 'enrollee.role', value_if_present='true'),
 ]
 
 
@@ -451,7 +449,6 @@ def standardize_stable_id(stable_id: str) -> str:
 
     return stable_id.replace('.', '_').strip().lower()
 
-
 def validate_leftover_questions(
         leftover_dsm_questions: list[DataDefinition],
         leftover_juniper_questions: list[DataDefinition]
@@ -508,6 +505,10 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
     for row in data:
         new_row = {}
         for translation in translations:
+            # certain modules (e.g. kit requests, families, relations) can be repeated, so we need
+            # to see how many repeats there are and apply the translation to each one
+            if is_in_repeatable_juniper_module(translation.juniper_question_definition.stable_id):
+                apply_repeatable_translation(row, new_row, translation)
             apply_translation(row, new_row, translation)
 
         has_all_needed_columns = True
@@ -521,6 +522,57 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
 
     return out
 
+repeatable_juniper_modules = ['sample_kit', 'family', 'relation']
+def is_in_repeatable_juniper_module(stable_id: str) -> bool:
+    for module in repeatable_juniper_modules:
+        if stable_id.startswith(module):
+            return True
+    return False
+
+def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
+    # for each translation, we need to go through all possible
+    # repeats of the question. e.g.,
+    # dsm_question.stable_id, dsm_question_2.stable_id, dsm_question_3.stable_id, ...
+    #
+    # most module repeats will be ignored by juniper,
+    # but certain things (notably kits) will need to
+    # be repeated, so let's just repeat all of them
+    # to be safe.
+    module_repeat = 1
+    while True:
+        dsm_module_repeat_stable_id = generate_dsm_module_repeat_stable_id(translation.dsm_question_definition.stable_id, module_repeat)
+        juniper_module_repeat_stable_id = generate_juniper_module_repeat_stable_id(translation.juniper_question_definition.stable_id, module_repeat)
+
+        if dsm_module_repeat_stable_id not in dsm_data:
+            break
+
+        repeat_translation = deepcopy(translation)
+        repeat_translation.dsm_question_definition.stable_id = dsm_module_repeat_stable_id
+        repeat_translation.juniper_question_definition.stable_id = juniper_module_repeat_stable_id
+
+        apply_translation(dsm_data, juniper_data, repeat_translation)
+        module_repeat += 1
+
+def generate_dsm_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
+    if repeat == 1:
+        return stable_id
+
+    split = stable_id.split('.')
+    if len(split) == 1:
+        print('Warning: DSM stable ID does not contain a period, might be invalid: ' + stable_id)
+
+    if split[0].lower() == 'dsm':
+        split[1] = split[1] + '_' + str(repeat)
+    else:
+        split[0] = split[0] + '_' + str(repeat)
+
+    return '.'.join(split)
+
+def generate_juniper_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
+    if repeat == 1:
+        return stable_id
+
+    return stable_id + '_' + str(repeat)
 
 def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
     if translation.translation_override is not None and translation.translation_override.constant_value is not None:
@@ -533,11 +585,11 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
     dsm_question = translation.dsm_question_definition
 
     if juniper_question.question_type == 'paneldynamic':
-        # todo: make sure this is right; does it need to be parsed as a string?
-        juniper_data[juniper_question.stable_id] = get_dynamic_panel_values(translation, dsm_data)
+        juniper_data[juniper_question.stable_id] = json.dumps(get_dynamic_panel_values(translation, dsm_data))
     elif dsm_question.question_type.lower() == 'multiselect':
-        # todo: make sure this is correct, possibly convert to string?
-        juniper_data[juniper_question.stable_id] = get_multi_panel_values(translation, dsm_data)
+        juniper_data[juniper_question.stable_id] = json.dumps(get_multi_panel_values(translation, dsm_data))
+    elif juniper_question.question_type.lower() == 'checkbox' and dsm_question.question_type.lower() == 'picklist':
+        juniper_data[juniper_question.stable_id] = json.dumps([dsm_data[dsm_question.stable_id]] if len(dsm_data[dsm_question.stable_id]) > 0 else [])
     else:
         simple_translate(
             translation, dsm_data, juniper_data
@@ -561,9 +613,13 @@ def simple_translate(translation: Translation,
             continue  # assume any value is good enough
         juniper_data[response_stable_id] = translate_value(translation, value)
 
+        # at's state province field is, e.g., US-MA for some reason.
+        if juniper_question.stable_id == "PREQUAL.REGISTRATION_STATE_PROVINCE":
+            juniper_data[response_stable_id] = juniper_data[response_stable_id].split("-")[-1]
+
 
 def translate_value(translation: Translation, value: Any) -> Any:
-    if translation.translation_override is not None and translation.translation_override.value_if_present is not None:
+    if translation.translation_override is not None and translation.translation_override.value_if_present is not None and translation.translation_override.value_if_present != '':
         return translation.translation_override.value_if_present if value.strip() != '' else None
 
     # possible data types: string, date, boolean, date_time, object_string

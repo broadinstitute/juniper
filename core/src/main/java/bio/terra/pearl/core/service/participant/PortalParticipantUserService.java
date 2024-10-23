@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import org.springframework.context.annotation.Lazy;
@@ -20,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class PortalParticipantUserService extends ImmutableEntityService<PortalParticipantUser, PortalParticipantUserDao> {
+public class PortalParticipantUserService extends CrudService<PortalParticipantUser, PortalParticipantUserDao> {
     private final ProfileService profileService;
     private final PreregistrationResponseDao preregistrationResponseDao;
     private final ParticipantDataChangeService participantDataChangeService;
@@ -81,6 +82,10 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
 
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
         return dao.findOne(participantUserId, portalShortcode);
+    }
+
+    public void attachProfiles(List<PortalParticipantUser> portalParticipantUsers) {
+        dao.attachProfiles(portalParticipantUsers);
     }
 
     public List<PortalParticipantUser> findByPortalEnvironmentId(UUID portalId) {

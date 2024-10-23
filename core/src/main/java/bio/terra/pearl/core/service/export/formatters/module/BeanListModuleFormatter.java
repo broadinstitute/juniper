@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
@@ -14,6 +15,10 @@ import java.util.Map;
 @Slf4j
 /** ModuleFormatter for just listing properties of a thing -- e.g. fields from a profile */
 public abstract class BeanListModuleFormatter<T> extends ModuleFormatter<T, PropertyItemFormatter<T>> {
+
+    public BeanListModuleFormatter(ExportOptions options, String moduleName, String displayName) {
+        super(options, moduleName, displayName);
+    }
 
     @Override
     public String getColumnSubHeader(PropertyItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum) {

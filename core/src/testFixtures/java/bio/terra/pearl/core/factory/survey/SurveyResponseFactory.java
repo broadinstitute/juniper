@@ -43,6 +43,7 @@ public class SurveyResponseFactory {
         return surveyResponseService.create(builderWithDependencies(testName).build());
     }
 
+    /** to create a response with an objectValued answer, use a JsonNode value in the answerMap */
     public SurveyResponse buildWithAnswers(Enrollee enrollee, Survey survey, Map<String, Object> answerMap) {
         SurveyResponse response = surveyResponseService.create(SurveyResponse.builder()
                 .enrolleeId(enrollee.getId())

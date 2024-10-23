@@ -54,7 +54,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(15, enrollees.size());
+        Assertions.assertEquals(16, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
@@ -106,6 +106,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     private void checkKeyedEnrollee(List<Enrollee> sandboxEnrollees) {
         Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDINVI".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
+        assertThat(enrollee.getSource(), equalTo(EnrolleeSourceType.IMPORT));
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         assertThat(user.getUsername().contains("+invited-"), equalTo(true));
         assertThat(user.getUsername(), endsWith("broadinstitute.org"));
@@ -200,7 +201,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId, enrolleeExportData);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(enrolleeExportData, moduleInfos);
 
-        assertThat(exportData, hasSize(13));
+        assertThat(exportData, hasSize(14));
         // confirm pre-enroll questions are included
         Map<String, String> salkMap = exportData.stream().filter(map -> "HDSALK".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();

@@ -59,6 +59,11 @@ public class CurrentUserService {
     UserLoginDto user = loadByToken(token, portalShortcode, environmentName);
     user.user.setLastLogin(Instant.now());
     participantUserDao.update(user.user);
+    user.ppUsers.forEach(
+        ppUser -> {
+          ppUser.setLastLogin(Instant.now());
+          portalParticipantUserService.update(ppUser);
+        });
     return user;
   }
 

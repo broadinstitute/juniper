@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -19,6 +20,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,11 +31,17 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,6 +73,8 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Autowired
     FamilyFactory familyFactory;
+    @Autowired
+    PortalParticipantUserService portalParticipantUserService;
 
 
     @Test
@@ -529,7 +539,28 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                         enrollee.getStudyEnvironmentId());
 
         assertEquals(0, resultsCreated.size());
+    }
 
+    @Test
+    @Transactional
+    public void testPortalUser(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Instant loginTime = Instant.now();
+        bundle.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle.portalParticipantUser());
+
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        loginTime = Instant.now().minusSeconds(3600);
+        bundle2.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle2.portalParticipantUser());
+
+        EnrolleeSearchExpression nameExp = enrolleeSearchExpressionParser.parseRule("{portalUser.lastLogin} < {user.createdAt}");
+
+        List<EnrolleeSearchExpressionResult> resultsName = enrolleeSearchExpressionDao.executeSearch(nameExp, studyEnvBundle.getStudyEnv().getId());
+
+        Assertions.assertEquals(1, resultsName.size());
+        assertTrue(resultsName.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle2.enrollee().getId())));
     }
 
     @Test
@@ -658,7 +689,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testInclude(TestInfo info) {
+    public void testIncludeFamily(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
         Family family = familyFactory.buildPersisted(getTestName(info), enrollee);
 
@@ -688,5 +719,32 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         assertEquals(enrollee.getId(), result.getEnrollee().getId());
         assertEquals(1, result.getFamilies().size());
         assertEquals(family.getId(), result.getFamilies().get(0).getId());
+    }
+
+    @Test
+    @Transactional
+    public void testIncludeUserData(TestInfo info) {
+        EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        Instant loginTime = Instant.now();
+        bundle.portalParticipantUser().setLastLogin(loginTime);
+        portalParticipantUserService.update(bundle.portalParticipantUser());
+        EnrolleeSearchExpression defaultExp = enrolleeSearchExpressionParser.parseRule("");
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(defaultExp, bundle.enrollee().getStudyEnvironmentId());
+        assertEquals(1, results.size());
+        EnrolleeSearchExpressionResult result = results.get(0);
+        assertThat(results.get(0).getPortalParticipantUser(), nullValue());
+        assertThat(results.get(0).getParticipantUser(), nullValue());
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({user.username}) and include({portalUser.lastLogin})"
+        );
+        results = enrolleeSearchExpressionDao.executeSearch(includeExp, bundle.enrollee().getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+        // we can't check exact equality since it goes to the DB, so instead just confirm seconds
+        assertThat(results.get(0).getPortalParticipantUser().getLastLogin().truncatedTo(ChronoUnit.MILLIS),
+                equalTo(loginTime.truncatedTo(ChronoUnit.MILLIS)));
+        assertThat(results.get(0).getParticipantUser().getUsername(), equalTo(bundle.participantUser().getUsername()));
     }
 }

@@ -49,10 +49,10 @@ import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 import FamilyRouter from './families/FamilyRouter'
 import { KitScanner } from './kits/kitcollection/KitScanner'
-import { LoadedSettingsView } from 'study/settings/SettingsView'
 import ExportIntegrationList from './export/integrations/ExportIntegrationList'
 import ExportIntegrationView from './export/integrations/ExportIntegrationView'
 import ExportIntegrationJobList from './export/integrations/ExportIntegrationJobList'
+import LoadedSettingsView from './settings/SettingsView'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -94,7 +94,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
     ...portalContext, portalEnv
   }
 
-  return <div className="StudyView d-flex flex-column flex-grow-1">
+  return <div className="StudyView d-flex flex-column flex-grow-1" key={studyEnvContext.currentEnvPath}>
     <NavBreadcrumb value={currentEnvPath}>
       <Select options={envOpts}
         value={envOpts.find(opt => opt.value === envName)}
@@ -126,7 +126,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             portalEnv={portalEnv}/>}/>
           <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
           <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="settings/*" element={<LoadedSettingsView key={currentEnv.environmentName}
+          <Route path="settings/*" element={<LoadedSettingsView
             studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}
           />
@@ -191,6 +191,10 @@ export const useStudyEnvParamsFromPath = () => {
 /** helper for participant list path */
 export const participantListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
+}
+
+export const participantAccountsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants/accounts`
 }
 
 /** root study environment path */

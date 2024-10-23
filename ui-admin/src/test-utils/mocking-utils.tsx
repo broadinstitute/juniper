@@ -53,6 +53,10 @@ import { PortalEnvContextT } from '@juniper/ui-participant/src/providers/PortalP
 import { mockLocalSiteContent } from 'test-utils/mock-site-content'
 import { ReactNotifications } from 'react-notifications-component'
 
+// add all jest-extended matchers
+import * as matchers from 'jest-extended'
+expect.extend(matchers)
+
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
 }
@@ -642,5 +646,5 @@ export const renderInPortalRouter = (portal: Portal,
         <ReactNotifications/>
       </UserContext.Provider>
     </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
-    ':portalShortcode/studies/:studyShortcode/:studyEnv')
+    ':portalShortcode/studies/:studyShortcode/:studyEnv/*')
 }
