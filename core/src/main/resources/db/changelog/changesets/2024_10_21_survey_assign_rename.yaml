@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "assign_to_all_new_enrollees_rename"
+      author: dbush
+      changes:
+        - dropColumn:  # closing the loop on the column rename from 2024_09_18_survey_assign_rename.yaml
+            tableName: survey
+            columnName: assign_to_all_new_enrollees

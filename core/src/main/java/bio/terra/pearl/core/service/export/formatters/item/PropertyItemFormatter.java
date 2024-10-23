@@ -5,12 +5,12 @@ import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.time.Instant;
 import java.util.Arrays;
 
 import static bio.terra.pearl.core.service.export.formatters.ExportFormatUtils.DATA_TYPE_MAP;
@@ -55,6 +55,8 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
         Object value = null;
         try {
             value = PropertyUtils.getNestedProperty(bean, propertyName);
+        } catch (NullPointerException | NestedNullException e) {
+            // this is expected if the property is null
         } catch (Exception e) {
             log.warn("Error getting property {} from bean {}", propertyName, bean, e);
         }

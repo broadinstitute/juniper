@@ -538,6 +538,40 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/plan:
+    post:
+      summary: gets a merge plan for the given participant users. This does not perform the merge.
+      tags: [ participantMerge ]
+      operationId: plan
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: the merge plan
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/execute:
+    post:
+      summary: executes a merge plan
+      tags: [ participantMerge ]
+      operationId: execute
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: the merge plan
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
       summary: Gets all of the possible fields which can be searched on within the provided portal.
@@ -664,6 +698,10 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - *enrolleeShortcodeParam
+      requestBody:
+        required: true
+        description: withdrawal params
+        content: *jsonContent
       responses:
         '200':
           description: withdrawnEnrollee id
@@ -676,9 +714,9 @@ paths:
       tags: [ withdrawnEnrollee ]
       operationId: getAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: withdrawnEnrollee list

@@ -83,8 +83,8 @@ export type EnrolleeSearchExpressionResult = {
   portalParticipantUser?: PortalParticipantUser
 }
 
-export type ParticipantUsersWithEnrollees = {
-  participantUsers: ParticipantUser[],
+export type ParticipantUsersAndEnrollees = {
+  participantUsers: ParticipantUser[]
   enrollees: Enrollee[]
 }
 
@@ -374,6 +374,8 @@ export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string
   userData: string
+  reason: 'PARTICIPANT_REQUEST' | 'TESTING' | 'DUPLICATE'
+  note: string
 }
 
 export type ExportIntegration = {
@@ -396,6 +398,35 @@ export type ExportIntegrationJob = {
   result: string,
   creatingAdminUserId?: string,
   systemProcess?: string
+}
+
+export type ParticipantUserMerge = {
+  users: MergeAction<ParticipantUser, object>
+  ppUsers: MergeAction<PortalParticipantUser, object>
+  enrollees: MergeAction<Enrollee, EnrolleeMergePlan>[]
+}
+
+export type MergeAction<T, MP> = {
+  pair: MergePair<T>
+  action: MergeActionAction
+  mergePlan: MP
+}
+
+export type EnrolleeMergePlan = {
+  tasks: MergeAction<ParticipantTask, object>[]
+  kits: MergeAction<KitRequest, object>[]
+}
+
+export type MergeActionAction =
+  'MOVE_SOURCE' | // no change to target, reassign source to target (not a delete/recreate, just a reassign)
+  'NO_ACTION' | // nothing
+  'MERGE' | // do some logic to reconcile source and target
+  'DELETE_SOURCE' | // delete the source, likely because it is empty or a pure dupe
+  'MOVE_SOURCE_DELETE_TARGET' // move source to target and delete target
+
+export type MergePair<T> = {
+  source?: T,
+  target?: T
 }
 
 let bearerToken: string | null = null
@@ -775,9 +806,29 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersWithEnrollees> {
+  async fetchParticipantUsers(portalShortcode: string, envName: string): Promise<ParticipantUsersAndEnrollees> {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers`,
       this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchMergePlan(portalShortcode: string, envName: string, sourceEmail: string, targetEmail: string):
+    Promise<ParticipantUserMerge> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/merge/plan`, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ sourceEmail, targetEmail })
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async executeMergePlan(portalShortcode: string, envName: string, mergePlan: ParticipantUserMerge):
+    Promise<ParticipantUserMerge> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/merge/execute`, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(mergePlan)
+    })
     return await this.processJsonResponse(response)
   },
 
@@ -835,10 +886,14 @@ export default {
   },
 
   async withdrawEnrollee(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<object> {
+    enrolleeShortcode: string, withdrawParams: {reason: string, note: string}): Promise<object> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
     }/enrollees/${enrolleeShortcode}/withdraw`
-    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(withdrawParams)
+    })
     return await this.processJsonResponse(response)
   },
 

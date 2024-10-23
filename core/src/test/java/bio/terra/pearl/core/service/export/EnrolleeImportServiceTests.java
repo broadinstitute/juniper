@@ -10,16 +10,11 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.dataimport.Import;
-import bio.terra.pearl.core.model.dataimport.ImportItem;
-import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.dataimport.*;
 import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeSourceType;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -29,9 +24,7 @@ import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -49,13 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -70,7 +62,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private EnrolleeService enrolleeService;
     @Autowired
+    private EnrolleeRelationService enrolleeRelationService;
+    @Autowired
     private ParticipantUserService participantUserService;
+    @Autowired
+    private PortalParticipantUserService portalParticipantUserService;
     @Autowired
     private ProfileService profileService;
     @Autowired
@@ -614,6 +610,152 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(responses, hasSize(0));
     }
 
+    @Test
+    @Transactional
+    public void testAccountImport(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "profile.givenName", "Alex");
+
+        EnrolleeImportService.AccountImportData accountImportData = new EnrolleeImportService.AccountImportData();
+        accountImportData.setEnrolleeData(enrolleeMap);
+        accountImportData.setEmail(username);
+
+        List<Enrollee> enrollees = importAccount(info, accountImportData, bundle);
+
+        assertThat(enrollees, hasSize(1));
+        Enrollee enrollee = enrollees.getFirst();
+
+        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("Alex"));
+    }
+
+    @Test
+    @Transactional
+    public void testAccountImportWithProxies(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        List<Map<String, String>> proxies = List.of(
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy1"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy2"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy3"));
+
+        String username = "proxy@test.com";
+
+        EnrolleeImportService.AccountImportData accountImportData = new EnrolleeImportService.AccountImportData();
+
+        accountImportData.setProxyData(proxies);
+        accountImportData.setEmail(username);
+
+        List<Enrollee> enrollees = importAccount(info, accountImportData, bundle);
+
+        assertThat(enrollees, hasSize(4));
+
+        List<Enrollee> nonSubject = enrollees.stream().filter(enrollee -> !enrollee.isSubject()).toList();
+        assertThat(nonSubject, hasSize(1));
+
+        Enrollee proxy = nonSubject.get(0);
+
+        List<Enrollee> proxiesList = enrollees.stream().filter(Enrollee::isSubject).toList();
+        assertThat(proxiesList, hasSize(3));
+
+        Set<String> names = proxiesList.stream().map(Enrollee::getProfileId).map(profileId -> {
+            Profile profile = profileService.loadWithMailingAddress(profileId).orElseThrow();
+            return profile.getGivenName();
+        }).collect(Collectors.toSet());
+
+        assertEquals(Set.of("Proxy1", "Proxy2", "Proxy3"), names);
+
+        List<EnrolleeRelation> relations = enrolleeRelationService.findAllByEnrolleeId(proxy.getId());
+
+        assertThat(relations, hasSize(3));
+
+        assertTrue(relations.stream().allMatch(relation -> relation.getEnrolleeId().equals(proxy.getId())));
+
+        Set<UUID> proxyIds = relations.stream().map(EnrolleeRelation::getTargetEnrolleeId).collect(Collectors.toSet());
+        Set<UUID> expectedProxyIds = proxiesList.stream().map(Enrollee::getId).collect(Collectors.toSet());
+
+        assertEquals(expectedProxyIds, proxyIds);
+
+    }
+
+    @Test
+    @Transactional
+    public void testSelfEnrolledWithProxies(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        List<Map<String, String>> proxies = List.of(
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Peter"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Jonathan"));
+
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", "proxy@test.com",
+                "profile.givenName", "Jonas");
+
+        EnrolleeImportService.AccountImportData accountImportData = new EnrolleeImportService.AccountImportData();
+
+        accountImportData.setProxyData(proxies);
+        accountImportData.setEnrolleeData(enrolleeMap);
+        accountImportData.setEmail("proxy@test.com");
+
+        List<Enrollee> enrollees = importAccount(info, accountImportData, bundle);
+
+        assertThat(enrollees, hasSize(3));
+
+        assertTrue(enrollees.stream().allMatch(Enrollee::isSubject));
+
+        Set<String> names = enrollees.stream().map(Enrollee::getProfileId).map(profileId -> {
+            Profile profile = profileService.loadWithMailingAddress(profileId).orElseThrow();
+            return profile.getGivenName();
+        }).collect(Collectors.toSet());
+
+        assertEquals(Set.of("Peter", "Jonathan", "Jonas"), names);
+    }
+
+    @Test
+    public void testGroupByAccountProxies(TestInfo info) {
+        List<EnrolleeImportService.AccountImportData> accountImportData = enrolleeImportService.groupImportMapsByAccount(
+                List.of(
+                        Map.of("account.username", "proxy@test.com", "profile.givenName", "John"),
+                        Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Jane"),
+                        Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Jim"),
+                        Map.of("account.username", "normal_user@test.com", "profile.givenName", "Jack"),
+                        Map.of("proxy.username", "different_proxy@test.com", "profile.givenName", "Jill")
+                )
+        );
+
+        assertThat(accountImportData, hasSize(3));
+
+        EnrolleeImportService.AccountImportData proxy = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("proxy@test.com")).findFirst().orElseThrow();
+
+        assertEquals(proxy.getEnrolleeData().get("profile.givenName"), "John");
+
+        List<Map<String, String>> proxyData = proxy.getProxyData();
+        assertThat(proxyData, hasSize(2));
+
+        Set<String> names = proxyData.stream().map(data -> data.get("profile.givenName")).collect(Collectors.toSet());
+        assertEquals(Set.of("Jane", "Jim"), names);
+
+        EnrolleeImportService.AccountImportData normalUser = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("normal_user@test.com")).findFirst().orElseThrow();
+
+        assertEquals(normalUser.getEnrolleeData().get("profile.givenName"), "Jack");
+        assertEquals(0, normalUser.getProxyData().size());
+
+        EnrolleeImportService.AccountImportData diffProxyUser = accountImportData.stream()
+                .filter(data -> data.getEmail().equals("different_proxy@test.com")).findFirst().orElseThrow();
+
+        assertNull(diffProxyUser.getEnrolleeData());
+
+        assertEquals(diffProxyUser.getProxyData().get(0).get("profile.givenName"), "Jill");
+
+    }
+
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
                                    ParticipantUser userExpected, Enrollee enrolleeExpected, Profile profileExpected) {
 
@@ -686,5 +828,31 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         private StudyEnvironmentBundle bundle;
         private AdminUser adminUser;
         private String csvString;
+    }
+
+    private List<Enrollee> importAccount(TestInfo info, EnrolleeImportService.AccountImportData accountImportData, StudyEnvironmentBundle bundle) {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        Import dataImport = importService.create(Import.builder().importType(ImportType.PARTICIPANT).studyEnvironmentId(bundle.getStudyEnv().getId()).responsibleUserId(adminUser.getId()).build());
+        return enrolleeImportService.importAccount(
+                        accountImportData,
+                        bundle.getPortal().getShortcode(),
+                        bundle.getStudy().getShortcode(),
+                        bundle.getStudyEnv(),
+                        new ExportOptions(),
+                        null,
+                        dataImport.getId())
+                .stream()
+                .map(item -> {
+                    if (item.getStatus().equals(ImportItemStatus.FAILED)) {
+                        log.debug("Failed to import account: {}", item.getMessage());
+                        log.debug(item.getDetail());
+                    }
+                    return item;
+                })
+                .filter(importItem -> Objects.nonNull(importItem.getCreatedEnrolleeId()))
+                .map(importItem -> enrolleeService.find(importItem.getCreatedEnrolleeId()).orElseThrow())
+                .toList();
+
+
     }
 }

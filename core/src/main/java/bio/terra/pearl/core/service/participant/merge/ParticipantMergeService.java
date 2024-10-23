@@ -5,6 +5,8 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -68,36 +70,52 @@ public class ParticipantMergeService {
     }
 
     protected void applyMergeEnrollee(MergeAction<Enrollee, EnrolleeMerge> mergeAction, ParticipantUserMerge parentMerge, DataAuditInfo auditInfo) {
+        Enrollee source = validateEnrollee(mergeAction.getSource(), parentMerge.getUsers().getSource());
+        Enrollee target = validateEnrollee(mergeAction.getTarget(), parentMerge.getUsers().getTarget());
+
         if (mergeAction.getAction().equals(MergeAction.Action.NO_ACTION)) {
             // nothing to do
         } else if (mergeAction.getAction().equals(MergeAction.Action.DELETE_SOURCE)) {
             // delete the source enrollee
-            deleteMergedEnrollee(mergeAction.getSource(), auditInfo);
+            deleteMergedEnrollee(source, auditInfo);
         } else if (mergeAction.getAction().equals(MergeAction.Action.MOVE_SOURCE)) {
             // move the source enrollee to the target user
-            moveEnrollee(mergeAction.getSource(), parentMerge.getPpUsers().getTarget(), auditInfo);
+            moveEnrollee(source, parentMerge.getPpUsers().getTarget(), auditInfo);
         } else if (mergeAction.getAction().equals(MergeAction.Action.MERGE)) {
             // merge the source enrollee into the target enrollee
-            mergeEnrolleeData(mergeAction.getSource(), mergeAction.getTarget(), mergeAction.getMergePlan(), parentMerge.getPpUsers().getTarget(), auditInfo);
-            deleteMergedEnrollee(mergeAction.getSource(), auditInfo);
+            mergeEnrolleeData(source, target, mergeAction.getMergePlan(), parentMerge.getPpUsers().getTarget(),  parentMerge.getUsers().getTarget(), auditInfo);
+            deleteMergedEnrollee(source, auditInfo);
         }
     }
 
+    private Enrollee validateEnrollee(Enrollee enrollee, ParticipantUser parent) {
+        if (enrollee != null) {
+            Enrollee fetched = enrolleeService.find(enrollee.getId()).orElseThrow();
+            if (!fetched.getParticipantUserId().equals(parent.getId())) {
+                throw new IllegalArgumentException("Enrollee not associated with participant");
+            }
+            return fetched;
+        }
+        return null;
+    }
+
     protected void deleteMergedEnrollee(Enrollee enrollee, DataAuditInfo auditInfo) {
-        withdrawnEnrolleeService.withdrawEnrollee(enrollee, auditInfo);
+        withdrawnEnrolleeService.withdrawEnrollee(enrollee, EnrolleeWithdrawalReason.DUPLICATE, auditInfo);
     }
 
     /** merges data from one enrollee into another.  Does not delete the source enrollee */
-    protected void mergeEnrolleeData(Enrollee source, Enrollee target, EnrolleeMerge mergePlan, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
+    protected void mergeEnrolleeData(Enrollee source, Enrollee target, EnrolleeMerge mergePlan, PortalParticipantUser targetPpUser, ParticipantUser targetUser, DataAuditInfo auditInfo) {
         for (MergeAction<ParticipantTask,?> action : mergePlan.getTasks()) {
+            ParticipantTask sourceTask = validateTask(action.getSource(), source);
+            ParticipantTask targetTask = validateTask(action.getTarget(), target);
             if (action.getAction().equals(MergeAction.Action.DELETE_SOURCE)) {
-                deleteTask(action.getSource(), auditInfo);
+                deleteTask(sourceTask, auditInfo);
             } else if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE) ||
                     action.getAction().equals(MergeAction.Action.MERGE) ||
                     action.getAction().equals(MergeAction.Action.MOVE_SOURCE_DELETE_TARGET)) {
-                moveTask(action.getSource().getId(), target, targetPpUser, auditInfo);
+                moveTask(sourceTask.getId(), target, targetPpUser, auditInfo);
                 if (action.getAction().equals(MergeAction.Action.MOVE_SOURCE_DELETE_TARGET)) {
-                    deleteTask(action.getTarget(), auditInfo);
+                    deleteTask(targetTask, auditInfo);
                 }
             } else if (action.getAction().equals(MergeAction.Action.NO_ACTION)) {
                 // nothing to do
@@ -107,9 +125,22 @@ public class ParticipantMergeService {
         }
 
         // for now, we reassign all notifications and events to the target enrollee
-        mergeDao.reassignEnrolleeNotifications(source.getId(), target.getId());
+        mergeDao.reassignEnrolleeNotifications(source.getId(), target.getId(), targetUser.getId());
         mergeDao.reassignEnrolleeEvents(source.getId(), target.getId());
+        mergeDao.reassignParticipantNotes(source.getId(), target.getId());
+        mergeDao.reassignFamily(source.getId(), target.getId());
         reassignDataChanges(source, target, targetPpUser);
+    }
+
+    private ParticipantTask validateTask(ParticipantTask task, Enrollee enrollee) {
+        if (task != null) {
+            ParticipantTask fetched = participantTaskService.find(task.getId()).orElseThrow();
+            if (!task.getEnrolleeId().equals(enrollee.getId())) {
+                throw new IllegalArgumentException("Task %s not associated with enrollee".formatted(task.getId()));
+            }
+            return fetched;
+        }
+        return null;
     }
 
     private void moveTask(UUID taskId, Enrollee targetEnrollee, PortalParticipantUser targetPpUser, DataAuditInfo auditInfo) {
@@ -131,7 +162,7 @@ public class ParticipantMergeService {
         // for now, we only support deleting tasks with no data attached
         task = participantTaskService.find(task.getId()).orElseThrow();
         if (ParticipantMergePlanService.hasMergeData(task)) {
-            throw new IllegalArgumentException("Cannot delete task with data");
+            throw new IllegalArgumentException("Cannot delete task %s with data".formatted(task.getId()));
         }
         participantTaskService.delete(task.getId(), auditInfo);
     }
@@ -145,6 +176,7 @@ public class ParticipantMergeService {
         surveyResponseService.update(response);
         List<Answer> answers = answerService.findByResponse(responseId);
         for (Answer answer : answers) {
+            answer.setEnrolleeId(targetEnrollee.getId());
             if (answer.getCreatingParticipantUserId() != null) {
                 answer.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
             }

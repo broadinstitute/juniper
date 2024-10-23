@@ -21,10 +21,7 @@ import bio.terra.pearl.core.service.export.dataimport.ImportService;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -34,9 +31,12 @@ import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -44,6 +44,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.FeatureDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,10 +55,11 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class EnrolleeImportService {
-
+    private final EnrolleeRelationService enrolleeRelationService;
     private final SurveyService surveyService;
     private final AnswerProcessingService answerProcessingService;
     private final AnswerMappingDao answerMappingDao;
+
     ExportOptions IMPORT_OPTIONS_TSV = ExportOptions
             .builder()
             .stableIdsForOptions(true)
@@ -96,7 +98,8 @@ public class EnrolleeImportService {
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
-                                TimeShiftDao timeShiftDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
+                                EnrolleeRelationService enrolleeRelationService,
+                                 TimeShiftDao timeShiftDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
                                  PortalParticipantUserService portalParticipantUserService, KitRequestService kitRequestService, SurveyService surveyService, AnswerProcessingService answerProcessingService, AnswerMappingDao answerMappingDao) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
@@ -113,6 +116,7 @@ public class EnrolleeImportService {
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.kitRequestService = kitRequestService;
+        this.enrolleeRelationService = enrolleeRelationService;
         this.surveyService = surveyService;
         this.answerProcessingService = answerProcessingService;
         this.answerMappingDao = answerMappingDao;
@@ -141,37 +145,73 @@ public class EnrolleeImportService {
             exportOptions = IMPORT_OPTIONS_CSV;
         }
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in, fileFormat);
-        for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            Enrollee enrollee = null;
-            ImportItem importItem;
-            try {
-                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions, adminId);
-                importItem = ImportItem.builder()
-                        .createdEnrolleeId(enrollee.getId())
-                        .importId(dataImport.getId())
-                        .createdParticipantUserId(enrollee.getParticipantUserId())
-                        .createdAt(Instant.now())
-                        .lastUpdatedAt(Instant.now())
-                        .status(ImportItemStatus.SUCCESS).build();
-            } catch (Exception e) {
-                importItem = ImportItem.builder()
-                        .importId(dataImport.getId())
-                        .createdParticipantUserId(adminId)
-                        .createdAt(Instant.now())
-                        .lastUpdatedAt(Instant.now())
-                        .status(ImportItemStatus.FAILED)
-                        .message(e.getMessage())
-                        .detail(Arrays.toString(e.getStackTrace())).build();
-            }
+        List<AccountImportData> accountData = groupImportMapsByAccount(enrolleeMaps);
 
-            importItem = importItemService.create(importItem);
-            log.debug("populated Import Item ID: {}", importItem.getId());
+        for (AccountImportData account : accountData) {
+
+            List<ImportItem> importItems = importAccount(account, portalShortcode, studyShortcode, studyEnv, exportOptions, adminId, dataImport.getId());
+
+            importItems.forEach(importItem -> {
+                log.debug("populated Import Item ID: {}", importItem.getId());
+            });
         }
         dataImport.setStatus(ImportStatus.DONE);
         importService.update(dataImport);
         importItemService.attachImportItems(dataImport);
         log.info("Completed importing : {} items for Import ID: {}", dataImport.getImportItems().size(), dataImport.getId());
         return dataImport;
+    }
+
+
+    // An account can have multiple enrollees. This
+    // record groups them together so our import process
+    // can create them all at once and link them together.
+    //
+    // Proxy accounts are determined by the presence of the
+    // proxy.email field in the import data.
+    @Getter
+    @Setter
+    public static class AccountImportData {
+        private String email;
+        private Map<String, String> enrolleeData = null;
+        private List<Map<String, String>> proxyData = new ArrayList<>();
+    }
+
+    List<AccountImportData> groupImportMapsByAccount(List<Map<String, String>> enrolleeMaps) {
+        List<AccountImportData> accountData = new ArrayList<>();
+
+        for (Map<String, String> enrolleeMap : enrolleeMaps) {
+            String email = enrolleeMap.get("account.username");
+            String proxyEmail = enrolleeMap.get("proxy.username");
+            if (StringUtils.isBlank(email)) {
+                email = proxyEmail;
+            }
+
+            AccountImportData account = findAccount(accountData, email);
+
+            if (account == null) {
+                AccountImportData newAccount = new AccountImportData();
+                newAccount.setEmail(email);
+                if (StringUtils.isBlank(proxyEmail)) {
+                    newAccount.setEnrolleeData(enrolleeMap);
+                } else {
+                    newAccount.getProxyData().add(enrolleeMap);
+                }
+                accountData.add(newAccount);
+            } else {
+                if (StringUtils.isBlank(proxyEmail)) {
+                    account.setEnrolleeData(enrolleeMap);
+                } else {
+                    account.getProxyData().add(enrolleeMap);
+                }
+            }
+        }
+
+        return accountData;
+    }
+
+    AccountImportData findAccount(List<AccountImportData> accountData, String email) {
+        return accountData.stream().filter(account -> account.getEmail().equals(email)).findFirst().orElse(null);
     }
 
     /**
@@ -212,6 +252,91 @@ public class EnrolleeImportService {
         return importMaps;
     }
 
+    @Transactional
+    public List<ImportItem> importAccount(AccountImportData accountData, String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, ExportOptions exportOptions, UUID adminId, UUID importId) {
+        DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(adminId).build();
+
+        List<ImportItem> importItems = new ArrayList<>();
+
+        Enrollee accountEnrollee = null;
+
+        // import primary enrollee or create proxy if no primary enrollee exists
+        try {
+            if (accountData.getEnrolleeData() != null) {
+                accountEnrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, accountData.getEnrolleeData(), exportOptions, adminId);
+                importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
+            } else {
+                final RegistrationService.RegistrationResult regResult = registerIfNeeded(
+                        portalShortcode,
+                        studyEnv,
+                        ParticipantUser.builder().username(accountData.getEmail()).build());
+
+                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, auditInfo);
+                importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
+            }
+        } catch (Exception e) {
+            importItems.add(createFailedImportItem(importId, e.getMessage(), Arrays.toString(e.getStackTrace()), adminId));
+            if (!accountData.getProxyData().isEmpty()) {
+                log.warn("failed to import primary enrollee, skipping proxy import for username: {}", accountData.getEmail());
+            }
+            return importItems;
+        }
+
+        // create all proxies & create relationship between them
+        for (Map<String, String> proxyData : accountData.getProxyData()) {
+            try {
+                Map<String, String> proxyDataCopy = new HashMap<>(proxyData);
+                proxyDataCopy.put("account.username", registrationService.getGovernedUsername(accountData.getEmail(), studyEnv.getEnvironmentName()));
+                Enrollee proxyEnrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, proxyDataCopy, exportOptions, adminId);
+
+                importItems.add(createImportItemFromEnrollee(proxyEnrollee, importId));
+
+                enrolleeRelationService.create(
+                        EnrolleeRelation
+                                .builder()
+                                .enrolleeId(accountEnrollee.getId())
+                                .targetEnrolleeId(proxyEnrollee.getId())
+                                .relationshipType(RelationshipType.PROXY)
+                                .beginDate(Instant.now())
+                                .build(),
+                        auditInfo
+                );
+            } catch (Exception e) {
+                importItems.add(createFailedImportItem(importId, e.getMessage(), Arrays.toString(e.getStackTrace()), adminId));
+            }
+        }
+
+        return importItems;
+    }
+
+    @Transactional
+    public ImportItem createImportItemFromEnrollee(Enrollee enrollee, UUID importId) {
+        ImportItem importItem = ImportItem.builder()
+                .createdEnrolleeId(enrollee.getId())
+                .importId(importId)
+                .createdParticipantUserId(enrollee.getParticipantUserId())
+                .createdAt(Instant.now())
+                .lastUpdatedAt(Instant.now())
+                .status(ImportItemStatus.SUCCESS).build();
+        return importItemService.create(importItem);
+    }
+
+    @Transactional
+    public ImportItem createFailedImportItem(UUID importId, String message, String detail, UUID adminId) {
+        ImportItem importItem = ImportItem.builder()
+                .importId(importId)
+                .createdParticipantUserId(adminId)
+                .createdAt(Instant.now())
+                .lastUpdatedAt(Instant.now())
+                .status(ImportItemStatus.FAILED)
+                .message(message)
+                .detail(detail)
+                .build();
+        return importItemService.create(importItem);
+    }
+
+
+    @Transactional
     public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, UUID adminId) {
         /** while importing handle update for existing import
          if same enrolle: update enrollee
@@ -307,6 +432,16 @@ public class EnrolleeImportService {
             }
             return newEnrollee;
         });
+    }
+
+    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, DataAuditInfo auditInfo) {
+
+        registration.profile().setDoNotEmail(true);
+        profileService.update(registration.profile(), auditInfo);
+
+        Optional<Enrollee> enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
+
+        return enrollee.orElseGet(() -> this.enrollmentService.enroll(registration.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, registration.participantUser(), registration.portalParticipantUser(), null, false).getEnrollee());
     }
 
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
@@ -422,7 +557,7 @@ public class EnrolleeImportService {
     public static List<String> getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
         return Stream.of(wrappedSource.getPropertyDescriptors())
-                .map(java.beans.FeatureDescriptor::getName)
+                .map(FeatureDescriptor::getName)
                 .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
                 .toList();
     }

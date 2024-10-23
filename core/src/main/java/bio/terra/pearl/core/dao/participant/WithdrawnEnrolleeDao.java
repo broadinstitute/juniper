@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -43,10 +44,12 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> impleme
 
   /** exclude the enrolleeData, as that could be multiple MB of data */
   public List<WithdrawnEnrollee> findByStudyEnvironmentIdNoData(UUID studyEnvironmentId) {
+    String colsNoDataString = getGetQueryColumns().stream().filter(col -> !col.equals("enrollee_data"))
+            .collect(Collectors.joining(", "));
     return jdbi.withHandle(handle ->
             handle.createQuery("""
-                    select id, created_at, last_updated_at, shortcode, user_data from %s where study_environment_id = :studyEnvironmentId;
-                    """.formatted(tableName))
+                    select %s from %s where study_environment_id = :studyEnvironmentId;
+                    """.formatted(colsNoDataString, tableName))
                     .bind("studyEnvironmentId", studyEnvironmentId)
                     .mapTo(clazz)
                     .list()

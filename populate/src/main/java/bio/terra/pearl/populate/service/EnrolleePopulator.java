@@ -431,7 +431,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             timeShiftDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
         if (popDto.isWithdrawn()) {
-            withdrawnEnrolleeService.withdrawEnrollee(enrollee, DataAuditInfo.builder().systemProcess("populateEnrolleeData").build());
+            withdrawnEnrolleeService.withdrawEnrollee(enrollee, EnrolleeWithdrawalReason.PARTICIPANT_REQUEST, DataAuditInfo.builder().systemProcess("populateEnrolleeData").build());
         }
     }
 

@@ -10,7 +10,6 @@ import {
   render,
   screen
 } from '@testing-library/react'
-import { LoadedSettingsView } from 'study/settings/SettingsView'
 import { userEvent } from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
@@ -18,6 +17,7 @@ import {
   mockAdminUser,
   MockUserProvider
 } from 'test-utils/user-mocking-utils'
+import LoadedSettingsView from './SettingsView'
 
 jest.mock('api/api', () => ({
   ...jest.requireActual('api/api'),

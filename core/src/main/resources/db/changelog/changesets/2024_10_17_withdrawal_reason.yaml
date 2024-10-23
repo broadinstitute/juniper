@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: "withdrawal_reason"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: withdrawn_enrollee
+            columns:
+              - column: { name: reason, type: text }
+        - addColumn:
+            tableName: withdrawn_enrollee
+            columns:
+              - column: { name: note, type: text }
+        - sql:
+            sql: update withdrawn_enrollee set reason = 'PARTICIPANT_REQUEST'; # as of now, no enrollees have requested to be withdrawn
+        - addNotNullConstraint:
+            tableName: withdrawn_enrollee
+            columnName: reason
+

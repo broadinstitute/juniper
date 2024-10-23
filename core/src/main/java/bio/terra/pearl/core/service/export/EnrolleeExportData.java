@@ -25,4 +25,5 @@ public class EnrolleeExportData {
     private List<KitRequestDto> kitRequests;
     private List<EnrolleeRelation> enrolleeRelations;
     private List<Family> families;
+    private List<ParticipantUser> proxyUsers;
 }

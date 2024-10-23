@@ -27,7 +27,7 @@ public class FamilyFormatterTests {
                 .shortcode("F_FAM2")
                 .build();
         FamilyFormatter familyFormatter = new FamilyFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, null, null, null, List.of(family1, family2));
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, null, null, null, List.of(family1, family2), null);
         Map<String, String> enrolleeMap = familyFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.size(), equalTo(4));
