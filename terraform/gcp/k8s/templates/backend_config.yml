@@ -1,0 +1,10 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: juniper-backendconfig
+spec:
+  securityPolicy:
+    name: juniper-cloud-armor-policy
+  customResponseHeaders:
+    headers:
+      - "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload"

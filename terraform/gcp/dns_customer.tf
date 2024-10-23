@@ -26,6 +26,16 @@ resource "google_dns_record_set" "a_customer_url" {
   type         = "A"
 }
 
+resource "google_dns_record_set" "caa_customer_url" {
+  for_each = var.customer_urls
+
+  name = google_dns_managed_zone.customer_dns_zone[each.key].dns_name
+  type = "CAA"
+  ttl  = 300
+  managed_zone = google_dns_managed_zone.customer_dns_zone[each.key].name
+  rrdatas = ["0 issue \"letsencrypt.org\"", "0 issue \"pki.goog\""]
+}
+
 resource "google_dns_record_set" "www_customer_url" {
   for_each = var.customer_urls
 
