@@ -6,3 +6,4 @@ spec:
   redirectToHttps:
     enabled: true
     responseCodeName: MOVED_PERMANENTLY_DEFAULT
+  sslPolicy: juniper-ssl-policy
