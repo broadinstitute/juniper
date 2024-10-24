@@ -19,7 +19,7 @@ metadata:
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-    - host: "juniper-cmi.dev"
+    - host: {{ .Values.adminUrl }}
       http:
         paths:
           - path: /*
