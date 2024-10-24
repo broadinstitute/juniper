@@ -75,3 +75,19 @@ variable "infra_region" {
   type = string
   description = "Infra region"
 }
+
+variable "admin_dnssec" {
+    type = string
+    default = "on"
+    description = "Admin DNSSEC"
+    validation {
+        condition = can(regex("^(on|off)$", var.admin_dnssec))
+        error_message = "must be on or off"
+    }
+}
+
+variable "k8s_namespace" {
+  type = string
+  description = "Kubernetes namespace"
+  default = "juniper"
+}

@@ -1,7 +1,7 @@
 gcpProject: broad-juniper-prod
-gcpRegion: us-east4
+gcpRegion: us-central1
 adminUrl: juniper-cmi.org
-replicas: 1
+replicas: 3
 # "portals" adds certificates for each portal - both for the admin subdomains and the custom domain
 portals:
   - name: demo

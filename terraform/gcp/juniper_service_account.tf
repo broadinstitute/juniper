@@ -34,7 +34,7 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
   service_account_id = google_service_account.junper-app-gsa.name
   role               = "roles/iam.workloadIdentityUser"
   members = [
-    "serviceAccount:${var.project}.svc.id.goog[juniper/juniper-app-ksa]"
+    "serviceAccount:${var.project}.svc.id.goog[${var.k8s_namespace}/juniper-app-ksa]"
   ]
 }
 
