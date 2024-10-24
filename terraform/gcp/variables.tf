@@ -22,6 +22,16 @@ variable "db_tier" {
   description = "Database tier"
 }
 
+variable "db_availability_type" {
+  type = string
+  default = "ZONAL"
+  description = "Database availability type"
+  validation {
+    condition = can(regex("^(ZONAL|REGIONAL)$", var.db_availability_type))
+    error_message = "must be ZONAL or REGIONAL"
+  }
+}
+
 variable "dns_ttl" {
   type = number
   default = 300

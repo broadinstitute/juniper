@@ -6,6 +6,8 @@ resource "google_sql_database_instance" "d2p" {
   deletion_protection = false
   settings {
     tier = var.db_tier
+
+    availability_type = var.db_availability_type
     ip_configuration {
       ipv4_enabled    = false
       private_network = google_compute_network.juniper_network.self_link
