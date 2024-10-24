@@ -1,0 +1,20 @@
+gcpProject: broad-juniper-prod
+gcpRegion: us-central1
+adminUrl: juniper-cmi.org
+replicas: 3
+# "portals" adds certificates for each portal - both for the admin subdomains and the custom domain
+portals:
+  - name: demo
+    customDomain: juniperdemostudy.org
+b2c:
+  admin:
+    clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a
+    tenantName: ddpdevb2c
+    policyName: B2C_1A_ddp_admin_signup_signin_dev
+  portals:
+    demo:
+      changePasswordPolicyName: B2C_1A_ddp_participant_change_password_demo-dev
+      clientId: 37d95cc4-7c71-465e-9fc2-66be9a54c202
+      policyName: B2C_1A_ddp_participant_signup_signin_demo-dev
+      tenantName: juniperdemodev
+

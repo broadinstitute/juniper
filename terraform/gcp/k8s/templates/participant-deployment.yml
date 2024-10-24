@@ -5,7 +5,7 @@ metadata:
   labels:
     app: participant
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: participant

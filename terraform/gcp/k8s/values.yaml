@@ -1,4 +1,5 @@
 adminUrl: ""
+replicas: 1
 portals:
   - name: ""
     customDomain: ""

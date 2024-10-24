@@ -22,6 +22,16 @@ variable "db_tier" {
   description = "Database tier"
 }
 
+variable "db_availability_type" {
+  type = string
+  default = "ZONAL"
+  description = "Database availability type"
+  validation {
+    condition = can(regex("^(ZONAL|REGIONAL)$", var.db_availability_type))
+    error_message = "must be ZONAL or REGIONAL"
+  }
+}
+
 variable "dns_ttl" {
   type = number
   default = 300
@@ -64,4 +74,20 @@ variable "infra_project" {
 variable "infra_region" {
   type = string
   description = "Infra region"
+}
+
+variable "admin_dnssec" {
+    type = string
+    default = "on"
+    description = "Admin DNSSEC"
+    validation {
+        condition = can(regex("^(on|off)$", var.admin_dnssec))
+        error_message = "must be on or off"
+    }
+}
+
+variable "k8s_namespace" {
+  type = string
+  description = "Kubernetes namespace"
+  default = "juniper"
 }
