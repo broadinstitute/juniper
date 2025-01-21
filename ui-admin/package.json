@@ -37,7 +37,7 @@
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
-    "@types/antlr4": "^4.11.6",
+    "@types/antlr4": "^4.12.0",
     "@types/lodash": "^4.17.13",
     "@types/pluralize": "^0.0.33",
     "@types/react": "^18.3.12",
