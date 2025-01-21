@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'com.typesafe:config:1.4.3'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.apache.velocity:velocity-engine-core:2.3'
 
     implementation files('libs/pepper-apis/ddp-common-1.0.0-SNAPSHOT.jar')
