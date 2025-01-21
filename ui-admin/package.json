@@ -14,7 +14,7 @@
     "@uiw/react-codemirror": "^4.23.3",
     "antlr4": "^4.13.2",
     "bootstrap": "^5.3.3",
-    "classnames": "^2.3.2",
+    "classnames": "^2.5.1",
     "es5-ext": "^0.10.64",
     "lodash": "^4.17.21",
     "oidc-client-ts": "^2.2.0",
