@@ -38,7 +38,7 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
   }
 
   return (
-    <div className="d-flex flex-wrap gap-2 mb-4">
+    <div className="d-flex flex-wrap gap-2">
       {advancedSearchFacets.map(f => {
         return (
           <button

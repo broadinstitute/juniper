@@ -625,6 +625,7 @@ paths:
           description: List of valid search fields
           content: *jsonContent
         '500':
+
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2:
     get:
@@ -637,6 +638,7 @@ paths:
         - *envNameParam
         - { name: expression, in: query, required: true, schema: { type: string } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: includes, in: query, required: false, schema: { type: array, items: { type: string } } }
       responses:
         '200':
           description: List of results, including any linked objects that were searched upon

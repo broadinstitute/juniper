@@ -1,6 +1,7 @@
 import {
   AddressValidationResult,
   AlertTrigger,
+  Answer,
   Enrollee,
   EnrolleeRelation,
   EnvironmentName,
@@ -77,11 +78,14 @@ export type StudyEnvironmentUpdate = {
 
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
+  answers: Answer[],
   profile: Profile,
   latestKit?: KitRequest,
   families: Family[]
   participantUser?: ParticipantUser
   portalParticipantUser?: PortalParticipantUser
+  tasks: ParticipantTask[]
+  kitRequests: KitRequest[]
 }
 
 export type ParticipantUsersAndEnrollees = {
@@ -888,14 +892,10 @@ export default {
     studyShortcode: string,
     envName: string,
     expression: string,
-    opts: { limit?: number } = {}):
+    opts: { limit?: number, includes?: ('kitRequests' | 'tasks')[] } = {}):
     Promise<EnrolleeSearchExpressionResult[]> {
-    let url = `${
-      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollee/search/v2?expression=${encodeURIComponent(expression)}`
-    if (opts.limit) {
-      url += `&limit=${opts.limit}`
-    }
+    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2`
+    url += `?${queryString.stringify({ ...opts, expression })}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

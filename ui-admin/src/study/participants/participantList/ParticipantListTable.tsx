@@ -43,6 +43,12 @@ import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
 import TableClientPagination from 'util/TablePagination'
 import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
+import {
+  enrolleeConsentedColumn,
+  enrolleeShortcodeColumn,
+  getAnswerFacets,
+  ParticipantSearchState
+} from 'util/participantSearchUtils'
 
 /**
  * Participant table used by the participant list. Does not include searching functionality, just table
@@ -57,6 +63,7 @@ function ParticipantListTable({
   disableColumnFiltering,
   header,
   tableClass,
+  searchState,
   reload
 }: {
   participantList: EnrolleeSearchExpressionResult[],
@@ -67,6 +74,7 @@ function ParticipantListTable({
   disableColumnFiltering?: boolean,
   header?: React.ReactNode,
   tableClass?: string,
+  searchState?: ParticipantSearchState,
   reload: () => void
 }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
@@ -103,14 +111,8 @@ function ParticipantListTable({
             onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
         </div>
       )
-    }, {
-      header: 'Shortcode',
-      accessorKey: 'enrollee.shortcode',
-      meta: {
-        columnType: 'string'
-      },
-      cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue() as string}</Link>
     },
+      enrolleeShortcodeColumn(currentEnvPath),
     {
       header: 'Created',
       id: 'createdAt',
@@ -180,19 +182,29 @@ function ParticipantListTable({
       },
       filterFn: 'equals',
       cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-    }, {
-      header: 'Consented',
-      accessorKey: 'enrollee.consented',
-      meta: {
-        columnType: 'boolean',
-        filterOptions: [
-          { value: true, label: 'Consented' },
-          { value: false, label: 'Not Consented' }
-        ]
-      },
-      filterFn: 'equals',
-      cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-    }]
+    },
+      enrolleeConsentedColumn()
+    ]
+
+    // now add any columns for answers
+    if (searchState) {
+      const answerFacets = getAnswerFacets(searchState)
+      answerFacets.forEach(facet => {
+        columns.push({
+          id: `answer.${facet.surveyStableId}.${facet.questionStableId}`,
+          header: facet.questionStableId,
+          accessorFn: info => {
+            const answer = info.answers.find(ans =>
+              ans.surveyStableId === facet.surveyStableId && ans.questionStableId === facet.questionStableId)
+            // we can add code here at a later time to map answer stableId string values to choice labels
+            return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+          },
+          meta: {
+            columnType: 'string'
+          }
+        })
+      })
+    }
 
     return columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode')
   }, [study.shortcode, currentEnv.environmentName, familyLinkageEnabled])

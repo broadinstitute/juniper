@@ -344,9 +344,12 @@ export const mockEnrollee: () => Enrollee = () => {
  */
 export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
   return {
+    answers: [],
     enrollee: mockEnrollee(),
     profile: mockEnrollee().profile,
-    families: [mockFamily(), mockFamily()]
+    families: [mockFamily(), mockFamily()],
+    kitRequests: [],
+    tasks: []
   }
 }
 

@@ -459,9 +459,6 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
   </table>
 }
 
-/** renders a boolean value as a checkmark (true)  or a blank (false) */
-export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
-  props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
 
 /**
  * hook for reading pagination params from the URL.  This should be used in conjunction with <TablePagination> for
@@ -491,3 +488,7 @@ declare module '@tanstack/table-core' {
     filterInitialValue?: string | boolean
   }
 }
+
+/** renders a boolean value as a checkmark (true)  or a blank (false) */
+export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
+  props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''

@@ -6,7 +6,9 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeSearchExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -41,13 +43,19 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
       String studyShortcode,
       String envName,
       String expression,
-      Integer limit) {
+      Integer limit,
+      List<String> includes) {
     AdminUser operator = authUtilService.requireAdminUser(request);
+    List<EnrolleeSearchOptions.Include> includeList =
+        includes == null
+            ? List.of()
+            : includes.stream().map(EnrolleeSearchOptions.Include::valueOf).toList();
     return ResponseEntity.ok(
         this.enrolleeSearchExtService.executeSearchExpression(
             PortalStudyEnvAuthContext.of(
                 operator, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName)),
             expression,
-            limit));
+            limit,
+            includeList));
   }
 }

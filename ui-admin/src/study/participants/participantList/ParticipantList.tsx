@@ -65,7 +65,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
       {groupByFamily && <ParticipantListTableGroupedByFamily
         participantList={participantList} studyEnvContext={studyEnvContext}/> }
       {!groupByFamily && <ParticipantListTable participantList={participantList}
-        studyEnvContext={studyEnvContext} reload={reload}/>}
+        studyEnvContext={studyEnvContext} reload={reload} searchState={searchState}/>}
     </LoadingSpinner>
   </div>
 }

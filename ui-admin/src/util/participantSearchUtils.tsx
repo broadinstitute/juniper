@@ -4,7 +4,11 @@ import {
   isArray,
   isEqual
 } from 'lodash'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import React from 'react'
+import { ColumnDef } from '@tanstack/react-table'
+import { EnrolleeSearchExpressionResult } from '../api/api'
+import { checkboxColumnCell } from './tableUtils'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
@@ -213,3 +217,43 @@ const getValueAsString = (key: keyof ParticipantSearchState, value: string | num
 
   return value.toString()
 }
+
+export const getAnswerFacets = (searchState: ParticipantSearchState):
+  { questionStableId: string, surveyStableId: string }[] => {
+  const facetStrings = searchState.custom.match(/\{answer\.([^\s]+)\.([^\s}]+)/g) ?? []
+  return facetStrings.map(facetString => {
+    const matchParts = facetString.split('.')
+    return { surveyStableId: matchParts[1], questionStableId: matchParts[2] }
+  })
+}
+
+export const enrolleeShortcodeColumn = <T extends EnrolleeSearchExpressionResult, >(currentEnvPath: string):
+  ColumnDef<T> => {
+  return {
+    header: 'Shortcode',
+    accessorKey: 'enrollee.shortcode',
+    meta: {
+      columnType: 'string'
+    },
+    cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue() as string}</Link>
+  }
+}
+
+export const enrolleeConsentedColumn = <T extends EnrolleeSearchExpressionResult, >(): ColumnDef<T> => {
+  return  {
+    header: 'Consented',
+    accessorKey: 'enrollee.consented',
+    id: 'enrollee.consented',
+    meta: {
+      columnType: 'boolean',
+      filterOptions: [
+        { value: true, label: 'Consented' },
+        { value: false, label: 'Not Consented' }
+      ]
+    },
+    filterFn: 'equals',
+    cell: checkboxColumnCell
+  }
+}
+
+
