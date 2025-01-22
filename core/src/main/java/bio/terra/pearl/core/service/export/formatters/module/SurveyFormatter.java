@@ -73,16 +73,15 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
         // the export order of the most recent version
         Collection<List<SurveyQuestionDefinition>> questionDefsByStableId = questionDefs.stream().collect(groupingBy(
                 SurveyQuestionDefinition::getQuestionStableId
-        )).values().stream().sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder())).toList();
+                ))
+                .values()
+                .stream()
+                .sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder()))
+                .map(questionVersions -> questionVersions.stream().sorted(Comparator.comparing(SurveyQuestionDefinition::getSurveyVersion, Collections.reverseOrder())).toList())
+                .toList();
 
         for (List<SurveyQuestionDefinition> questionVersions : questionDefsByStableId) {
-
-            Optional<SurveyQuestionDefinition> mostRecentOpt = getLatest(questionVersions);
-            if (mostRecentOpt.isEmpty()) {
-                continue;
-            }
-
-            SurveyQuestionDefinition mostRecent = mostRecentOpt.get();
+            SurveyQuestionDefinition mostRecent = questionVersions.getFirst();
 
             if (List.of("signaturepad", "html").contains(mostRecent.getQuestionType())) {
                 continue;
@@ -98,10 +97,6 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
             itemFormatters.addAll(buildChildrenItemFormatters(exportOptions, questionDefsByStableId, data, mostRecent));
 
         }
-    }
-
-    private Optional<SurveyQuestionDefinition> getLatest(List<SurveyQuestionDefinition> questionVersions) {
-        return questionVersions.stream().max(Comparator.comparing(SurveyQuestionDefinition::getSurveyVersion));
     }
 
     private Collection<List<SurveyQuestionDefinition>> getChildrenOf(Collection<List<SurveyQuestionDefinition>> questionDefs, SurveyQuestionDefinition parent) {
