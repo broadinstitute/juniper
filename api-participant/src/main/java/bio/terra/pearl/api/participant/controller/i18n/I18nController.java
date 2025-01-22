@@ -7,9 +7,11 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import java.util.HashMap;
+import io.opentelemetry.api.internal.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.HashMap;
 
 @Controller
 public class I18nController implements I18nApi {
@@ -29,6 +31,10 @@ public class I18nController implements I18nApi {
   @Override
   public ResponseEntity<Object> listLanguageTexts(
       String language, String portalShortcode, String environmentName) {
+    if (StringUtils.isNullOrEmpty(environmentName)) {
+      environmentName = "live";
+    }
+
     PortalEnvironment portalEnv =
         portalEnvironmentService
             .findOne(portalShortcode, EnvironmentName.valueOfCaseInsensitive(environmentName))
