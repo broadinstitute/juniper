@@ -16,10 +16,9 @@ import Api, { EnrolleeSearchExpressionResult, ParticipantTask } from 'api/api'
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   basicTableLayout,
-  ColumnVisibilityControl,
   IndeterminateCheckbox, renderEmptyMessage,
   RowVisibilityCount, checkboxColumnCell
-} from 'util/tableUtils'
+} from 'util/table/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Enrollee, instantToDateString, KitType, StudyEnvParams } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
@@ -29,6 +28,7 @@ import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
 import { enrolleeConsentedColumn } from 'util/participantSearchUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>

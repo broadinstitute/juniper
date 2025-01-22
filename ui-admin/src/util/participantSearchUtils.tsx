@@ -8,7 +8,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { EnrolleeSearchExpressionResult } from '../api/api'
-import { checkboxColumnCell } from './tableUtils'
+import { checkboxColumnCell } from './table/tableUtils'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
@@ -21,7 +21,8 @@ export type ParticipantSearchState = {
   sexAtBirth: string[],
   tasks: { task: string, status: string }[],
   latestKitStatus: string[],
-  custom: string
+  custom: string,
+  includeFields?: string[] // e.g. answer.foo.bar -- NOT entire entities (e.g. NOT 'kitRequests')
 }
 
 export const DefaultParticipantSearchState: ParticipantSearchState = {
@@ -30,7 +31,8 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
   sexAtBirth: [],
   tasks: [],
   latestKitStatus: [],
-  custom: ''
+  custom: '',
+  includeFields: []
 }
 
 
@@ -218,13 +220,11 @@ const getValueAsString = (key: keyof ParticipantSearchState, value: string | num
   return value.toString()
 }
 
-export const getAnswerFacets = (searchState: ParticipantSearchState):
-  { questionStableId: string, surveyStableId: string }[] => {
+/** extracts any answer fields from the custom search expression (e.g. 'answer.surveyA.question1' */
+export const getAnswerFields = (searchState: ParticipantSearchState):
+  string[] => {
   const facetStrings = searchState.custom.match(/\{answer\.([^\s]+)\.([^\s}]+)/g) ?? []
-  return facetStrings.map(facetString => {
-    const matchParts = facetString.split('.')
-    return { surveyStableId: matchParts[1], questionStableId: matchParts[2] }
-  })
+  return facetStrings.map(facetString => facetString.slice(1))
 }
 
 export const enrolleeShortcodeColumn = <T extends EnrolleeSearchExpressionResult, >(currentEnvPath: string):
@@ -256,4 +256,30 @@ export const enrolleeConsentedColumn = <T extends EnrolleeSearchExpressionResult
   }
 }
 
-
+export const getDynamicColumn = (field: string): ColumnDef<EnrolleeSearchExpressionResult> => {
+  if (field.startsWith('answer')) {
+    const [, surveyStableId, questionStableId] = field.split('.')
+    return {
+      id: field,
+      header: questionStableId,
+      accessorFn: info => {
+        const answer = info.answers.find(ans =>
+          ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
+        // we can add code here at a later time to map answer stableId string values to choice labels
+        return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+      },
+      meta: {
+        columnType: 'string'
+      }
+    }
+  } else {
+    return {
+      id: field,
+      header: field,
+      accessorKey: field,
+      meta: {
+        columnType: 'string'
+      }
+    }
+  }
+}

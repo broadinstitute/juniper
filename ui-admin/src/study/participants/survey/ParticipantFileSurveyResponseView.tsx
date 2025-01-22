@@ -9,8 +9,8 @@ import {
   ParticipantFile, saveBlobAsDownload,
   SurveyResponse
 } from '@juniper/ui-core'
-import { basicTableLayout } from 'util/tableUtils'
-import { createdAtColumn } from 'util/tableColumnUtils'
+import { basicTableLayout } from '../../../util/table/tableUtils'
+import { createdAtColumn } from '../../../util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'

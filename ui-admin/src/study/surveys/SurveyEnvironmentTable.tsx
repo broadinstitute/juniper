@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { Button, EllipsisDropdownButton } from 'components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, Row, useReactTable } from '@tanstack/react-table'
-import { RowDragHandleCell, useDraggableTableLayout } from 'util/tableDragDropUtils'
+import { RowDragHandleCell, useDraggableTableLayout } from '../../util/table/tableDragDropUtils'
 import SurveyPublishModal from './SurveyPublishModal'
 
 import { UniqueIdentifier } from '@dnd-kit/core'

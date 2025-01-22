@@ -31,6 +31,11 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
     if (familyLinkageEnabled) {
       expressions.push('include({family.shortcode})')
     }
+    if (searchState.includeFields) {
+      searchState.includeFields.forEach(field => {
+        expressions.push(`include({${field}})`)
+      })
+    }
     return concatSearchExpressions(expressions)
   }
 
@@ -40,9 +45,9 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
       study.shortcode,
       currentEnv.environmentName,
       generateFullSearchExpression())
-
     setParticipantList(results)
-  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
+  }, [portal.shortcode, study.shortcode, currentEnv.environmentName,
+    searchExpression, searchState.includeFields?.join(',')])
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     <div className="d-flex align-items-center justify-content-between ">
@@ -65,7 +70,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
       {groupByFamily && <ParticipantListTableGroupedByFamily
         participantList={participantList} studyEnvContext={studyEnvContext}/> }
       {!groupByFamily && <ParticipantListTable participantList={participantList}
-        studyEnvContext={studyEnvContext} reload={reload} searchState={searchState}/>}
+        studyEnvContext={studyEnvContext} reload={reload} searchState={searchState} setSearchState={setSearchState}/>}
     </LoadingSpinner>
   </div>
 }

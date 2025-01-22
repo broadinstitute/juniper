@@ -13,7 +13,7 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout } from '../../util/table/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,

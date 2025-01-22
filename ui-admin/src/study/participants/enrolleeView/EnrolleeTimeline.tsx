@@ -25,7 +25,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout } from '../../../util/table/tableUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {

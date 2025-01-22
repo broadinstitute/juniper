@@ -3,8 +3,7 @@ import React, {
   useState
 } from 'react'
 import { EnrolleeSearchExpressionResult } from 'api/api'
-import { Link } from 'react-router-dom'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -17,13 +16,13 @@ import {
 } from '@tanstack/react-table'
 import {
   basicTableLayout,
-  ColumnVisibilityControl,
   DownloadControl,
   IndeterminateCheckbox,
   renderEmptyMessage,
   RowVisibilityCount,
   useRoutableTablePaging
-} from 'util/tableUtils'
+} from 'util/table/tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
@@ -41,12 +40,12 @@ import {
 } from 'components/forms/Button'
 import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
-import TableClientPagination from 'util/TablePagination'
+import TableClientPagination from 'util/table/TablePagination'
 import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
 import {
   enrolleeConsentedColumn,
   enrolleeShortcodeColumn,
-  getAnswerFacets,
+  getAnswerFields, getDynamicColumn,
   ParticipantSearchState
 } from 'util/participantSearchUtils'
 
@@ -64,6 +63,7 @@ function ParticipantListTable({
   header,
   tableClass,
   searchState,
+  setSearchState,
   reload
 }: {
   participantList: EnrolleeSearchExpressionResult[],
@@ -75,6 +75,7 @@ function ParticipantListTable({
   header?: React.ReactNode,
   tableClass?: string,
   searchState?: ParticipantSearchState,
+  setSearchState?: (searchState: ParticipantSearchState) => void,
   reload: () => void
 }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
@@ -112,7 +113,7 @@ function ParticipantListTable({
         </div>
       )
     },
-      enrolleeShortcodeColumn(currentEnvPath),
+    enrolleeShortcodeColumn(currentEnvPath),
     {
       header: 'Created',
       id: 'createdAt',
@@ -183,27 +184,19 @@ function ParticipantListTable({
       filterFn: 'equals',
       cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
     },
-      enrolleeConsentedColumn()
-    ]
+    enrolleeConsentedColumn()]
 
     // now add any columns for answers
     if (searchState) {
-      const answerFacets = getAnswerFacets(searchState)
-      answerFacets.forEach(facet => {
-        columns.push({
-          id: `answer.${facet.surveyStableId}.${facet.questionStableId}`,
-          header: facet.questionStableId,
-          accessorFn: info => {
-            const answer = info.answers.find(ans =>
-              ans.surveyStableId === facet.surveyStableId && ans.questionStableId === facet.questionStableId)
-            // we can add code here at a later time to map answer stableId string values to choice labels
-            return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
-          },
-          meta: {
-            columnType: 'string'
-          }
-        })
+      const answerFields = getAnswerFields(searchState)
+      answerFields.forEach(answerField => {
+        columns.push(getDynamicColumn(answerField))
       })
+      if (searchState.includeFields) {
+        searchState.includeFields.forEach(field => {
+          columns.push(getDynamicColumn(field))
+        })
+      }
     }
 
     return columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode')
@@ -236,6 +229,16 @@ function ParticipantListTable({
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
+
+  const dynamicColOpts = setSearchState && searchState ?
+    {
+      studyEnvParams: paramsFromContext(studyEnvContext),
+      dynamicCols: searchState.includeFields ?? [],
+      setDynamicCols: (dynamicCols: string[]) => setSearchState({
+        ...searchState,
+        includeFields: dynamicCols
+      })
+    }: undefined
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     <div className="d-flex align-items-center justify-content-between">
@@ -272,8 +275,7 @@ function ParticipantListTable({
           </ul>
         </ul>
 
-
-        <ColumnVisibilityControl table={table}/>
+        <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}

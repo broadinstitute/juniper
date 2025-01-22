@@ -9,7 +9,7 @@ import {
   ParticipantTask
 } from '@juniper/ui-core'
 import { ParticipantNoteModal } from './ParticipantNoteModal'
-import { renderEmptyMessage } from 'util/tableUtils'
+import { renderEmptyMessage } from '../../../util/table/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'

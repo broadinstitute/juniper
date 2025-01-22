@@ -16,7 +16,7 @@ import {
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, ColumnVisibilityControl, renderEmptyMessage } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
 import { instantToDateString, KitRequest } from '@juniper/ui-core'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
@@ -29,7 +29,8 @@ import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
 import { prettifyString, KitRequestDetails } from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
-import { tabLinkStyle } from '../../util/subNavStyles'
+import { tabLinkStyle } from 'util/subNavStyles'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 
 type KitStatusTabConfig = {
   statuses: string[],

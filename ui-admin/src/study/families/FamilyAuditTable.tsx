@@ -16,7 +16,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout } from '../../util/table/tableUtils'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { get } from 'lodash'
 import { renderDiff } from 'util/changeRecordUtils'

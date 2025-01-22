@@ -69,16 +69,25 @@ public class AnswerTerm extends SearchTerm {
                     .joinClausesForStudy(studyName);
 
             joinClauses.add(
-                    new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), "%s.id = %s.enrollee_id".formatted(
+                    new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
+                            %s.id = %s.enrollee_id 
+                            and %s.survey_stable_id = %s
+                            and %s.question_stable_id = %s
+                            """.formatted(
                             addStudySuffix("enrollee", studyName),
-                            alias()))
+                            alias(), alias(),
+                            surveyStableId, alias(), questionStableId))
             );
 
             return joinClauses;
         }
 
         return List.of(
-                new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), "enrollee.id = %s.enrollee_id".formatted(alias()))
+                new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
+                    enrollee.id = %s.enrollee_id
+                    and %s.survey_stable_id = '%s'
+                    and %s.question_stable_id = '%s'
+                    """.formatted(alias(), alias(), surveyStableId, alias(), questionStableId))
         );
     }
 
@@ -91,10 +100,7 @@ public class AnswerTerm extends SearchTerm {
 
     @Override
     public Optional<Condition> requiredConditions() {
-        return Optional.of(
-                condition(
-                        alias() + ".survey_stable_id = ? AND " + alias() + ".question_stable_id = ?",
-                        surveyStableId, questionStableId));
+        return Optional.empty(); // the condition is contained inside the join
     }
 
     @Override

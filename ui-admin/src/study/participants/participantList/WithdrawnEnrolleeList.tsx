@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import Api, { WithdrawnEnrollee } from 'api/api'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
