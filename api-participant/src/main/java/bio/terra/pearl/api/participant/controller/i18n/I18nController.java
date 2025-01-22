@@ -8,6 +8,7 @@ import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -29,6 +30,10 @@ public class I18nController implements I18nApi {
   @Override
   public ResponseEntity<Object> listLanguageTexts(
       String language, String portalShortcode, String environmentName) {
+    if (StringUtils.isEmpty(environmentName)) {
+      environmentName = "live";
+    }
+
     PortalEnvironment portalEnv =
         portalEnvironmentService
             .findOne(portalShortcode, EnvironmentName.valueOfCaseInsensitive(environmentName))
