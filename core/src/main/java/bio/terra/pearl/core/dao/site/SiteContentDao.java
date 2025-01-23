@@ -1,10 +1,7 @@
 package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
-import bio.terra.pearl.core.model.site.HtmlPage;
-import bio.terra.pearl.core.model.site.HtmlSection;
-import bio.terra.pearl.core.model.site.NavbarItem;
-import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.site.*;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -59,39 +56,49 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
     /** attaches all the content (pages, sections, navbar) children for the given language to the SiteContent */
     public void attachChildContent(SiteContent siteContent, String language) {
         localizedSiteContentDao.findBySiteContent(siteContent.getId(), language).ifPresent(localSite -> {
-            siteContent.getLocalizedSiteContents().add(localSite);
-            List<NavbarItem> navbarItems = navbarItemDao.findByLocalSiteId(localSite.getId());
-            List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
-            List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
-            navbarItems.forEach(item -> {
-                // attach the children of this item, if they exist
-                item.setItems(
-                        navbarItems
-                                .stream()
-                                .filter(childItem -> item.getId().equals(childItem.getParentNavbarItemId()))
-                                .toList());
-            });
-            htmlPages.forEach(page -> {
-                page.getSections().addAll(htmlSections.stream().filter(section ->
-                        page.getId().equals(section.getHtmlPageId())
-                ).collect(Collectors.toList()));
-            });
-
-            localSite.setPages(htmlPages.stream().filter(page -> !page.getId().equals(localSite.getLandingPageId())).toList());
-
-            localSite.setLandingPage(htmlPages.stream()
-                    .filter(page -> page.getId().equals(localSite.getLandingPageId()))
-                    .findFirst().orElse(null));
-            localSite
-                    .getNavbarItems()
-                    .addAll(
-                            // add only the top level items, the children are already attached
-                            navbarItems.stream().filter(item -> item.getParentNavbarItemId() == null).toList()
-                    );
-            if (localSite.getFooterSectionId() != null) {
-                localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
-            }
+            attachLocalSite(siteContent, localSite);
         });
+    }
+
+    public void attachAllChildContent(SiteContent siteContent) {
+        localizedSiteContentDao.findBySiteContent(siteContent.getId()).forEach(localSite -> {
+            attachLocalSite(siteContent, localSite);
+        });
+    }
+
+    private void attachLocalSite(SiteContent siteContent, LocalizedSiteContent localSite) {
+        siteContent.getLocalizedSiteContents().add(localSite);
+        List<NavbarItem> navbarItems = navbarItemDao.findByLocalSiteId(localSite.getId());
+        List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
+        List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
+        navbarItems.forEach(item -> {
+            // attach the children of this item, if they exist
+            item.setItems(
+                    navbarItems
+                            .stream()
+                            .filter(childItem -> item.getId().equals(childItem.getParentNavbarItemId()))
+                            .toList());
+        });
+        htmlPages.forEach(page -> {
+            page.getSections().addAll(htmlSections.stream().filter(section ->
+                    page.getId().equals(section.getHtmlPageId())
+            ).collect(Collectors.toList()));
+        });
+
+        localSite.setPages(htmlPages.stream().filter(page -> !page.getId().equals(localSite.getLandingPageId())).toList());
+
+        localSite.setLandingPage(htmlPages.stream()
+                .filter(page -> page.getId().equals(localSite.getLandingPageId()))
+                .findFirst().orElse(null));
+        localSite
+                .getNavbarItems()
+                .addAll(
+                        // add only the top level items, the children are already attached
+                        navbarItems.stream().filter(item -> item.getParentNavbarItemId() == null).toList()
+                );
+        if (localSite.getFooterSectionId() != null) {
+            localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
+        }
     }
 
     public int getNextVersion(String cleanFileName, String portalShortcode) {
