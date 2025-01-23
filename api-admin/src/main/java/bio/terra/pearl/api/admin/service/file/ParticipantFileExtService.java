@@ -8,6 +8,7 @@ import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import java.io.InputStream;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,5 +36,10 @@ public class ParticipantFileExtService {
     return participantFileService
         .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
         .orElseThrow(() -> new NotFoundException("File not found"));
+  }
+
+  @EnforcePortalEnrolleePermission(permission = "participant_data_view")
+  public List<ParticipantFile> list(PortalEnrolleeAuthContext authContext) {
+    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
   }
 }

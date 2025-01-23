@@ -9,7 +9,7 @@ import {
   KitRequest,
   KitType,
   MailingAddress,
-  ParticipantDashboardAlert,
+  ParticipantDashboardAlert, ParticipantFile,
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
@@ -612,6 +612,15 @@ export default {
 
     const response = await fetch(url, this.getGetInit())
     return await this.processResponse(response)
+  },
+
+  async listParticipantFiles({ studyEnvParams, enrolleeShortcode }: {
+    studyEnvParams: StudyEnvParams,
+    enrolleeShortcode: string
+  }): Promise<ParticipantFile[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollees/${enrolleeShortcode}/file`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async getPortalMedia(portalShortcode: string): Promise<SiteMediaMetadata[]> {

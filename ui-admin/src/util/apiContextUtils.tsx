@@ -28,9 +28,8 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
         studyEnvParams, stableId, version, enrolleeShortcode, response, taskId
       })
     },
-    listParticipantFiles: () => {
-      //stub- not implemented for admin api yet
-      return Promise.resolve([])
+    listParticipantFiles: ({ studyEnvParams, enrolleeShortcode }) => {
+      return Api.listParticipantFiles({ studyEnvParams, enrolleeShortcode })
     },
     deleteParticipantFile: () => {
       //stub- not implemented for admin api yet

@@ -152,6 +152,7 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
 ReactQuestionFactory.Instance.registerQuestion('documentrequest', props => {
   return React.createElement(SurveyQuestionDocumentRequest, props)
 })
+
 /**
  * Takes in an I18nSurveyElement and either returns the default value (if I18nSurveyElement is in the
  * internationalized format), or the string itself (if I18nSurveyElement is a simple string).'
