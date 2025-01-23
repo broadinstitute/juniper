@@ -1,5 +1,11 @@
 import _camelCase from 'lodash/camelCase'
-import { QuestionChoice, I18nSurveyElement, SurveyQuestionAddressValidation, PortalEnvironmentLanguage }
+import {
+  QuestionChoice,
+  I18nSurveyElement,
+  SurveyQuestionAddressValidation,
+  PortalEnvironmentLanguage,
+  SurveyQuestionDocumentRequest
+}
   from '@juniper/ui-core'
 import { ReactQuestionFactory } from 'survey-react-ui'
 import React from 'react'
@@ -142,6 +148,10 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
   return React.createElement(SurveyQuestionAddressValidation, props)
 })
 
+// register themed document upload
+ReactQuestionFactory.Instance.registerQuestion('documentrequest', props => {
+  return React.createElement(SurveyQuestionDocumentRequest, props)
+})
 /**
  * Takes in an I18nSurveyElement and either returns the default value (if I18nSurveyElement is in the
  * internationalized format), or the string itself (if I18nSurveyElement is a simple string).'
