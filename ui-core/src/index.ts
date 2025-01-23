@@ -9,7 +9,7 @@ export * from './components/forms/PagedSurveyView'
 export { SurveyAutoCompleteButton } from './components/forms/SurveyAutoCompleteButton'
 export { SurveyReviewModeButton } from './components/forms/ReviewModeButton'
 export { createAddressValidator } from './surveyjs/address-validator'
-export { DocumentRequestUpload } from './components/DocumentRequestUpload'
+export { DocumentRequestUploader } from './components/documents/DocumentRequestUploader'
 export { SurveyQuestionDocumentRequest } from './surveyjs/document-request-question'
 
 export * from './types/forms'

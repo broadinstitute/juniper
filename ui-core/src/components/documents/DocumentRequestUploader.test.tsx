@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import { DocumentRequestUpload } from './DocumentRequestUpload'
-import { useApiContext } from '../participant/ApiProvider'
-import { StudyEnvParams } from '../types/study'
-import { ParticipantFile } from '../types/participantFile'
+import { DocumentRequestUploader } from './DocumentRequestUploader'
+import { useApiContext } from 'src/participant/ApiProvider'
+import { StudyEnvParams } from 'src/types/study'
+import { ParticipantFile } from 'src/types/participantFile'
 import { asMockedFn } from 'src/test-utils/asMockedFn'
 import { userEvent } from '@testing-library/user-event'
 
@@ -25,7 +25,7 @@ const studyEnvParams: StudyEnvParams = {
 
 const renderDocumentRequestUpload = () => {
   render(
-    <DocumentRequestUpload
+    <DocumentRequestUploader
       studyEnvParams={studyEnvParams}
       enrolleeShortcode={'HDSALK'}
       selectedFileNames={[]}

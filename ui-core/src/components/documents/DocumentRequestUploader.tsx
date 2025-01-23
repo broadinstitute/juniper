@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { ParticipantFile } from '../types/participantFile'
 import { useDropzone } from 'react-dropzone'
-import './DocumentRequestUpload.css'
+import './DocumentRequestUploader.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCaretDown,
@@ -11,12 +10,13 @@ import {
   faUpload
 } from '@fortawesome/free-solid-svg-icons'
 import { isNil } from 'lodash'
-import { useApiContext } from '../participant/ApiProvider'
-import { StudyEnvParams } from '../types/study'
+import { useApiContext } from 'src/participant/ApiProvider'
+import { StudyEnvParams } from 'src/types/study'
 import LoadingSpinner from '@juniper/ui-admin/src/util/LoadingSpinner'
-import { saveBlobAsDownload } from '../util/downloadUtils'
+import { saveBlobAsDownload } from 'src/util/downloadUtils'
+import { ParticipantFile } from 'src/types/participantFile'
 
-export const DocumentRequestUpload = (
+export const DocumentRequestUploader = (
   {
     studyEnvParams,
     enrolleeShortcode,
@@ -72,7 +72,7 @@ export const DocumentRequestUpload = (
 
   return <div className='pt-2'>
     <div className='mb-2'>
-      <SelectedFiles selectedFiles={selectedFiles} removeFile={unselectFile} onDownload={downloadFile}/>
+      <SelectedFileList selectedFiles={selectedFiles} removeFile={unselectFile} onDownload={downloadFile}/>
     </div>
     <div className='mb-2'>
       {/* show on desktops */}
@@ -85,7 +85,7 @@ export const DocumentRequestUpload = (
       </div>
 
     </div>
-    <Library
+    <DocumentLibrary
       uploadingFile={uploadingFile}
       files={files}
       selectFile={selectFile}
@@ -96,7 +96,7 @@ export const DocumentRequestUpload = (
   </div>
 }
 
-const SelectedFiles = (
+const SelectedFileList = (
   {
     selectedFiles,
     removeFile,
@@ -132,7 +132,7 @@ const SelectedFiles = (
   </div>
 }
 
-const Library = (
+const DocumentLibrary = (
   {
     uploadingFile,
     files,

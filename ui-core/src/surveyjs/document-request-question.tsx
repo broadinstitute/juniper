@@ -14,7 +14,7 @@ import {
 } from 'lodash'
 import Modal from 'react-bootstrap/Modal'
 import { ModalProps } from 'react-bootstrap'
-import { DocumentRequestUpload } from '../components/DocumentRequestUpload'
+import { DocumentRequestUploader } from '../components/documents/DocumentRequestUploader'
 
 const DOCUMENT_REQUEST_TYPE = 'documentrequest'
 
@@ -72,7 +72,7 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
       return <></>
     }
 
-    return <DocumentRequestUpload
+    return <DocumentRequestUploader
       studyEnvParams={studyEnvParams}
       enrolleeShortcode={enrolleeShortcode}
       selectedFileNames={this.fileNames}
