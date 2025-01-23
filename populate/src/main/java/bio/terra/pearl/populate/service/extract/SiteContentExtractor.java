@@ -2,7 +2,6 @@ package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.*;
-import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.populate.dto.site.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,14 +20,12 @@ public class SiteContentExtractor {
 
     private final SiteContentService siteContentService;
     private final ObjectMapper objectMapper;
-    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
-    public SiteContentExtractor(SiteContentService siteContentService, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper, PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
+    public SiteContentExtractor(SiteContentService siteContentService, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.siteContentService = siteContentService;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(NavbarItem .class, NavbarItemMixin.class);
         this.objectMapper.addMixIn(HtmlSection.class, HtmlSectionMixin.class);
-        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     }
 
     public void writeSiteContents(Portal portal, ExtractPopulateContext context) {
