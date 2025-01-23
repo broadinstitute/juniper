@@ -7,7 +7,7 @@ import { ParticipantFile } from 'src/types/participantFile'
 import { asMockedFn } from 'src/test-utils/asMockedFn'
 import { userEvent } from '@testing-library/user-event'
 
-jest.mock('../participant/ApiProvider')
+jest.mock('src/participant/ApiProvider')
 
 const mockApi = {
   listParticipantFiles: jest.fn(),
