@@ -23,7 +23,6 @@ public class LanguageText extends BaseEntity {
     // if site content attached, it will go through
     // standard publishing workflows.
 
-
     // nullable; if null, it's the default language text.
     //           if specified, then it's a portal-specific
     //           override for the default language text

@@ -9,7 +9,8 @@ import {
 import {
   ApiContextT,
   HtmlSection,
-  HubResponse, SystemSettings
+  HubResponse,
+  SystemSettings
 } from '@juniper/ui-core'
 
 /** mock site content */
@@ -36,7 +37,8 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
     ],
     landingPage: mockLandingPage(),
     navLogoVersion: 1,
-    navLogoCleanFileName: 'fakeLogo.png'
+    navLogoCleanFileName: 'fakeLogo.png',
+    languageTextOverrides: []
   }
 }
 

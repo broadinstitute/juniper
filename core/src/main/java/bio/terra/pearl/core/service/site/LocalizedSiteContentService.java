@@ -69,7 +69,9 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             languageText.setLocalizedSiteContentId(savedSite.getId());
             languageText.setLanguage(savedSite.getLanguage());
 
-            languageTextService.create(languageText);
+            LanguageText createdLanguageText = languageTextService.create(languageText);
+
+            savedSite.getLanguageTextOverrides().add(createdLanguageText);
         }
 
         HtmlPage landingPage = localSite.getLandingPage();
