@@ -623,6 +623,22 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string, file: File
+  }): Promise<ParticipantFile> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollees/${enrolleeShortcode}/file`
+    const headers = this.getInitHeaders()
+    delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getPortalMedia(portalShortcode: string): Promise<SiteMediaMetadata[]> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteMedia`, this.getGetInit())
     return await this.processJsonResponse(response)

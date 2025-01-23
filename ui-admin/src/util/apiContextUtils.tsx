@@ -1,7 +1,7 @@
 import {
   ApiContextT,
   EnvironmentName,
-  MailingAddress, ParticipantFile, StudyEnvParams
+  MailingAddress, StudyEnvParams
 } from '@juniper/ui-core'
 import Api from '../api/api'
 
@@ -35,9 +35,8 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
       //stub- not implemented for admin api yet
       return Promise.resolve(new Response())
     },
-    uploadParticipantFile: () => {
-      //stub- not implemented for admin api yet
-      return Promise.resolve({} as ParticipantFile)
+    uploadParticipantFile: ({ studyEnvParams, enrolleeShortcode, file }) => {
+      return Api.uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file })
     },
     downloadParticipantFile({ studyEnvParams, enrolleeShortcode, fileName }: {
       studyEnvParams: StudyEnvParams

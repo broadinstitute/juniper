@@ -211,6 +211,7 @@ const FileRow = ({
     onDownload?: () => void
 }) => {
   return <div
+    key={fileName}
     className={'border border-1 rounded-1 bg-light-subtle p-2 d-flex align-items-center justify-content-between mb-2'}>
     <div className='d-flex align-items-center justify-content-between'>
       <FileIcon mimeType={fileType}/>

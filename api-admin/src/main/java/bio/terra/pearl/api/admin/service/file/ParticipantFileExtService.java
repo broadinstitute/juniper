@@ -7,9 +7,11 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ParticipantFileExtService {
@@ -41,5 +43,29 @@ public class ParticipantFileExtService {
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public List<ParticipantFile> list(PortalEnrolleeAuthContext authContext) {
     return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
+  }
+
+  @EnforcePortalEnrolleePermission(permission = "participant_data_edit")
+  public ParticipantFile uploadFile(PortalEnrolleeAuthContext authContext, MultipartFile file) {
+    try {
+      return participantFileService.uploadFileAndCreate(
+          ParticipantFile.builder()
+              .enrolleeId(authContext.getEnrollee().getId())
+              .fileName(getFileName(file.getOriginalFilename()))
+              .fileType(file.getContentType())
+              .build(),
+          file.getInputStream());
+    } catch (IOException e) {
+      throw new RuntimeException("Error uploading file");
+    }
+  }
+
+  // Returns the name of the file without the preceding path
+  public String getFileName(String fileName) {
+    if (fileName == null) {
+      return "";
+    }
+    String[] split = fileName.split("\\[/\\\\]");
+    return split[split.length - 1];
   }
 }
