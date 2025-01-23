@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "survey_response_metadata"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: survey_response
+            columns:
+              - column: { name: response_metadata, type: text}

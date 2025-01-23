@@ -47,6 +47,7 @@ import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
 import { NavbarPreview } from 'portal/siteContent/NavbarPreview'
+import LanguageTextOverridesEditor from 'portal/siteContent/LanguageTextOverridesEditor'
 
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
@@ -384,6 +385,28 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                           updatePage={page => updatePage(page, isLandingPage)}/>
                       </ApiProvider>}
                 </div>
+              </ErrorBoundary>
+            </Tab>
+            <Tab
+              eventKey={'systemTextOverride'}
+              title={'Text Overrides'}
+              disabled={hasInvalidSection}
+            >
+              <ErrorBoundary>
+                <ApiProvider api={previewApi}>
+                  <LanguageTextOverridesEditor
+                    portalEnvContext={portalEnvContext}
+                    localContent={localContent}
+                    selectedLanguage={selectedLanguage?.languageCode || ''}
+                    onChange={overrides => {
+                      const updatedLocalContent = {
+                        ...localContent,
+                        languageTextOverrides: overrides
+                      }
+                      updateLocalContent(updatedLocalContent)
+                    }}
+                  />
+                </ApiProvider>
               </ErrorBoundary>
             </Tab>
             <Tab

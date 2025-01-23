@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,6 +56,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
         List<ItemFormatter<SurveyResponseWithTaskDto>> formatters = new ArrayList<>();
         formatters.add(new PropertyItemFormatter<>("lastUpdatedAt", SurveyResponseWithTaskDto.class, options.getZoneId()));
         formatters.add(new PropertyItemFormatter<>("createdAt", SurveyResponseWithTaskDto.class, options.getZoneId()));
+        formatters.add(new PropertyItemFormatter<>("responseMetadata", SurveyResponseWithTaskDto.class, options.getZoneId()));
 
         PropertyItemFormatter<SurveyResponseWithTaskDto> taskCompletedFormatter = new PropertyItemFormatter<>("task.completedAt", SurveyResponseWithTaskDto.class, "completedAt", options.getZoneId());
         taskCompletedFormatter.setImportable(false); // task will be null at time of initial import, but time shifting will occur after
@@ -74,10 +74,15 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
         // the export order of the most recent version
         Collection<List<SurveyQuestionDefinition>> questionDefsByStableId = questionDefs.stream().collect(groupingBy(
                 SurveyQuestionDefinition::getQuestionStableId
-        )).values().stream().sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder())).toList();
+                ))
+                .values()
+                .stream()
+                .sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder()))
+                .map(questionVersions -> questionVersions.stream().sorted(Comparator.comparing(SurveyQuestionDefinition::getSurveyVersion, Collections.reverseOrder())).toList())
+                .toList();
 
         for (List<SurveyQuestionDefinition> questionVersions : questionDefsByStableId) {
-            SurveyQuestionDefinition mostRecent = questionVersions.get(0);
+            SurveyQuestionDefinition mostRecent = questionVersions.getFirst();
 
             if (List.of("signaturepad", "html").contains(mostRecent.getQuestionType())) {
                 continue;

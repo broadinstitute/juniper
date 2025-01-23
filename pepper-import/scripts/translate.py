@@ -115,6 +115,7 @@ def ensure_files_exist(files: list[Union[str, None]]):
 
 
 class DataDefinition:
+    module = None
     stable_id = None
     data_type = None
     question_type = None
@@ -126,6 +127,7 @@ class DataDefinition:
     subquestions = None  # list of composite subquestions
 
     def __init__(self,
+                 module: str,
                  stable_id: str,
                  data_type: str,
                  description: str,
@@ -134,6 +136,7 @@ class DataDefinition:
                  option_values: list[str] | None = None,
                  num_repeats: int | None = None,
                  subquestions: list[Any] | None = None):
+        self.module = module
         self.stable_id = stable_id
         self.data_type = data_type
         self.description = description
@@ -172,13 +175,13 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
     row_idx = 1
     num_blanks = 0
     out: list[DataDefinition] = []
-    current_survey = ""
+    module = ""
     while True:
         name_col = str(dsm_data_dict['A' + str(row_idx)].value or '')
         if name_col is None or name_col == '':
             if num_blanks == 0:
                 # survey is done
-                current_survey = ""
+                module = ""
             num_blanks += 1
             if num_blanks > 3:
                 break
@@ -186,7 +189,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
             continue
 
         if num_blanks != 0:
-            current_survey = name_col
+            module = name_col
             # skip header
             row_idx += 2
             num_blanks = 0
@@ -205,7 +208,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
             option_values = [option.split(' ')[0] for option in option_texts]
 
         question: DataDefinition = DataDefinition(
-            stable_id, data_type, description, question_type, option_values=option_values
+            module, stable_id, data_type, description, question_type, option_values=option_values
         )
         out.append(question)
 
@@ -262,6 +265,7 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
 
     while len(simple_questions) > 0:
         question = simple_questions.pop(0)
+
         # subquestion; handled when we encounter the parent question
         if question.stable_id.endswith('[0]'):
             continue
@@ -562,6 +566,10 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
         apply_translation(dsm_data, juniper_data, repeat_translation)
         module_repeat += 1
 
+        if module_repeat > 10:
+            # dsm sometimes has... a lot of repeats... it's hard to imagine needing more than 10.
+            break
+
 def generate_dsm_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
     if repeat == 1:
         return stable_id
@@ -698,17 +706,21 @@ def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> li
     out = {0: dsm_data[dsm_question.stable_id]}
 
     for [key, value] in dsm_data.items():
-        if key.startswith(dsm_question.stable_id) and is_repeat_question(dsm_question.stable_id, key):
-            index = get_repeat_index(key)
-            out[index] = value
+        if key == dsm_question.stable_id:
+            out[0] = value
+        elif key.startswith(dsm_question.module) and  is_dsm_repeat_question(dsm_question.module, dsm_question.stable_id, key):
+            index = get_dsm_repeat_index(dsm_question.module, key)
+            out[index - 1] = value
 
-    return [out[i] for i in range(len(out))]
+    # return the first 5 values; some dsm modules have a ridiculous number of repeats
+    return [out[i] for i in range(min(len(out), 5))]
 
 
-def is_repeat_question(question_stable_id: str, response_stable_id: str) -> bool:
+def is_dsm_repeat_question(module: str, question_stable_id: str, response_stable_id: str) -> bool:
     # use regex to match the question stable ID
     # format: question_stable_id_response_stable_id_[0-9]+
-    return re.match(question_stable_id + '_[0-9]+', response_stable_id) is not None
+    question_name_only = question_stable_id.replace(module + '.', '')
+    return re.match(module + '_[0-9]+.' + question_name_only, response_stable_id) is not None
 
 
 def get_juniper_response_stable_id(juniper_question: DataDefinition, repeat: int) -> str:
@@ -717,12 +729,15 @@ def get_juniper_response_stable_id(juniper_question: DataDefinition, repeat: int
     if repeat == 0:
         return stable_id
 
-    [survey_id, question_id] = stable_id.partition('.')
-    return survey_id + '.' + str(repeat) + '.' + question_id
+    [survey_id, question_id] = stable_id.split('.', 1)
+    return survey_id + '[' + str(repeat+1) + '].' + question_id
 
 
-def get_repeat_index(response_stable_id: str) -> int:
-    return int(response_stable_id.split('_')[-1])
+def get_dsm_repeat_index(module: str, response_stable_id: str) -> int:
+    noprefix = response_stable_id.removeprefix(module + '_')
+    split = noprefix.split('.')
+    return int(split[0])
+
 
 
 def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[dict[str, Any]]:

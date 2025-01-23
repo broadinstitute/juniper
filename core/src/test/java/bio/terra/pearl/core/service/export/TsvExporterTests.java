@@ -67,7 +67,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
         Map<String, String> valueMap = Map.of("survey1.tabTrailing\t", "blah");
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
         // header and subheader should be quoted
-        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.createdAt\tsurvey1.completedAt\tsurvey1.complete\t\"survey1.tabTrailing\t\"\nLast Updated At\tCreated At\tTask   -   completed At\tComplete\t\"Tab Trailing \t\"\n\"\"\t\t\t\tblah\n"));
+        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.createdAt\tsurvey1.responseMetadata\tsurvey1.completedAt\tsurvey1.complete\t\"survey1.tabTrailing\t\"\nLast Updated At\tCreated At\tResponse Metadata\tTask   -   completed At\tComplete\t\"Tab Trailing \t\"\n\"\"\t\t\t\t\tblah\n"));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
         Map<String, String> valueMap = Map.of("survey1.q1", "{\"key\": \"value\"}");
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
         // the extra quotes here are expected; it conforms to RFC 4180
-        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.createdAt\tsurvey1.completedAt\tsurvey1.complete\tsurvey1.q1\nLast Updated At\tCreated At\tTask   -   completed At\tComplete\tQ 1\n\"\"\t\t\t\t\"{\"\"key\"\": \"\"value\"\"}\"\n"));
+        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.createdAt\tsurvey1.responseMetadata\tsurvey1.completedAt\tsurvey1.complete\tsurvey1.q1\nLast Updated At\tCreated At\tResponse Metadata\tTask   -   completed At\tComplete\tQ 1\n\"\"\t\t\t\t\t\"{\"\"key\"\": \"\"value\"\"}\"\n"));
     }
 
     @Test
