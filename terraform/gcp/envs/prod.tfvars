@@ -97,6 +97,11 @@ customer_urls = {
     dnssec = "on"
     additional_records = []
   }
+  trcc = {
+    url    = "trccproject.org"
+    dnssec = "off"
+    additional_records = []
+  }
 }
 
 slack_notification_channel = "projects/broad-juniper-prod/notificationChannels/9072110396476167224"

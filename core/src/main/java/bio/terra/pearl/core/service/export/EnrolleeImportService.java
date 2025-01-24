@@ -284,7 +284,9 @@ public class EnrolleeImportService {
                 importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
             }
         } catch (Exception e) {
-            importItems.add(createFailedImportItem(importId, e.getMessage(), Arrays.toString(e.getStackTrace()), adminId));
+            String message = "%s: %s".formatted(e.getClass().getSimpleName(), e.getMessage());
+
+            importItems.add(createFailedImportItem(importId, message, Arrays.toString(e.getStackTrace()), adminId));
             if (!accountData.getProxyData().isEmpty()) {
                 log.warn("failed to import primary enrollee, skipping proxy import for username: {}", accountData.getEmail());
             }
@@ -600,7 +602,7 @@ public class EnrolleeImportService {
                     .orElse(null);
         } else {
             if (completedAt.isEmpty()) {
-                throw new IllegalStateException("completedAt must be specified for importing survey response history");
+                throw new IllegalStateException("Failed importing %s: completedAt must be specified for importing survey response history".formatted(formatter.getModuleName()));
             }
             // case 2: completedAt is specified, find task with that completion time
             relatedTask = participantTaskService.findTaskForActivityWithCompletionTime(ppUser.getId(), studyEnv.getId(), formatter.getModuleName(), completedAt.get())
@@ -640,7 +642,7 @@ public class EnrolleeImportService {
     private Optional<Instant> parseSurveyFieldToInstant(SurveyFormatter formatter, Map<String, String> enrolleeMap, Integer repeatNum, String field, ZoneId zoneId) {
         String key = formatter.formatColumnKey(repeatNum, field);
         if (enrolleeMap.containsKey(key)) {
-            return Optional.of(ExportFormatUtils.importInstant(enrolleeMap.get(key), zoneId == null ? ZoneId.of("America/New_York") : zoneId));
+            return Optional.ofNullable(ExportFormatUtils.importInstant(enrolleeMap.get(key), zoneId == null ? ZoneId.of("America/New_York") : zoneId));
         }
         return Optional.empty();
     }

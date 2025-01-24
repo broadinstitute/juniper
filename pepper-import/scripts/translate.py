@@ -265,6 +265,7 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
 
     while len(simple_questions) > 0:
         question = simple_questions.pop(0)
+
         # subquestion; handled when we encounter the parent question
         if question.stable_id.endswith('[0]'):
             continue

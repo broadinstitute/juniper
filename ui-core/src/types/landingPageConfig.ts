@@ -10,12 +10,19 @@ export type LocalSiteContent = {
   language: string
   navbarItems: NavbarItem[]
   pages: HtmlPage[]
+  languageTextOverrides: LanguageText[]
   landingPage: HtmlPage
   navLogoCleanFileName: string
   navLogoVersion: number
   footerSection?: HtmlSection
   primaryBrandColor?: string
   dashboardBackgroundColor?: string
+}
+
+export type LanguageText = {
+  keyName: string
+  text: string
+  language: string
 }
 
 export type HtmlPage = {
