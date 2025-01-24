@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "kit_label_unique_constraint"
+      author: mbemis
+      changes:
+        - addUniqueConstraint:
+            tableName: kit_request
+            constraintName: uc_kit_request_kit_label
+            columnNames: kit_label
