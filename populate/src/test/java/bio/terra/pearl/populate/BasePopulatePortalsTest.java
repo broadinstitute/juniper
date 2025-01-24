@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.dao.dashboard.ParticipantDashboardAlertDao;
+import bio.terra.pearl.core.dao.site.LocalizedSiteContentDao;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
@@ -91,4 +92,6 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected BaseSeedPopulator baseSeedPopulator;
     @Autowired
     protected EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    @Autowired
+    protected LocalizedSiteContentDao localSiteContentDao;
 }

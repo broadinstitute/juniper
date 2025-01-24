@@ -32,8 +32,9 @@ public class SiteContentExtractor {
         List<SiteContent> siteContents = context.isExtractActiveVersionsOnly()
                 ? siteContentService.findActiveContentByPortalId(portal.getId())
                 : siteContentService.findByPortalId(portal.getId());
+
         for (SiteContent siteContent : siteContents) {
-            siteContentService.attachChildContent(siteContent, "en");
+            siteContentService.attachAllChildContent(siteContent);
             writeSiteContent(siteContent, context);
         }
     }

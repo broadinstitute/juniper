@@ -30,6 +30,10 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
         dao.attachChildContent(siteContent, language);
     }
 
+    public void attachAllChildContent(SiteContent siteContent) {
+        dao.attachAllChildContent(siteContent);
+    }
+
     @Override
     public SiteContent create(SiteContent siteContent) {
         SiteContent savedSite = dao.create(siteContent);

@@ -27,7 +27,7 @@ public class LocalizedSiteContentDao  extends BaseJdbiDao<LocalizedSiteContent> 
     public Optional<LocalizedSiteContent> findBySiteContent(UUID siteContentId, String language) {
         return findByTwoProperties("site_content_id", siteContentId, "language", language);
     }
-
+    
     /**
      * clears the landing page Id from the specified site content.  this is necessary in some cases to enable
      * deletion, since localizedSiteContent can be bidirectionally linked to an htmlPage

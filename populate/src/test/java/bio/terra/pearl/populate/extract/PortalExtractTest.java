@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.extract;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -19,11 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,7 +65,15 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
         assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(13));
         // confirm both the old and current versions of the site content got populated
-        assertThat(siteContentService.findByPortalId(restoredPortal.getId()), hasSize(2));
+
+        List<SiteContent> allSiteContent = siteContentService.findByPortalId(restoredPortal.getId()).stream().sorted(Comparator.comparing(SiteContent::getVersion, Comparator.reverseOrder())).toList();
+        assertThat(allSiteContent, hasSize(2));
+
+        SiteContent latestSiteContent = allSiteContent.get(0);
+        List<LocalizedSiteContent> localizedSiteContents = localSiteContentDao.findBySiteContent(latestSiteContent.getId());
+        assertThat(localizedSiteContents, hasSize(3));
+        assertThat(localizedSiteContents.stream().map(LocalizedSiteContent::getLanguage).collect(Collectors.toSet()),
+                equalTo(Set.of("en", "es", "dev")));
 
         // confirm the sandbox got configured
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
