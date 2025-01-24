@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
+import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.model.site.*;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -12,18 +13,20 @@ import java.util.stream.Collectors;
 
 @Component
 public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
+    private final LanguageTextDao languageTextDao;
     private LocalizedSiteContentDao localizedSiteContentDao;
     private NavbarItemDao navbarItemDao;
     private HtmlPageDao htmlPageDao;
     private HtmlSectionDao htmlSectionDao;
 
     public SiteContentDao(Jdbi jdbi, LocalizedSiteContentDao localizedSiteContentDao, NavbarItemDao navbarItemDao,
-                          HtmlPageDao htmlPageDao, HtmlSectionDao htmlSectionDao) {
+                          HtmlPageDao htmlPageDao, HtmlSectionDao htmlSectionDao, LanguageTextDao languageTextDao) {
         super(jdbi);
         this.localizedSiteContentDao = localizedSiteContentDao;
         this.navbarItemDao = navbarItemDao;
         this.htmlPageDao = htmlPageDao;
         this.htmlSectionDao = htmlSectionDao;
+        this.languageTextDao = languageTextDao;
     }
 
     @Override
@@ -96,6 +99,7 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
                         // add only the top level items, the children are already attached
                         navbarItems.stream().filter(item -> item.getParentNavbarItemId() == null).toList()
                 );
+        localSite.setLanguageTextOverrides(languageTextDao.findByLocalSiteId(localSite.getId()));
         if (localSite.getFooterSectionId() != null) {
             localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
         }
