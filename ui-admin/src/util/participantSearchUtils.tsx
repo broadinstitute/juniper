@@ -4,11 +4,9 @@ import {
   isArray,
   isEqual
 } from 'lodash'
-import { Link, useSearchParams } from 'react-router-dom'
-import React, { useState } from 'react'
-import { ColumnDef } from '@tanstack/react-table'
-import Api, { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from '../api/api'
-import { checkboxColumnCell } from './table/tableUtils'
+import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+import Api, { ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from '../api/api'
 import { StudyEnvParams } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 
@@ -268,5 +266,5 @@ export const getQueryFields = (searchState: ParticipantSearchState):
   string[] => {
   const facetStrings = searchState.custom.match(/\{[^}]*}/g) ?? []
   // chop the leading and trailing {}, and trim whitespace
-  return facetStrings.map(facetString => facetString.slice(1).slice(-1).trim())
+  return facetStrings.map(facetString => facetString.slice(1, -1).trim())
 }

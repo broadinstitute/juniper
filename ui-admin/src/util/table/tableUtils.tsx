@@ -19,7 +19,6 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
-  faColumns,
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
@@ -28,7 +27,7 @@ import { Button } from '../../components/forms/Button'
 import {
   escapeCsvValue
 } from '../downloadUtils'
-import { instantToDefaultString, saveBlobAsDownload, StudyEnvParams } from '@juniper/ui-core'
+import { instantToDefaultString, saveBlobAsDownload } from '@juniper/ui-core'
 import {
   isEmpty,
   isNil
@@ -36,9 +35,6 @@ import {
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from '../../components/forms/TextInput'
 import classNames from 'classnames'
-import { useLoadingEffect } from '../../api/api-utils'
-import Api, { ExpressionSearchFacets } from '../../api/api'
-import LoadingSpinner from '../LoadingSpinner'
 
 
 /**

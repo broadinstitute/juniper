@@ -70,9 +70,9 @@ public class AnswerTerm extends SearchTerm {
 
             joinClauses.add(
                     new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
-                            %s.id = %s.enrollee_id 
-                            and %s.survey_stable_id = '%s'
-                            and %s.question_stable_id = '%s'
+                            %s.id = %s.enrollee_id \
+                            and %s.survey_stable_id = '%s' \
+                            and %s.question_stable_id = '%s'\
                             """.formatted(
                             addStudySuffix("enrollee", studyName),
                             alias(), alias(),
@@ -84,9 +84,9 @@ public class AnswerTerm extends SearchTerm {
 
         return List.of(
                 new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
-                    enrollee.id = %s.enrollee_id
-                    and %s.survey_stable_id = '%s'
-                    and %s.question_stable_id = '%s'
+                    enrollee.id = %s.enrollee_id \
+                    and %s.survey_stable_id = '%s' \
+                    and %s.question_stable_id = '%s'\
                     """.formatted(alias(), alias(), surveyStableId, alias(), questionStableId))
         );
     }

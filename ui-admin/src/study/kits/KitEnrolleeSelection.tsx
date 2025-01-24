@@ -59,7 +59,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
   const { searchState, setSearchState, searchExpression } = useParticipantSearchState([], false)
-  const { facetedSearchState, facets} = useParticipantSearchFacets(searchState, paramsFromContext(studyEnvContext))
+  const { facetedSearchState, facets } = useParticipantSearchFacets(searchState, paramsFromContext(studyEnvContext))
 
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -199,13 +199,13 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   })
 
   const dynamicColOpts = {
-      facets: facets,
-      dynamicFacets: facetedSearchState?.includeFacets ?? [],
-      setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
-        ...facetedSearchState,
-        includeFacetKeys: dynamicFacets.map(facet => facet.key)
-      })
-    }
+    facets,
+    dynamicFacets: facetedSearchState?.includeFacets ?? [],
+    setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
+      ...facetedSearchState,
+      includeFacetKeys: dynamicFacets.map(facet => facet.key)
+    })
+  }
 
   return <LoadingSpinner isLoading={isLoading}>
     <div className="d-flex align-items-center justify-content-between">

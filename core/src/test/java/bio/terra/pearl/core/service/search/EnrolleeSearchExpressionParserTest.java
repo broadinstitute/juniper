@@ -78,25 +78,21 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
                         mailing_address.last_updated_at as mailing_address_last_updated_at \
                         from enrollee enrollee \
                         left outer join profile profile on (enrollee.profile_id = profile.id) \
-                        left outer join answer answer_diagnosis on (enrollee.id = answer_diagnosis.enrollee_id) \
+                        left outer join answer answer_diagnosis on (enrollee.id = answer_diagnosis.enrollee_id and answer_diagnosis.survey_stable_id = 'basics' and answer_diagnosis.question_stable_id = 'diagnosis') \
                         left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) \
                         where (((mailing_address.country = ?) or (mailing_address.country = ?)) \
-                        and (answer_diagnosis.survey_stable_id = ? \
-                        AND answer_diagnosis.question_stable_id = ?) \
                         and (answer_diagnosis.string_value = ?) \
                         and (EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) \
                         and (enrollee.study_environment_id = ?))\
                         """,
                 query.getSQL());
 
-        assertEquals(7, query.getBindValues().size());
+        assertEquals(5, query.getBindValues().size());
         assertEquals("us", query.getBindValues().get(0));
         assertEquals("gb", query.getBindValues().get(1));
-        assertEquals("basics", query.getBindValues().get(2));
-        assertEquals("diagnosis", query.getBindValues().get(3));
-        assertEquals("something", query.getBindValues().get(4));
-        assertEquals(18.0, query.getBindValues().get(5));
-        assertEquals(fakeStudyEnvId, query.getBindValues().get(6));
+        assertEquals("something", query.getBindValues().get(2));
+        assertEquals(18.0, query.getBindValues().get(3));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(4));
     }
 
     @Test
