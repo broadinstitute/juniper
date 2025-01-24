@@ -61,6 +61,8 @@ jobs:
           echo "Application start timed out after 5 minutes"
           exit 1
         fi
+    - name: Install Playwright
+      run: npm install -g @playwright/test
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
