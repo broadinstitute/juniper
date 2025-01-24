@@ -17,6 +17,7 @@ portals:
   - name: hearthive
     customDomain: thehearthive.org
   - name: trccproject
+    customDomain: trccproject.org
   - name: rgp
   - name: cmi
 b2c:
