@@ -35,6 +35,7 @@ import {
   StudyEnvParams,
   Survey,
   SurveyType
+  , setupRouterTest
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
@@ -57,7 +58,6 @@ import { ReactNotifications } from 'react-notifications-component'
 // add all jest-extended matchers
 import * as matchers from 'jest-extended'
 import { render, RenderResult } from '@testing-library/react'
-import { setupRouterTest } from '@juniper/ui-core/build'
 
 expect.extend(matchers)
 
