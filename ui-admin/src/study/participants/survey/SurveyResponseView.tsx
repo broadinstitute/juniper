@@ -10,8 +10,6 @@ import {
 
 import {
   NavLink,
-  useLocation,
-  useNavigate,
   useParams
 } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
@@ -135,8 +133,6 @@ export function RawEnrolleeSurveyView({
   response?: SurveyResponse, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { user } = useUser()
-  const navigate = useNavigate()
-  const location = useLocation()
   // Admin-only forms should default to edit mode
   const [view, setView] = useState<SurveyView>(configSurvey.survey.surveyType === 'ADMIN' ? 'editing' : 'viewing')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
