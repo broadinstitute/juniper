@@ -1,14 +1,16 @@
-import { Table } from '@tanstack/react-table'
+import { CellContext, ColumnDef, Table } from '@tanstack/react-table'
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faColumns } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal'
-import { StudyEnvParams } from '@juniper/ui-core'
-import Api, { ExpressionSearchFacets } from 'api/api'
-import { useLoadingEffect } from 'api/api-utils'
+import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
 import LoadingSpinner from '../LoadingSpinner'
 import Select from 'react-select'
+import { Link } from 'react-router-dom'
+import { checkboxColumnCell } from './tableUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
+import _startCase from 'lodash/startCase'
 
 
 /**
@@ -17,18 +19,21 @@ import Select from 'react-select'
  * */
 export function ColumnVisibilityControl<T>({ table, dynamicColOpts }: {table: Table<T>,
   dynamicColOpts?: {
-    dynamicCols: string[], setDynamicCols: (cols: string[]) => void, studyEnvParams: StudyEnvParams }
+    dynamicFacets: KeyedSearchValueTypeDefinition[],
+    facets?: ExpressionSearchFacets,
+    setDynamicFacets: (facets: KeyedSearchValueTypeDefinition[]) => void
+  }
 }) {
   const [show, setShow] = useState(false)
   // cache the dynamic cols so the user can select multiple at once without a refresh
-  const [selectedDynamicCols, setSelectedDynamicCols] = useState<string[]>(dynamicColOpts?.dynamicCols ?? [])
+  const [selectedDynamicFacets, setSelectedDynamicFacets] =
+    useState<KeyedSearchValueTypeDefinition[]>(dynamicColOpts?.dynamicFacets ?? [])
   const handleClose = () => {
     setShow(false)
     if (dynamicColOpts) {
-      dynamicColOpts.setDynamicCols(selectedDynamicCols)
+      dynamicColOpts.setDynamicFacets(selectedDynamicFacets)
     }
   }
-
 
   return <div className="ms-auto">
     <Button onClick={() => setShow(!show)}
@@ -68,8 +73,9 @@ export function ColumnVisibilityControl<T>({ table, dynamicColOpts }: {table: Ta
             </div>
           )
         })}
-        {dynamicColOpts && <DynamicColumnControl studyEnvParams={dynamicColOpts.studyEnvParams}
-          setDynamicCols={setSelectedDynamicCols} dynamicCols={selectedDynamicCols}/>}
+        {dynamicColOpts && <DynamicColumnControl facets={dynamicColOpts.facets}
+          setDynamicFacets={setSelectedDynamicFacets}
+          dynamicFacets={selectedDynamicFacets}/>}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>Ok</Button>
@@ -78,26 +84,98 @@ export function ColumnVisibilityControl<T>({ table, dynamicColOpts }: {table: Ta
   </div>
 }
 
-export function DynamicColumnControl({ studyEnvParams, dynamicCols, setDynamicCols }:
-  {studyEnvParams: StudyEnvParams, dynamicCols: string[], setDynamicCols: (cols: string[]) => void}) {
-  const [facets, setFacets] = useState<ExpressionSearchFacets>({})
-  const { isLoading } = useLoadingEffect(async () => {
-    const loadedFacets = await Api.getExpressionSearchFacets(
-      studyEnvParams.portalShortcode,
-      studyEnvParams.studyShortcode,
-      studyEnvParams.envName)
-    setFacets(loadedFacets)
-  }, [], 'Failed to load cohort criteria options')
-  const opts = Object.keys(facets)
+export function DynamicColumnControl({ facets, dynamicFacets, setDynamicFacets }:
+  {facets?: ExpressionSearchFacets, dynamicFacets: KeyedSearchValueTypeDefinition[],
+    setDynamicFacets: (cols: KeyedSearchValueTypeDefinition[]) => void}) {
+  const opts = facets ? Object.keys(facets)
     .sort((a, b) => a.localeCompare(b))
-    .map(facet => ({ value: facet, label: facet }))
+    .map(keyName => ({
+      value: {
+        ...facets[keyName],
+        key: keyName
+      }, label: keyName
+    })) : []
 
   return <div>
     Add columns
-    <LoadingSpinner isLoading={isLoading}>
+    <LoadingSpinner isLoading={!facets}>
       <Select options={opts}
-        isMulti={true} onChange={opts => setDynamicCols(opts.map(opt => opt.value))}
-        value={dynamicCols.map(col => ({ value: col, label: col }))}/>
+        isMulti={true}
+        onChange={opts => setDynamicFacets(opts.map(opt => opt.value))}
+        value={dynamicFacets.map(facet => ({ value: facet, label: facet.key }))}/>
     </LoadingSpinner>
   </div>
+}
+
+
+export const enrolleeShortcodeColumn = <T extends EnrolleeSearchExpressionResult, >(currentEnvPath: string):
+  ColumnDef<T> => {
+  return {
+    header: 'Shortcode',
+    accessorKey: 'enrollee.shortcode',
+    meta: {
+      columnType: 'string'
+    },
+    cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue() as string}</Link>
+  }
+}
+
+export const enrolleeConsentedColumn = <T extends EnrolleeSearchExpressionResult, >(): ColumnDef<T> => {
+  return  {
+    header: 'Consented',
+    accessorKey: 'enrollee.consented',
+    id: 'enrollee.consented',
+    meta: {
+      columnType: 'boolean',
+      filterOptions: [
+        { value: true, label: 'Consented' },
+        { value: false, label: 'Not Consented' }
+      ]
+    },
+    filterFn: 'equals',
+    cell: checkboxColumnCell
+  }
+}
+
+/** returns a column definition for a given facet */
+export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  let field = facet.key
+  const columnType = facet.type.toLowerCase()
+  let cellFn = undefined
+  if (facet.type === 'INSTANT') {
+    cellFn = (info: CellContext<T, unknown>) => instantToDefaultString(info.getValue() as number)
+  } else if (facet.type === 'BOOLEAN') {
+    cellFn = (info: CellContext<T, unknown>) =>
+      info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+  }
+  if (field.startsWith('user')) {
+    field = field.replace('user.', 'participantUser.')
+  }
+  if (field.startsWith('answer')) {
+    const [, surveyStableId, questionStableId] = field.split('.')
+    return {
+      id: field,
+      header: _startCase(questionStableId),
+      accessorFn: info => {
+        const answer = info.answers.find(ans =>
+          ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
+        // we can add code here at a later time to map answer stableId string values to choice labels
+        return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+      },
+      meta: {
+        columnType
+      }
+    }
+  } else {
+    return {
+      id: field,
+      header: _startCase(field.replace('.', ' ')),
+      accessorKey: field,
+      cell: cellFn,
+      meta: {
+        columnType
+      }
+    }
+  }
 }

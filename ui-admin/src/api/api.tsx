@@ -386,6 +386,10 @@ export type SearchValueTypeDefinition = {
   allowOtherDescription: boolean
 }
 
+export type KeyedSearchValueTypeDefinition = SearchValueTypeDefinition & {
+  key: string
+}
+
 export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string

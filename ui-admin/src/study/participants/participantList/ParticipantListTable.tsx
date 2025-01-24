@@ -2,8 +2,8 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { EnrolleeSearchExpressionResult } from 'api/api'
-import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -22,7 +22,12 @@ import {
   RowVisibilityCount,
   useRoutableTablePaging
 } from 'util/table/tableUtils'
-import { ColumnVisibilityControl } from 'util/table/columnUtils'
+import {
+  ColumnVisibilityControl,
+  enrolleeConsentedColumn,
+  enrolleeShortcodeColumn,
+  getDynamicColumn
+} from 'util/table/columnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
@@ -43,9 +48,7 @@ import { isEmpty } from 'lodash'
 import TableClientPagination from 'util/table/TablePagination'
 import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
 import {
-  enrolleeConsentedColumn,
-  enrolleeShortcodeColumn,
-  getAnswerFields, getDynamicColumn,
+  FacetedParticipantSearchState,
   ParticipantSearchState
 } from 'util/participantSearchUtils'
 
@@ -62,8 +65,9 @@ function ParticipantListTable({
   disableColumnFiltering,
   header,
   tableClass,
-  searchState,
+  facetedSearchState,
   setSearchState,
+  facets,
   reload
 }: {
   participantList: EnrolleeSearchExpressionResult[],
@@ -74,11 +78,12 @@ function ParticipantListTable({
   disableColumnFiltering?: boolean,
   header?: React.ReactNode,
   tableClass?: string,
-  searchState?: ParticipantSearchState,
+  facetedSearchState?: FacetedParticipantSearchState,
   setSearchState?: (searchState: ParticipantSearchState) => void,
+  facets?: ExpressionSearchFacets,
   reload: () => void
 }) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const { portal, currentEnv, currentEnvPath } = studyEnvContext
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [showSyntheticModal, setShowSyntheticModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
@@ -98,6 +103,16 @@ function ParticipantListTable({
   )
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
+  const dynamicColumns: ColumnDef<EnrolleeSearchExpressionResult>[] = []
+  // now add any columns for answers
+  if (facetedSearchState) {
+    facetedSearchState.queryFacets?.forEach(facet => {
+      dynamicColumns.push(getDynamicColumn(facet))
+    })
+    facetedSearchState.includeFacets?.forEach(facet => {
+      dynamicColumns.push(getDynamicColumn(facet))
+    })
+  }
 
   const columns = useMemo<ColumnDef<EnrolleeSearchExpressionResult>[]>(() => {
     const columns: ColumnDef<EnrolleeSearchExpressionResult>[] = [{
@@ -184,23 +199,14 @@ function ParticipantListTable({
       filterFn: 'equals',
       cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
     },
-    enrolleeConsentedColumn()]
+    enrolleeConsentedColumn(),
+    ...dynamicColumns]
 
-    // now add any columns for answers
-    if (searchState) {
-      const answerFields = getAnswerFields(searchState)
-      answerFields.forEach(answerField => {
-        columns.push(getDynamicColumn(answerField))
-      })
-      if (searchState.includeFields) {
-        searchState.includeFields.forEach(field => {
-          columns.push(getDynamicColumn(field))
-        })
-      }
-    }
 
     return columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode')
-  }, [study.shortcode, currentEnv.environmentName, familyLinkageEnabled])
+  }, [
+    currentEnvPath, familyLinkageEnabled, dynamicColumns.map(col => col.id).join(','), currentEnvPath
+  ])
 
   const table = useReactTable({
     data: participantList,
@@ -230,13 +236,13 @@ function ParticipantListTable({
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
-  const dynamicColOpts = setSearchState && searchState ?
+  const dynamicColOpts = setSearchState && facetedSearchState ?
     {
-      studyEnvParams: paramsFromContext(studyEnvContext),
-      dynamicCols: searchState.includeFields ?? [],
-      setDynamicCols: (dynamicCols: string[]) => setSearchState({
-        ...searchState,
-        includeFields: dynamicCols
+      facets,
+      dynamicFacets: facetedSearchState?.includeFacets ?? [],
+      setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
+        ...facetedSearchState,
+        includeFacetKeys: dynamicFacets.map(facet => facet.key)
       })
     }: undefined
 

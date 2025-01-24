@@ -12,7 +12,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { EnrolleeSearchExpressionResult, ParticipantTask } from 'api/api'
+import Api, { EnrolleeSearchExpressionResult, KeyedSearchValueTypeDefinition, ParticipantTask } from 'api/api'
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   basicTableLayout,
@@ -27,8 +27,11 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
-import { enrolleeConsentedColumn } from 'util/participantSearchUtils'
-import { ColumnVisibilityControl } from 'util/table/columnUtils'
+import {
+  useParticipantSearchFacets,
+  useParticipantSearchState
+} from 'util/participantSearchUtils'
+import { ColumnVisibilityControl, enrolleeConsentedColumn, getDynamicColumn } from 'util/table/columnUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -55,13 +58,17 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
+  const { searchState, setSearchState, searchExpression } = useParticipantSearchState([], false)
+  const { facetedSearchState, facets} = useParticipantSearchFacets(searchState, paramsFromContext(studyEnvContext))
+
+
   const { isLoading, reload } = useLoadingEffect(async () => {
     const studyEnvParams: StudyEnvParams = paramsFromContext(studyEnvContext)
 
     const [kitTypes, enrollees] = await Promise.all([
       Api.fetchKitTypes(studyEnvParams),
-      Api.executeSearchExpression(portal.shortcode, study.shortcode, currentEnv.environmentName, '',
-        { includes: ['tasks', 'kitRequests'] })
+      Api.executeSearchExpression(portal.shortcode, study.shortcode, currentEnv.environmentName,
+        searchExpression, { includes: ['tasks', 'kitRequests'] })
     ])
 
     setStudyEnvKitTypes(kitTypes)
@@ -82,7 +89,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       }
     })
     setEnrollees(enrolleeRows)
-  }, [studyEnvContext.currentEnvPath])
+  }, [studyEnvContext.currentEnvPath, searchExpression])
 
   const onSubmit = async (anyKitWasCreated: boolean) => {
     setShowRequestKitModal(false)
@@ -171,6 +178,11 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     },
     cell: checkboxColumnCell
   }))]
+  if (facetedSearchState.includeFacets) {
+    facetedSearchState.includeFacets.forEach(facet => {
+      columns.push(getDynamicColumn(facet))
+    })
+  }
 
   const table = useReactTable({
     data: enrollees,
@@ -186,6 +198,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     getFilteredRowModel: getFilteredRowModel()
   })
 
+  const dynamicColOpts = {
+      facets: facets,
+      dynamicFacets: facetedSearchState?.includeFacets ?? [],
+      setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
+        ...facetedSearchState,
+        includeFacetKeys: dynamicFacets.map(facet => facet.key)
+      })
+    }
+
   return <LoadingSpinner isLoading={isLoading}>
     <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex align-items-center">
@@ -200,7 +221,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
           <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
         </Button>
-        <ColumnVisibilityControl table={table}/>
+        <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         { showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
