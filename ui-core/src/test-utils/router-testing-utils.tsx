@@ -57,3 +57,4 @@ export function renderWithRouter(ComponentToRender: ReactElement,
   const { RoutedComponent } = setupRouterTest(ComponentToRender, initialEntries, componentPath)
   return render(RoutedComponent)
 }
+

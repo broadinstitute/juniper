@@ -71,8 +71,8 @@ public class AnswerTerm extends SearchTerm {
             joinClauses.add(
                     new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
                             %s.id = %s.enrollee_id 
-                            and %s.survey_stable_id = %s
-                            and %s.question_stable_id = %s
+                            and %s.survey_stable_id = '%s'
+                            and %s.question_stable_id = '%s'
                             """.formatted(
                             addStudySuffix("enrollee", studyName),
                             alias(), alias(),

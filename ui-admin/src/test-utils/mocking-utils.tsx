@@ -45,7 +45,7 @@ import {
   PortalContextT
 } from '../portal/PortalProvider'
 import { PortalEnvContext } from '../portal/PortalRouter'
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { AdminUserContext } from '../providers/AdminUserProvider'
 import { AdminUser } from '../api/adminUser'
 import { mockAdminUser } from './user-mocking-utils'
@@ -56,6 +56,8 @@ import { ReactNotifications } from 'react-notifications-component'
 
 // add all jest-extended matchers
 import * as matchers from 'jest-extended'
+import { render, RenderResult } from '@testing-library/react'
+import { setupRouterTest } from '@juniper/ui-core/build'
 
 expect.extend(matchers)
 
@@ -651,4 +653,18 @@ export const renderInPortalRouter = (portal: Portal,
       </UserContext.Provider>
     </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv/*')
+}
+
+
+/** render a component wrapped in a router, use 'setupRouterTest' if you need to access the router
+ * directly.
+ * paths in the initialEntries array should always start with a '/'.
+ * componentPath is the route to mount the component at, e.g. ':portalShortcode/studies/:studyShortcode/:studyEnv'
+ * this needs to be specified for useParams to be able to access structured params
+ * */
+export function renderWithRouterAndStore(ComponentToRender: ReactElement,
+  initialEntries = ['/'], componentPath = '*'): RenderResult {
+  const { RoutedComponent } = setupRouterTest(
+    <> <ReactNotifications/>{ComponentToRender}</>, initialEntries, componentPath)
+  return render(RoutedComponent)
 }
