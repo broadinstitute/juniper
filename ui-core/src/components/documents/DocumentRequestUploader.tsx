@@ -10,11 +10,11 @@ import {
   faUpload
 } from '@fortawesome/free-solid-svg-icons'
 import { isNil } from 'lodash'
-import { useApiContext } from 'src/participant/ApiProvider'
 import { StudyEnvParams } from 'src/types/study'
 import LoadingSpinner from '@juniper/ui-admin/src/util/LoadingSpinner'
-import { saveBlobAsDownload } from 'src/util/downloadUtils'
-import { ParticipantFile } from 'src/types/participantFile'
+import { saveBlobAsDownload } from '../../util/downloadUtils'
+import { ParticipantFile } from '../../types/participantFile'
+import { useApiContext } from '../../participant/ApiProvider'
 
 export const DocumentRequestUploader = (
   {
