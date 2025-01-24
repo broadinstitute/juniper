@@ -1,12 +1,20 @@
-import { renderWithRouter, setupRouterTest } from '@juniper/ui-core'
+import {
+  renderWithRouter,
+  setupRouterTest
+} from '@juniper/ui-core'
 import {
   mockAnswer,
   mockConfiguredSurvey,
-  mockEnrollee, mockParticipantTask,
+  mockEnrollee,
+  mockParticipantTask,
   mockStudyEnvContext,
   mockSurveyResponse
 } from 'test-utils/mocking-utils'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import React from 'react'
 import { userEvent } from '@testing-library/user-event'
 import SurveyResponseView, { RawEnrolleeSurveyView } from './SurveyResponseView'
@@ -69,7 +77,9 @@ describe('RawEnrolleeSurveyView', () => {
         configSurvey={mockConfiguredSurvey()} onUpdate={jest.fn()}/>)
     render(RoutedComponent)
     await userEvent.click(screen.getByText('Printing'))
-    await waitFor(() => expect(screen.getByText('Done')).toBeVisible())
+    await waitFor(() => expect(screen.getByText('Download / Print')).toBeVisible())
+    await waitFor(() => expect(printSpy).toHaveBeenCalledTimes(0))
+    await userEvent.click(screen.getByText('Download / Print'))
     await waitFor(() => expect(printSpy).toHaveBeenCalledTimes(1))
   })
 
