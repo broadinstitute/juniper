@@ -3,7 +3,8 @@ import {
   LocalSiteContent,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig, PortalStudy,
+  PortalEnvironmentConfig,
+  PortalStudy,
   SiteContent,
   Study,
   StudyEnvironment
@@ -106,7 +107,8 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
     pages: [],
     landingPage: mockHtmlPage(),
     navLogoCleanFileName: 'navLogo.png',
-    navLogoVersion: 1
+    navLogoVersion: 1,
+    languageTextOverrides: []
   }
 }
 

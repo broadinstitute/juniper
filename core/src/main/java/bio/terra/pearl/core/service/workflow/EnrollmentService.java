@@ -220,6 +220,7 @@ public class EnrollmentService {
                         .builder()
                         .surveyId(preEnrollResponse.getSurveyId())
                         .answers(answers)
+                        .responseMetadata(preEnrollResponse.getReferralSource())
                         .enrolleeId(enrollee.getId())
                         .complete(true)
                         .creatingParticipantUserId(enrollee.getParticipantUserId())

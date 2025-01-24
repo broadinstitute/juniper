@@ -406,12 +406,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(moduleFormatters, hasSize(1));
         ModuleFormatter<SurveyResponseWithTaskDto, ItemFormatter<SurveyResponseWithTaskDto>> socialHealthModule = moduleFormatters.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
-        assertThat(socialHealthModule.getItemFormatters(), hasSize(6));
+        assertThat(socialHealthModule.getItemFormatters(), hasSize(7));
         // module should contain both the response properties and question items
         assertThat(socialHealthModule.getItemFormatters().stream()
                 .filter(itemFormatter -> itemFormatter instanceof PropertyItemFormatter)
                 .map(itemFormatter -> ((PropertyItemFormatter) itemFormatter).getPropertyName()).toList(),
-                hasItems("lastUpdatedAt", "complete"));
+                hasItems("lastUpdatedAt", "complete", "responseMetadata"));
         assertThat(socialHealthModule.getItemFormatters().stream()
                         .filter(itemFormatter -> itemFormatter instanceof AnswerItemFormatter)
                         .map(itemFormatter -> ((AnswerItemFormatter) itemFormatter).getQuestionStableId()).toList(),
@@ -483,7 +483,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         ModuleFormatter<SurveyResponseWithTaskDto, ItemFormatter<SurveyResponseWithTaskDto>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
         // module should contain both question items from both surveys, but no duplicates
-        assertThat(socialHealthModule.getItemFormatters(), hasSize(7));
+        assertThat(socialHealthModule.getItemFormatters(), hasSize(8));
         assertThat(socialHealthModule.getItemFormatters().stream()
                         .filter(itemFormatter -> itemFormatter instanceof AnswerItemFormatter)
                         .map(itemFormatter -> ((AnswerItemFormatter) itemFormatter).getQuestionStableId()).toList(),

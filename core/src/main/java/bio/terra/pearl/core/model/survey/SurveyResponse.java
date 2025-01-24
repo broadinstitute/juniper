@@ -33,6 +33,10 @@ public class SurveyResponse extends BaseEntity {
     // a json map of userId -> an object with information about where that particular user left off
     // currently, the only property stored on that object is currentPageNo
     private String resumeData;
+    // a json blob containing metadata about the response
+    // for pre-enrollment responses this tracks referralSource information
+    // future use could include things like how long the participant spent on the response, etc
+    private String responseMetadata;
 
     public void setResponsibleUser(ResponsibleEntity responsibleEntity) {
         if (responsibleEntity == null) {
