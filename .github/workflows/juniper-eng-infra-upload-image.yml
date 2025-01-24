@@ -11,7 +11,7 @@ env:
 
 jobs:
   get-version-tag:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
@@ -28,7 +28,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token:  'write'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.juniper-eng-build-publish.outputs.published-image }}
     steps:
@@ -50,7 +50,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token:  'write'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.juniper-eng-build-publish.outputs.published-image }}
     steps:
