@@ -1,19 +1,20 @@
 @media print {
-    /** allow fullscreen bootstrap modals to print all content, even with vertical scroll */
-    .modal {
-        position: absolute !important;
+    body {
+        visibility: hidden;
+    }
+
+    .print {
+        visibility: visible !important;
+        position: absolute;
         left: 0;
         top: 0;
-        margin: 0;
-        padding: 0;
-        overflow: visible !important;
-        max-height: none;
+        width: 100vw;
+        height: fit-content;
+        -webkit-print-color-adjust: exact;
     }
-    .modal-fullscreen .modal-body {
-        overflow-y: visible;
-    }
-    header,footer {
-        display: none;
+
+    .sd-row {
+        page-break-after: auto !important;
     }
 }
 

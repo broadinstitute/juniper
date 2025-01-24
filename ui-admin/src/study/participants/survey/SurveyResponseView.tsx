@@ -10,8 +10,6 @@ import {
 
 import {
   NavLink,
-  useLocation,
-  useNavigate,
   useParams
 } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
@@ -60,6 +58,10 @@ import JustifyChangesModal from '../JustifyChangesModal'
 import { ParticipantFileSurveyResponseView } from 'study/participants/survey/ParticipantFileSurveyResponseView'
 import SurveyAssignModal from './SurveyAssignModal'
 import TaskChangeModal from './TaskChangeModal'
+import PrintFormView from 'study/participants/survey/PrintFormView'
+
+
+type SurveyView = 'viewing' | 'editing' | 'printing'
 
 /** Show responses for a survey based on url param */
 export default function SurveyResponseView({ enrollee, responseMap, updateResponseMap, studyEnvContext, onUpdate }: {
@@ -131,10 +133,8 @@ export function RawEnrolleeSurveyView({
   response?: SurveyResponse, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { user } = useUser()
-  const navigate = useNavigate()
-  const location = useLocation()
   // Admin-only forms should default to edit mode
-  const [isEditing, setIsEditing] = useState(configSurvey.survey.surveyType === 'ADMIN')
+  const [view, setView] = useState<SurveyView>(configSurvey.survey.surveyType === 'ADMIN' ? 'editing' : 'viewing')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
   const [showJustificationModal, setShowJustificationModal] = useState(false)
   const [justification, setJustification] = useState<string>('')
@@ -166,16 +166,20 @@ export function RawEnrolleeSurveyView({
               variant="light"
               aria-haspopup="true"
               aria-expanded="false"
-              aria-label={isEditing ? 'Editing' : 'Viewing'}
+              aria-label={view === 'editing' ? 'Editing' : view === 'viewing' ? 'Viewing' : 'Printing'}
             >
-              {isEditing ?
-                <><FontAwesomeIcon icon={faPencil} className="fa-lg"/> Editing</> :
-                <><FontAwesomeIcon icon={faEye} className="fa-lg"/> Viewing</>
+              {view == 'editing' &&
+                  <><FontAwesomeIcon icon={faPencil} className="fa-lg"/> Editing</>}
+              {view == 'viewing' &&
+                  <><FontAwesomeIcon icon={faEye} className="fa-lg"/> Viewing</>
+              }
+              {view == 'printing' &&
+                  <><FontAwesomeIcon icon={faPrint} className="fa-lg"/> Printing</>
               }
             </Button>
             <div className="dropdown-menu" aria-labelledby="surveyModeMenu">
               <DropdownButton
-                onClick={() => setIsEditing(false)}
+                onClick={() => setView('viewing')}
                 icon={faEye}
                 label="Viewing"
                 description="Read form responses"
@@ -186,7 +190,7 @@ export function RawEnrolleeSurveyView({
                   <DropdownButton
                     onClick={() => {
                       if (configSurvey.survey.surveyType === 'ADMIN') {
-                        setIsEditing(true)
+                        setView('editing')
                       } else {
                         setShowJustificationModal(true)
                       }
@@ -201,8 +205,7 @@ export function RawEnrolleeSurveyView({
               }
               <DropdownButton
                 onClick={() => {
-                  setIsEditing(false)
-                  navigate(`print${location.search}`)
+                  setView('printing')
                 }}
                 disabled={!response?.answers.length}
                 icon={faPrint}
@@ -214,21 +217,24 @@ export function RawEnrolleeSurveyView({
         </div>
       </div>
       <hr/>
-      {(!isEditing && (!response?.answers.length && !response?.participantFiles?.length)) &&
+      {(view === 'viewing' && (!response?.answers.length && !response?.participantFiles?.length)) &&
           <div>No response for enrollee {enrollee.shortcode}</div>}
-      {!isEditing && response?.answers.length !== undefined && response?.answers.length > 0 && <SurveyFullDataView
-        responseId={response.id}
-        enrollee={enrollee}
-        answers={response?.answers || []}
-        survey={configSurvey.survey}
-        studyEnvContext={studyEnvContext}/>}
-      {!isEditing && (response?.participantFiles?.length !== undefined && response.participantFiles.length > 0) &&
+      {view === 'viewing' && response?.answers.length !== undefined && response?.answers.length > 0 &&
+          <SurveyFullDataView
+            responseId={response.id}
+            enrollee={enrollee}
+            answers={response?.answers || []}
+            survey={configSurvey.survey}
+            studyEnvContext={studyEnvContext}/>}
+      {view === 'viewing' && (
+        response?.participantFiles?.length !== undefined && response.participantFiles.length > 0
+      ) &&
           <ParticipantFileSurveyResponseView
             studyEnvContext={studyEnvContext}
             enrollee={enrollee}
             surveyResponse={response}/>
       }
-      {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
+      {view === 'editing' && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}
         justification={justification}
         setAutosaveStatus={setAutosaveStatus}
@@ -238,12 +244,13 @@ export function RawEnrolleeSurveyView({
         saveWithJustification={justification => {
           setJustification(justification)
           setShowJustificationModal(false)
-          setIsEditing(true)
+          setView('editing')
         }}
         onDismiss={() => setShowJustificationModal(false)}
         changes={[]}
         confirmText={'Continue to edit'}
       />}
+      {view === 'printing' && <PrintFormView answers={response?.answers || []} survey={configSurvey.survey}/>}
     </div>
     {showTaskModal && <TaskChangeModal studyEnvParams={paramsFromContext(studyEnvContext)}
       onDismiss={() => setShowTaskModal(false)}
