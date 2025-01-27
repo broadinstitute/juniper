@@ -45,7 +45,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("profile", enrolleeContext.getProfile());
-        if (enrolleeContext.getParticipantUser().getUsername().contains("-prox-")) {
+        if (StringUtils.contains(enrolleeContext.getParticipantUser().getUsername(), "-prox-")) {
             valueMap.put("isProxy", "true");
         } else {
             valueMap.put("isSubject", "true");
