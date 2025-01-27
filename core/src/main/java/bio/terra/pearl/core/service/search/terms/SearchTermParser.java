@@ -45,7 +45,6 @@ public abstract class SearchTermParser<T extends SearchTerm> {
     protected abstract T parse(String arguments);
 
     /**
-     <<<<<<< HEAD
      * Parse the term string into a search term for the given study environment.
      */
     protected T parse(String study, String arguments) {
@@ -53,18 +52,13 @@ public abstract class SearchTermParser<T extends SearchTerm> {
     }
 
     /**
-     =======
-     >>>>>>> origin/development
      * Get the facets that can be used in a search expression for the given study environment.
      */
     public abstract Map<String, SearchValueTypeDefinition> getFacets(UUID studyEnvId);
 
     /**
      * The name of the term. E.g., AgeTermParser would return "age".
-     <<<<<<< HEAD
      * Any variable that starts with this name will be parsed by this parser.
-     =======
-     >>>>>>> origin/development
      */
     public abstract String getTermName();
 
