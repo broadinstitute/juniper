@@ -155,6 +155,32 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's an invite: ${invitationLink}"),
                 equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=test123%40test.com"));
+    }
+
+    @Test
+    public void testTernaryReplaced(TestInfo info) {
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), Profile.builder().givenName("test name").build(), ParticipantUser.builder().username("asdf@asdf.com").build());
+
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+
+        assertThat(replacer.replace("${isSubject ? \"Subject is true\" : \"Subject is false\"}"),
+                equalTo("Subject is true"));
+        assertThat(replacer.replace("${isProxy ? \"Proxy is true\" : \"Proxy is false\"}"),
+                equalTo("Proxy is false"));
+
+        assertThat(replacer.replace("${isSubject ? profile.givenName : \"Subject is false\"}"),
+                equalTo("test name"));
 
     }
 }

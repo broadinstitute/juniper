@@ -45,6 +45,12 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("profile", enrolleeContext.getProfile());
+        if (enrolleeContext.getParticipantUser().getUsername().contains("-prox-")) {
+            valueMap.put("isProxy", "true");
+        } else {
+            valueMap.put("isSubject", "true");
+        }
+
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
         valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
@@ -67,17 +73,50 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, customMessages));
     }
 
-
-
     @Override
     public String lookup(String key) {
         try {
+            if (Ternary.isTernary(key)) {
+                return lookupTernary(key);
+            }
+
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
                     key, contextInfo.portal().getShortcode(), enrolleeContext.getEnrollee().getShortcode());
         }
         return "";
+    }
+
+    private record Ternary(String condition, String left, String right) {
+        public static Ternary fromString(String key) {
+            String[] parts = key.split("\\?");
+            String condition = parts[0];
+            String[] values = parts[1].split(":");
+            return new Ternary(condition.trim(), values[0].trim(), values[1].trim());
+        }
+
+        public static boolean isTernary(String key) {
+            return key.contains("?") && key.contains(":") && key.indexOf('?') < key.indexOf(':');
+        }
+    }
+
+    private String lookupTernary(String key) {
+        Ternary ternary = Ternary.fromString(key);
+
+        if (lookup(ternary.condition).equals("true")) {
+            return parseAsStringOrLookup(ternary.left);
+        } else {
+            return parseAsStringOrLookup(ternary.right);
+        }
+    }
+
+    private String parseAsStringOrLookup(String variableOrString) {
+        if (variableOrString.startsWith("\"") && variableOrString.endsWith("\"")) {
+            return variableOrString.substring(1, variableOrString.length() - 1);
+        }
+
+        return lookup(variableOrString);
     }
 
     public String getSiteLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, Portal portal) {
