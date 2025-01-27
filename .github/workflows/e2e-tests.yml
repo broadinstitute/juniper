@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres
@@ -62,7 +62,7 @@ jobs:
           exit 1
         fi
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: npx -w e2e-tests playwright install --with-deps
     - name: Run Playwright tests
       run: npm -w e2e-tests test
     - name: Upload test results
