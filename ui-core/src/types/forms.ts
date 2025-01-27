@@ -69,6 +69,7 @@ export type Answer = {
   numberValue?: number
   booleanValue?: boolean
   objectValue?: string
+  format: AnswerFormat
   otherDescription?: string
   surveyStableId?: string
   surveyVersion?: number
@@ -78,6 +79,8 @@ export type Answer = {
   createdAt?: number
   lastUpdatedAt?: number
 }
+
+export type AnswerFormat = 'NONE' | 'FILE_NAME'
 
 export type FormResponse = {
   id?: string

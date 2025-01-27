@@ -144,5 +144,6 @@
   {"keyName": "documentsPageTitle", "text": "Documents", "language": "en"},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Uploaded documents", "language": "en"},
   {"keyName": "documentsPageMessage", "text": "While participating in a study, you may be asked to upload documents as part of a form or survey. Below, you can review the documents you have uploaded.", "language": "en"},
-  {"keyName": "navbarDocuments", "text": "Documents", "language": "en"}
+  {"keyName": "navbarDocuments", "text": "Documents", "language": "en"},
+  {"keyName": "taskTypeDocumentRequests", "text": "Document Requests", "language": "en"}
 ]

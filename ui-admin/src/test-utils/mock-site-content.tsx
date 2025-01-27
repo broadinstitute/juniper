@@ -10,6 +10,7 @@ import {
   ApiContextT,
   HtmlSection,
   HubResponse,
+  ParticipantFile,
   SystemSettings
 } from '@juniper/ui-core'
 
@@ -98,5 +99,9 @@ export const emptyApi: ApiContextT = {
   getLanguageTexts: () => Promise.resolve({}),
   updateSurveyResponse: () => Promise.resolve({} as HubResponse),
   validateAddress: () => Promise.resolve({} as AddressValidationResult),
-  loadSystemSettings: () => Promise.resolve({} as SystemSettings)
+  loadSystemSettings: () => Promise.resolve({} as SystemSettings),
+  listParticipantFiles: () => Promise.resolve([]),
+  uploadParticipantFile: () => Promise.resolve({} as ParticipantFile),
+  downloadParticipantFile: () => Promise.resolve({} as Response),
+  deleteParticipantFile: () => Promise.resolve({} as Response)
 }

@@ -104,15 +104,22 @@ let bearerToken: string | null = null
 const API_ROOT = `/api`
 
 export default {
-  getInitHeaders() {
-    const headers: HeadersInit = {
+  getAuthHeaders(): HeadersInit {
+    if (bearerToken === null) {
+      return {}
+    }
+
+    return {
+      'Authorization': `Bearer ${bearerToken}`
+    }
+  },
+
+  getInitHeaders(): HeadersInit {
+    return {
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      ...this.getAuthHeaders()
     }
-    if (bearerToken !== null) {
-      headers['Authorization'] = `Bearer ${bearerToken}`
-    }
-    return headers
   },
 
   getGetInit() {
@@ -178,26 +185,42 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async listParticipantFiles(
-    studyShortcode: string, enrolleeShortcode: string
-  ): Promise<ParticipantFile[]> {
-    const url = `${baseEnvUrl(false)}/studies/${studyShortcode}/enrollee/${enrolleeShortcode}/file`
+  async uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string, file: File
+  }): Promise<ParticipantFile> {
+    const url = `${baseStudyEnvUrl(false, studyEnvParams.studyShortcode)}/enrollee/${enrolleeShortcode}/file`
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: formData
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async listParticipantFiles({ studyEnvParams, enrolleeShortcode }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string
+  }): Promise<ParticipantFile[]> {
+    const url = `${baseEnvUrl(false)}/studies/${studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async downloadParticipantFile(
-    studyShortcode: string, enrolleeShortcode: string, fileName: string
-  ): Promise<Response> {
-    const url = `${baseEnvUrl(false)}/studies/${studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+  async downloadParticipantFile({ studyEnvParams, enrolleeShortcode, fileName }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
+  }): Promise<Response> {
+    const url = `${baseEnvUrl(false)}/studies/${
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
     const response = await fetch(url, this.getGetInit())
     return this.processResponse(response)
   },
 
-  async deleteParticipantFile(
-    studyShortcode: string, enrolleeShortcode: string, fileName: string
-  ): Promise<void> {
-    const url = `${baseEnvUrl(false)}/studies/${studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+  async deleteParticipantFile({ studyEnvParams, enrolleeShortcode, fileName }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
+  }): Promise<void> {
+    const url = `${baseEnvUrl(false)}/studies/${
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
     await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()

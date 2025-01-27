@@ -10,11 +10,13 @@ import bio.terra.pearl.core.model.file.ParticipantFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
+import java.util.List;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class ParticipantFileController implements ParticipantFileApi {
@@ -62,5 +64,42 @@ public class ParticipantFileController implements ParticipantFileApi {
     }
 
     return ResponseEntity.ok().contentType(mediaType).body(new InputStreamResource(content));
+  }
+
+  @Override
+  public ResponseEntity<Object> list(
+      String portalShortcode, String envName, String studyShortcode, String enrolleeShortcode) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    PortalEnrolleeAuthContext authContext =
+        PortalEnrolleeAuthContext.of(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOf(envName),
+            enrolleeShortcode);
+
+    List<ParticipantFile> participantFiles = participantFileExtService.list(authContext);
+    return ResponseEntity.ok(participantFiles);
+  }
+
+  @Override
+  public ResponseEntity<Object> upload(
+      String portalShortcode,
+      String envName,
+      String studyShortcode,
+      String enrolleeShortcode,
+      MultipartFile participantFile) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    PortalEnrolleeAuthContext authContext =
+        PortalEnrolleeAuthContext.of(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOf(envName),
+            enrolleeShortcode);
+
+    ParticipantFile created = participantFileExtService.uploadFile(authContext, participantFile);
+
+    return ResponseEntity.ok(created);
   }
 }

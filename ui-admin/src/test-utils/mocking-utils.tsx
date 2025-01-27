@@ -511,6 +511,7 @@ export const mockSurveyResponse = (): SurveyResponse => {
 /** mock survey answer */
 export const mockAnswer = (): Answer => {
   return {
+    format: 'NONE',
     surveyVersion: 1,
     stringValue: 'foo',
     questionStableId: 'question1'
