@@ -111,7 +111,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvWorkflowPath({
             portalShortcode, studyShortcode: study.shortcode, envName: 'sandbox'
           })}
-          className={sidebarNavLinkClasses} style={navStyleFunc}>Participant flow</NavLink>
+          className={sidebarNavLinkClasses} style={navStyleFunc}>Participant Flow</NavLink>
         </li>
         <li className="mb-2">
           <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, 'sandbox')}
