@@ -19,22 +19,21 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
-  faColumns,
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
-import { Button } from 'components/forms/Button'
+import { Button } from '../../components/forms/Button'
 import {
   escapeCsvValue
-} from './downloadUtils'
+} from '../downloadUtils'
 import { instantToDefaultString, saveBlobAsDownload } from '@juniper/ui-core'
 import {
   isEmpty,
   isNil
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
-import { TextInput } from 'components/forms/TextInput'
+import { TextInput } from '../../components/forms/TextInput'
 import classNames from 'classnames'
 
 
@@ -247,57 +246,6 @@ export function IndeterminateCheckbox({
   )
 }
 
-/**
- * adapted from https://tanstack.com/table/v8/docs/examples/react/column-visibility
- * For now, this control assumes that all the headers are simple strings.
- * */
-export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
-  const [show, setShow] = useState(false)
-  return <div className="ms-auto">
-    <Button onClick={() => setShow(!show)}
-      variant="light" className="border m-1"
-      tooltip={'Show or hide columns'}>
-      <FontAwesomeIcon icon={faColumns} className="fa-lg"/> Columns
-    </Button>
-    { show && <Modal show={show} onHide={() => setShow(false)}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          Toggle column visibility
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="border-b border-black">
-          <label>
-            <input
-              type='checkbox'
-              checked={table.getIsAllColumnsVisible()}
-              onChange={table.getToggleAllColumnsVisibilityHandler()}
-            />
-            <span className="ps-2">Toggle All</span>
-          </label>
-        </div>
-        <hr/>
-        {table.getAllLeafColumns().map(column => {
-          return (
-            <div key={column.id} className="pb-1">
-              <label>
-                <input
-                  type='checkbox'
-                  checked={column.getIsVisible()}
-                  onChange={column.getToggleVisibilityHandler()}
-                />
-                <span className="ps-2">{ column.columnDef.header as string ?? column.columnDef.id }</span>
-              </label>
-            </div>
-          )
-        })}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" onClick={() => setShow(false)}>Ok</Button>
-      </Modal.Footer>
-    </Modal> }
-  </div>
-}
 
 /**
  * Returns a count of the total number of rows in the table, and the number of rows
@@ -459,9 +407,6 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
   </table>
 }
 
-/** renders a boolean value as a checkmark (true)  or a blank (false) */
-export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
-  props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
 
 /**
  * hook for reading pagination params from the URL.  This should be used in conjunction with <TablePagination> for
@@ -491,3 +436,7 @@ declare module '@tanstack/table-core' {
     filterInitialValue?: string | boolean
   }
 }
+
+/** renders a boolean value as a checkmark (true)  or a blank (false) */
+export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
+  props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''

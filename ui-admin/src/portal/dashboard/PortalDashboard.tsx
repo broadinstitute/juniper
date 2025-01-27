@@ -10,7 +10,7 @@ import { MailingListWidget } from './widgets/MailingListWidget'
 import { StudyTeamWidget } from './widgets/StudyTeamWidget'
 import { StudyTrendsWidget } from './widgets/StudyTrendsWidget'
 import classNames from 'classnames'
-import ErrorBoundary from '../../util/ErrorBoundary'
+import ErrorBoundary from 'util/ErrorBoundary'
 
 export default function PortalDashboard({ portal }: {portal: Portal}) {
   return <div className="px-4 container-fluid mb-5">

@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import Api, { WithdrawnEnrollee } from 'api/api'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
@@ -17,7 +18,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { renderPageHeader } from '../../../util/pageUtils'
+import { renderPageHeader } from 'util/pageUtils'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 type WithdrawnEnrolleeExtract = WithdrawnEnrollee & {

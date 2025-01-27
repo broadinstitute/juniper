@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
 import { useParticipantSearchState } from 'util/participantSearchUtils'
-import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
@@ -23,24 +22,17 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
     searchState,
     updateSearchState,
     setSearchState,
+    facets,
     searchExpression
-  } = useParticipantSearchState()
-
-  const generateFullSearchExpression = () => {
-    const expressions: string[] = [searchExpression, 'include({user.username})', 'include({portalUser.lastLogin})']
-    if (familyLinkageEnabled) {
-      expressions.push('include({family.shortcode})')
-    }
-    return concatSearchExpressions(expressions)
-  }
+  } = useParticipantSearchState(['user.username', 'portalUser.lastLogin'],
+    familyLinkageEnabled, paramsFromContext(studyEnvContext))
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      generateFullSearchExpression())
-
+      searchExpression)
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
@@ -65,7 +57,9 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
       {groupByFamily && <ParticipantListTableGroupedByFamily
         participantList={participantList} studyEnvContext={studyEnvContext}/> }
       {!groupByFamily && <ParticipantListTable participantList={participantList}
-        studyEnvContext={studyEnvContext} reload={reload}/>}
+        studyEnvContext={studyEnvContext} reload={reload}
+        facetedSearchState={searchState} facets={facets}
+        setSearchState={setSearchState}/>}
     </LoadingSpinner>
   </div>
 }

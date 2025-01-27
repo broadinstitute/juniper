@@ -1,20 +1,19 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import SearchCriteriaView from './SearchCriteriaView'
-import { setupRouterTest } from '@juniper/ui-core'
 import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
+import { renderWithRouterAndStore } from 'test-utils/mocking-utils'
 
 describe('SearchCriteriaView', () => {
   test('shows and deletes search criteria', async () => {
     const mockUpdateSearchStateFn = jest.fn()
-    const { RoutedComponent } = setupRouterTest(
+    renderWithRouterAndStore(
       <SearchCriteriaView searchState={{
         ...DefaultParticipantSearchState,
         sexAtBirth: ['F'],
         tasks: [{ task: 'consent', status: 'complete' }]
       }} updateSearchState={mockUpdateSearchStateFn}/>)
-    render(RoutedComponent)
 
     expect(screen.getByText('Sex at birth: F')).toBeInTheDocument()
     expect(screen.getByText(content => content.startsWith('consent:'))).toBeInTheDocument()

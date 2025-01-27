@@ -9,7 +9,7 @@ import {
 import Api, { Portal } from 'api/api'
 import { AdminUser, PortalAdminUser } from 'api/adminUser'
 import { useLoadingEffect } from 'api/api-utils'
-import { basicTableLayout, renderEmptyMessage }  from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage }  from '../util/table/tableUtils'
 import { instantToDefaultString } from '@juniper/ui-core'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

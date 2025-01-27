@@ -1,13 +1,14 @@
 import React from 'react'
 import { screen } from '@testing-library/react'
 import KitEnrolleeSelection from './KitEnrolleeSelection'
-import { asMockedFn, KitType, renderWithRouter } from '@juniper/ui-core'
-import { mockKitType, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { asMockedFn, KitType } from '@juniper/ui-core'
+import { mockKitType, mockStudyEnvContext, renderWithRouterAndStore } from 'test-utils/mocking-utils'
 import Api from 'api/api'
 
 jest.mock('api/api', () => ({
   fetchKitTypes: jest.fn(),
-  fetchEnrolleesWithKits: jest.fn().mockResolvedValue([])
+  executeSearchExpression: jest.fn().mockResolvedValue([]),
+  getExpressionSearchFacets: jest.fn().mockResolvedValue({})
 }))
 
 describe('KitEnrolleeSelection', () => {
@@ -23,7 +24,7 @@ describe('KitEnrolleeSelection', () => {
 
     asMockedFn(Api.fetchKitTypes).mockResolvedValue(mockKitTypes)
 
-    renderWithRouter(<KitEnrolleeSelection studyEnvContext={mockStudyEnvContext()}/>)
+    renderWithRouterAndStore(<KitEnrolleeSelection studyEnvContext={mockStudyEnvContext()}/>)
 
     for (const kitType of mockKitTypes) {
       expect(await screen.findByText(`${kitType.displayName} kit requested`)).toBeInTheDocument()
