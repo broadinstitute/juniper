@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
@@ -45,7 +46,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("profile", enrolleeContext.getProfile());
-        if (StringUtils.contains(enrolleeContext.getParticipantUser().getUsername(), "-prox-")) {
+        if (Objects.nonNull(enrolleeContext.getParticipantUser())
+                && StringUtils.contains(enrolleeContext.getParticipantUser().getUsername(), "-prox-")) {
             valueMap.put("isProxy", "true");
         } else {
             valueMap.put("isSubject", "true");
