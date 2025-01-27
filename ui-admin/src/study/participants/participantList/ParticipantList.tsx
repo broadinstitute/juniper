@@ -5,10 +5,7 @@ import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRoute
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-import {
-  useParticipantSearchFacets,
-  useParticipantSearchState
-} from 'util/participantSearchUtils'
+import { useParticipantSearchState } from 'util/participantSearchUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
@@ -25,10 +22,10 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
     searchState,
     updateSearchState,
     setSearchState,
+    facets,
     searchExpression
-  } = useParticipantSearchState(['user.username', 'portalUser.lastLogin'], familyLinkageEnabled)
-
-  const { facetedSearchState, facets } = useParticipantSearchFacets(searchState, paramsFromContext(studyEnvContext))
+  } = useParticipantSearchState(['user.username', 'portalUser.lastLogin'],
+    familyLinkageEnabled, paramsFromContext(studyEnvContext))
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
@@ -61,7 +58,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
         participantList={participantList} studyEnvContext={studyEnvContext}/> }
       {!groupByFamily && <ParticipantListTable participantList={participantList}
         studyEnvContext={studyEnvContext} reload={reload}
-        facetedSearchState={facetedSearchState} facets={facets}
+        facetedSearchState={searchState} facets={facets}
         setSearchState={setSearchState}/>}
     </LoadingSpinner>
   </div>

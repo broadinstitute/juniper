@@ -69,6 +69,7 @@ public class AnswerTerm extends SearchTerm {
                     .joinClausesForStudy(studyName);
 
             joinClauses.add(
+                    /** CAREFUL! this raw inclusion of the stableIds in the query is only safe because they are validated in the constructor */
                     new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), """
                             %s.id = %s.enrollee_id \
                             and %s.survey_stable_id = '%s' \

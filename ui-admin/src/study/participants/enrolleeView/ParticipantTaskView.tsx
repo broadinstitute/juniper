@@ -8,7 +8,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import {
   Enrollee,
   instantToDefaultString

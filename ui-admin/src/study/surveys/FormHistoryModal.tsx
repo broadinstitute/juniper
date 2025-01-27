@@ -9,7 +9,7 @@ import Api from 'api/api'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faRotate } from '@fortawesome/free-solid-svg-icons'
-import useReactSingleSelect from '../../util/react-select-utils'
+import useReactSingleSelect from 'util/react-select-utils'
 
 /**
  * Shows past versions of a form and controls for slecting them

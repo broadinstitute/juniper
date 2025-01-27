@@ -27,10 +27,7 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
-import {
-  useParticipantSearchFacets,
-  useParticipantSearchState
-} from 'util/participantSearchUtils'
+import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { ColumnVisibilityControl, enrolleeConsentedColumn, getDynamicColumn } from 'util/table/columnUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
@@ -58,8 +55,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
-  const { searchState, setSearchState, searchExpression } = useParticipantSearchState([], false)
-  const { facetedSearchState, facets } = useParticipantSearchFacets(searchState, paramsFromContext(studyEnvContext))
+  const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
+    paramsFromContext(studyEnvContext))
 
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -178,8 +175,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     },
     cell: checkboxColumnCell
   }))]
-  if (facetedSearchState.includeFacets) {
-    facetedSearchState.includeFacets.forEach(facet => {
+  if (searchState.includeFacets) {
+    searchState.includeFacets.forEach(facet => {
       columns.push(getDynamicColumn(facet))
     })
   }
@@ -200,9 +197,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   const dynamicColOpts = {
     facets,
-    dynamicFacets: facetedSearchState?.includeFacets ?? [],
+    dynamicFacets: searchState?.includeFacets ?? [],
     setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
-      ...facetedSearchState,
+      ...searchState,
       includeFacetKeys: dynamicFacets.map(facet => facet.key)
     })
   }

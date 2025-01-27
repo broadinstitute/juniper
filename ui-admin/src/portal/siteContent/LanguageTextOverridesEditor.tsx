@@ -31,7 +31,7 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 import { TextInput } from 'components/forms/TextInput'
 import Select from 'react-select'

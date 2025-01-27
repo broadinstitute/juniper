@@ -1,7 +1,7 @@
 import { Question, QuestionType } from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { Textarea } from 'components/forms/Textarea'
-import { questionFromRawText } from '../../../util/juniperSurveyUtils'
+import { questionFromRawText } from 'util/juniperSurveyUtils'
 
 export const FormElementFreetextEditor = ({ question, onChange }: {
     question: Question, onChange: (newQuestion: Question) => void

@@ -9,7 +9,7 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import InfoPopup from 'components/forms/InfoPopup'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 
 export type SurveyEnvironmentDetailModalProps = {
   studyEnvParams: StudyEnvParams

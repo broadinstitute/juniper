@@ -13,7 +13,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { renderDiff } from 'util/changeRecordUtils'

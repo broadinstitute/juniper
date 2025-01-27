@@ -8,7 +8,7 @@ import {
 import {
   basicTableLayout,
   renderEmptyMessage
-} from '../../util/table/tableUtils'
+} from 'util/table/tableUtils'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {

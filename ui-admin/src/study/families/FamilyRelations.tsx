@@ -12,7 +12,7 @@ import {
   Row,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import Creatable from 'react-select/creatable'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'

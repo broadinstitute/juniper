@@ -8,7 +8,7 @@ import {
 import { isEmpty, isNil } from 'lodash'
 import { Modal, ModalBody, ModalFooter } from 'react-bootstrap'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 import { Button } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'

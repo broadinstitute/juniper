@@ -25,6 +25,7 @@ export type ParticipantSearchState = {
   includeFacetKeys: string[]
 }
 
+/** search state with includeFacetKeys mapped to facets retrieved from the server */
 export type FacetedParticipantSearchState = ParticipantSearchState & {
   includeFacets?: KeyedSearchValueTypeDefinition[], // facets explicitly included
   queryFacets?: KeyedSearchValueTypeDefinition[] // facets used in query logic
@@ -59,7 +60,7 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
  * Hook for managing the participant search state from the page URL.
  */
 export const useParticipantSearchState = (defaultIncludes: string[], familyLinkageEnabled: boolean,
-  searchParamName = 'search') => {
+  studyEnvParams: StudyEnvParams, searchParamName = 'search') => {
   const [searchParams, setSearchParams] = useSearchParams()
 
 
@@ -79,7 +80,8 @@ export const useParticipantSearchState = (defaultIncludes: string[], familyLinka
       [field]: value
     })
   }
-  return { searchState, searchExpression, updateSearchState, setSearchState }
+  const { facetedSearchState, facets, isLoading } = useParticipantSearchFacets(searchState, studyEnvParams)
+  return { searchState: facetedSearchState, searchExpression, updateSearchState, setSearchState, facets, isLoading }
 }
 
 /** handles loading and caching of search facets.  Returns a parsed version of the searchState identifying

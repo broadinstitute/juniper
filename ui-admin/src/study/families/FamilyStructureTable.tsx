@@ -23,7 +23,7 @@ import {
   lowerCase,
   startCase
 } from 'lodash'
-import { basicTableLayout } from '../../util/table/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import {
   faCaretDown,
   faCaretUp

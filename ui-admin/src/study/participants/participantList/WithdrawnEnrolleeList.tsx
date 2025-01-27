@@ -18,7 +18,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { renderPageHeader } from '../../../util/pageUtils'
+import { renderPageHeader } from 'util/pageUtils'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
 
 type WithdrawnEnrolleeExtract = WithdrawnEnrollee & {

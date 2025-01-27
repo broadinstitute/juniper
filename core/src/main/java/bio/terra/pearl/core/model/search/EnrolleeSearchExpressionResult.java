@@ -25,9 +25,11 @@ public class EnrolleeSearchExpressionResult {
     private ParticipantUser participantUser;
     private PortalParticipantUser portalParticipantUser;
     private MailingAddress mailingAddress;
+    @Builder.Default
     private final List<Answer> answers = new ArrayList<>();
     @Builder.Default
     private final List<ParticipantTask> tasks = new ArrayList<>();
+    @Builder.Default
     private final List<Family> families = new ArrayList<>();
     private KitRequest latestKit;
     @Builder.Default
