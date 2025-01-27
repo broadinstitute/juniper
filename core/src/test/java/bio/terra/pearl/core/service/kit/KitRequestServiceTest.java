@@ -293,6 +293,25 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
+    public void testAssignDuplicateKitErrors(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequestService.KitRequestCreationDto kitRequestCreationDto = new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, "testLabel", false);
+        KitRequestDto kitRequest = kitRequestService.createNewInPersonKitRequest(adminUser, enrollee, kitRequestCreationDto);
+
+        assertThat(kitRequest.getStatus(), equalTo(KitRequestStatus.CREATED));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> kitRequestService.createNewInPersonKitRequest(adminUser, enrollee, kitRequestCreationDto)
+        );
+    }
+
+    @Transactional
+    @Test
     public void testCollectInPersonKit(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
