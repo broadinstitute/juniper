@@ -100,19 +100,6 @@ public class EnrolleeController implements EnrolleeApi {
     }
   }
 
-  @Override
-  public ResponseEntity<Object> enrolleesWithKits(
-      String portalShortcode, String studyShortcode, String envName) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    List<Enrollee> enrollees =
-        enrolleeExtService.findForKitManagement(
-            PortalStudyEnvAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, environmentName));
-    return ResponseEntity.ok(enrollees);
-  }
-
   public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}
 
   public record WithdrawalParams(EnrolleeWithdrawalReason reason, String note) {}

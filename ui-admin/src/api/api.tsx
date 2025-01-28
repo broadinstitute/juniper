@@ -1034,16 +1034,6 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchEnrolleesWithKits(
-    portalShortcode: string,
-    studyShortcode: string,
-    envName: string
-  ): Promise<Enrollee[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesWithKits`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
   async findRelationsByTargetShortcode(
     portalShortcode: string,
     studyShortcode: string,

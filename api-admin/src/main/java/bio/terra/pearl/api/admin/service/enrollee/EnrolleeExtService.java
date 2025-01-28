@@ -38,12 +38,6 @@ public class EnrolleeExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public List<Enrollee> findForKitManagement(PortalStudyEnvAuthContext authContext) {
-    return enrolleeService.findForKitManagement(
-        authContext.getStudyShortcode(), authContext.getEnvironmentName());
-  }
-
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public Enrollee findWithAdminLoad(PortalEnrolleeAuthContext authContext) {
     return enrolleeService.loadForAdminView(authContext.getEnrollee());
