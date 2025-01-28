@@ -180,9 +180,4 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
             update(destIntegration);
         }
     }
-
-    @Override
-    public List<String> getAdditionalPublishIgnoreProps() {
-        return List.of("exportOptions", "exportOptionsId", "destinationUrl");
-    }
 }
