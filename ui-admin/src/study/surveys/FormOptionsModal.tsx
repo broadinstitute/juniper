@@ -16,7 +16,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { TextInput } from '../../components/forms/TextInput'
-import { useNonNullReactSingleSelect } from '../../util/react-select-utils'
+import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import Select from 'react-select'
 import { RecurrenceType } from '@juniper/ui-core'
 

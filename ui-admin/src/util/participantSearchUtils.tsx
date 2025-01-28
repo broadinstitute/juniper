@@ -5,6 +5,10 @@ import {
   isEqual
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+import Api, { ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from '../api/api'
+import { StudyEnvParams } from '@juniper/ui-core'
+import { useLoadingEffect } from '../api/api-utils'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
@@ -17,8 +21,16 @@ export type ParticipantSearchState = {
   sexAtBirth: string[],
   tasks: { task: string, status: string }[],
   latestKitStatus: string[],
-  custom: string
+  custom: string,
+  includeFacetKeys: string[]
 }
+
+/** search state with includeFacetKeys mapped to facets retrieved from the server */
+export type FacetedParticipantSearchState = ParticipantSearchState & {
+  includeFacets?: KeyedSearchValueTypeDefinition[], // facets explicitly included
+  queryFacets?: KeyedSearchValueTypeDefinition[] // facets used in query logic
+}
+
 
 export const DefaultParticipantSearchState: ParticipantSearchState = {
   keywordSearch: '',
@@ -26,7 +38,8 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
   sexAtBirth: [],
   tasks: [],
   latestKitStatus: [],
-  custom: ''
+  custom: '',
+  includeFacetKeys: []
 }
 
 
@@ -39,19 +52,20 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
   sexAtBirth: 'Sex at birth',
   tasks: 'Tasks',
   latestKitStatus: 'Latest Kit',
-  custom: 'Expression'
+  custom: 'Expression',
+  includeFacetKeys: 'include'
 }
 
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (searchParamName = 'search') => {
+export const useParticipantSearchState = (defaultIncludes: string[], familyLinkageEnabled: boolean,
+  studyEnvParams: StudyEnvParams, searchParamName = 'search') => {
   const [searchParams, setSearchParams] = useSearchParams()
 
 
   const searchState = urlParamsToSearchState(searchParams, searchParamName)
-  const searchExpression = toExpression(searchState)
-
+  const searchExpression = toExpression(searchState, defaultIncludes, familyLinkageEnabled)
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(params => {
       params.set(searchParamName, searchStateToUrlParam(newSearchState))
@@ -59,22 +73,45 @@ export const useParticipantSearchState = (searchParamName = 'search') => {
     })
   }
 
+
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
     setSearchState({
       ...searchState,
       [field]: value
     })
   }
+  const { facetedSearchState, facets, isLoading } = useParticipantSearchFacets(searchState, studyEnvParams)
+  return { searchState: facetedSearchState, searchExpression, updateSearchState, setSearchState, facets, isLoading }
+}
 
+/** handles loading and caching of search facets.  Returns a parsed version of the searchState identifying
+ * any included facets */
+export const useParticipantSearchFacets = (searchState: ParticipantSearchState, studyEnvParams: StudyEnvParams) => {
+  const [facets, setFacets] = useState<ExpressionSearchFacets>()
+  const { isLoading } = useLoadingEffect(async () => {
+    const loadedFacets = await Api.getExpressionSearchFacets(
+      studyEnvParams.portalShortcode,
+      studyEnvParams.studyShortcode,
+      studyEnvParams.envName)
+    setFacets(loadedFacets)
+  }, [], 'Failed to load cohort criteria options')
 
-  return { searchState, searchExpression, updateSearchState, setSearchState }
+  const queryFields = getQueryFields(searchState)
+  const facetedSearchState = {
+    ...searchState,
+    includeFacets: facets ? searchState.includeFacetKeys.map(key => ({ key, ...facets[key] })) : [],
+    queryFacets: facets ? queryFields.map(key => ({ key, ...facets[key] })) : []
+  }
+
+  return { facetedSearchState, facets, isLoading }
 }
 
 /** maps search state to a url param excluding default params */
 const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
   const explicitSearchState: Partial<ParticipantSearchState> = {}
   for (const [key, value] of Object.entries(searchState)) {
-    if (!isEqual(value, DefaultParticipantSearchState[key as keyof ParticipantSearchState])) {
+    if (!isEqual(value, DefaultParticipantSearchState[key as keyof ParticipantSearchState]) &&
+    !['includeFacets', 'queryFacets'].includes(key)) {
       // @ts-ignore
       explicitSearchState[key as keyof ParticipantSearchState] = value
     }
@@ -97,7 +134,8 @@ const urlParamsToSearchState = (searchParams: URLSearchParams, searchParamName: 
 /**
  * Converts the search state to a search expression.
  */
-export const toExpression = (searchState: ParticipantSearchState) => {
+export const toExpression = (searchState: ParticipantSearchState,
+  defaultIncludes: string[]= [], familyLinkageEnabled: boolean = false) => {
   const expressions: string[] = []
   if (!isEmpty(searchState.keywordSearch)) {
     expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
@@ -161,6 +199,15 @@ export const toExpression = (searchState: ParticipantSearchState) => {
     expressions.push(`(${searchState.custom})`)
   }
 
+  searchState.includeFacetKeys.forEach(field => {
+    expressions.push(`include({${field}})`)
+  })
+
+  expressions.push(...defaultIncludes.map(include => `include({${include}})`))
+  if (familyLinkageEnabled) {
+    expressions.push('include({family.shortcode})')
+  }
+
   return concatSearchExpressions(expressions)
 }
 
@@ -183,10 +230,12 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeK
         for (const task of value as { task: string, status: string }[]) {
           facets.push({ label: task.task, value: task.status })
         }
+      } else if (key === 'includeFacetKeys') {
+        // skip -- not shown directly to users
       } else {
         facets.push({
           label: ParticipantSearchStateLabels[key as keyof ParticipantSearchState] || key,
-          value: getValueAsString(key as keyof ParticipantSearchState, value)
+          value: getValueAsString(key as keyof ParticipantSearchState, value as string | number | boolean)
         })
       }
     }
@@ -212,4 +261,12 @@ const getValueAsString = (key: keyof ParticipantSearchState, value: string | num
   }
 
   return value.toString()
+}
+
+/** extracts any fields from the custom search expression (e.g. 'answer.surveyA.question1' */
+export const getQueryFields = (searchState: ParticipantSearchState):
+  string[] => {
+  const facetStrings = searchState.custom.match(/\{[^}]*}/g) ?? []
+  // chop the leading and trailing {}, and trim whitespace
+  return facetStrings.map(facetString => facetString.slice(1, -1).trim())
 }

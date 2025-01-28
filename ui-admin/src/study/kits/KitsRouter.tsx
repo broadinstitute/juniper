@@ -6,7 +6,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import KitEnrolleeSelection from './KitEnrolleeSelection'
 import KitList from './KitList'
 import { renderPageHeader } from 'util/pageUtils'
-import { tabLinkStyle } from '../../util/subNavStyles'
+import { tabLinkStyle } from 'util/subNavStyles'
 
 /** Router for kit management screens. */
 export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

@@ -6,7 +6,7 @@ import { successNotification } from 'util/notifications'
 import { useUser } from 'user/UserProvider'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from '../../components/forms/Button'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import LoadingSpinner from 'util/LoadingSpinner'
 import { StudyEnvParams } from '@juniper/ui-core'
 
 

@@ -7,7 +7,7 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { ParticipantTaskStatus, StudyEnvParams } from '@juniper/ui-core'
 import Select from 'react-select'
-import { useNonNullReactSingleSelect } from '../../../util/react-select-utils'
+import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { TextInput } from '../../../components/forms/TextInput'
 import { Button } from '../../../components/forms/Button'
 

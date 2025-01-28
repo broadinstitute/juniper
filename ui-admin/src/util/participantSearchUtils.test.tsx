@@ -101,7 +101,8 @@ describe('toExpression', () => {
       sexAtBirth: ['female'],
       tasks: [{ task: 'my_task', status: 'COMPLETE' }],
       custom: '{age} != 15',
-      latestKitStatus: ['ERRORED']
+      latestKitStatus: ['ERRORED'],
+      includeFacetKeys: []
     }
 
     const result = toExpression(searchState)

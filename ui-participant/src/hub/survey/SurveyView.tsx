@@ -31,10 +31,16 @@ import { useActiveUser } from 'providers/ActiveUserProvider'
 import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
 import { ReactQuestionFactory } from 'survey-react-ui'
 import mixpanel from 'mixpanel-browser'
+import { ThemedSurveyQuestionDocumentRequest } from 'components/ThemedDocumentRequest'
 
 // register themed address validation type
 ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
   return React.createElement(ThemedSurveyQuestionAddressValidation, props)
+})
+
+// register themed document upload
+ReactQuestionFactory.Instance.registerQuestion('documentrequest', props => {
+  return React.createElement(ThemedSurveyQuestionDocumentRequest, props)
 })
 
 /** handles loading the survey form and responses from the server */

@@ -9,7 +9,8 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, DownloadControl } from './tableUtils'
+import { basicTableLayout, checkboxColumnCell, DownloadControl } from './tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import { userEvent } from '@testing-library/user-event'
 
 const SAMPLE_INITIAL_DATA = [{ consented: true, name: 'Fred' }, { consented: false, name: 'James' }]

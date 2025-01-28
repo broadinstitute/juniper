@@ -11,7 +11,7 @@ import {
 import {
   basicTableLayout,
   renderEmptyMessage
-} from 'util/tableUtils'
+} from 'util/table/tableUtils'
 import { instantToDefaultString } from '@juniper/ui-core'
 import { useLoadingEffect } from 'api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

@@ -15,7 +15,7 @@ import {
   IndeterminateCheckbox,
   renderEmptyMessage,
   RowVisibilityCount
-} from 'util/tableUtils'
+} from '../util/table/tableUtils'
 import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
 import { failureNotification, successNotification } from '../util/notifications'

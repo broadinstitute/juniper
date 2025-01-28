@@ -1,7 +1,9 @@
 package bio.terra.pearl.core.dao.search;
 
+import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
@@ -9,6 +11,8 @@ import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
@@ -26,7 +30,6 @@ import org.jdbi.v3.core.statement.StatementContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,6 +44,8 @@ public class EnrolleeSearchExpressionDao {
     private final Jdbi jdbi;
     private final EnrolleeDao enrolleeDao;
     private final ProfileDao profileDao;
+    private final KitRequestService kitRequestService;
+    private final ParticipantTaskDao participantTaskDao;
 
     /** list of mappers for the various modules that can be included in a search result */
     protected static final List<SearchModuleMapper<? extends BaseEntity>> moduleMappers = List.of(
@@ -54,10 +59,12 @@ public class EnrolleeSearchExpressionDao {
             new SearchModuleCollectionMapper<>("task", ParticipantTask.class, (result, task) -> result.getTasks().add(task)));
 
 
-    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao) {
+    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao, KitRequestService kitRequestService, ParticipantTaskDao participantTaskDao) {
         this.jdbi = jdbi;
         this.enrolleeDao = enrolleeDao;
         this.profileDao = profileDao;
+        this.kitRequestService = kitRequestService;
+        this.participantTaskDao = participantTaskDao;
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId) {
@@ -75,7 +82,7 @@ public class EnrolleeSearchExpressionDao {
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search, EnrolleeSearchOptions opts) {
-        return jdbi.withHandle(handle -> {
+        List<EnrolleeSearchExpressionResult> searchResult = jdbi.withHandle(handle -> {
             org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES), opts);
             Query query = jdbiFromJooq(jooqQuery, handle);
             var result = query
@@ -85,6 +92,31 @@ public class EnrolleeSearchExpressionDao {
                     .toList();
             return result;
         });
+        if (opts.getIncludes().size() > 0) {
+            for (EnrolleeSearchOptions.Include include : opts.getIncludes()) {
+                if (include == EnrolleeSearchOptions.Include.kitRequests) {
+                    attachKitRequests(searchResult);
+                } else if (include == EnrolleeSearchOptions.Include.tasks) {
+                    attachTasks(searchResult);
+                }
+            }
+        }
+
+        return searchResult;
+    }
+
+    private void attachKitRequests(List<EnrolleeSearchExpressionResult> result) {
+        Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(result.stream().map(EnrolleeSearchExpressionResult::getEnrollee).toList());
+        for (EnrolleeSearchExpressionResult enrolleeResult : result) {
+            enrolleeResult.getKitRequests().addAll(kitsByEnrolleeId.getOrDefault(enrolleeResult.getEnrollee().getId(), List.of()));
+        }
+    }
+
+    private void attachTasks(List<EnrolleeSearchExpressionResult> result) {
+        Map<UUID, List<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(result.stream().map(r -> r.getEnrollee().getId()).toList());
+        for (EnrolleeSearchExpressionResult enrolleeResult : result) {
+            enrolleeResult.getTasks().addAll(tasksByEnrolleeId.getOrDefault(enrolleeResult.getEnrollee().getId(), List.of()));
+        }
     }
 
     private static Query jdbiFromJooq(org.jooq.Query jooqQuery, Handle handle) {
@@ -169,7 +201,7 @@ public class EnrolleeSearchExpressionDao {
 
     /** for modules that are mapped to a collection in the EnrolleeSearchExpressionResult, such as tasks */
     private static class SearchModuleCollectionMapper<T> extends SearchModuleMapper<T> {
-        public SearchModuleCollectionMapper(String prefix, Class<T> clazz, BiConsumer<EnrolleeSearchExpressionResult, T> consumer) {
+        public  SearchModuleCollectionMapper(String prefix, Class<T> clazz, BiConsumer<EnrolleeSearchExpressionResult, T> consumer) {
             super(prefix, clazz, consumer);
         }
 

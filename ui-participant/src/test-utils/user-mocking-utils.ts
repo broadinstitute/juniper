@@ -1,6 +1,7 @@
 import { UserContextT } from 'providers/UserProvider'
 import { ActiveUserContextT } from 'providers/ActiveUserProvider'
 import { mockEnrollee } from './test-participant-factory'
+import { mockProfile } from '@juniper/ui-core'
 
 /**
  * Returns a mock object that can be returned by the useUser hook
@@ -27,11 +28,11 @@ export const mockUseActiveUser = (): ActiveUserContextT => {
   return {
     ppUser: {
       id: '',
-      profile: {},
+      profile: mockProfile(),
       profileId: 'profile1',
       participantUserId: ''
     },
-    profile: {},
+    profile: mockProfile(),
     enrollees: [mockEnrollee()],
     proxyRelations: [],
     setActiveUser: jest.fn(),

@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { StudyEnvironmentSurvey } from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification } from '../../util/notifications'
+import { failureNotification } from 'util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 
 /** renders a modal that allows archiving a survey from the current study env */

@@ -9,11 +9,11 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
+import { basicTableLayout, useRoutableTablePaging } from 'util/table/tableUtils'
 import { instantToDefaultString } from '@juniper/ui-core'
 import { LoadedPortalContextT } from '../PortalProvider'
 import { useLoadingEffect } from 'api/api-utils'
-import TableClientPagination from 'util/TablePagination'
+import TableClientPagination from 'util/table/TablePagination'
 import { Modal } from 'react-bootstrap'
 import SiteMediaUploadModal, { allowedImageTypes } from './SiteMediaUploadModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

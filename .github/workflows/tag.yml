@@ -10,7 +10,7 @@ on:
 
 jobs:
   tag-job:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:

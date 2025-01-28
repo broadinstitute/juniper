@@ -66,6 +66,13 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
           } else {
             processedValue = trimIfString(value)
           }
+        } else if (typeDefinition.type === 'INSTANT') {
+          const parsedDate = Date.parse(value)
+          if (isNaN(parsedDate)) {
+            throw new Error(`Invalid date: ${value}`)
+          }
+
+          processedValue = `'${new Date(parsedDate).toISOString()}'`
         } else {
           processedValue = `'${escape(value, escapeQuotes)}'`
         }

@@ -44,6 +44,7 @@ export type StudyEnrollContext = {
   user: ParticipantUser | null,
   studyEnv: StudyEnvironment,
   studyShortcode: string,
+  portalShortcode: string,
   preEnrollResponseId: string | null,
   updatePreEnrollResponseId: (newId: string | null) => void,
   isProxyEnrollment: boolean
@@ -180,6 +181,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   const enrollContext: StudyEnrollContext = {
     studyShortcode,
+    portalShortcode: portal.shortcode,
     studyEnv,
     user,
     preEnrollResponseId,

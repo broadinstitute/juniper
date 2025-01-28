@@ -15,7 +15,7 @@
       {
         "elements": [
           {
-            "type": "document_request",
+            "type": "documentrequest",
             "isRequired": true,
             "name": "medical_record_document_request",
             "title": "Medical Record Request"

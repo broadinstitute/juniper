@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.participant.*;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
@@ -17,6 +18,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
@@ -24,6 +26,8 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -822,4 +826,72 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         results = enrolleeSearchExpressionDao.executeSearch(wrongQuestion, studyEnv.getId());
         assertEquals(0, results.size());
     }
+
+    @Test
+    @Transactional
+    public void testIncludeTasks(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        ParticipantTask task1 = participantTaskFactory.buildPersisted(enrolleeBundle1, "surveyA", TaskStatus.NEW, TaskType.SURVEY);
+        ParticipantTask task2 = participantTaskFactory.buildPersisted(enrolleeBundle1, "surveyB", TaskStatus.NEW, TaskType.SURVEY);
+
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle3 =  enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        ParticipantTask task3 = participantTaskFactory.buildPersisted(enrolleeBundle3, "surveyB", TaskStatus.NEW, TaskType.SURVEY);
+
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(
+                enrolleeSearchExpressionParser.parseRule(""), studyEnvBundle.getStudyEnv().getId());
+        Assertions.assertEquals(3, results.size());
+        // check does not include tasks by default
+        Assertions.assertTrue(results.stream().allMatch(r -> r.getTasks().isEmpty()));
+
+        results = enrolleeSearchExpressionDao.executeSearch(
+                enrolleeSearchExpressionParser.parseRule(""), studyEnvBundle.getStudyEnv().getId(),
+                EnrolleeSearchOptions.builder().includes(List.of(EnrolleeSearchOptions.Include.tasks)).build());
+        Assertions.assertEquals(3, results.size());
+        // check the tasks are included correctly with each user
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle1.enrollee().getId()) &&
+                r.getTasks().size() == 2 &&
+                r.getTasks().stream().allMatch(t -> t.getId().equals(task1.getId()) || t.getId().equals(task2.getId()))));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle2.enrollee().getId()) &&
+                r.getTasks().size() == 0));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle3.enrollee().getId()) &&
+                r.getTasks().size() == 1 &&
+                r.getTasks().stream().allMatch(t -> t.getId().equals(task3.getId()))));
+    }
+
+    @Test
+    @Transactional
+    public void testIncludeKitRequests(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        KitRequest kitRequest1 = kitRequestFactory.buildPersisted(getTestName(info), enrolleeBundle1.enrollee(), PepperKitStatus.CREATED);
+        KitRequest kitRequest2 = kitRequestFactory.buildPersisted(getTestName(info), enrolleeBundle1.enrollee(), PepperKitStatus.SENT);
+
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle3 =  enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        KitRequest kitRequest3 = kitRequestFactory.buildPersisted(getTestName(info), enrolleeBundle3.enrollee(), PepperKitStatus.ERRORED);
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(
+                enrolleeSearchExpressionParser.parseRule(""), studyEnvBundle.getStudyEnv().getId());
+        Assertions.assertEquals(3, results.size());
+        // check does not include kits by default
+        Assertions.assertTrue(results.stream().allMatch(r -> r.getKitRequests().isEmpty()));
+
+        results = enrolleeSearchExpressionDao.executeSearch(
+                enrolleeSearchExpressionParser.parseRule(""), studyEnvBundle.getStudyEnv().getId(),
+                EnrolleeSearchOptions.builder().includes(List.of(EnrolleeSearchOptions.Include.kitRequests)).build());
+        Assertions.assertEquals(3, results.size());
+        // check the tasks are included correctly with each user
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle1.enrollee().getId()) &&
+                r.getKitRequests().size() == 2 &&
+                r.getKitRequests().stream().allMatch(t -> t.getId().equals(kitRequest1.getId()) || t.getId().equals(kitRequest2.getId()))));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle2.enrollee().getId()) &&
+                r.getKitRequests().size() == 0));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle3.enrollee().getId()) &&
+                r.getKitRequests().size() == 1 &&
+                r.getKitRequests().stream().allMatch(t -> t.getId().equals(kitRequest3.getId()))));
+    }
+
 }

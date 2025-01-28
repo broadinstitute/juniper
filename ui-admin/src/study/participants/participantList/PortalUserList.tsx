@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import { useLoadingEffect } from 'api/api-utils'
 import Api, { Study } from 'api/api'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
@@ -21,7 +22,7 @@ import { tabLinkStyle } from 'util/subNavStyles'
 import ParticipantMergeView from '../merge/ParticipantMergeView'
 import useParticipantDupeTab from '../merge/UseParticipantDupeTab'
 import { ParticipantListViewSwitcher } from './ParticipantListViewSwitcher'
-import ErrorBoundary from '../../../util/ErrorBoundary'
+import ErrorBoundary from 'util/ErrorBoundary'
 
 export type ParticipantUserWithEnrollees = ParticipantUser & {
   enrollees: Enrollee[]
