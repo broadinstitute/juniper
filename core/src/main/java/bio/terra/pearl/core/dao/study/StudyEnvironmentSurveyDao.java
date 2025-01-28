@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.context.annotation.Lazy;
@@ -124,6 +125,34 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
                         .bind("excludeId", excludeId)
                         .mapTo(Integer.class)
                         .one()) > 0;
+    }
+
+    public List<StudyEnvironmentSurvey> findAllByTypeWithContent(List<UUID> studyEnvIds, SurveyType surveyType, Boolean active) {
+        List<StudyEnvironmentSurvey> studyEnvSurveys = jdbi.withHandle(handle -> {
+            Query query = handle.createQuery("""
+                                select a.* from %s a
+                                    join survey on survey.id = a.survey_id
+                                    where a.study_environment_id IN (<studyEnvIds>)
+                                    %s
+                                    %s
+                                    order by survey.stable_id asc, survey_order asc;
+                                """.formatted(
+                            tableName,
+                            surveyType != null ? " and survey.survey_type = :surveyType" : "",
+                            active != null ? " and a.active = :active" : ""))
+                    .bind("surveyType", surveyType)
+                    .bindList("studyEnvIds", studyEnvIds);
+            if (active != null) {
+                query = query.bind("active", active);
+            }
+            if (surveyType != null) {
+                query = query.bind("surveyType", surveyType);
+            }
+            return query.mapTo(clazz)
+                    .list();
+        });
+        attachSurveys(studyEnvSurveys, ATTACH_SURVEY.WITH_CONTENT);
+        return studyEnvSurveys;
     }
 
     protected enum ATTACH_SURVEY {

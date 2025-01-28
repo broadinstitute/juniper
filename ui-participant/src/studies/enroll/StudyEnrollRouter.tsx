@@ -12,8 +12,7 @@ import {
 import { usePortalEnv } from 'providers/PortalProvider'
 import Api, {
   Portal,
-  StudyEnvironment,
-  Survey
+  StudyEnvironment
 } from 'api/api'
 import NavBar from 'Navbar'
 import PreEnrollView from './PreEnroll'
@@ -97,7 +96,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
-  const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
+  const preEnrollSurvey = getPreEnrollSurvey(studyEnv)
+  const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!preEnrollSurvey)
 
   const [hasProvidedPassword, setHasProvidedPassword] = useHasProvidedStudyPassword(studyShortcode)
   const mustProvidePassword = studyEnv.studyEnvironmentConfig.passwordProtected && !hasProvidedPassword
@@ -189,7 +189,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     isSubjectEnrollment: !!matchedEnrollee && !matchedEnrollee.subject,
     isProxyEnrollment
   }
-  const hasPreEnroll = !!enrollContext.studyEnv.preEnrollSurvey
+
+  const hasPreEnroll = !!preEnrollSurvey
 
   if (isLoading) { return <PageLoadingIndicator/> }
   return <>
@@ -206,7 +207,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
           {skipPreEnroll &&
             <Route path="preEnroll/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>}
           {hasPreEnroll && <Route path="preEnroll" element={
-            <PreEnrollView enrollContext={enrollContext} survey={enrollContext.studyEnv.preEnrollSurvey as Survey}/>
+            <PreEnrollView enrollContext={enrollContext} survey={preEnrollSurvey!.survey}/>
           }/>}
           <Route path="ineligible" element={<StudyIneligible portal={portal} studyName={studyName}/>}/>
           <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
@@ -238,4 +239,8 @@ export function handleNewStudyEnroll(
     }
     navigate('/hub', { replace: true, state: hubUpdate })
   }
+}
+
+const getPreEnrollSurvey = (studyEnv: StudyEnvironment) => {
+  return studyEnv.configuredSurveys.find(ses => ses.survey.surveyType === 'PRE_ENROLL')
 }

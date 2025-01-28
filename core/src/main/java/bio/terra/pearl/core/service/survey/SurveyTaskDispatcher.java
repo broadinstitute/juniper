@@ -111,6 +111,7 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
             SurveyType.RESEARCH, TaskType.SURVEY,
             SurveyType.OUTREACH, TaskType.OUTREACH,
             SurveyType.ADMIN, TaskType.ADMIN_FORM,
+            SurveyType.PRE_ENROLL, TaskType.SURVEY, // pre-enroll surveys are NOT typically assigned as tasks
             SurveyType.DOCUMENT_REQUEST, TaskType.DOCUMENT_REQUEST
     );
 

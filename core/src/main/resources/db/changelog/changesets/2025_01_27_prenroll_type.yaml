@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: "preenroll_type"
+      author: dbush
+      changes:
+        - sql:
+            sql:
+              insert into study_environment_survey (study_environment_id, created_at, last_updated_at, survey_id, survey_order, active)
+              select id, now(), now(), pre_enroll_survey_id as survey_id, 1, true from study_environment where pre_enroll_survey_id is not null;
+        - sql:
+            sql:
+              update survey set survey_type = 'PRE_ENROLL', auto_assign = false where stable_id in (select 
+              stable_id from survey join study_environment on pre_enroll_survey_id = survey.id);
