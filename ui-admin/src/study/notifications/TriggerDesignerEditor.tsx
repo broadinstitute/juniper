@@ -1,12 +1,16 @@
 import {
-  ParticipantTaskStatus, StudyEnvParams,
+  ParticipantTaskStatus,
+  StudyEnvParams,
   Trigger,
   TriggerActionType,
   TriggerDeliveryType,
   TriggerScope,
   TriggerType
 } from '@juniper/ui-core'
-import React, { useId, useState } from 'react'
+import React, {
+  useId,
+  useState
+} from 'react'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
 import {
@@ -16,7 +20,10 @@ import {
   InfoCardTitle
 } from 'components/InfoCard'
 import EmailTemplateEditor from 'study/notifications/EmailTemplateEditor'
-import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  paramsFromContext,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import InfoPopup from 'components/forms/InfoPopup'
 import { NavLink } from 'react-router-dom'
 import { Checkbox } from 'components/forms/Checkbox'
@@ -164,7 +171,8 @@ const eventTypeOptions = [
   { label: 'Study Consent', value: 'STUDY_CONSENT' },
   { label: 'Survey Completed', value: 'SURVEY_RESPONSE' },
   { label: 'Kit Sent', value: 'KIT_SENT' },
-  { label: 'Kit Returned', value: 'KIT_RECEIVED' }
+  { label: 'Kit Returned', value: 'KIT_RECEIVED' },
+  { label: 'Survey Published', value: 'SURVEY_PUBLISHED' }
 ]
 
 const EventTriggerEditor = (

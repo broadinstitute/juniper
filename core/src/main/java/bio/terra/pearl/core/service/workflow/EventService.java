@@ -11,7 +11,10 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.*;
+import bio.terra.pearl.core.model.workflow.Event;
+import bio.terra.pearl.core.model.workflow.EventClass;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -136,7 +139,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
 
     public SurveyPublishedEvent publishSurveyPublishedEvent(UUID portalEnvId, UUID studyEnvId, Survey survey) {
         SurveyPublishedEvent event = SurveyPublishedEvent.builder()
-                        .studyEnvironmentId(studyEnvId)
+                .studyEnvironmentId(studyEnvId)
                 .surveyId(survey.getId())
                 .survey(survey)
                 .portalEnvironmentId(portalEnvId)

@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.survey.event;
 
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.service.workflow.BaseEvent;
+import bio.terra.pearl.core.service.workflow.StudyEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Getter @Setter
 @SuperBuilder
-public class SurveyPublishedEvent extends Event implements BaseEvent {
+public class SurveyPublishedEvent extends StudyEvent implements BaseEvent {
     private Survey survey;  // the survey that is being published -- the content does not need to be attached
 
     public String getStableId() {
@@ -22,5 +22,9 @@ public class SurveyPublishedEvent extends Event implements BaseEvent {
 
     public Integer getVersion() {
         return survey.getVersion();
+    }
+
+    public String getTargetStableId() {
+        return survey.getStableId();
     }
 }
