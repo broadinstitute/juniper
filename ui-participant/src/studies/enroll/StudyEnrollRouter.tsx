@@ -243,4 +243,5 @@ export function handleNewStudyEnroll(
 
 const getPreEnrollSurvey = (studyEnv: StudyEnvironment) => {
   return studyEnv.configuredSurveys.find(ses => ses.survey.surveyType === 'PRE_ENROLL')
+    ?? studyEnv.preEnrollSurvey
 }

@@ -163,7 +163,7 @@ public class EnrolleeExportService {
         return moduleFormatters;
     }
 
-    List<SurveyType> SURVEY_TYPE_EXPORT_ORDER = List.of(SurveyType.CONSENT, SurveyType.RESEARCH, SurveyType.DOCUMENT_REQUEST, SurveyType.OUTREACH);
+    List<SurveyType> SURVEY_TYPE_EXPORT_ORDER = List.of(SurveyType.PRE_ENROLL, SurveyType.CONSENT, SurveyType.RESEARCH, SurveyType.DOCUMENT_REQUEST, SurveyType.OUTREACH);
 
     /**
      * returns a ModuleExportInfo for each unique survey stableId that has ever been attached to the studyEnvironment
@@ -171,19 +171,6 @@ public class EnrolleeExportService {
      */
     protected List<SurveyFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId, List<EnrolleeExportData> enrolleeExportData) {
         List<SurveyFormatter> moduleFormatters = new ArrayList<>();
-        // now add the pre-enrollment survey (if it exists)
-        StudyEnvironment studyEnvironment = studyEnvironmentService.find(studyEnvironmentId).orElseThrow();
-        if (studyEnvironment.getPreEnrollSurveyId() != null) {
-            Survey preEnrollSurvey = surveyService.find(studyEnvironment.getPreEnrollSurveyId()).orElseThrow();
-            List<SurveyQuestionDefinition> preEnrollSurveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(List.of(preEnrollSurvey.getId()));
-            moduleFormatters.add(new SurveyFormatter(
-                    exportOptions,
-                    preEnrollSurvey.getStableId(),
-                    List.of(preEnrollSurvey),
-                    preEnrollSurveyQuestionDefinitions,
-                    enrolleeExportData,
-                    objectMapper));
-        }
 
         // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
         List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
