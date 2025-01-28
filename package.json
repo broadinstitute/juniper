@@ -11,12 +11,12 @@
   "devDependencies": {
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.26.3",
-    "@babel/preset-typescript": "^7.24.7",
+    "@babel/preset-typescript": "^7.26.0",
     "@prosopo/vite-plugin-watch-workspace": "^1.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.5.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
     "@types/json-stringify-safe": "^5.0.3",
     "@types/mixpanel-browser": "^2.49.1",
@@ -62,8 +62,10 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@types/react-dropzone": "^5.1.0",
     "@yudiel/react-qr-scanner": "^2.0.8",
     "mixpanel-browser": "^2.54.0",
+    "react-dropzone": "^14.3.5",
     "react-qr-code": "^2.0.15"
   },
   "overrides": {

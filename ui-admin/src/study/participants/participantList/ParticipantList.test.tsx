@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  render,
   screen,
   waitFor
 } from '@testing-library/react'
@@ -11,17 +10,17 @@ import {
   mockEnrollee,
   mockEnrolleeSearchExpressionResult,
   mockFamily,
-  mockStudyEnvContext, renderInPortalRouter
+  mockStudyEnvContext, renderInPortalRouter, renderWithRouterAndStore
 } from 'test-utils/mocking-utils'
 import { userEvent } from '@testing-library/user-event'
 import {
-  Family, renderWithRouter,
-  setupRouterTest
+  Family
 } from '@juniper/ui-core'
 import ParticipantsRouter from '../ParticipantsRouter'
 import { mockParticipantUser } from '@juniper/ui-participant/src/test-utils/test-participant-factory'
 
 const mockSearchApi = (numSearchResults: number) => {
+  jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue({})
   return jest.spyOn(Api, 'executeSearchExpression')
     .mockImplementation(() => {
       const enrolleeSearchResults: EnrolleeSearchExpressionResult[] =
@@ -78,8 +77,7 @@ const mockParticipantUserApi = () => {
 test('renders a participant with link', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
@@ -92,8 +90,7 @@ test('renders a participant with link', async () => {
 test('renders filters for participant columns', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
 
   //There are 3 default columns shown, 1 of which allow text search
   const searchInputs = await screen.findAllByPlaceholderText('Filter...')
@@ -103,8 +100,7 @@ test('renders filters for participant columns', async () => {
 test('filters participants based on shortcode', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
 
   //Assert that JOSALK is visible in the table
   await screen.findByText('JOSALK')
@@ -121,7 +117,7 @@ test('filters participants based on shortcode', async () => {
 test('send email is toggled depending on participants selected', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
@@ -134,7 +130,7 @@ test('add synthetic participant not shown for live environment', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   studyEnvContext.currentEnv.environmentName = 'live'
-  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
@@ -145,7 +141,7 @@ test('add synthetic participant not shown for live environment', async () => {
 test('add synthetic participant shown for sandbox environment', async () => {
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  renderWithRouter(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
@@ -157,8 +153,7 @@ test('keyword search sends search api request', async () => {
   jest.clearAllMocks()
   const searchSpy = mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
@@ -182,8 +177,7 @@ test('keyword search sends search api request', async () => {
 test('allows the user to cycle pages', async () => {
   mockSearchApi(100)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
 
   //Wait for results to be rendered
   await screen.findAllByText('JOSALK')
@@ -201,8 +195,7 @@ test('allows the user to cycle pages', async () => {
 test('allows the user to change the page size', async () => {
   mockSearchApi(100)
   const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
+  renderWithRouterAndStore(<ParticipantList studyEnvContext={studyEnvContext}/>)
 
   //Wait for results to be rendered
   await screen.findAllByText('JOSALK')

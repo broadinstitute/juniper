@@ -8,7 +8,7 @@ import { emptyChangeSet, emptyStudyEnvChange } from 'util/publishUtils'
 import { doApiLoad } from '../../api/api-utils'
 import { Store } from 'react-notifications-component'
 
-import { successNotification } from '../../util/notifications'
+import { successNotification } from 'util/notifications'
 import { PortalContext, PortalContextT } from '../../portal/PortalProvider'
 
 /** renders a modal that allows publishing a single survey to a new environment */

@@ -1,4 +1,11 @@
-import { Enrollee, instantToDateString, ParticipantFile, saveBlobAsDownload, Study, useI18n } from '@juniper/ui-core'
+import {
+  Enrollee, EnvironmentName,
+  instantToDateString,
+  ParticipantFile,
+  saveBlobAsDownload,
+  StudyEnvParams,
+  useI18n
+} from '@juniper/ui-core'
 import React, { useEffect, useState } from 'react'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import Api from 'api/api'
@@ -13,23 +20,14 @@ import {
 import { usePortalEnv } from 'providers/PortalProvider'
 
 export default function DocumentLibrary() {
+  const { i18n } = useI18n()
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees, ppUser } = useActiveUser()
-  const [participantFiles, setParticipantFiles] = useState<ParticipantFile[]>([])
-  const currentStudy = portal.portalStudies.find(pStudy =>
-    pStudy.study.studyEnvironments.find(studyEnv =>
-      studyEnv.environmentName === portalEnv.environmentName))?.study
 
-  const loadDocuments = async () => {
-    if (!currentStudy) { return }
-    const enrolleeShortcode = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)!.shortcode
-    const documents = await Api.listParticipantFiles(currentStudy.shortcode, enrolleeShortcode)
-    setParticipantFiles(documents)
-  }
-
-  useEffect(() => {
-    loadDocuments()
-  }, [])
+  const studiesJoined = portal.portalStudies.filter(pStudy =>
+    enrollees.some(enrollee =>
+      enrollee.profileId === ppUser?.profileId && enrollee.studyEnvironmentId === pStudy.study.studyEnvironments[0].id)
+  )
 
   return <div
     className="hub-dashboard-background flex-grow-1 pb-2"
@@ -38,10 +36,26 @@ export default function DocumentLibrary() {
       <div className="my-md-4 mx-auto px-0" style={{ maxWidth: 768 }}>
         <div className="card-body">
           <div className="align-items-center">
-            <DocumentsList
-              currentStudy={currentStudy!}
-              enrollee={enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)!}
-              participantFiles={participantFiles}/>
+            <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
+              <h1 className="pb-3">
+                {i18n('documentsPageTitle')}
+              </h1>
+              <div className="pb-4">
+                {i18n('documentsPageMessage')}
+              </div>
+              <h3>{i18n('documentsPageUploadedDocumentsTitle')}</h3>
+              {studiesJoined.map(pStudy =>
+                <DocumentsList
+                  studyName={pStudy.study.name}
+                  studyEnvParams={{
+                    portalShortcode: portal.shortcode,
+                    studyShortcode: pStudy.study.shortcode,
+                    envName: portalEnv.environmentName as EnvironmentName
+                  }}
+                  enrollee={enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)!}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -49,19 +63,24 @@ export default function DocumentLibrary() {
   </div>
 }
 
-const DocumentsList = ({ currentStudy, enrollee, participantFiles }: {
-  currentStudy: Study, enrollee: Enrollee, participantFiles: ParticipantFile[]
+const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
+  studyName: string, studyEnvParams: StudyEnvParams, enrollee: Enrollee
 }) => {
   const { i18n } = useI18n()
+  const [participantFiles, setParticipantFiles] = useState<ParticipantFile[]>([])
 
-  return <div className="mb-3 rounded round-3 py-4 bg-white px-md-5 shadow-sm px-2">
-    <h1 className="pb-3">
-      {i18n('documentsPageTitle')}
-    </h1>
-    <div className="pb-4">
-      {i18n('documentsPageMessage')}
-    </div>
-    <h3>{i18n('documentsPageUploadedDocumentsTitle')} ({participantFiles.length})</h3>
+  const loadDocuments = async () => {
+    const enrolleeShortcode = enrollee.shortcode
+    const documents = await Api.listParticipantFiles({ studyEnvParams, enrolleeShortcode })
+    setParticipantFiles(documents)
+  }
+
+  useEffect(() => {
+    loadDocuments()
+  }, [])
+
+  return <>
+    <h5 className={'mt-3'}>{studyName} ({participantFiles.length})</h5>
     <div className="d-flex flex-column">
       { participantFiles.length > 0 && <table className="table">
         <thead>
@@ -85,8 +104,9 @@ const DocumentsList = ({ currentStudy, enrollee, participantFiles }: {
               <td className="align-middle">
                 <div className={'d-flex justify-content-end'}>
                   <button className="btn btn-outline-primary" onClick={async () => {
-                    const response = await Api.downloadParticipantFile(
-                      currentStudy.shortcode, enrollee.shortcode, participantFile.fileName)
+                    const response = await Api.downloadParticipantFile({
+                      studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
+                    })
                     saveBlobAsDownload(await response.blob(), participantFile.fileName)
                   }}>
                     <span className="d-flex align-items-center">
@@ -100,10 +120,10 @@ const DocumentsList = ({ currentStudy, enrollee, participantFiles }: {
         </tbody>
       </table>}
       {participantFiles.length === 0 &&
-          <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
+        <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
       }
     </div>
-  </div>
+  </>
 }
 
 const fileTypeToIcon = (fileType: string) => {

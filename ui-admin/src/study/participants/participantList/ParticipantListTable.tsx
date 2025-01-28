@@ -2,8 +2,7 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { EnrolleeSearchExpressionResult } from 'api/api'
-import { Link } from 'react-router-dom'
+import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
@@ -17,13 +16,18 @@ import {
 } from '@tanstack/react-table'
 import {
   basicTableLayout,
-  ColumnVisibilityControl,
   DownloadControl,
   IndeterminateCheckbox,
   renderEmptyMessage,
   RowVisibilityCount,
   useRoutableTablePaging
-} from 'util/tableUtils'
+} from 'util/table/tableUtils'
+import {
+  ColumnVisibilityControl,
+  enrolleeConsentedColumn,
+  enrolleeShortcodeColumn,
+  getDynamicColumn
+} from 'util/table/columnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
@@ -41,8 +45,12 @@ import {
 } from 'components/forms/Button'
 import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
-import TableClientPagination from 'util/TablePagination'
+import TableClientPagination from 'util/table/TablePagination'
 import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
+import {
+  FacetedParticipantSearchState,
+  ParticipantSearchState
+} from 'util/participantSearchUtils'
 
 /**
  * Participant table used by the participant list. Does not include searching functionality, just table
@@ -57,6 +65,9 @@ function ParticipantListTable({
   disableColumnFiltering,
   header,
   tableClass,
+  facetedSearchState,
+  setSearchState,
+  facets,
   reload
 }: {
   participantList: EnrolleeSearchExpressionResult[],
@@ -67,9 +78,12 @@ function ParticipantListTable({
   disableColumnFiltering?: boolean,
   header?: React.ReactNode,
   tableClass?: string,
+  facetedSearchState?: FacetedParticipantSearchState,
+  setSearchState?: (searchState: ParticipantSearchState) => void,
+  facets?: ExpressionSearchFacets,
   reload: () => void
 }) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const { portal, currentEnv, currentEnvPath } = studyEnvContext
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [showSyntheticModal, setShowSyntheticModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
@@ -89,6 +103,16 @@ function ParticipantListTable({
   )
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
+  const dynamicColumns: ColumnDef<EnrolleeSearchExpressionResult>[] = []
+  // now add any columns for answers
+  if (facetedSearchState) {
+    facetedSearchState.queryFacets?.forEach(facet => {
+      dynamicColumns.push(getDynamicColumn(facet))
+    })
+    facetedSearchState.includeFacets?.forEach(facet => {
+      dynamicColumns.push(getDynamicColumn(facet))
+    })
+  }
 
   const columns = useMemo<ColumnDef<EnrolleeSearchExpressionResult>[]>(() => {
     const columns: ColumnDef<EnrolleeSearchExpressionResult>[] = [{
@@ -103,14 +127,8 @@ function ParticipantListTable({
             onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
         </div>
       )
-    }, {
-      header: 'Shortcode',
-      accessorKey: 'enrollee.shortcode',
-      meta: {
-        columnType: 'string'
-      },
-      cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue() as string}</Link>
     },
+    enrolleeShortcodeColumn(currentEnvPath),
     {
       header: 'Created',
       id: 'createdAt',
@@ -180,22 +198,15 @@ function ParticipantListTable({
       },
       filterFn: 'equals',
       cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-    }, {
-      header: 'Consented',
-      accessorKey: 'enrollee.consented',
-      meta: {
-        columnType: 'boolean',
-        filterOptions: [
-          { value: true, label: 'Consented' },
-          { value: false, label: 'Not Consented' }
-        ]
-      },
-      filterFn: 'equals',
-      cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-    }]
+    },
+    enrolleeConsentedColumn(),
+    ...dynamicColumns]
+
 
     return columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode')
-  }, [study.shortcode, currentEnv.environmentName, familyLinkageEnabled])
+  }, [
+    currentEnvPath, familyLinkageEnabled, dynamicColumns.map(col => col.id).join(','), currentEnvPath
+  ])
 
   const table = useReactTable({
     data: participantList,
@@ -224,6 +235,16 @@ function ParticipantListTable({
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
+
+  const dynamicColOpts = setSearchState && facetedSearchState ?
+    {
+      facets,
+      dynamicFacets: facetedSearchState?.includeFacets ?? [],
+      setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
+        ...facetedSearchState,
+        includeFacetKeys: dynamicFacets.map(facet => facet.key)
+      })
+    }: undefined
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     <div className="d-flex align-items-center justify-content-between">
@@ -260,8 +281,7 @@ function ParticipantListTable({
           </ul>
         </ul>
 
-
-        <ColumnVisibilityControl table={table}/>
+        <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}

@@ -171,6 +171,13 @@ public class EnrolleeSearchQueryBuilder {
             this.on = on;
         }
 
+        public JoinClause(JoinClause joinClause, String joinType) {
+            this.joinType = joinType;
+            this.alias = joinClause.alias;
+            this.table = joinClause.table;
+            this.on = joinClause.on;
+        }
+
         public JoinClause(String joinType, String table, String alias, String on) {
             this.joinType = joinType;
             this.alias = alias;

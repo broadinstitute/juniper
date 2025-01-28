@@ -19,9 +19,9 @@ import {
   basicTableLayout,
   renderEmptyMessage,
   useRoutableTablePaging
-} from 'util/tableUtils'
+} from 'util/table/tableUtils'
 import { Family } from '@juniper/ui-core'
-import TableClientPagination from 'util/TablePagination'
+import TableClientPagination from 'util/table/TablePagination'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { getFamilyNameString } from 'util/familyUtils'
 import { NavLink } from 'react-router-dom'
@@ -33,7 +33,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
-import { createdAtColumn } from 'util/tableColumnUtils'
+import { createdAtColumn } from 'util/table/tableColumnUtils'
 
 type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 

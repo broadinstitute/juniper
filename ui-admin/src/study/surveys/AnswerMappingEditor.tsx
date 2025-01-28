@@ -35,7 +35,7 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 
 

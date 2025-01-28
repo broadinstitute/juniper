@@ -8,7 +8,7 @@ import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { Enrollee } from '@juniper/ui-core'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
-import { useNonNullReactSingleSelect } from '../../../util/react-select-utils'
+import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import Select from 'react-select'
 
 

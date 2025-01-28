@@ -6,7 +6,7 @@ import Api, { getMediaUrl } from './api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faExternalLink, faList, faSearch, faTableCellsLarge } from '@fortawesome/free-solid-svg-icons'
 import { Portal, instantToDateString, SUPPORT_EMAIL_ADDRESS } from '@juniper/ui-core'
-import { basicTableLayout } from './util/tableUtils'
+import { basicTableLayout } from './util/table/tableUtils'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { useConfig } from './providers/ConfigProvider'
 

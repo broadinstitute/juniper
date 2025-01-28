@@ -14,7 +14,7 @@ import {
 } from 'survey-core'
 
 import {
-  Answer,
+  Answer, AnswerFormat,
   FormContent,
   FormElement,
   Survey,
@@ -35,7 +35,7 @@ import { Markdown } from './participant/landing/Markdown'
 import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
-import { EnvironmentName } from './types/study'
+import { StudyEnvParams } from './types/study'
 import { Profile } from 'src/types/user'
 import { DefaultLight } from 'survey-core/themes'
 
@@ -183,16 +183,18 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
     .filter(([key]) => {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
+    .map(([key, value]) =>
+      makeAnswer(surveyJSModel, value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
 export function makeAnswer(
+  model: SurveyModel,
   value: SurveyJsValueType,
   questionStableId: string,
   surveyJsData: Record<string, SurveyJsValueType>,
   viewedLanguage?: string): Answer {
-  const answer: Answer = { questionStableId }
+  const answer: Answer = { questionStableId, format: getFormat(model, questionStableId) }
   if (viewedLanguage) {
     answer.viewedLanguage = viewedLanguage
   }
@@ -210,20 +212,46 @@ export function makeAnswer(
     answer.otherDescription = surveyJsData[questionStableId + SURVEY_JS_OTHER_SUFFIX] as string
   } else if (questionStableId.endsWith(SURVEY_JS_OTHER_SUFFIX)) {
     const baseStableId = questionStableId.substring(0, questionStableId.lastIndexOf('-'))
-    return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData, viewedLanguage)
+    return makeAnswer(model, surveyJsData[baseStableId], baseStableId, surveyJsData, viewedLanguage)
   }
   return answer
 }
 
+const getFormat = (model: SurveyModel, questionStableId: string): AnswerFormat => {
+  if (isFileQuestion(model, questionStableId)) {
+    return 'FILE_NAME'
+  }
+  return 'NONE'
+}
+
+const isFileQuestion = (model: SurveyModel, questionStableId: string): boolean => {
+  // will have format 'questionName[idx]'
+  // need to strip [idx] and check if original question is a file question
+
+  const endRegex = /\[\d+\]$/
+
+  if (!endRegex.test(questionStableId)) {
+    return false
+  }
+
+  const questionName = questionStableId.replace(endRegex, '')
+  const question = model?.getQuestionByName(questionName)
+
+  return question?.getType() === 'documentrequest'
+}
+
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
-export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
-  updated: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer[] {
+export function getUpdatedAnswers(
+  model: SurveyModel,
+  original: Record<string, SurveyJsValueType>,
+  updated: Record<string, SurveyJsValueType>, viewedLanguage?: string
+): Answer[] {
   const allKeys = _union(_keys(original), _keys(updated))
   const updatedKeys = allKeys.filter(key => !_isEqual(original[key], updated[key]))
     .map(key => key.endsWith(SURVEY_JS_OTHER_SUFFIX) ? key.substring(0, key.lastIndexOf(SURVEY_JS_OTHER_SUFFIX)) : key)
   const dedupedKeys = Array.from(new Set(updatedKeys).values())
 
-  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated, viewedLanguage))
+  return dedupedKeys.map(key => makeAnswer(model, updated[key], key, updated, viewedLanguage))
 }
 
 
@@ -301,9 +329,11 @@ type UseSurveyJsModelOpts = {
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
  * @param pager the control object for paging the survey
- * @param envName
+ * @param studyEnvParams
+ * @param enrolleeShortcode
  * @param profile
  * @param proxyProfile
+ * @param referencedAnswers
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
@@ -313,7 +343,8 @@ export function useSurveyJSModel(
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
-  envName: EnvironmentName,
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string,
   profile?: Profile,
   proxyProfile?: Profile,
   referencedAnswers: Answer[] = [],
@@ -364,7 +395,9 @@ export function useSurveyJSModel(
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
-    newSurveyModel.setVariable('portalEnvironmentName', envName)
+    newSurveyModel.setVariable('studyEnvParams', studyEnvParams)
+    newSurveyModel.setVariable('enrolleeShortcode', enrolleeShortcode)
+    newSurveyModel.setVariable('portalEnvironmentName', studyEnvParams.envName)
     referencedAnswers.forEach(answer => {
       newSurveyModel.setVariable(`${answer.surveyStableId}.${answer.questionStableId}`,
         answer.stringValue ?? answer.numberValue ?? answer.booleanValue ?? answer.objectValue)

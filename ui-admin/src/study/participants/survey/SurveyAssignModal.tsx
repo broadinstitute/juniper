@@ -8,7 +8,7 @@ import { Store } from 'react-notifications-component'
 import { Enrollee, StudyEnvParams } from '@juniper/ui-core'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
-import { useSingleSearchParam } from '../../../util/searchParamsUtils'
+import { useSingleSearchParam } from 'util/searchParamsUtils'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SurveyAssignModal({
