@@ -168,5 +168,9 @@ public class ParticipantTaskService extends ParticipantDataAuditedService<Partic
         return new ParticipantTaskTaskListDto(tasks, enrollees, notes);
     }
 
+    public Optional<ParticipantTask> findOldestTaskForActivity(UUID studyEnvId, String activityStableId) {
+        return dao.findOldestTaskForActivity(studyEnvId, activityStableId);
+    }
+
     public record ParticipantTaskTaskListDto(List<ParticipantTask> tasks, List<Enrollee> enrollees, List<ParticipantNote> participantNotes) {}
 }

@@ -249,6 +249,21 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         return findByProperty("kit_request_id", kitRequestId);
     }
 
+    public Optional<ParticipantTask> findOldestTaskForActivity(UUID studyEnvId, String activityStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select * from %s 
+                                where target_stable_id = :activityStableId 
+                                and study_environment_id = :studyEnvId 
+                                order by created_at limit 1""".formatted(tableName)
+                        )
+                        .bind("activityStableId", activityStableId)
+                        .bind("studyEnvId", studyEnvId)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
     @Getter
     @Setter @NoArgsConstructor
     public static class EnrolleeWithTasks {

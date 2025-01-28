@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service.scheduled;
 
 import bio.terra.pearl.api.admin.service.system.CheckDisableScheduledTask;
+import bio.terra.pearl.core.service.notification.EnrolleeLaunchService;
 import bio.terra.pearl.core.service.notification.EnrolleeReminderService;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -11,9 +12,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ScheduledEnrolleeReminderService {
   private final EnrolleeReminderService enrolleeReminderService;
+  private final EnrolleeLaunchService enrolleeLaunchService;
 
-  public ScheduledEnrolleeReminderService(EnrolleeReminderService enrolleeReminderService) {
+  public ScheduledEnrolleeReminderService(
+      EnrolleeReminderService enrolleeReminderService,
+      EnrolleeLaunchService enrolleeLaunchService) {
     this.enrolleeReminderService = enrolleeReminderService;
+    this.enrolleeLaunchService = enrolleeLaunchService;
   }
 
   @Scheduled(
@@ -27,6 +32,7 @@ public class ScheduledEnrolleeReminderService {
   public void sendReminderEmails() {
     log.info("Beginning enrollee reminder processing");
     enrolleeReminderService.sendTaskReminders();
+    enrolleeLaunchService.sendTaskLaunchEmails();
     log.info("Enrollee reminder processing complete");
   }
 }

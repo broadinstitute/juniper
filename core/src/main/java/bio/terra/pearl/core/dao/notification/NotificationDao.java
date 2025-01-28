@@ -61,4 +61,8 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     public List<Notification> findAllByConfigId(UUID configId) {
         return findAllByProperty("trigger_id", configId);
     }
+
+    public List<Notification> findByEnrolleeAndTriggerId(UUID enrolleeId, UUID triggerId) {
+        return findAllByTwoProperties("enrollee_id", enrolleeId, "trigger_id", triggerId);
+    }
 }

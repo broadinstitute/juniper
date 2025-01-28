@@ -40,6 +40,10 @@ public class NotificationService extends CrudService<Notification, NotificationD
         return notifications;
     }
 
+    public List<Notification> findByEnrolleeAndTriggerId(UUID enrolleeId, UUID triggerId) {
+        return dao.findByEnrolleeAndTriggerId(enrolleeId, triggerId);
+    }
+
     @Transactional
     public void deleteByEnrolleeId(UUID enrolleeId) {
         List<Notification> notifications = dao.findByEnrolleeId(enrolleeId);

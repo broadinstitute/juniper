@@ -61,7 +61,7 @@ export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
   envName: EnvironmentName
 }
 
-export type TriggerType = 'EVENT' | 'TASK_REMINDER' | 'AD_HOC'
+export type TriggerType = 'EVENT' | 'TASK_REMINDER' | 'LAUNCH' | 'AD_HOC'
 export type TriggerDeliveryType = 'EMAIL'
 export type TriggerActionType = 'NOTIFICATION' | 'ADMIN_NOTIFICATION' | 'TASK_STATUS_CHANGE'
 export type TriggerScope = 'PORTAL' | 'STUDY'

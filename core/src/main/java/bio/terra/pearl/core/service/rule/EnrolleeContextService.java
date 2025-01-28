@@ -45,17 +45,6 @@ public class EnrolleeContextService {
             return List.of();
         }
         List<Enrollee> enrollees = enrolleeService.findAllPreserveOrder(enrolleeIds);
-
-        return attachContextData(enrollees);
-    }
-
-    public List<EnrolleeContext> fetchDataByStudyEnvId(UUID studyEnvId) {
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvId);
-
-        return attachContextData(enrollees);
-    }
-
-    public List<EnrolleeContext> attachContextData(List<Enrollee> enrollees) {
         List<Profile> profiles = profileService.findAllWithMailingAddressPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
         List<EnrolleeContext> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->

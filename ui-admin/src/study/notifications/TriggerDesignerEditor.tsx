@@ -68,7 +68,8 @@ export const TriggerDesignerEditor = (
 const triggerTypeLabels = {
   EVENT: 'Event',
   TASK_REMINDER: 'Task Reminder',
-  AD_HOC: 'Ad hoc'
+  AD_HOC: 'Ad hoc',
+  LAUNCH: 'Launch'
 }
 
 const TriggerTypeEditor = (
@@ -96,7 +97,7 @@ const TriggerTypeEditor = (
     selectedOption: triggerType,
     selectInputId: triggerTypeSelectInputId
   } = useReactSingleSelect(
-    ['EVENT', 'TASK_REMINDER', 'AD_HOC'],
+    ['EVENT', 'TASK_REMINDER', 'LAUNCH', 'AD_HOC'],
     val => {
       return {
         value: val,
@@ -106,7 +107,7 @@ const TriggerTypeEditor = (
     updateTriggerType,
     trigger.triggerType)
 
-  const isTaskScopable = (trigger.triggerType === 'TASK_REMINDER') ||
+  const isTaskScopable = (trigger.triggerType === 'TASK_REMINDER' || trigger.triggerType === 'LAUNCH') ||
     (trigger.triggerType === 'EVENT' && ['SURVEY_RESPONSE', 'KIT_RECEIVED', 'KIT_SENT'].includes(trigger.eventType))
 
   return <InfoCard>
@@ -129,11 +130,14 @@ const TriggerTypeEditor = (
             && <EventTriggerEditor trigger={trigger} updateTrigger={updateTrigger}/>}
           {trigger.triggerType === 'TASK_REMINDER'
            && <TaskReminderTypeEditor trigger={trigger} updateTrigger={updateTrigger}/>}
+          {trigger.triggerType === 'LAUNCH'
+            && <TaskReminderTypeEditor trigger={trigger} updateTrigger={updateTrigger}/>}
 
         </div>
 
         {!baseFieldsOnly && <>
           {isTaskScopable && <TaskTargetStableIdsEditor
+            triggerType={trigger.triggerType}
             studyEnvParams={studyEnvParams}
             stableIds={trigger.filterTargetStableIds}
             setStableIds={ids => updateTrigger('filterTargetStableIds', ids)}
@@ -146,6 +150,11 @@ const TriggerTypeEditor = (
           {trigger.triggerType === 'TASK_REMINDER'
             && <>
               <TaskReminderEditor trigger={trigger} updateTrigger={updateTrigger}/>
+            </>}
+
+          {trigger.triggerType === 'LAUNCH'
+            && <>
+              <TaskLaunchEditor trigger={trigger} updateTrigger={updateTrigger}/>
             </>}
 
           {trigger.triggerType !== 'AD_HOC' && <TriggerRuleEditor
@@ -171,8 +180,7 @@ const eventTypeOptions = [
   { label: 'Study Consent', value: 'STUDY_CONSENT' },
   { label: 'Survey Completed', value: 'SURVEY_RESPONSE' },
   { label: 'Kit Sent', value: 'KIT_SENT' },
-  { label: 'Kit Returned', value: 'KIT_RECEIVED' },
-  { label: 'Survey Published', value: 'SURVEY_PUBLISHED' }
+  { label: 'Kit Returned', value: 'KIT_RECEIVED' }
 ]
 
 const EventTriggerEditor = (
@@ -222,6 +230,31 @@ const TaskReminderTypeEditor = (
                 taskTypeOptions[0].value)}/>
   </>
 }
+
+const TaskLaunchEditor = (
+  {
+    trigger,
+    updateTrigger
+  }: {
+    trigger: Trigger;
+    updateTrigger: (string: keyof Trigger, value: unknown) => void;
+  }) => {
+  return <div>
+    <div>
+      <label className="form-label">
+        Send launch email to any enrollee assigned within the first
+        <div className="d-flex align-items-center">
+          <input className="form-control me-2 w-50" type="number" value={trigger.reminderIntervalMinutes / 60}
+            onChange={e => updateTrigger(
+              'reminderIntervalMinutes',
+              parseInt(e.target.value) * 60 || 0)}/>
+          hours
+        </div>
+      </label>
+    </div>
+  </div>
+}
+
 
 const TaskReminderEditor = (
   {
@@ -477,8 +510,14 @@ const TaskStatusEditor = (
   </div>
 }
 
-const TaskTargetStableIdsEditor = ({ studyEnvParams, stableIds, setStableIds, isKitType }:
-  {studyEnvParams: StudyEnvParams, stableIds: string[], setStableIds: (ids: string[]) => void, isKitType: boolean}) => {
+const TaskTargetStableIdsEditor = ({ triggerType, studyEnvParams, stableIds, setStableIds, isKitType }:
+                                     {
+                                       triggerType: TriggerType,
+                                       studyEnvParams: StudyEnvParams,
+                                       stableIds: string[],
+                                       setStableIds: (ids: string[]) => void,
+                                       isKitType: boolean
+                                     }) => {
   const [options, setOptions] = useState<{ label: string, value: string }[]>([])
   useLoadingEffect(async () => {
     if (isKitType) {
@@ -495,7 +534,9 @@ const TaskTargetStableIdsEditor = ({ studyEnvParams, stableIds, setStableIds, is
   const inputId = useId()
   return <div className="mt-3">
     <label className="form-label" htmlFor={inputId}>Limit to these {isKitType ? 'kit types' : 'surveys'}
-      <span className="fst-italic ms-2">(leave blank if automation applies to all)</span></label>
+      <span className="fst-italic ms-2">
+        {triggerType === 'LAUNCH' ? '(required for launch emails)' : '(leave blank if automation applies to all)'}
+      </span></label>
     <Select options={options} inputId={inputId}
       value={stableIds.map(stableId => options.find(option => option.value === stableId))}
       isMulti={true}

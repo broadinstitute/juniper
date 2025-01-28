@@ -7,16 +7,13 @@ import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -24,7 +21,6 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
-import bio.terra.pearl.core.service.participant.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +50,6 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
     private KitRequestFactory kitRequestFactory;
     @Autowired
     private NotificationService notificationService;
-    @Autowired
-    private SurveyFactory surveyFactory;
-    @Autowired
-    private ProfileService profileService;
 
     @Test
     @Transactional
@@ -214,44 +206,6 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         notifications = notificationService.findByEnrolleeId(enrolleeBundle2.enrollee().getId());
         assertThat(notifications.get(0).getTriggerId(), equalTo(salivaConfig.getId()));
 
-    }
-
-    @Test
-    @Transactional
-    public void testSurveyLaunchNotifications(TestInfo testInfo) {
-        String testName = getTestName(testInfo);
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
-        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, true);
-        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, true);
-
-        Profile profile1 = profileService.find(enrolleeBundle1.enrollee().getProfileId()).orElseThrow();
-        profile1.setGivenName("Jonas");
-        profileService.update(profile1, getAuditInfo(testInfo));
-
-        Survey survey = surveyFactory.buildPersisted(testName, portalEnv.getPortalId());
-        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
-        Trigger config = Trigger.builder()
-                .triggerType(TriggerType.EVENT)
-                .eventType(TriggerEventType.SURVEY_PUBLISHED)
-                .actionType(TriggerActionType.NOTIFICATION)
-                .deliveryType(NotificationDeliveryType.EMAIL)
-                .studyEnvironmentId(studyEnv.getId())
-                .portalEnvironmentId(portalEnv.getId())
-                .rule("{profile.givenName} = 'Jonas'")
-                .build();
-        config = triggerService.create(config);
-
-        eventService.publishSurveyPublishedEvent(portalEnv.getId(), studyEnv.getId(), survey);
-
-        // confirm that a notification got sent to the expected enrollee
-        List<Notification> notifications = notificationService.findByEnrolleeId(enrolleeBundle1.enrollee().getId());
-        assertThat(notifications.size(), equalTo(1));
-        assertThat(notifications.get(0).getTriggerId(), equalTo(config.getId()));
-
-        // confirm that no notification got sent to the other enrollee
-        notifications = notificationService.findByEnrolleeId(enrolleeBundle2.enrollee().getId());
-        assertThat(notifications.size(), equalTo(0));
     }
 
     private ParticipantTask createTask(EnrolleeBundle enrolleeBundle, String taskStableId, TaskStatus status ) {
