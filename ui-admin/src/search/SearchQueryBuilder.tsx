@@ -82,7 +82,7 @@ export const SearchQueryBuilder = ({
       if (isEmpty(searchExpression)) {
         return true
       }
-      toReactQueryBuilderState(parseExpression(searchExpression))
+      toReactQueryBuilderState(parseExpression(searchExpression), {})
       return true
     } catch (_) {
       setAdvancedMode(true)
@@ -200,23 +200,17 @@ const BasicQueryBuilder = ({
   onSearchExpressionChange: (searchExpression: string) => void,
   searchExpression: string
 }) => {
-  const tryParseExpression = (expression: string): RuleGroupType | undefined => {
+  const tryParseExpression = (expression: string, facets: ExpressionSearchFacets): RuleGroupType | undefined => {
     try {
-      return toReactQueryBuilderState(parseExpression(expression))
+      return toReactQueryBuilderState(parseExpression(expression), facets)
     } catch (_) {
       return undefined
     }
   }
 
-  const initialQuery = useMemo(() => !isEmpty(searchExpression) ? tryParseExpression(searchExpression) : {
-    combinator: 'and',
-    rules: []
-  }, [])
-
-  const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
-
-
+  const [query, setQuery] = useState<RuleGroupTypeAny | undefined>()
   const [facets, setFacets] = React.useState<ExpressionSearchFacets>({})
+
 
   const { isLoading } = useLoadingEffect(async () => {
     const loadedFacets = await Api.getExpressionSearchFacets(
@@ -226,6 +220,8 @@ const BasicQueryBuilder = ({
 
 
     setFacets(loadedFacets)
+
+    setQuery(tryParseExpression(searchExpression, loadedFacets))
   }, [], 'Failed to load cohort criteria options')
 
   const ruleProcessor = useMemo(() => createEnrolleeSearchExpressionRuleProcessor(facets), [facets])

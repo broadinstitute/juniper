@@ -1,11 +1,13 @@
 import { parseExpression } from './searchExpressionParser'
 import { toReactQueryBuilderState } from './searchExpressionUtils'
 
+const noFacets = {}
+
 describe('to react query builder', () => {
   it('converts basic expression', () => {
     const expression = parseExpression(`{profile.name} = 'John' and {age} > 30 or {age} < 20`)
 
-    const result = toReactQueryBuilderState(expression)
+    const result = toReactQueryBuilderState(expression, noFacets)
 
     expect(result).toEqual({
       'combinator': 'and',
@@ -44,7 +46,7 @@ describe('to react query builder', () => {
       `{profile.name} = 'John' and {age} > 30 and {age} < 40 and {age} > 20 or {age} < 20`
     )
 
-    const result = toReactQueryBuilderState(expression)
+    const result = toReactQueryBuilderState(expression, noFacets)
 
     expect(result).toEqual({
       'combinator': 'and',
@@ -94,7 +96,7 @@ describe('to react query builder', () => {
       `({profile.name} = 'John' and {age} > 30) or {age} < 20 or ({age} > 30 and {age} < 40)`
     )
 
-    expect(toReactQueryBuilderState(expression)).toEqual({
+    expect(toReactQueryBuilderState(expression, noFacets)).toEqual({
       'combinator': 'and',
       'id': '1',
       'rules': [
@@ -140,5 +142,28 @@ describe('to react query builder', () => {
         }
       ]
     })
+  })
+})
+
+
+it('reformats instants', () => {
+  const expression = parseExpression(`{instant} > '2021-01-01T12:00:00Z'`)
+
+  expect(toReactQueryBuilderState(expression, {
+    instant: {
+      type: 'INSTANT',
+      allowMultiple: false,
+      allowOtherDescription: false
+    }
+  })).toEqual({
+    'combinator': 'and',
+    'id': '1',
+    'rules': [
+      {
+        'field': 'instant',
+        'operator': '>',
+        'value': '2021-01-01T07:00' // in local timezone
+      }
+    ]
   })
 })

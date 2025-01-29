@@ -14,7 +14,11 @@ import {
   RuleGroupType
 } from 'react-querybuilder'
 import { isEmpty } from 'lodash/fp'
-import { ExpressionSearchFacets } from 'api/api'
+import {
+  ExpressionSearchFacets,
+  SearchValueTypeDefinition
+} from 'api/api'
+import { isNil } from 'lodash'
 
 /**
  * Concatenates search expressions with an 'and' by default.
@@ -43,7 +47,10 @@ export const toReactQueryBuilderState = (
  * Returns an array of rules - these are combined with either 'and' or 'or' depending on the operator
  * parameter. Each element could either be a facet comparison or new group of rules.
  */
-const _toReactQueryBuilderState = (operator: BooleanOperator, expression: SearchExpression, facets: ExpressionSearchFacets): RuleGroupArray => {
+const _toReactQueryBuilderState = (
+  operator: BooleanOperator,
+  expression: SearchExpression,
+  facets: ExpressionSearchFacets): RuleGroupArray => {
   if (isBooleanSearchExpression(expression)) {
     // only create a new group if the operator changes
     if (expression.booleanOperator !== operator) {
@@ -66,9 +73,13 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
   }
 
   if (isComparisonSearchFacet(expression)) {
+    const field = termToString(expression.left, undefined)?.toString() || ''
+
+    const typeDefinition = facets[field]
+
     return [{
-      field: termToString(expression.left)?.toString() || '',
-      value: termToString(expression.right),
+      field,
+      value: termToString(expression.right, typeDefinition),
       operator: expression.comparisonOperator
     }]
   }
@@ -76,7 +87,9 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
 }
 
 // Converts a Term object into a string representation.
-const termToString = (term: Term): string | number | boolean | null => {
+const termToString = (
+  term: Term,
+  typeDef: SearchValueTypeDefinition | undefined): string | number | boolean | null => {
   if (isSearchVariable(term)) {
     if (term.field.length === 0) {
       return term.model
@@ -87,5 +100,37 @@ const termToString = (term: Term): string | number | boolean | null => {
     throw new Error('Function terms are not supported')
   }
 
+  if (!isNil(typeDef) && typeDef.type === 'INSTANT') {
+    const parsedDate = Date.parse(term?.toString() || '')
+    if (isNaN(parsedDate)) {
+      return term // return the original term just to be safe
+    }
+
+    const date = new Date(parsedDate)
+
+    return formatDate(date)
+  }
+
   return term
+}
+
+
+// react query builder needs dates with format: 2025-01-21T14:15
+const formatDate = (date: Date): string => {
+  // we can't use toISOString because it returns the date in UTC and we need it in local time
+  return `${
+    date.getFullYear()
+  }-${
+    zeroPad(date.getMonth() + 1)
+  }-${
+    zeroPad(date.getDate())
+  }T${
+    zeroPad(date.getHours())
+  }:${
+    zeroPad(date.getMinutes())
+  }`
+}
+
+const zeroPad = (num: number): string => {
+  return num.toString().padStart(2, '0')
 }

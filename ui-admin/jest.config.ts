@@ -1,3 +1,5 @@
+process.env.TZ = 'EST'
+
 export default {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',

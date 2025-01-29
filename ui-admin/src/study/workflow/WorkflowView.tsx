@@ -1,29 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  Link,
+  useNavigate
+} from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import {
   paramsFromContext,
-  StudyEnvContextT, studyEnvFormsParamsPath,
-  studyEnvPreEnrollPath, studyEnvSurveyPath,
-  studyEnvTriggerPath, studyEnvWorkflowPath,
+  StudyEnvContextT,
+  studyEnvFormsParamsPath,
+  studyEnvPreEnrollPath,
+  studyEnvSurveyPath,
+  studyEnvTriggerPath,
+  studyEnvWorkflowPath,
   triggerPath
 } from '../StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
-import { StudyEnvironmentSurvey, StudyEnvParams, Survey, Trigger } from '@juniper/ui-core'
+import {
+  StudyEnvironmentSurvey,
+  StudyEnvParams,
+  Survey,
+  Trigger
+} from '@juniper/ui-core'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateTriggerModal from '../notifications/CreateTriggerModal'
 import {
-  faAsterisk, faEdit, faFilter,
+  faAsterisk,
+  faEdit,
+  faFilter,
   faTasks
 } from '@fortawesome/free-solid-svg-icons'
-import { faCalendarAlt, faClipboard, faEnvelope,   faCheckSquare } from '@fortawesome/free-regular-svg-icons'
+import {
+  faCalendarAlt,
+  faCheckSquare,
+  faClipboard,
+  faEnvelope
+} from '@fortawesome/free-regular-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import _sortBy from 'lodash/sortBy'
-import { minutesToDayString, triggerName } from './workflowUtils'
+import {
+  minutesToDayString,
+  triggerName
+} from './workflowUtils'
 import { EllipsisDropdownButton } from 'components/forms/Button'
 
 /** shows configuration of notifications for a study */
@@ -248,6 +272,23 @@ const AddTriggerMenu = ({ triggerOpts, setTriggerOpts, setShowCreateModal }:
             Add reminder
           </button>
         </li> }
+        {triggerOpts.taskType && <li>
+          <button className="dropdown-item"
+            onClick={() => {
+              setTriggerOpts({
+                ...triggerOpts,
+                triggerType: 'TASK_REMINDER',
+                eventType: undefined,
+                maxNumReminders: 1,
+                afterMinutesIncomplete: 0,
+                reminderIntervalMinutes: 0,
+                rule: `{enrollee.createdAt} < '${new Date().toISOString()}'`
+              })
+              setShowCreateModal(true)
+            }}>
+                Add launch notification
+          </button>
+        </li>}
         {triggerOpts.eventType && <li>
           <button className="dropdown-item"
             onClick={() => {
