@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import {
+import Api, {
   ParticipantTask,
   StudyEnvironmentSurvey,
   SurveyResponse
 } from 'api/api'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   Link,
   NavLink,
@@ -35,7 +35,7 @@ import {
   faCircleXmark
 } from '@fortawesome/free-regular-svg-icons'
 import {
-  Enrollee,
+  Enrollee, ParticipantFile,
   ParticipantTaskStatus
 } from '@juniper/ui-core'
 import EnrolleeOverview from './EnrolleeOverview'
@@ -44,6 +44,7 @@ import {
   navListItemStyle
 } from 'util/subNavStyles'
 import { RequireUserPermission } from 'util/RequireUserPermission'
+import { useLoadingEffect } from '../../../api/api-utils'
 
 
 export type SurveyWithResponsesT = {
@@ -56,16 +57,35 @@ export type ResponseMapT = { [stableId: string]: SurveyWithResponsesT }
 /** loads an enrollee and renders the view for it */
 export default function EnrolleeView({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { isLoading, enrollee, reload } = useRoutedEnrollee(studyEnvContext)
+  const [participantFiles, setParticipantFiles] = useState<ParticipantFile[]>([])
+
+  const { isLoading: isLoadingFiles } = useLoadingEffect(async () => {
+    await loadLogEvents()
+  }, [enrollee])
+
+  const loadLogEvents = async () => {
+    if (!enrollee) { return }
+    const response = await Api.listParticipantFiles({
+      studyEnvParams: paramsFromContext(studyEnvContext),
+      enrolleeShortcode: enrollee.shortcode
+    })
+    setParticipantFiles(response)
+  }
+
   return <>
-    {isLoading && <LoadingSpinner/>}
+    {(isLoading || isLoadingFiles) && <LoadingSpinner/>}
     {!isLoading && enrollee &&
-        <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={reload}/>}
+        <LoadedEnrolleeView
+          enrollee={enrollee}
+          files={participantFiles}
+          studyEnvContext={studyEnvContext}
+          onUpdate={reload}/>}
   </>
 }
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
-  enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
+export function LoadedEnrolleeView({ enrollee, files, studyEnvContext, onUpdate }: {
+  enrollee: Enrollee, files: ParticipantFile[], studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { currentEnv, currentEnvPath } = studyEnvContext
   const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
@@ -141,7 +161,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                   <ul className="list-unstyled">
                     {currentEnv.preEnrollSurvey && <li className="mb-2">
                       <NavLink to="preRegistration" className={getLinkCssClasses}>
-                          PreEnrollment
+                        PreEnrollment
                       </NavLink>
                     </li>}
                     <SurveyList surveys={surveys
@@ -166,10 +186,16 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
               <RequireUserPermission superuser>
                 <li style={navListItemStyle}>
                   <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
-                    <SurveyList surveys={surveys
-                      .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
-                    responseMap={responseMap} emptyText={'No document requests'}
-                    />}
+                    <>
+                      <SurveyList surveys={surveys
+                        .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
+                      responseMap={responseMap} emptyText={'No document requests'}
+                      />
+                      View all documents
+                      <span className="badge align-middle bg-secondary ms-1 mb-1">
+                        {files.length}
+                      </span>
+                    </>}
                   />
                 </li>
               </RequireUserPermission>
@@ -187,6 +213,16 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                 {
                   <span className="badge align-middle bg-secondary ms-1 mb-1">
                     {enrollee.kitRequests.length}
+                  </span>
+                }
+              </li>
+              <li style={navListItemStyle} className="ps-3 d-flex justify-content-between align-items-center">
+                <NavLink to="documents" className={getLinkCssClasses}>
+                  Documents
+                </NavLink>
+                {
+                  <span className="badge align-middle bg-secondary ms-1 mb-1">
+                    {files.length}
                   </span>
                 }
               </li>

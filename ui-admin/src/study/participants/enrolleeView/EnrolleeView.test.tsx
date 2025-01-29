@@ -11,7 +11,8 @@ test('renders survey links for configured surveys', async () => {
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
-  renderWithRouter(<LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
+  renderWithRouter(<LoadedEnrolleeView
+    enrollee={enrollee} files={[]} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   const surveyLink = screen.getByText('Survey number one')
   // should have no badge since the enrollee hasn't take the survey
   expect(surveyLink.querySelector('span')).toBeNull()
@@ -24,7 +25,8 @@ test('renders survey task no response badge', async () => {
   enrollee.participantTasks
     .push(taskForForm(studyEnvContext.currentEnv.configuredSurveys[0].survey, enrollee.id, 'SURVEY'))
 
-  renderWithRouter(<LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
+  renderWithRouter(<LoadedEnrolleeView
+    enrollee={enrollee} files={[]} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
   // should show a badge
   expect(within(surveyLinkContainer).getByTitle('No response')).toBeInTheDocument()
@@ -48,7 +50,8 @@ test('renders survey task viewed badge', async () => {
     enrolleeId: enrollee.id
   })
 
-  renderWithRouter(<LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
+  renderWithRouter(<LoadedEnrolleeView
+    enrollee={enrollee} files={[]} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
   // should show a badge
   expect(within(surveyLinkContainer).getByTitle('Viewed')).toBeInTheDocument()
@@ -83,7 +86,8 @@ test('renders survey task complete badge for most recent', async () => {
     ]
   }
 
-  renderWithRouter(<LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
+  renderWithRouter(<LoadedEnrolleeView
+    enrollee={enrollee} files={[]} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
   // should show a badge
   expect(within(surveyLinkContainer).getByTitle('Complete')).toBeInTheDocument()
