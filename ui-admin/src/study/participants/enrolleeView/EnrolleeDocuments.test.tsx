@@ -23,4 +23,14 @@ describe('EnrolleeDocuments', () => {
       expect(screen.getByText('file2.png')).toBeInTheDocument()
     })
   })
+
+  it('displays an empty message when there aren\t any documents', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([])
+
+    render(<EnrolleeDocuments enrollee={mockEnrollee()} studyEnvContext={mockStudyEnvContext()} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('This participant has not uploaded any documents')).toBeInTheDocument()
+    })
+  })
 })

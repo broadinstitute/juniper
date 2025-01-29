@@ -8,7 +8,7 @@ import {
   Enrollee,
   ParticipantFile, saveBlobAsDownload
 } from '@juniper/ui-core'
-import { basicTableLayout } from 'util/table/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
@@ -72,5 +72,6 @@ export const ParticipantFileSurveyResponseView = ({
       Document Uploads
     </span>
     {basicTableLayout(table)}
+    { renderEmptyMessage(documents, 'This participant has not uploaded any documents') }
   </>
 }
