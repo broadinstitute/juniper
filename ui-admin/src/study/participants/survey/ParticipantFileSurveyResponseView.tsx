@@ -47,8 +47,6 @@ export const ParticipantFileSurveyResponseView = ({
     }
   ]
 
-  // const data: ParticipantFile[] = surveyResponse?.participantFiles || []
-
   const table = useReactTable({
     columns,
     data: documents,
