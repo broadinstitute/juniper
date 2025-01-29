@@ -379,6 +379,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: taskType, in: query, required: false, schema: { type: string } }
+        - { name: participantUserId, in: query, required: false, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: list of outreach activities
