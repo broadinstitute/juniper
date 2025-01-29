@@ -15,7 +15,7 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
-export const ParticipantFileSurveyResponseView = ({
+export const ParticipantDocumentListView = ({
   studyEnvContext,
   enrollee,
   documents

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Enrollee, ParticipantFile } from '@juniper/ui-core'
-import { ParticipantFileSurveyResponseView } from '../survey/ParticipantFileSurveyResponseView'
+import { ParticipantDocumentListView } from '../survey/ParticipantDocumentListView'
 import { useLoadingEffect } from 'api/api-utils'
 import Api from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -21,7 +21,7 @@ export default function EnrolleeDocuments({ enrollee, studyEnvContext }: {
   }, [enrollee])
 
   return <LoadingSpinner isLoading={isLoading}>
-    <ParticipantFileSurveyResponseView
+    <ParticipantDocumentListView
       studyEnvContext={studyEnvContext}
       enrollee={enrollee}
       documents={participantFiles}/>

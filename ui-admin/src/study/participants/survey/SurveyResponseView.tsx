@@ -55,7 +55,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import classNames from 'classnames'
 import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons'
 import JustifyChangesModal from '../JustifyChangesModal'
-import { ParticipantFileSurveyResponseView } from 'study/participants/survey/ParticipantFileSurveyResponseView'
+import { ParticipantDocumentListView } from './ParticipantDocumentListView'
 import SurveyAssignModal from './SurveyAssignModal'
 import TaskChangeModal from './TaskChangeModal'
 import PrintFormView from 'study/participants/survey/PrintFormView'
@@ -229,7 +229,7 @@ export function RawEnrolleeSurveyView({
       {view === 'viewing' && (
         response?.participantFiles?.length !== undefined && response.participantFiles.length > 0
       ) &&
-          <ParticipantFileSurveyResponseView
+          <ParticipantDocumentListView
             studyEnvContext={studyEnvContext}
             enrollee={enrollee}
             documents={response.participantFiles || []}/>
