@@ -6,24 +6,23 @@ import {
 } from '@tanstack/react-table'
 import {
   Enrollee,
-  ParticipantFile, saveBlobAsDownload,
-  SurveyResponse
+  ParticipantFile, saveBlobAsDownload
 } from '@juniper/ui-core'
-import { basicTableLayout } from 'util/table/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
-export const ParticipantFileSurveyResponseView = ({
+export const ParticipantDocumentListView = ({
   studyEnvContext,
   enrollee,
-  surveyResponse
+  documents
 }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee,
-  surveyResponse: SurveyResponse
+  documents: ParticipantFile[]
 }) => {
   const columns: ColumnDef<ParticipantFile>[] = [
     {
@@ -48,11 +47,9 @@ export const ParticipantFileSurveyResponseView = ({
     }
   ]
 
-  const data: ParticipantFile[] = surveyResponse?.participantFiles || []
-
   const table = useReactTable({
     columns,
-    data,
+    data: documents,
     getCoreRowModel: getCoreRowModel()
   })
 
@@ -73,5 +70,6 @@ export const ParticipantFileSurveyResponseView = ({
       Document Uploads
     </span>
     {basicTableLayout(table)}
+    { renderEmptyMessage(documents, 'This participant has not uploaded any documents') }
   </>
 }
