@@ -1,14 +1,17 @@
 package bio.terra.pearl.core.service.rule;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -18,19 +21,22 @@ public class EnrolleeContextService {
     private final ProfileService profileService;
     private final EnrolleeService enrolleeService;
     private final ParticipantUserService participantUserService;
+    private final EnrolleeRelationService enrolleeRelationService;
 
 
     public EnrolleeContextService(ProfileService profileService, @Lazy EnrolleeService enrolleeService,
-                                  ParticipantUserService participantUserService) {
+                                  ParticipantUserService participantUserService, EnrolleeRelationService enrolleeRelationService) {
         this.profileService = profileService;
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     public EnrolleeContext fetchData(Enrollee enrollee) {
         return new EnrolleeContext(enrollee,
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null),
-                participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(() -> new IllegalStateException("no participant user for enrollee")));
+                participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(() -> new IllegalStateException("no participant user for enrollee")),
+                enrolleeRelationService.findAllByEnrolleeOrTargetId(enrollee.getId()));
     }
 
     /**
@@ -47,9 +53,27 @@ public class EnrolleeContextService {
         List<Enrollee> enrollees = enrolleeService.findAllPreserveOrder(enrolleeIds);
         List<Profile> profiles = profileService.findAllWithMailingAddressPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
+        List<EnrolleeRelation> allRelations = enrolleeRelationService.findAllByEnrolleeOrTargetIds(enrolleeIds);
+        List<List<EnrolleeRelation>> relations = groupRelations(allRelations, enrollees);
+
         List<EnrolleeContext> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->
-                new EnrolleeContext(enrollees.get(i), profiles.get(i), users.get(i))
+                new EnrolleeContext(enrollees.get(i), profiles.get(i), users.get(i), relations.get(i))
         ).toList();
         return ruleData;
     }
+
+    private List<List<EnrolleeRelation>> groupRelations(List<EnrolleeRelation> allRelations, List<Enrollee> enrollees) {
+        List<List<EnrolleeRelation>> relations = new ArrayList<>();
+        for (Enrollee enrollee : enrollees) {
+            List<EnrolleeRelation> enrolleeRelations = new ArrayList<>();
+            for (EnrolleeRelation relation : allRelations) {
+                if (relation.getEnrolleeId().equals(enrollee.getId())) {
+                    enrolleeRelations.add(relation);
+                }
+            }
+            relations.add(enrolleeRelations);
+        }
+        return relations;
+    }
 }
+

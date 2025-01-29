@@ -3,9 +3,7 @@ package bio.terra.pearl.core.service.notification.email;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -18,6 +16,9 @@ import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -33,7 +34,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void profileVariablesAreReplaced() {
         Profile profile = Profile.builder().givenName("tester").build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null, null);
 
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder().build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("profileVariablesAreReplaced")
@@ -46,7 +47,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void envConfigVariablesAreReplaced() {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null, null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -61,7 +62,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void studyNameVariablesAreReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null, null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -77,7 +78,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testDashLinkVariablesReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null, null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -100,7 +101,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testMailLinkVariablesReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null, null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@test.edu")
                 .build();
@@ -116,7 +117,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testImageVariablesReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null, null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -133,7 +134,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     @Test
     public void testParticipantUserVariablesReplaced(TestInfo info) {
         ParticipantUser user = ParticipantUser.builder().username("test123@test.com").build();
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), user);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), user, null);
         PortalEnvironment portalEnv = PortalEnvironment.builder().environmentName(EnvironmentName.irb).build();
         NotificationContextInfo contextInfo = new NotificationContextInfo(new Portal(), portalEnv, new PortalEnvironmentConfig(), null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
@@ -143,7 +144,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testInvitationLinkReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), ParticipantUser.builder().username("test123@test.com").build());
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), ParticipantUser.builder().username("test123@test.com").build(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -158,8 +159,26 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testTernaryReplaced(TestInfo info) {
-        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), Profile.builder().givenName("test name").build(), ParticipantUser.builder().username("asdf@asdf.com").build());
+    public void testProxyTernary(TestInfo info) {
+        UUID enrolleeId = UUID.randomUUID();
+        EnrolleeContext proxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                List.of(
+                        // enrollee has a proxy
+                        EnrolleeRelation
+                                .builder()
+                                .targetEnrolleeId(enrolleeId)
+                                .relationshipType(RelationshipType.PROXY)
+                                .build()
+                ));
+
+        EnrolleeContext nonProxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                null);
 
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
@@ -172,14 +191,17 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
 
-        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        StringSubstitutor proxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(proxyData, contextInfo, routingPaths);
+        StringSubstitutor nonProxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(nonProxyData, contextInfo, routingPaths);
 
-        assertThat(replacer.replace("${isSubject ? \"Subject is true\" : \"Subject is false\"}"),
-                equalTo("Subject is true"));
-        assertThat(replacer.replace("${isProxy ? \"Proxy is true\" : \"Proxy is false\"}"),
+        assertThat(proxyReplacer.replace("${isProxy ? \"Proxy is true\" : \"Proxy is false\"}"),
+                equalTo("Proxy is true"));
+        assertThat(nonProxyReplacer.replace("${isProxy ? \"Proxy is true\" : \"Proxy is false\"}"),
                 equalTo("Proxy is false"));
 
-        assertThat(replacer.replace("${isSubject ? profile.givenName : \"Subject is false\"}"),
+        assertThat(proxyReplacer.replace("${isProxy ? profile.givenName : \"Proxy is false\"}"),
+                equalTo("test name"));
+        assertThat(nonProxyReplacer.replace("${isProxy ? \"Proxy is true\" : profile.givenName}"),
                 equalTo("test name"));
 
     }

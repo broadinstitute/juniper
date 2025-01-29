@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -20,7 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.regex.Pattern;
 
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
@@ -45,20 +46,28 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
-        valueMap.put("profile", enrolleeContext.getProfile());
-        if (Objects.nonNull(enrolleeContext.getParticipantUser())
-                && StringUtils.contains(enrolleeContext.getParticipantUser().getUsername(), "-prox-")) {
+        if (isProxy(ruleData)) {
             valueMap.put("isProxy", "true");
-        } else {
-            valueMap.put("isSubject", "true");
         }
-
+        valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
         valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
         if (messages != null) {
             valueMap.putAll(messages);
         }
+    }
+
+    private boolean isProxy(EnrolleeContext context) {
+        if (context.getRelations() == null) {
+            return false;
+        }
+
+        return context
+                .getRelations()
+                .stream()
+                .anyMatch(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY)
+                        && relation.getTargetEnrolleeId().equals(context.getEnrollee().getId()));
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
@@ -90,6 +99,9 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return "";
     }
 
+
+    // matches a ternary expression, e.g. "isProxy ? "yes" : "no""
+    final static Pattern isTernaryPattern = Pattern.compile("[^:]+\\?.+:.+");
     private record Ternary(String condition, String left, String right) {
         public static Ternary fromString(String key) {
             String[] parts = key.split("\\?");
@@ -98,8 +110,9 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return new Ternary(condition.trim(), values[0].trim(), values[1].trim());
         }
 
+
         public static boolean isTernary(String key) {
-            return key.contains("?") && key.contains(":") && key.indexOf('?') < key.indexOf(':');
+            return isTernaryPattern.matcher(key).matches();
         }
     }
 
