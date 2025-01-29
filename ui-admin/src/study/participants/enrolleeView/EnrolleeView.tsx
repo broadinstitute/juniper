@@ -27,7 +27,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import {
   faCircleCheck,
-  faCircleHalfStroke,
+  faCircleHalfStroke, faList,
   faMinus
 } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -176,7 +176,10 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                         .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
                       responseMap={responseMap} emptyText={'No document requests'}
                       />
-                      <NavLink to="documents" className={getLinkCssClasses}>View all documents</NavLink>
+                      <NavLink to="documents" className={getLinkCssClasses}>
+                        <FontAwesomeIcon className="me-2" icon={faList}/>
+                        <span className={'fst-italic'}>View all documents</span>
+                      </NavLink>
                     </>}
                   />
                 </li>
