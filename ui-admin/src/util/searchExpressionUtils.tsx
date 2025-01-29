@@ -14,6 +14,7 @@ import {
   RuleGroupType
 } from 'react-querybuilder'
 import { isEmpty } from 'lodash/fp'
+import { ExpressionSearchFacets } from 'api/api'
 
 /**
  * Concatenates search expressions with an 'and' by default.
@@ -27,11 +28,13 @@ export const concatSearchExpressions =
  * Converts a SearchExpression object into a RuleGroupType object,
  * which can be used by the react-querybuilder component.
  */
-export const toReactQueryBuilderState = (searchExpression: SearchExpression): RuleGroupType => {
+export const toReactQueryBuilderState = (
+  searchExpression: SearchExpression,
+  facets: ExpressionSearchFacets): RuleGroupType => {
   return {
     id: '1',
     combinator: 'and',
-    rules: _toReactQueryBuilderState('and', searchExpression)
+    rules: _toReactQueryBuilderState('and', searchExpression, facets)
   }
 }
 
@@ -40,18 +43,18 @@ export const toReactQueryBuilderState = (searchExpression: SearchExpression): Ru
  * Returns an array of rules - these are combined with either 'and' or 'or' depending on the operator
  * parameter. Each element could either be a facet comparison or new group of rules.
  */
-const _toReactQueryBuilderState = (operator: BooleanOperator, expression: SearchExpression): RuleGroupArray => {
+const _toReactQueryBuilderState = (operator: BooleanOperator, expression: SearchExpression, facets: ExpressionSearchFacets): RuleGroupArray => {
   if (isBooleanSearchExpression(expression)) {
     // only create a new group if the operator changes
     if (expression.booleanOperator !== operator) {
       return [{
         combinator: expression.booleanOperator,
-        rules: _toReactQueryBuilderState(expression.booleanOperator, expression.left)
-          .concat(_toReactQueryBuilderState(expression.booleanOperator, expression.right))
+        rules: _toReactQueryBuilderState(expression.booleanOperator, expression.left, facets)
+          .concat(_toReactQueryBuilderState(expression.booleanOperator, expression.right, facets))
       }]
     }
-    return _toReactQueryBuilderState(operator, expression.left)
-      .concat(_toReactQueryBuilderState(operator, expression.right))
+    return _toReactQueryBuilderState(operator, expression.left, facets)
+      .concat(_toReactQueryBuilderState(operator, expression.right, facets))
   }
 
   if (isNotExpression(expression)) {
@@ -83,5 +86,6 @@ const termToString = (term: Term): string | number | boolean | null => {
   if (isFunctionTerm(term)) {
     throw new Error('Function terms are not supported')
   }
+
   return term
 }

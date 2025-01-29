@@ -1,9 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.participant.EnrolleeSourceType;
@@ -12,14 +10,16 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,6 +31,7 @@ public class EnrolleeReminderService {
     private final NotificationDispatcher notificationDispatcher;
     private final KitTypeDao kitTypeDao;
     private final KitRequestService kitRequestService;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     public EnrolleeReminderService(ParticipantTaskQueryService participantTaskQueryService,
                                    StudyEnvironmentService studyEnvironmentService,
@@ -38,7 +39,7 @@ public class EnrolleeReminderService {
                                    EnrolleeContextService enrolleeContextService,
                                    NotificationDispatcher notificationDispatcher,
                                    KitTypeDao kitTypeDao,
-                                   KitRequestService kitRequestService) {
+                                   KitRequestService kitRequestService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.participantTaskQueryService = participantTaskQueryService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.triggerService = triggerService;
@@ -46,6 +47,7 @@ public class EnrolleeReminderService {
         this.notificationDispatcher = notificationDispatcher;
         this.kitTypeDao = kitTypeDao;
         this.kitRequestService = kitRequestService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
     public void sendTaskReminders() {
@@ -108,6 +110,14 @@ public class EnrolleeReminderService {
                  enrolleeContext.getParticipantUser().getLastLogin() == null) {
             return false;
         }
+
+        if (!StringUtils.isEmpty(trigger.getRule())) {
+            EnrolleeSearchExpression searchExpression = enrolleeSearchExpressionParser.parseRule(trigger.getRule());
+
+            EnrolleeSearchContext searchContext = new EnrolleeSearchContext(enrolleeContext.getEnrollee(), enrolleeContext.getProfile());
+            return searchExpression.evaluate(searchContext);
+        }
+
         return true;
     }
 }
