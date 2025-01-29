@@ -45,6 +45,7 @@ import {
 } from 'util/subNavStyles'
 import { RequireUserPermission } from 'util/RequireUserPermission'
 import { useLoadingEffect } from '../../../api/api-utils'
+import EnrolleeDocuments from './EnrolleeDocuments'
 
 
 export type SurveyWithResponsesT = {
@@ -191,10 +192,7 @@ export function LoadedEnrolleeView({ enrollee, files, studyEnvContext, onUpdate 
                         .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
                       responseMap={responseMap} emptyText={'No document requests'}
                       />
-                      View all documents
-                      <span className="badge align-middle bg-secondary ms-1 mb-1">
-                        {files.length}
-                      </span>
+                      <NavLink to="documents" className={getLinkCssClasses}>View all documents</NavLink>
                     </>}
                   />
                 </li>
@@ -213,16 +211,6 @@ export function LoadedEnrolleeView({ enrollee, files, studyEnvContext, onUpdate 
                 {
                   <span className="badge align-middle bg-secondary ms-1 mb-1">
                     {enrollee.kitRequests.length}
-                  </span>
-                }
-              </li>
-              <li style={navListItemStyle} className="ps-3 d-flex justify-content-between align-items-center">
-                <NavLink to="documents" className={getLinkCssClasses}>
-                  Documents
-                </NavLink>
-                {
-                  <span className="badge align-middle bg-secondary ms-1 mb-1">
-                    {files.length}
                   </span>
                 }
               </li>
@@ -265,6 +253,9 @@ export function LoadedEnrolleeView({ enrollee, files, studyEnvContext, onUpdate 
                     onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
+                <Route path="documents" element={
+                  <EnrolleeDocuments enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
                 <Route path="timeline" element={
                   <EnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>

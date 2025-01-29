@@ -6,8 +6,7 @@ import {
 } from '@tanstack/react-table'
 import {
   Enrollee,
-  ParticipantFile, saveBlobAsDownload,
-  SurveyResponse
+  ParticipantFile, saveBlobAsDownload
 } from '@juniper/ui-core'
 import { basicTableLayout } from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
@@ -19,11 +18,11 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 export const ParticipantFileSurveyResponseView = ({
   studyEnvContext,
   enrollee,
-  surveyResponse
+  documents
 }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee,
-  surveyResponse: SurveyResponse
+  documents: ParticipantFile[]
 }) => {
   const columns: ColumnDef<ParticipantFile>[] = [
     {
@@ -48,11 +47,11 @@ export const ParticipantFileSurveyResponseView = ({
     }
   ]
 
-  const data: ParticipantFile[] = surveyResponse?.participantFiles || []
+  // const data: ParticipantFile[] = surveyResponse?.participantFiles || []
 
   const table = useReactTable({
     columns,
-    data,
+    data: documents,
     getCoreRowModel: getCoreRowModel()
   })
 

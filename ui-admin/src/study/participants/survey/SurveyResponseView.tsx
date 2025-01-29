@@ -232,7 +232,7 @@ export function RawEnrolleeSurveyView({
           <ParticipantFileSurveyResponseView
             studyEnvContext={studyEnvContext}
             enrollee={enrollee}
-            surveyResponse={response}/>
+            documents={response.participantFiles || []}/>
       }
       {view === 'editing' && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}
