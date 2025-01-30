@@ -12,8 +12,14 @@ jest.mock('api/api', () => ({
 describe('EnrolleeDocuments', () => {
   it('displays participant documents', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
-      { id: 'file1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0 },
-      { id: 'file2', fileName: 'file2.png', fileType: 'image/png', createdAt: 0, lastUpdatedAt: 0 }
+      {
+        id: 'file1', fileName: 'file1.pdf', fileType: 'application/pdf',
+        createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
+      },
+      {
+        id: 'file2', fileName: 'file2.png', fileType: 'image/png',
+        createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
+      }
     ])
 
     render(<EnrolleeDocuments enrollee={mockEnrollee()} studyEnvContext={mockStudyEnvContext()} />)

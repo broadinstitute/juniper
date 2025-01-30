@@ -133,12 +133,12 @@ const surveyResponseIdsToTaskNames = (
   }).filter(task => task !== undefined)
 
   if (associatedTasks.length === 0) {
-    return null
+    return <div className={'mt-2 fst-italic'}>This document is not associated with any tasks</div>
   }
 
   return (
-    <div className={'mt-2'}>
-      <span className={'fw-medium'}>Survey Responses</span>
+    <div className={'mt-2 text-muted'}>
+      <span>Document shared in response to:</span>
       <ul>
         {associatedTasks.map(task =>
           <li key={task!.id}>

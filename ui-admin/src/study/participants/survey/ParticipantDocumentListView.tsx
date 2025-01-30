@@ -18,10 +18,12 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 export const ParticipantDocumentListView = ({
   studyEnvContext,
   enrollee,
+  showAssociatedTasks,
   documents
 }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee,
+  showAssociatedTasks: boolean,
   documents: ParticipantFile[]
 }) => {
   const columns: ColumnDef<ParticipantFile>[] = [
@@ -33,6 +35,10 @@ export const ParticipantDocumentListView = ({
       header: 'File Name',
       accessorKey: 'fileName'
     },
+    ...(showAssociatedTasks ? [{
+      header: 'Associated Tasks',
+      accessorKey: 'surveyResponseIds'
+    }] : []),
     {
       header: 'File Type',
       accessorKey: 'fileType'

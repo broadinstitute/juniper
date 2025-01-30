@@ -37,8 +37,11 @@ const renderDocumentRequestUpload = () => {
 describe('DocumentRequestUpload', () => {
   it('should render document list', async () => {
     const files: ParticipantFile[] = [
-      { id: '1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0 },
-      { id: '2', fileName: 'file2.jpg', fileType: 'image/jpeg', createdAt: 0, lastUpdatedAt: 0 }
+      {
+        id: '1', fileName: 'file1.pdf', fileType: 'application/pdf',
+        createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
+      },
+      { id: '2', fileName: 'file2.jpg', fileType: 'image/jpeg', createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: [] }
     ]
     asMockedFn(mockApi.listParticipantFiles).mockResolvedValue(files)
 
@@ -52,7 +55,7 @@ describe('DocumentRequestUpload', () => {
 
   test('should upload a new file', async () => {
     const newFile: ParticipantFile = {
-      id: '3', fileName: 'file3.png', fileType: 'image/png', createdAt: 0, lastUpdatedAt: 0
+      id: '3', fileName: 'file3.png', fileType: 'image/png', createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
     }
     asMockedFn(mockApi.listParticipantFiles).mockResolvedValue([])
     asMockedFn(mockApi.uploadParticipantFile).mockResolvedValue(newFile)
@@ -75,7 +78,7 @@ describe('DocumentRequestUpload', () => {
 
   test('should download a file when clicked', async () => {
     const file: ParticipantFile = {
-      id: '1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0
+      id: '1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
     }
     asMockedFn(mockApi.listParticipantFiles).mockResolvedValue([file])
     asMockedFn(mockApi.downloadParticipantFile).mockResolvedValue(new Response())
