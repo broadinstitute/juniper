@@ -22,17 +22,10 @@ export default function DocumentLibrary() {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees, ppUser } = useActiveUser()
 
-  const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
   const studiesJoined = portal.portalStudies.filter(pStudy =>
     enrollees.some(enrollee =>
       enrollee.profileId === ppUser?.profileId && enrollee.studyEnvironmentId === pStudy.study.studyEnvironments[0].id)
   )
-
-  activeEnrollee?.surveyResponses.forEach(surveyResponse => {
-    surveyResponse.participantFiles?.forEach(file => {
-      console.log(file)
-    })
-  })
 
   return <div
     className="hub-dashboard-background flex-grow-1 pb-2"
@@ -103,7 +96,7 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
                   {fileTypeToIcon(participantFile.fileType)}
                   {participantFile.fileName}
                   <span className='fst-italic text-muted'> ({instantToDateString(participantFile.createdAt)})</span>
-                  {surveyResponseIdsToTaskNames(i18n, enrollee, participantFile.surveyResponseIds)}
+                  {surveyResponseIdsToTaskNames(i18n, studyEnvParams, enrollee, participantFile.surveyResponseIds)}
                 </div>
               </td>
               <td className="align-middle">
@@ -132,7 +125,8 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
 }
 
 const surveyResponseIdsToTaskNames = (
-  i18n: (key: string, options?: I18nOptions) => string, enrollee: Enrollee, surveyResponseIds: string[]
+  i18n: (key: string, options?: I18nOptions) => string, studyEnvParams: StudyEnvParams,
+  enrollee: Enrollee, surveyResponseIds: string[]
 ) => {
   const associatedTasks = surveyResponseIds.map(surveyResponseId => {
     return enrollee.participantTasks.find(task => task.surveyResponseId === surveyResponseId)
@@ -144,11 +138,11 @@ const surveyResponseIdsToTaskNames = (
 
   return (
     <div className={'mt-2'}>
-      <span className={'fw-medium'}>Survey Responses&nbsp;</span>
+      <span className={'fw-medium'}>Survey Responses</span>
       <ul>
         {associatedTasks.map(task =>
           <li key={task!.id}>
-            <Link to={`../${getTaskPath(task!, enrollee.shortcode, 'heartdemo')}`}>
+            <Link to={`../${getTaskPath(task!, enrollee.shortcode, studyEnvParams.studyShortcode)}`}>
               {i18n(`${task!.targetStableId}:${task!.targetAssignedVersion}`, { defaultValue: task!.targetName })}
             </Link>
           </li>
