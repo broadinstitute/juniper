@@ -153,10 +153,10 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
     field = field.replace('user.', 'participantUser.')
   }
   if (field.startsWith('answer')) {
-    const [, surveyStableId, questionStableId] = field.split('.')
+    const { questionStableId, surveyStableId, header } = parseAnswerFacet(facet)
     return {
       id: field,
-      header: _startCase(questionStableId),
+      header,
       accessorFn: info => {
         const answer = info.answers.find(ans =>
           ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
@@ -178,4 +178,14 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
       }
     }
   }
+}
+
+export function parseAnswerFacet(facet: KeyedSearchValueTypeDefinition) {
+  const field = facet.key
+  const [, surveyStableId, questionStableId] = field.split('.')
+  let header = _startCase(questionStableId)
+  if (questionStableId.match(/^[a-z]{2}_[a-z]{2}_/)) {
+    header = _startCase(questionStableId.slice(5))
+  }
+  return { surveyStableId, questionStableId, header }
 }
