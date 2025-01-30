@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,22 @@ public class ParticipantTaskExtService {
 
   // Loads all outreach activities for the logged-in PortalParticipantUser
   public List<TaskAndSurvey> listSurveyTasks(
-      ParticipantUser user, String portalShortcode, EnvironmentName envName, TaskType taskType) {
+      ParticipantUser operator,
+      String portalShortcode,
+      EnvironmentName envName,
+      TaskType taskType,
+      UUID participantUserId) {
     PortalWithPortalUser portalUser =
-        authUtilService.authParticipantToPortal(user.getId(), portalShortcode, envName);
+        authUtilService.authParticipantToPortal(operator.getId(), portalShortcode, envName);
+
+    if (participantUserId != operator.getId()) {
+      // this is a proxy getting tasks for a governed participant
+      portalUser =
+          authUtilService.authParticipantToPortal(participantUserId, portalShortcode, envName);
+      authUtilService.authParticipantUserToPortalParticipantUser(
+          operator.getId(), portalUser.ppUser().getId());
+    }
+
     List<Enrollee> participantEnrollees =
         enrolleeService.findByPortalParticipantUser(portalUser.ppUser());
 
