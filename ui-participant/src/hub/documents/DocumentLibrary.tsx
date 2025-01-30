@@ -1,5 +1,7 @@
 import {
-  Enrollee, EnvironmentName,
+  Enrollee,
+  EnvironmentName,
+  I18nOptions,
   instantToDateString,
   ParticipantFile,
   saveBlobAsDownload,
@@ -10,24 +12,27 @@ import React, { useEffect, useState } from 'react'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import Api from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faDownload,
-  faFile,
-  faFileImage,
-  faFileLines,
-  faFilePdf
-} from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faFile, faFileImage, faFileLines, faFilePdf } from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { Link } from 'react-router-dom'
+import { getTaskPath } from '../task/taskUtils'
 
 export default function DocumentLibrary() {
   const { i18n } = useI18n()
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees, ppUser } = useActiveUser()
 
+  const activeEnrollee = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)
   const studiesJoined = portal.portalStudies.filter(pStudy =>
     enrollees.some(enrollee =>
       enrollee.profileId === ppUser?.profileId && enrollee.studyEnvironmentId === pStudy.study.studyEnvironments[0].id)
   )
+
+  activeEnrollee?.surveyResponses.forEach(surveyResponse => {
+    surveyResponse.participantFiles?.forEach(file => {
+      console.log(file)
+    })
+  })
 
   return <div
     className="hub-dashboard-background flex-grow-1 pb-2"
@@ -46,6 +51,7 @@ export default function DocumentLibrary() {
               <h3>{i18n('documentsPageUploadedDocumentsTitle')}</h3>
               {studiesJoined.map(pStudy =>
                 <DocumentsList
+                  key={pStudy.study.shortcode}
                   studyName={pStudy.study.name}
                   studyEnvParams={{
                     portalShortcode: portal.shortcode,
@@ -82,7 +88,7 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
   return <>
     <h5 className={'mt-3'}>{studyName} ({participantFiles.length})</h5>
     <div className="d-flex flex-column">
-      { participantFiles.length > 0 && <table className="table">
+      {participantFiles.length > 0 && <table className="table">
         <thead>
           <tr>
             <th></th>
@@ -96,9 +102,8 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
                 <div>
                   {fileTypeToIcon(participantFile.fileType)}
                   {participantFile.fileName}
-                  <div className={'text-muted fst-italic'}>
-                    {`${i18n('documentsListCreatedOn')} ${  instantToDateString(participantFile.createdAt)}`}
-                  </div>
+                  <span className='fst-italic text-muted'> ({instantToDateString(participantFile.createdAt)})</span>
+                  {surveyResponseIdsToTaskNames(i18n, enrollee, participantFile.surveyResponseIds)}
                 </div>
               </td>
               <td className="align-middle">
@@ -120,10 +125,37 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
         </tbody>
       </table>}
       {participantFiles.length === 0 &&
-        <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
+          <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
       }
     </div>
   </>
+}
+
+const surveyResponseIdsToTaskNames = (
+  i18n: (key: string, options?: I18nOptions) => string, enrollee: Enrollee, surveyResponseIds: string[]
+) => {
+  const associatedTasks = surveyResponseIds.map(surveyResponseId => {
+    return enrollee.participantTasks.find(task => task.surveyResponseId === surveyResponseId)
+  }).filter(task => task !== undefined)
+
+  if (associatedTasks.length === 0) {
+    return null
+  }
+
+  return (
+    <div className={'mt-2'}>
+      <span className={'fw-medium'}>Survey Responses&nbsp;</span>
+      <ul>
+        {associatedTasks.map(task =>
+          <li key={task!.id}>
+            <Link to={`../${getTaskPath(task!, enrollee.shortcode, 'heartdemo')}`}>
+              {i18n(`${task!.targetStableId}:${task!.targetAssignedVersion}`, { defaultValue: task!.targetName })}
+            </Link>
+          </li>
+        )}
+      </ul>
+    </div>
+  )
 }
 
 const fileTypeToIcon = (fileType: string) => {

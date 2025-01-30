@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerFormat;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class AnswerService extends CrudService<Answer, AnswerDao> {
     private final ParticipantFileService participantFileService;
 
-    public AnswerService(AnswerDao dao, ParticipantFileService participantFileService) {
+    public AnswerService(AnswerDao dao, @Lazy ParticipantFileService participantFileService) {
         super(dao);
         this.participantFileService = participantFileService;
     }

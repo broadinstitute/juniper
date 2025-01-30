@@ -4,4 +4,5 @@ export type ParticipantFile = {
   fileType: string
   createdAt: number
   lastUpdatedAt: number
+  surveyResponseIds: string[]
 }

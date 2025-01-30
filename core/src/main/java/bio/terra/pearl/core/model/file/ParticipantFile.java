@@ -1,11 +1,14 @@
 package bio.terra.pearl.core.model.file;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,4 +31,7 @@ public class ParticipantFile extends BaseEntity {
     private UUID enrolleeId;
 
     private String notes;
+
+    @Builder.Default
+    private List<UUID> surveyResponseIds = new ArrayList<>(); //list of survey responses that are associated with this file
 }
