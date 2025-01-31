@@ -97,7 +97,7 @@ export default function PreEnrollShortcutModal({
               `If set, any participant signing up with this link will have these answers 
                pre-filled in the pre-enroll survey. Go to the "Preview" tab in the survey
                 builder and fill out the answers you want to pre-fill. Then, click the
-                "Copy selected answers" button to copy the answers to the clipboard. 
+                "Copy answers" button to copy the answers to the clipboard. 
                 Finally, paste that value here. `
             }
             label={'Pre-filled Answers'}

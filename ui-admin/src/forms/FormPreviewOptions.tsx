@@ -162,7 +162,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           forceUpdate() //trigger a re-render to persist the answers to the survey model
           setCopyTriggered(true)
         }}>
-          <FontAwesomeIcon icon={faClipboard}/> Copy selected answers
+          <FontAwesomeIcon icon={faClipboard}/> Copy answers
         </Button>
       </div>
 
