@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 public class MixpanelServiceTests extends BaseSpringBootTest {
     @Autowired private MixpanelService mixpanelService;
+    @Autowired private LoggingConfigCache loggingConfigCache;
     @Autowired private Environment env;
     @Autowired private PortalEnvironmentConfigService portalEnvironmentConfigService;
     @Autowired private PortalEnvironmentFactory portalEnvironmentFactory;
@@ -36,7 +37,7 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         env = mock(Environment.class);
         when(env.getProperty("env.mixpanel.token")).thenReturn("test-token");
         MixpanelService.MixpanelConfig mixpanelConfig = new MixpanelService.MixpanelConfig(env);
-        MixpanelService mockedMixpanelService = new MixpanelService(mixpanelConfig, portalEnvironmentConfigService, cacheManager);
+        MixpanelService mockedMixpanelService = new MixpanelService(mixpanelConfig, loggingConfigCache);
 
         JSONObject result = mockedMixpanelService.buildEvent(event, "test-token");
 
@@ -66,7 +67,7 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         when(env.getProperty("env.mixpanel.token")).thenReturn("test-token");
         MixpanelService.MixpanelConfig mixpanelConfig = new MixpanelService.MixpanelConfig(env);
         // Create a spy on the MixpanelService instance
-        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, portalEnvironmentConfigService, cacheManager);
+        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, loggingConfigCache);
         MixpanelService spyMixpanelService = spy(mixpanelService);
 
         JSONObject event = new JSONObject();
@@ -99,7 +100,7 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         when(env.getProperty("env.mixpanel.token")).thenReturn("test-token");
         MixpanelService.MixpanelConfig mixpanelConfig = new MixpanelService.MixpanelConfig(env);
         // Create a spy on the MixpanelService instance
-        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, portalEnvironmentConfigService, cacheManager);
+        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, loggingConfigCache);
         MixpanelService spyMixpanelService = spy(mixpanelService);
 
         PortalEnvironment portalEnv =  portalEnvironmentFactory.buildPersisted(getTestName(info));
@@ -107,20 +108,21 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         envConfig.setParticipantHostname("somedomain.org");
         envConfig.setMixpanelToken("custom-token");
         portalEnvironmentConfigService.update(envConfig);
+        loggingConfigCache.configCacheEvict();
 
 
         JSONObject event = new JSONObject();
         event.put("event", "test_event");
         JSONObject properties = new JSONObject();
         properties.put("key", "value");
-        properties.put("current_domain", "somedomain.org");
+        properties.put("$current_url", "https://somedomain.org/page");
         event.put("properties", properties);
 
         JSONObject event2 = new JSONObject();
         event2.put("event", "test_event2");
         JSONObject properties2 = new JSONObject();
         properties2.put("key", "value2");
-        properties2.put("current_domain", "anotherdomain.com");
+        properties2.put("$current_url", "https://anotherdomain.com");
         event2.put("properties", properties2);
 
         JSONArray events = new JSONArray();
@@ -134,8 +136,8 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
 
         assertThat(tokenCaptor.getAllValues(), contains("test-token", "custom-token", "test-token"));
         assertThat(objCaptor.getAllValues().stream().map(obj ->
-                ((JSONObject) obj.get("properties")).get("current_domain")).toList(),
-                contains("somedomain.org", "somedomain.org", "anotherdomain.com"));
+                ((JSONObject) obj.get("properties")).get("$current_url")).toList(),
+                contains("https://somedomain.org/page", "https://somedomain.org/page", "https://anotherdomain.com"));
     }
 
     @Test

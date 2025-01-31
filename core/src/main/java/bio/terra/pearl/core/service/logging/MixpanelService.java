@@ -78,7 +78,7 @@ public class MixpanelService {
             if (eventDomain != null) {
                 customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
                 Map<String, PortalEnvironmentConfig> configMap = loggingConfigCache.getConfigsWithDomain();
-                 PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
+                PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
                 if (matchedConfig != null && matchedConfig.getMixpanelToken() != null) {
                     JSONObject domainEvent = buildEvent(event, matchedConfig.getMixpanelToken());
                     customDelivery.addMessage(domainEvent);
