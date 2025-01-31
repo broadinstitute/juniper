@@ -60,24 +60,17 @@ export default function PreEnrollShortcutModal({
     <Modal.Body>
       <form>
         <p>
-          Participants can be directed to enroll using a customized URL with the following options:
+          Participants can be directed to your website with pre-configured enrollment options.
+          After configuring the options below, copy and paste the URL to
+          direct participants to the portal with your selected options.
         </p>
-        <Checkbox
-          infoContent={'If checked, any participant signing up with this link will bypass the pre-enroll survey.'}
-          onClick={() => {
-            setSkipPreEnroll(!skipPreEnroll)
-            setQueryParams(prev => ({
-              ...prev,
-              skipPreEnroll: !skipPreEnroll ? true : undefined
-            }))
-          }} label={'Skip Pre-enroll'} checked={skipPreEnroll}/>
         <div className={'my-3'}>
           <TextInput
             type="text"
             infoContent={
               'If set, any participant signing up with this link will have this ' +
-                'site recorded as the referring site in their profile. Use this option if you want to track ' +
-                'participant enrollments from a partner website or other source such as a newsletter.'
+                  'site recorded as the referring site in their profile. Use this option if you want to track ' +
+                  'participant enrollments from a partner website or other source such as a newsletter.'
             }
             label={'Referring Site'}
             value={referralSource?.referringSite} onChange={e => {
@@ -94,7 +87,7 @@ export default function PreEnrollShortcutModal({
           <TextInput
             type="text"
             infoContent={
-              `If set, any participant signing up with this link will have these answers 
+                `If set, any participant signing up with this link will have these answers 
                pre-filled in the pre-enroll survey. Go to the "Preview" tab in the survey
                 builder and fill out the answers you want to pre-fill. Then, click the
                 "Copy answers" button to copy the answers to the clipboard. 
@@ -110,14 +103,29 @@ export default function PreEnrollShortcutModal({
             }}/>
         </div>
 
-        <div>
-          <span className={'fw-semibold'}>URL</span>
-          <div className={'d-flex mb-3'}>
-            <TextInput type="text" value={shortcutUrl} onChange={e => setShortcutUrl(e)}/>
-            <IconButton
-              aria-label={'Copy to clipboard'}
-              icon={faClipboard}
-              onClick={() => navigator.clipboard.writeText(shortcutUrl || 'error: could not create url')}/>
+        <Checkbox
+          label={'Skip Pre-enroll'} checked={skipPreEnroll}
+          infoContent={
+            'If checked, any participant signing up with this link will bypass the pre-enroll survey entirely.'
+          }
+          onClick={() => {
+            setSkipPreEnroll(!skipPreEnroll)
+            setQueryParams(prev => ({
+              ...prev,
+              skipPreEnroll: !skipPreEnroll ? true : undefined
+            }))
+          }}/>
+
+        <div className={'bg-light mt-3 px-2 py-2 border rounded'}>
+          <div>
+            <span className={'fw-semibold'}>Configured Portal URL</span>
+            <div className={'d-flex mb-3'}>
+              <TextInput type="text" value={shortcutUrl} onChange={e => setShortcutUrl(e)}/>
+              <IconButton
+                aria-label={'Copy to clipboard'}
+                icon={faClipboard}
+                onClick={() => navigator.clipboard.writeText(shortcutUrl || 'error: could not create url')}/>
+            </div>
           </div>
         </div>
       </form>
