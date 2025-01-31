@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Answer, Profile } from '@juniper/ui-core'
-import InfoPopup from '../components/forms/InfoPopup'
-import { TextInput } from '../components/forms/TextInput'
-import { Button } from '../components/forms/Button'
+import InfoPopup from 'components/forms/InfoPopup'
+import { TextInput } from 'components/forms/TextInput'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 
@@ -18,12 +18,30 @@ type FormPreviewOptions = {
 
 type FormPreviewOptionsProps = {
   value: FormPreviewOptions
+  forceUpdate: () => void
   onChange: (newValue: FormPreviewOptions) => void
 }
 
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
-  const { value, onChange } = props
+  const { value, forceUpdate, onChange } = props
+  const [copyTriggered, setCopyTriggered] = useState(false)
+
+  //this effect is necessary because the answers typed into the preview do not persist to the model
+  //until a component re-render is triggered, hence the forceUpdate call in the copy button onClick.
+  //however, just forcing a re-render is not enough. we also need to ensure that everything happens
+  //in the right order, so we copy the latest answers to the clipboard only after the re-render.
+  useEffect(() => {
+    if (copyTriggered) {
+      const filteredAnswers = value.answers.filter(a => a.questionStableId !== 'qualified')
+      filteredAnswers.map(a => {
+        // @ts-ignore
+        delete a.format
+      })
+      navigator.clipboard.writeText(JSON.stringify(filteredAnswers))
+      setCopyTriggered(false)
+    }
+  }, [copyTriggered])
 
   return (
     <div>
@@ -141,7 +159,8 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           value={value.proxyProfile?.familyName ?? ''} />
         </div>
         <Button variant="secondary" className="mt-2" onClick={() => {
-          navigator.clipboard.writeText(JSON.stringify(value.answers))
+          forceUpdate() //trigger a re-render to persist the answers to the survey model
+          setCopyTriggered(true)
         }}>
           <FontAwesomeIcon icon={faClipboard}/> Copy selected answers
         </Button>

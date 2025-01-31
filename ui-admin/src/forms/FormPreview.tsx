@@ -11,8 +11,8 @@ import {
   Profile,
   surveyJSModelFromFormContent,
   useForceUpdate,
-  useI18n
-  , getSurveyJsAnswerList
+  useI18n,
+  getSurveyJsAnswerList
 } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
@@ -72,6 +72,7 @@ export const FormPreview = (props: FormPreviewProps) => {
             proxyProfile: surveyModel.getVariable('proxyProfile'),
             isGovernedUser: surveyModel.getVariable('isGovernedUser')
           }}
+          forceUpdate={forceUpdate}
           onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile, isGovernedUser }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
