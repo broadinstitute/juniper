@@ -53,7 +53,7 @@ public class MixpanelService {
     }
 
     public void logEvent(String data) {
-        if(mixpanelConfig.enabled) {
+        if(!mixpanelConfig.enabled) {
             return;
         }
 
@@ -65,6 +65,7 @@ public class MixpanelService {
         JSONArray events = new JSONArray(filteredData);
 
         ClientDelivery delivery = new ClientDelivery();
+        ClientDelivery customDelivery = null;
 
         for (int i = 0; i < events.length(); i++) {
             JSONObject event = events.getJSONObject(i);
@@ -75,16 +76,19 @@ public class MixpanelService {
             /** check if the event comes from a domain with a dedicated mixpanel token, if so, use that token to send the
              * event to that token in addition to the global mixpanel domain */
             if (eventDomain != null) {
+                customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
                 Map<String, PortalEnvironmentConfig> configMap = loggingConfigCache.getConfigsWithDomain();
                  PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
                 if (matchedConfig != null && matchedConfig.getMixpanelToken() != null) {
                     JSONObject domainEvent = buildEvent(event, matchedConfig.getMixpanelToken());
-                    delivery.addMessage(domainEvent);
+                    customDelivery.addMessage(domainEvent);
                 }
             }
         }
-
         deliverEvents(delivery);
+        if (customDelivery != null) {
+            deliverEvents(customDelivery);
+        }
     }
 
     protected JSONObject buildEvent(JSONObject event, String apiToken) {
@@ -101,9 +105,6 @@ public class MixpanelService {
 
     protected void deliverEvents(ClientDelivery delivery) {
         MixpanelAPI mixpanel = new MixpanelAPI();
-        if(!mixpanelConfig.enabled) {
-            return;
-        }
         try {
             mixpanel.deliver(delivery);
         } catch (IOException e) {

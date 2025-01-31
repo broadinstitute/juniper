@@ -14,7 +14,6 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -104,6 +103,4 @@ public class PortalExtService {
             authContext.getPortalEnvironment().getId(), languages);
     return updatedLangs;
   }
-
-  private setEmptyString
 }
