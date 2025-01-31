@@ -1,9 +1,13 @@
 import React from 'react'
-import { Profile } from '@juniper/ui-core'
+import { Answer, Profile } from '@juniper/ui-core'
 import InfoPopup from '../components/forms/InfoPopup'
 import { TextInput } from '../components/forms/TextInput'
+import { Button } from '../components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 
 type FormPreviewOptions = {
+  answers: Answer[]
   ignoreValidation: boolean
   showInvisibleElements: boolean
   locale: string
@@ -136,6 +140,11 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           unboldLabel={true}
           value={value.proxyProfile?.familyName ?? ''} />
         </div>
+        <Button variant="secondary" className="mt-2" onClick={() => {
+          navigator.clipboard.writeText(JSON.stringify(value.answers))
+        }}>
+          <FontAwesomeIcon icon={faClipboard}/> Copy selected answers
+        </Button>
       </div>
 
     </div>

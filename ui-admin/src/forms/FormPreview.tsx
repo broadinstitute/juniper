@@ -12,6 +12,7 @@ import {
   surveyJSModelFromFormContent,
   useForceUpdate,
   useI18n
+  , getSurveyJsAnswerList
 } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
@@ -63,6 +64,7 @@ export const FormPreview = (props: FormPreviewProps) => {
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
           value={{
+            answers: getSurveyJsAnswerList(surveyModel),
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,
             locale: surveyModel.locale,
