@@ -19,7 +19,7 @@
     "oidc-client-ts": "^2.2.0",
     "polished": "^4.3.1",
     "react": "^18.3.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19.0.0",
     "react-markdown": "^8.0.3",
     "react-oidc-context": "^2.2.0",
     "react-router-dom": "^6.4.0",
@@ -33,7 +33,7 @@
     "@types/bootstrap": "^5.2.10",
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.0.6",
+    "@types/react-dom": "^19.0.3",
     "@types/react-router-hash-link": "^2.4.9"
   },
   "scripts": {
