@@ -169,10 +169,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         // now try to complete the survey
         SurveyResponse survResponse = SurveyResponse.builder()
-                        .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
-                        .complete(true)
-                        .resumeData("stuff")
-                        .build();
+                .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
+                .complete(true)
+                .resumeData("stuff")
+                .build();
         hubResponse = surveyResponseService.updateResponse(survResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, surveyTasks.get(0).getId(), survey.getPortalId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
@@ -195,16 +195,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Study study = studyEnvBundle.getStudy();
 
         Survey preEnrollmentSurvey = surveyFactory.buildPersisted(getTestName(info));
-        StudyEnvironmentSurvey.builder()
-                .surveyId(preEnrollmentSurvey.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .portalId(portalEnv.getPortalId()));
 
-        studyEnv.setPreEnrollSurveyId(preEnrollmentSurvey.getId());
-        studyEnvironmentService.update(
-                studyEnv
-        );
-
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
         String preEnrollmentSurveyResponseData = """
                 [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
                 {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
@@ -298,7 +293,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(consent, studyEnv.getId(), true);
 
         HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                 null);
+                null);
         Enrollee proxyEnrollee = hubResponse1.getEnrollee();
         HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode,userBundle.user(), userBundle.ppUser(),
                 null);
@@ -416,12 +411,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
         config.setAcceptingProxyEnrollment(true);
         studyEnvironmentConfigService.update(config);
-        Survey preEnrollmentSurvey = surveyFactory.buildPersisted(getTestName(info));
-        StudyEnvironmentSurvey.builder()
-                .surveyId(preEnrollmentSurvey.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnv.setPreEnrollSurveyId(preEnrollmentSurvey.getId());
+        Survey preEnrollmentSurvey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .portalId(portalEnv.getPortalId()));
+
+        surveyFactory.attachToEnv(preEnrollmentSurvey, studyEnv.getId(), true);
         studyEnvironmentService.update(studyEnv);
         String proxyQuestionStableId = "proxyQuestion";
         preEnrollmentSurveyFactory.buildPersistedProxyAnswerMapping(getTestName(info), preEnrollmentSurvey.getId(), proxyQuestionStableId);
