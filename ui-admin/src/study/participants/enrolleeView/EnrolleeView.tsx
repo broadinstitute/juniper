@@ -45,7 +45,7 @@ import {
 } from 'util/subNavStyles'
 import { RequireUserPermission } from 'util/RequireUserPermission'
 import EnrolleeDocuments from './EnrolleeDocuments'
-import { KitFullDetails } from '../../kits/KitFullDetails'
+import { KitRequestFullDetails } from '../../kits/KitRequestFullDetails'
 
 
 export type SurveyWithResponsesT = {
@@ -259,7 +259,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                   <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
                 }/>
                 <Route path="kitRequests/:kitRequestId" element={
-                  <KitFullDetails enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                  <KitRequestFullDetails enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route path="withdrawal" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
