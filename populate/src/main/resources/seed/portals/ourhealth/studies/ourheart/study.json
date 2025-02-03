@@ -32,7 +32,7 @@
         "enableInPersonKits": true
       },
       "configuredSurveyDtos": [
-        {"populateFileName": "surveys/preenroll.json"},
+        {"populateFileName": "surveys/preEnroll.json"},
         {"populateFileName": "surveys/basic.json"},
         {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
