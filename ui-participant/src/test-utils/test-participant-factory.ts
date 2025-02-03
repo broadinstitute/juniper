@@ -120,6 +120,7 @@ export const mockKitRequest = (kitStatus: KitRequestStatus, kitType: string): Ki
     kitType: mockKitType(kitType),
     distributionMethod: 'MAILED',
     skipAddressValidation: false,
+    creatingAdminUserId: 'adminId',
     createdAt: now,
     status: kitStatus,
     sentToAddress: '123 Main St',

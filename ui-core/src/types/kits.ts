@@ -32,5 +32,7 @@ export type KitRequest = {
     errorMessage?: string,
     details?: string,
     enrolleeShortcode?: string,
-    skipAddressValidation: boolean
+    skipAddressValidation: boolean,
+    creatingAdminUserId: string,
+    collectingAdminUserId?: string,
 }

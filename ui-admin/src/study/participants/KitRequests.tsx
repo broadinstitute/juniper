@@ -26,9 +26,10 @@ import {
   InfoCardHeader
 } from 'components/InfoCard'
 import { startCase } from 'lodash'
+import { Link } from 'react-router-dom'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
-function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
+export function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
   if (!sentToAddressJson) {
     return <div className="text-muted fst-italic">n/a<InfoPopup content={
       <div>
@@ -66,7 +67,7 @@ const columns: ColumnDef<KitRequest, string>[] = [{
 }, {
   header: 'Details',
   accessorKey: 'details',
-  cell: ({ row }) => <KitRequestDetails kitRequest={row.original}/>
+  cell: ({ row }) => <Link to={row.original.id}>View details</Link>
 }]
 
 /**
