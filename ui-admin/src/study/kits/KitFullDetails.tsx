@@ -27,19 +27,19 @@ export function KitFullDetails({ enrollee, studyEnvContext }: {
         </div>
       </InfoCardHeader>
       {!kitRequest && <div>Details for this kit request could not be displayed. Please contact support.</div>}
-      {kitRequest && <div className={'d-flex pt-3'}>
-        <div className={'d-flex flex-row'}>
-          <div className="border rounded p-3 ms-2">
+      {kitRequest && <div className={'container pt-3'}>
+        <div className={'row'}>
+          <div className="col-6 border rounded p-3">
             <div className="fw-bold">Sent To</div>
             <KitRequestAddress sentToAddressJson={kitRequest.sentToAddress}/>
             <FontAwesomeIcon className={'fa-xl'} icon={faFedex}/> {kitRequest.trackingNumber}
           </div>
-          <div className="border rounded p-3">
+          <div className="col-6 border rounded p-3">
             <div className="fw-bold">Latest Status</div>
             {kitStatusBadge(kitRequest.status)}
           </div>
         </div>
-        <div className={'d-flex flex-row pt-3'}>
+        <div className={'pt-3'}>
           <div className="py-3 border rounded-3 mb-3">
             <h5 className="fw-bold ps-3 border-bottom pb-3">Timeline</h5>
             <div className={'mt-3'}>
