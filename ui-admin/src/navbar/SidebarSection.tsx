@@ -62,6 +62,7 @@ export const SidebarItem = ({
         <button
           className="btn btn-secondary btn-sm text-white hover-opacity-50"
           onClick={() => toggleHiddenItem(item.key)}
+          aria-label={`Toggle visibility for ${item.label}`}
         >
           {hiddenItems.includes(item.key) ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye}/>}
         </button>

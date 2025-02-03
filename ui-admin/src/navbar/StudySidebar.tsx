@@ -8,7 +8,7 @@ import {
   studyParticipantsPath
 } from 'portal/PortalRouter'
 import StudySelector from './StudySelector'
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath,
@@ -29,48 +29,44 @@ import {
 } from 'user/UserProvider'
 import { studyPublishingPath } from 'study/StudyRouter'
 import { portalUsersPath } from 'user/AdminUserRouter'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCheck,
-  faPencil
-} from '@fortawesome/free-solid-svg-icons'
 import {
   SidebarSection,
   SidebarSectionT
 } from 'navbar/SidebarSection'
-
-type SidebarConfig = {
-  hidden: string[]
-}
-
-type SidebarConfigState = { [key: string]: SidebarConfig }
+import { StudySidebarConfig } from 'navbar/AdminSidebar'
 
 /** shows menu options related to the current study */
-export const StudySidebar = ({ study, portalList, portalShortcode }:
-                               { study: Study, portalList: Portal[], portalShortcode: string }) => {
+export const StudySidebar = ({
+  study,
+  portalList,
+  portalShortcode,
+  studySidebarConfig,
+  isEditingSidebarConfig,
+  toggleHiddenItem
+}: {
+  study: Study,
+  portalList: Portal[],
+  portalShortcode: string,
+  studySidebarConfig: StudySidebarConfig,
+  isEditingSidebarConfig: boolean,
+  toggleHiddenItem: (key: string) => void
+}) => {
   const navigate = useNavigate()
   const user = useUser()
   const portalId = portalList.find(p => p.shortcode === portalShortcode)?.id
 
-  const sidebarConfigState: SidebarConfigState = parseSidebarConfigState(localStorage.getItem('sidebarConfig') || '{}')
 
-  const sidebarConfig: SidebarConfig = sidebarConfigState[study.shortcode] || { hidden: [] }
-  const [hiddenItems, setHiddenItems] = React.useState(sidebarConfig.hidden)
-  useEffect(() => {
-    setHiddenItems(sidebarConfig.hidden)
-  }, [sidebarConfig])
+  const [hiddenItems, setHiddenItems] = React.useState<string[]>(studySidebarConfig.hidden)
+  React.useEffect(() => {
+    setHiddenItems(studySidebarConfig.hidden)
+  }, [studySidebarConfig])
 
-  const [isEditing, setIsEditing] = React.useState(false)
-
-  const toggleHiddenItem = (key: string) => {
+  const onToggleHiddenItem = (key: string) => {
     if (hiddenItems.includes(key)) {
-      sidebarConfig.hidden = hiddenItems.filter(item => item !== key)
+      setHiddenItems(hiddenItems.filter(i => i !== key))
     } else {
-      sidebarConfig.hidden = [...hiddenItems, key]
+      setHiddenItems([...hiddenItems, key])
     }
-    sidebarConfigState[study.shortcode] = sidebarConfig
-    localStorage.setItem('sidebarConfig', JSON.stringify(sidebarConfigState))
-    setHiddenItems(sidebarConfig.hidden)
   }
 
   /** updates the selected study -- routes to that study's homepage */
@@ -90,36 +86,21 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
     study.shortcode)
 
   return <div className="pt-3">
-    <div className="d-flex w-100 align-items-baseline">
-      <div className="flex-grow-1">
-        <StudySelector
-          portalList={portalList}
-          selectedShortcode={study.shortcode}
-          setSelectedStudy={setSelectedStudy}/>
+    <StudySelector
+      portalList={portalList}
+      selectedShortcode={study.shortcode}
+      setSelectedStudy={setSelectedStudy}/>
 
-      </div>
-      <button
-        className="btn btn-secondary btn-sm text-white m-0 ms-2 hover-opacity-50"
-        onClick={() => setIsEditing(!isEditing)}
-      >
-        {isEditing ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faPencil}/>}
-      </button>
-    </div>
     {sections.map(section => <SidebarSection
       key={section.key}
       section={section}
-      isEditing={isEditing}
+      isEditing={isEditingSidebarConfig}
       hiddenItems={hiddenItems}
-      toggleHiddenItem={toggleHiddenItem}/>)}
+      toggleHiddenItem={key => {
+        toggleHiddenItem(key)
+        onToggleHiddenItem(key)
+      }}/>)}
   </div>
-}
-
-const parseSidebarConfigState = (data: string): SidebarConfigState => {
-  try {
-    return JSON.parse(data)
-  } catch (e) {
-    return {}
-  }
 }
 
 const buildStudySidebarSections = (
