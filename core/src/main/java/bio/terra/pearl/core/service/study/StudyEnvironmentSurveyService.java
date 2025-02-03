@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.study;
 
+import bio.terra.pearl.core.dao.study.AttachSurvey;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.ListChange;
@@ -8,6 +9,7 @@ import bio.terra.pearl.core.model.publishing.VersionedConfigChange;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +93,10 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
 
     public List<StudyEnvironmentSurvey> findAllWithSurveyNoContent(List<UUID> studyEnvIds, String stableId, Boolean active) {
         return dao.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
+    }
+
+    public List<StudyEnvironmentSurvey> findAllByType(List<UUID> studyEnvIds, SurveyType type, Boolean active, AttachSurvey attachSurvey) {
+        return dao.findAllByType(studyEnvIds, type, active, attachSurvey);
     }
 
     public void deleteBySurveyId(UUID surveyId) {
