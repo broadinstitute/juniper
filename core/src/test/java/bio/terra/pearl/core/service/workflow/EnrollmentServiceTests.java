@@ -15,10 +15,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
-import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -27,6 +24,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,15 +65,19 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     private ParticipantUserService participantUserService;
     @Autowired
     private EnrolleeService enrolleeService;
+    @Autowired
+    private SurveyResponseService surveyResponseService;
 
     @Test
     @Transactional
     public void testAnonymousPreEnroll(TestInfo testInfo) throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
-        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo), portalEnv.getPortalId());
-        studyEnv.setPreEnrollSurveyId(survey.getId());
-        studyEnvironmentService.update(studyEnv);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .portalId(portalEnv.getPortalId()));
+
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
@@ -99,6 +101,14 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), savedResponse.getId(), false);
         assertThat(hubResponse.getEnrollee(), notNullValue());
+
+        // now check that the response is backfilled to a SurveyResponse
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(hubResponse.getEnrollee().getId());
+        assertThat(responses, hasSize(1));
+        assertThat(responses.get(0).getSurveyId(), equalTo(survey.getId()));
+        List<Answer> responseAnswers = surveyResponseService.findOneWithAnswers(responses.get(0).getId()).get().getAnswers();
+        assertThat(answers, hasSize(2));
+
     }
 
     /**
@@ -111,14 +121,13 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     public void testEnrollDoesNotRequirePreEnroll(TestInfo testInfo) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
-        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
-        studyEnv.setPreEnrollSurveyId(survey.getId());
-        studyEnvironmentService.update(studyEnv);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
                 getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
         HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, false);
@@ -141,7 +150,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                   null, false);
+                    null, false);
         });
     }
 
@@ -158,9 +167,10 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo), portalEnv.getPortalId());
-        studyEnv.setPreEnrollSurveyId(survey.getId());
-        studyEnvironmentService.update(studyEnv);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
                 "qualified", true,
