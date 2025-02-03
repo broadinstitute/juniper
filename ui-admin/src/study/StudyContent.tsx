@@ -43,9 +43,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const { currentEnv } = studyEnvContext
   const portalContext = useContext(PortalContext) as PortalContextT
 
-
-  const preEnrollSurvey = currentEnv.preEnrollSurvey
-  const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurveyNamed[]>([])
   const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
