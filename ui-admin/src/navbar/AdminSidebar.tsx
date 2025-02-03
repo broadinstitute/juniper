@@ -76,10 +76,10 @@ const AdminSidebar = ({ config }: { config: Config }) => {
         { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
           portalShortcode={portalShortcode!}/> }
 
-        {user?.superuser && <CollapsableMenu header={'Superuser functions'} content={
+        {user?.superuser && <CollapsableMenu header={'Superuser Functions'} content={
           <ul className="list-unstyled">
             <li className="mb-2">
-              <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>
+              <NavLink to="/users" className={sidebarNavLinkClasses}>All Users</NavLink>
             </li>
             <li className="mb-2">
               <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>

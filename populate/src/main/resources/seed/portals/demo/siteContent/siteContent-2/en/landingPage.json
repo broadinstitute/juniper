@@ -54,7 +54,7 @@
     "sectionType": "HERO_WITH_IMAGE",
     "sectionConfigJson": {
       "title": "Who can join?",
-      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the [American Heart Association](https://www.heart.org) as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
       "fullWidth": true,
       "buttons": [
         {"text": "Get Started",

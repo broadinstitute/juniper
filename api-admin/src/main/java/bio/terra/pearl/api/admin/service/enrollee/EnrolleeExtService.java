@@ -2,9 +2,7 @@ package bio.terra.pearl.api.admin.service.enrollee;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
-import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
@@ -36,12 +34,6 @@ public class EnrolleeExtService {
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.participantDataChangeService = participantDataChangeService;
     this.studyEnvironmentService = studyEnvironmentService;
-  }
-
-  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public List<Enrollee> findForKitManagement(PortalStudyEnvAuthContext authContext) {
-    return enrolleeService.findForKitManagement(
-        authContext.getStudyShortcode(), authContext.getEnvironmentName());
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")

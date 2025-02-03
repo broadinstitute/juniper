@@ -30,7 +30,7 @@ test('renders the superuser menu for superusers', async () => {
       <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
-  expect(screen.getByText('Superuser functions')).toBeInTheDocument()
+  expect(screen.getByText('Superuser Functions')).toBeInTheDocument()
 })
 
 test('menu components collapse on click', async () => {
@@ -39,11 +39,11 @@ test('menu components collapse on click', async () => {
       <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
-  expect(screen.getByText('All users')).toBeVisible()
-  await userEvent.click(screen.getByText('Superuser functions'))
-  waitFor(() => expect(screen.queryByText('All users')).not.toBeVisible())
-  await userEvent.click(screen.getByText('Superuser functions'))
-  waitFor(() => expect(screen.queryByText('All users')).toBeVisible())
+  expect(screen.getByText('All Users')).toBeVisible()
+  await userEvent.click(screen.getByText('Superuser Functions'))
+  waitFor(() => expect(screen.queryByText('All Users')).not.toBeVisible())
+  await userEvent.click(screen.getByText('Superuser Functions'))
+  waitFor(() => expect(screen.queryByText('All Users')).toBeVisible())
 })
 
 test('does not render the superuser menu for  regular users', async () => {
@@ -52,6 +52,6 @@ test('does not render the superuser menu for  regular users', async () => {
       <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
-  expect(screen.queryByText('Superuser functions')).toBeNull()
+  expect(screen.queryByText('Superuser Functions')).toBeNull()
 })
 

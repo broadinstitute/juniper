@@ -16,8 +16,7 @@ import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateTriggerModal from '../notifications/CreateTriggerModal'
 import {
-  faAsterisk,
-  faCodeBranch, faEdit,
+  faAsterisk, faEdit, faFilter,
   faTasks
 } from '@fortawesome/free-solid-svg-icons'
 import { faCalendarAlt, faClipboard, faEnvelope,   faCheckSquare } from '@fortawesome/free-regular-svg-icons'
@@ -103,7 +102,7 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
             setShowCreateModal={setShowCreateModal}/></h3>
 
         <ul className="list-unstyled">
-          { triggers.filter(trigger => trigger.eventType === 'STUDY_ENROLLMENT')
+          { triggers.filter(trigger => trigger.eventType === 'STUDY_ENROLLMENT' && trigger.triggerType !== 'AD_HOC')
             .map(trigger =>
               <TriggerListItem trigger={trigger} key={trigger.id} studyEnvParams={paramsFromContext(studyEnvContext)}/>
             )
@@ -161,7 +160,8 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
             </h4>
           </div>
           <ul className="list-unstyled">
-            { triggers.filter(trigger => trigger.taskType === 'SURVEY' && trigger.filterTargetStableIds.length === 0)
+            { triggers.filter(trigger => (trigger.taskType === 'SURVEY' && trigger.filterTargetStableIds.length === 0)
+              && trigger.triggerType !== 'AD_HOC')
               .map(trigger =>
                 <TriggerListItem trigger={trigger} key={trigger.id}
                   studyEnvParams={paramsFromContext(studyEnvContext)}/>
@@ -203,8 +203,8 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
       <li className={boxClasses}>
         <h3 className="h5">Kits</h3>
         <ul className="list-unstyled">
-          { triggers.filter(trigger => trigger.eventType === 'KIT_SENT' ||
-            trigger.eventType === 'KIT_RECEIVED' || trigger.taskType === 'KIT_REQUEST')
+          { triggers.filter(trigger => (trigger.eventType === 'KIT_SENT' || trigger.eventType === 'KIT_RECEIVED' ||
+            trigger.taskType === 'KIT_REQUEST'))
             .map(trigger =>
               <TriggerListItem trigger={trigger} key={trigger.id} studyEnvParams={paramsFromContext(studyEnvContext)}/>
             )
@@ -270,12 +270,12 @@ const SurveyListItem = ({ studyEnvSurvey, studyEnvParams, triggers, triggerOpts,
 
   return <li className="py-2">
     <div className={'d-flex align-items-center'}>
-      { survey.eligibilityRule && <span className="me-2 text-muted fst-italic">
-        <InfoPopup content={survey.eligibilityRule} marginClass="me-2"
-          target={<FontAwesomeIcon icon={faCodeBranch} title="conditional logic"/>}/>
-      </span> }
       { survey.surveyType === 'CONSENT' && <FontAwesomeIcon icon={faCheckSquare} className="me-2"/> }
       { survey.surveyType === 'RESEARCH' && <FontAwesomeIcon icon={faClipboard} className="me-2"/> }
+      { survey.eligibilityRule && <span className="me-2 text-muted fst-italic">
+        <InfoPopup content={survey.eligibilityRule} marginClass="me-2"
+          target={<FontAwesomeIcon icon={faFilter} title="conditional logic"/>}/>
+      </span> }
       { survey.required && <span className="me-2 text-muted">
         <FontAwesomeIcon icon={faAsterisk} title={'required'}/>
       </span> }

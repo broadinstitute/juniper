@@ -14,11 +14,11 @@ public interface StudyEnvPublishable {
     void applyDiff( StudyEnvironmentChange change, StudyEnvironment destEnv, PortalEnvironment destPortalEnv);
 
     default List<String> getPublishIgnoreProps() {
-        return Stream.concat(List.of("id", "createdAt", "lastUpdatedAt", "class",
-                "portalEnvironmentId", "studyEnvironmentId").stream(), getAdditionalPublishIgnoreProps().stream()).toList();
-    }
-
-    default List<String> getAdditionalPublishIgnoreProps() {
-        return List.of();
+        return List.of(
+                "id", "createdAt", "lastUpdatedAt", "class",
+                "portalEnvironmentId", "studyEnvironmentId",
+                "surveyId", "survey", "versionedEntity",
+                "exportOptions", "exportOptionsId", "destinationUrl"
+        );
     }
 }
