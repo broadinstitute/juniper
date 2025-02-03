@@ -6,6 +6,7 @@
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@juniper/ui-core": "*",

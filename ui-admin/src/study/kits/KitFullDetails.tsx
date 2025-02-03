@@ -23,40 +23,42 @@ export function KitFullDetails({ enrollee, studyEnvContext }: {
     <InfoCard>
       <InfoCardHeader>
         <div className="d-flex justify-content-between align-items-center w-100">
-          <div className="fw-bold lead my-1">Kit Requests</div>
+          <div className="fw-bold lead my-1">Kit Request</div>
         </div>
       </InfoCardHeader>
-      {!kitRequest && <div>Kit request not found</div>}
-      {kitRequest && <div className={'container pt-3'}>
-        <div className={'row'}>
-          <div className="col-6 border rounded p-3">
+      {!kitRequest && <div>Details for this kit request could not be displayed. Please contact support.</div>}
+      {kitRequest && <div className={'d-flex pt-3'}>
+        <div className={'d-flex flex-row'}>
+          <div className="border rounded p-3 ms-2">
             <div className="fw-bold">Sent To</div>
             <KitRequestAddress sentToAddressJson={kitRequest.sentToAddress}/>
             <FontAwesomeIcon className={'fa-xl'} icon={faFedex}/> {kitRequest.trackingNumber}
           </div>
-          <div className="col-6 border rounded p-3">
+          <div className="border rounded p-3">
             <div className="fw-bold">Latest Status</div>
             {kitStatusBadge(kitRequest.status)}
           </div>
         </div>
-        <div className={'pt-3'}>
-          <span className="fw-bold">Timeline</span>
-          <div className="py-3 border rounded-3">
-            {timelineEvent(
+        <div className={'d-flex flex-row pt-3'}>
+          <div className="py-3 border rounded-3 mb-3">
+            <h5 className="fw-bold ps-3 border-bottom pb-3">Timeline</h5>
+            <div className={'mt-3'}>
+              {timelineEvent(
                 `Requested by ${users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}`,
                 kitRequest.createdAt
-            )}
-            {timelineEvent(
+              )}
+              {timelineEvent(
                 `Queued for shipment`
-            )}
-            {timelineEvent(
+              )}
+              {timelineEvent(
                 `Shipped to participant ${kitRequest.trackingNumber}`
-            )}
-            {timelineEvent(
+              )}
+              {timelineEvent(
                 `Returned by participant ${kitRequest.returnTrackingNumber}`
-            )}
-            <div className={'text-center py-3 fst-italic text-muted'}>
+              )}
+              <div className={'text-center py-3 fst-italic text-muted'}>
               Status updates will appear here as they occur
+              </div>
             </div>
           </div>
         </div>
