@@ -48,10 +48,8 @@
         "initialized": true,
         "enableInPersonKits": true
       },
-      "preEnrollSurveyDto": {
-        "populateFileName": "surveys/preEnroll.json"
-      },
       "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
         {"populateFileName": "surveys/ourHealthConsent.json"},
         {"populateFileName": "surveys/basic.json"},
         {"populateFileName": "surveys/cardioHistory.json"},
@@ -217,10 +215,8 @@
         "initialized": true,
         "enableInPersonKits": true
       },
-      "preEnrollSurveyDto": {
-        "populateFileName": "surveys/preEnroll.json"
-      },
       "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
         {"populateFileName": "surveys/basic.json"},
         {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
@@ -275,10 +271,8 @@
         "initialized": true,
         "enableInPersonKits": true
       },
-      "preEnrollSurveyDto": {
-        "populateFileName": "surveys/preEnroll.json"
-      },
       "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
         {"populateFileName": "surveys/basic.json"},
         {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
