@@ -102,3 +102,11 @@ a {
 .nav-icon:hover {
   color: #858D9A;
 }
+
+.hover-opacity-50:hover {
+  opacity: 1.0;
+}
+
+.hover-opacity-50 {
+  opacity: 0.5;
+}

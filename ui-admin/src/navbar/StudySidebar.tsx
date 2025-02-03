@@ -2,40 +2,48 @@ import {
   Portal,
   Study
 } from '@juniper/ui-core'
-import {
-  NavLink,
-  useNavigate
-} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   studyKitsPath,
   studyParticipantsPath
 } from 'portal/PortalRouter'
 import StudySelector from './StudySelector'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
-  adminTasksPath, studyEnvMailingListPath, studyEnvSiteContentPath,
+  adminTasksPath,
   studyEnvDataBrowserPath,
   studyEnvDatasetListViewPath,
   studyEnvExportIntegrationsPath,
   studyEnvFormsPath,
   studyEnvImportPath,
+  studyEnvMailingListPath,
   studyEnvMetricsPath,
-  studyEnvTriggersPath, studyEnvWorkflowPath,
-  studyEnvSiteSettingsPath
+  studyEnvSiteContentPath,
+  studyEnvSiteSettingsPath,
+  studyEnvTriggersPath,
+  studyEnvWorkflowPath
 } from 'study/StudyEnvironmentRouter'
-
-
-import CollapsableMenu from './CollapsableMenu'
 import {
   userHasPermission,
   useUser
 } from 'user/UserProvider'
+import { studyPublishingPath } from 'study/StudyRouter'
+import { portalUsersPath } from 'user/AdminUserRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  studyPublishingPath
-} from 'study/StudyRouter'
-import { sidebarNavLinkClasses } from './AdminSidebar'
-import { portalUsersPath } from '../user/AdminUserRouter'
+  faCheck,
+  faPencil
+} from '@fortawesome/free-solid-svg-icons'
+import {
+  SidebarSection,
+  SidebarSectionT
+} from 'navbar/SidebarSection'
 
+type SidebarConfig = {
+  hidden: string[]
+}
+
+type SidebarConfigState = { [key: string]: SidebarConfig }
 
 /** shows menu options related to the current study */
 export const StudySidebar = ({ study, portalList, portalShortcode }:
@@ -44,102 +52,225 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
   const user = useUser()
   const portalId = portalList.find(p => p.shortcode === portalShortcode)?.id
 
+  const sidebarConfigState: SidebarConfigState = parseSidebarConfigState(localStorage.getItem('sidebarConfig') || '{}')
+
+  const sidebarConfig: SidebarConfig = sidebarConfigState[study.shortcode] || { hidden: [] }
+  const [hiddenItems, setHiddenItems] = React.useState(sidebarConfig.hidden)
+  useEffect(() => {
+    setHiddenItems(sidebarConfig.hidden)
+  }, [sidebarConfig])
+
+  const [isEditing, setIsEditing] = React.useState(false)
+
+  const toggleHiddenItem = (key: string) => {
+    if (hiddenItems.includes(key)) {
+      sidebarConfig.hidden = hiddenItems.filter(item => item !== key)
+    } else {
+      sidebarConfig.hidden = [...hiddenItems, key]
+    }
+    sidebarConfigState[study.shortcode] = sidebarConfig
+    localStorage.setItem('sidebarConfig', JSON.stringify(sidebarConfigState))
+    setHiddenItems(sidebarConfig.hidden)
+  }
+
   /** updates the selected study -- routes to that study's homepage */
   const setSelectedStudy = (portalShortcode: string, studyShortcode: string) => {
     navigate(studyParticipantsPath(portalShortcode, studyShortcode, 'live'))
   }
-  const navStyleFunc = ({ isActive }: { isActive: boolean }) => {
-    return isActive ? { background: 'rgba(255, 255, 255, 0.3)' } : {}
+
+  const userHasPermissionInPortal = (permission: string) => {
+    if (!portalId) {
+      return false
+    }
+    return userHasPermission(user.user, portalId, permission)
   }
 
-  const studyParams = {
+  const sections: SidebarSectionT[] = buildStudySidebarSections(userHasPermissionInPortal,
     portalShortcode,
-    studyShortcode: study.shortcode
-  }
+    study.shortcode)
 
   return <div className="pt-3">
-    <StudySelector portalList={portalList} selectedShortcode={study.shortcode} setSelectedStudy={setSelectedStudy}/>
-    <div className="text-white">
-      <CollapsableMenu header={'Research Coordination'} content={<ul className="list-unstyled">
-        <li className="mb-2">
-          <NavLink to={studyParticipantsPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Participants</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyKitsPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Kits</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={adminTasksPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Tasks</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvMailingListPath({ ...studyParams, envName: 'live' })}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
-        </li>
-      </ul>}/>
-      <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
-        <li className="mb-2">
-          <NavLink to={studyEnvMetricsPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Study Trends</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
-        </li>
-        { portalId && userHasPermission(user.user, portalId, 'export_integration') && <li className="mb-2">
-          <NavLink to={studyEnvExportIntegrationsPath({ ...studyParams, envName: 'live' })}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Export Integrations</NavLink>
-        </li>
-        }
-        { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
-          <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>
-        </li>
-        }
-      </ul>}/>
-      <CollapsableMenu header={'Design & Build'} content={<ul className="list-unstyled">
-        <li className="mb-2">
-          <NavLink to={studyEnvSiteContentPath({ ...studyParams, envName: 'sandbox' })}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Website</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvWorkflowPath({
-            portalShortcode, studyShortcode: study.shortcode, envName: 'sandbox'
-          })}
-          className={sidebarNavLinkClasses} style={navStyleFunc}>Participant Flow</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, 'sandbox')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Forms &amp; Surveys</NavLink>
-        </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvTriggersPath({
-            portalShortcode, studyShortcode: study.shortcode, envName: 'sandbox'
-          })}
-          className={sidebarNavLinkClasses} style={navStyleFunc}>Emails &amp; Automation</NavLink>
-        </li>
-      </ul>}/>
-      <CollapsableMenu header={'Publish'} content={<ul className="list-unstyled">
-        <li className="mb-2">
-          <NavLink to={studyPublishingPath(portalShortcode, study.shortcode)}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Publish Content</NavLink>
-        </li>
-        <li>
-          <NavLink to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, 'live')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Site Settings</NavLink>
-        </li>
-      </ul>}/>
-      <CollapsableMenu header={'Manage'} content={<ul className="list-unstyled">
-        <li className="mb-2">
-          <NavLink to={portalUsersPath({ portalShortcode, studyShortcode: study.shortcode, envName: 'live' })}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Team Members</NavLink>
-        </li>
-      </ul>}/>
+    <div className="d-flex w-100 align-items-baseline">
+      <div className="flex-grow-1">
+        <StudySelector
+          portalList={portalList}
+          selectedShortcode={study.shortcode}
+          setSelectedStudy={setSelectedStudy}/>
+
+      </div>
+      <button
+        className="btn btn-secondary btn-sm text-white m-0 ms-2 hover-opacity-50"
+        onClick={() => setIsEditing(!isEditing)}
+      >
+        {isEditing ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faPencil}/>}
+      </button>
     </div>
+    {sections.map(section => <SidebarSection
+      key={section.key}
+      section={section}
+      isEditing={isEditing}
+      hiddenItems={hiddenItems}
+      toggleHiddenItem={toggleHiddenItem}/>)}
   </div>
+}
+
+const parseSidebarConfigState = (data: string): SidebarConfigState => {
+  try {
+    return JSON.parse(data)
+  } catch (e) {
+    return {}
+  }
+}
+
+const buildStudySidebarSections = (
+  userHasPermissionInPortal: (permission: string) => boolean,
+  portalShortcode: string,
+  studyShortcode: string): SidebarSectionT[] => {
+  const sections: SidebarSectionT[] = [
+    {
+      key: 'research',
+      label: 'Research Coordination',
+      items: [
+        {
+          key: 'participants',
+          label: 'Participants',
+          link: studyParticipantsPath(portalShortcode, studyShortcode, 'live')
+        },
+        {
+          key: 'kits',
+          label: 'Kits',
+          link: studyKitsPath(portalShortcode, studyShortcode, 'live')
+        },
+        {
+          key: 'tasks',
+          label: 'Tasks',
+          link: adminTasksPath(portalShortcode, studyShortcode, 'live')
+        },
+        {
+          key: 'import',
+          label: 'Import Participants',
+          link: studyEnvImportPath(portalShortcode, studyShortcode, 'sandbox')
+        },
+        {
+          key: 'mailingList',
+          label: 'Mailing List',
+          link: studyEnvMailingListPath({
+            portalShortcode,
+            studyShortcode,
+            envName: 'live'
+          })
+        }
+      ]
+    }
+  ]
+
+  const analyticsDataSection: SidebarSectionT = {
+    key: 'analytics',
+    label: 'Analytics & Data',
+    items: [
+      {
+        key: 'metrics',
+        label: 'Study Trends',
+        link: studyEnvMetricsPath(portalShortcode, studyShortcode, 'live')
+      },
+      {
+        key: 'dataBrowser',
+        label: 'Data Export',
+        link: studyEnvDataBrowserPath(portalShortcode, studyShortcode, 'live')
+      }
+    ]
+  }
+
+  if (userHasPermissionInPortal('export_integration')) {
+    analyticsDataSection.items.push({
+      key: 'exportIntegrations',
+      label: 'Export Integrations',
+      link: studyEnvExportIntegrationsPath({
+        portalShortcode,
+        studyShortcode,
+        envName: 'live'
+      })
+    })
+  }
+
+  if (userHasPermissionInPortal('tdr_export')) {
+    analyticsDataSection.items.push({
+      key: 'terraDataRepo',
+      label: 'Terra Data Repo',
+      link: studyEnvDatasetListViewPath(portalShortcode, studyShortcode, 'live')
+    })
+  }
+
+  sections.push(analyticsDataSection,
+    {
+      key: 'design',
+      label: 'Design & Build',
+      items: [
+        {
+          key: 'siteContent',
+          label: 'Website',
+          link: studyEnvSiteContentPath({
+            portalShortcode,
+            studyShortcode,
+            envName: 'sandbox'
+          })
+        },
+        {
+          key: 'workflow',
+          label: 'Participant Flow',
+          link: studyEnvWorkflowPath({
+            portalShortcode,
+            studyShortcode,
+            envName: 'sandbox'
+          })
+        },
+        {
+          key: 'forms',
+          label: 'Forms & Surveys',
+          link: studyEnvFormsPath(portalShortcode, studyShortcode, 'sandbox')
+        },
+        {
+          key: 'triggers',
+          label: 'Emails & Automation',
+          link: studyEnvTriggersPath({
+            portalShortcode,
+            studyShortcode,
+            envName: 'sandbox'
+          })
+        }
+      ]
+    },
+    {
+      key: 'publish',
+      label: 'Publish',
+      items: [
+        {
+          key: 'publishContent',
+          label: 'Publish Content',
+          link: studyPublishingPath(portalShortcode, studyShortcode)
+        },
+        {
+          key: 'siteSettings',
+          label: 'Site Settings',
+          link: studyEnvSiteSettingsPath(portalShortcode, studyShortcode, 'live')
+        }
+      ]
+    },
+    {
+      key: 'manage',
+      label: 'Manage',
+      items: [
+        {
+          key: 'teamMembers',
+          label: 'Team Members',
+          link: portalUsersPath({
+            portalShortcode,
+            studyShortcode,
+            envName: 'live'
+          })
+        }
+      ]
+    })
+
+  return sections
 }
