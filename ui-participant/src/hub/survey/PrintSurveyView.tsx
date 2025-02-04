@@ -13,6 +13,7 @@ import {
   applySurveyJsVariables,
   configureModelForPrint,
   Enrollee,
+  EnvironmentName,
   makeSurveyJsData,
   surveyJSModelFromForm,
   useTaskIdParam,
@@ -25,6 +26,7 @@ import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { enrolleeForStudy } from './SurveyView'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 
 
 type UsePrintableConsentArgs = {
@@ -42,8 +44,11 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
 
   const {
     user,
-    enrollees
+    enrollees: allEnrollees
   } = useUser()
+
+  const { ppUser } = useActiveUser()
+
 
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
@@ -70,14 +75,16 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
       configureModelForPrint(surveyModel)
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
 
+      const proxyProfile = ppUser?.participantUserId != user?.id ? allEnrollees
+        .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
+        ?.profile : undefined
+
       applySurveyJsVariables(surveyModel, {
         profile: enrollee.profile,
-        proxyProfile: enrollee.participantUserId !== user?.id
-          ? enrollees.find(enrollee => enrollee.participantUserId === user?.id)?.profile
-          : undefined,
+        proxyProfile,
         studyEnvParams: {
           studyShortcode,
-          environmentName: portalEnv.environmentName,
+          environmentName: portalEnv.environmentName as EnvironmentName,
           portalShortcode: portal.shortcode
         },
         enrolleeShortcode: enrollee.shortcode,
