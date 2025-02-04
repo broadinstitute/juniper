@@ -3,7 +3,7 @@ import {
   EnvironmentName,
   I18nOptions,
   instantToDateString,
-  ParticipantFile,
+  ParticipantFile, ParticipantTask,
   saveBlobAsDownload,
   StudyEnvParams,
   useI18n
@@ -118,7 +118,7 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
         </tbody>
       </table>}
       {participantFiles.length === 0 &&
-          <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
+        <div className="text-muted fst-italic my-3">{i18n('documentsListNone')}</div>
       }
     </div>
   </>
@@ -130,7 +130,7 @@ const surveyResponseIdsToTaskNames = (
 ) => {
   const associatedTasks = surveyResponseIds.map(surveyResponseId => {
     return enrollee.participantTasks.find(task => task.surveyResponseId === surveyResponseId)
-  }).filter(task => task !== undefined)
+  }).filter((task): task is ParticipantTask => task !== undefined)
 
   if (associatedTasks.length === 0) {
     return <div className={'mt-2 fst-italic'}>This document is not associated with any tasks</div>
@@ -141,9 +141,9 @@ const surveyResponseIdsToTaskNames = (
       <span>Document shared in response to:</span>
       <ul>
         {associatedTasks.map(task =>
-          <li key={task!.id}>
-            <Link to={`../${getTaskPath(task!, enrollee.shortcode, studyEnvParams.studyShortcode)}`}>
-              {i18n(`${task!.targetStableId}:${task!.targetAssignedVersion}`, { defaultValue: task!.targetName })}
+          <li key={task.id}>
+            <Link to={`../${getTaskPath(task, enrollee.shortcode, studyEnvParams.studyShortcode)}`}>
+              {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
             </Link>
           </li>
         )}

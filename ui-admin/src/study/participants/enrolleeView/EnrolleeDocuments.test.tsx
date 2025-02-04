@@ -4,6 +4,7 @@ import EnrolleeDocuments from './EnrolleeDocuments'
 import { asMockedFn, mockEnrollee } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
 import Api from 'api/api'
+import { mockParticipantFile } from '@juniper/ui-participant/src/test-utils/test-portal-factory'
 
 jest.mock('api/api', () => ({
   listParticipantFiles: jest.fn()
@@ -12,14 +13,8 @@ jest.mock('api/api', () => ({
 describe('EnrolleeDocuments', () => {
   it('displays participant documents', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
-      {
-        id: 'file1', fileName: 'file1.pdf', fileType: 'application/pdf',
-        createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
-      },
-      {
-        id: 'file2', fileName: 'file2.png', fileType: 'image/png',
-        createdAt: 0, lastUpdatedAt: 0, surveyResponseIds: []
-      }
+      mockParticipantFile('file1.pdf'),
+      mockParticipantFile('file2.png')
     ])
 
     render(<EnrolleeDocuments enrollee={mockEnrollee()} studyEnvContext={mockStudyEnvContext()} />)
