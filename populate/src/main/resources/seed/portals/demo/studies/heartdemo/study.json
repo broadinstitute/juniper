@@ -174,7 +174,7 @@
         {
           "name": "Airtable participant table",
           "destinationType": "AIRTABLE",
-          "enabled": true,
+          "enabled": false,
           "exportOptions": {
             "fileFormat": "CSV",
             "excludeModules": ["surveys"],
@@ -189,7 +189,7 @@
         {
           "name": "Airtable answer data",
           "destinationType": "AIRTABLE",
-          "enabled": true,
+          "enabled": false,
           "exportOptions": {
             "fileFormat": "CSV",
             "excludeModules": ["profile"],

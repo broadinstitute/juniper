@@ -387,6 +387,9 @@ databaseChangeLog:
       file: changesets/2025_01_24_kit_label_unique_constraint.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2025_01_30_custom_mixpanel_config.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2025_01_27_prenroll_type.yaml
       relativeToChangelogFile: true
 

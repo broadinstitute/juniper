@@ -63,7 +63,8 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }
 
   const loadOutreachActivities = async () => {
-    const outreachActivities = await Api.listOutreachActivities()
+    const participantUserId = enrollees[0]?.participantUserId
+    const outreachActivities = await Api.listOutreachActivities(participantUserId)
     setOutreachActivities(outreachActivities)
   }
 

@@ -92,7 +92,7 @@ public class ConfigExtService {
             Map.of("authToken", maskSecret(airtableConfig.getAuthToken())),
             "mixpanel",
             Map.of(
-                "enabled", mixpanelConfig.getEnabled(),
+                "enabled", mixpanelConfig.getEnabled().toString(),
                 "token", mixpanelConfig.getToken()));
     return internalConfigMap;
   }

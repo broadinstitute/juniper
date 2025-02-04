@@ -43,6 +43,7 @@ export type PortalEnvironmentConfig = {
   emailSourceAddress?: string
   defaultLanguage: string
   primaryStudy?: string
+  mixpanelToken?: string
 }
 
 export {}

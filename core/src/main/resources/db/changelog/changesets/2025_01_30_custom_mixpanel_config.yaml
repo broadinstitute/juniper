@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "custom_mixpanel_config"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: portal_environment_config
+            columns:
+              - column: { name: mixpanel_token, type: text }

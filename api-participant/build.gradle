@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.1'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.1'
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
@@ -34,7 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
     implementation 'org.liquibase:liquibase-core:4.30.0'
-    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'com.auth0:java-jwt:4.5.0'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
