@@ -10,7 +10,8 @@ import {
   KitRequest,
   KitType,
   MailingAddress,
-  ParticipantDashboardAlert, ParticipantFile,
+  ParticipantDashboardAlert,
+  ParticipantFile,
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
@@ -1346,6 +1347,29 @@ export default {
       body: JSON.stringify({
         triggerId,
         enrolleeShortcodes,
+        customMessages
+      })
+    })
+  },
+
+  async sendAdHocNotificationByEnrolleeSearchExp({
+    portalShortcode, studyShortcode, envName, searchExpression,
+    customMessages, triggerId
+  }: {
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    searchExpression: string,
+    customMessages: Record<string, string>,
+    triggerId: string
+  }): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notifications/adhoc`
+    return await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({
+        triggerId,
+        filter: searchExpression,
         customMessages
       })
     })

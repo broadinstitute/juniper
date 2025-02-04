@@ -12,14 +12,13 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 
 @Controller
 public class TriggerController implements TriggerApi {
@@ -110,16 +109,18 @@ public class TriggerController implements TriggerApi {
     Trigger configUsed;
 
     if (StringUtils.isNotEmpty(adHoc.filter())) {
-      configUsed = notificationExtService.sendAdHoc(
+      configUsed =
+          notificationExtService.sendAdHoc(
               PortalStudyEnvAuthContext.of(
-                      adminUser, portalShortcode, studyShortcode, environmentName),
+                  adminUser, portalShortcode, studyShortcode, environmentName),
               adHoc.filter(),
               adHoc.customMessages,
               adHoc.triggerId);
     } else {
-      configUsed = notificationExtService.sendAdHoc(
+      configUsed =
+          notificationExtService.sendAdHoc(
               PortalStudyEnvAuthContext.of(
-                      adminUser, portalShortcode, studyShortcode, environmentName),
+                  adminUser, portalShortcode, studyShortcode, environmentName),
               adHoc.enrolleeShortcodes,
               adHoc.customMessages,
               adHoc.triggerId);
@@ -156,9 +157,8 @@ public class TriggerController implements TriggerApi {
 
   /** object for specifying an adhoc notification. */
   public record AdHocNotification(
-          List<String> enrolleeShortcodes,
-          String filter, // if specified, ignore enrolleeShortcodes and use this filter
-          UUID triggerId,
-          Map<String, String> customMessages) {
-  }
+      List<String> enrolleeShortcodes,
+      String filter, // if specified, ignore enrolleeShortcodes and use this filter
+      UUID triggerId,
+      Map<String, String> customMessages) {}
 }
