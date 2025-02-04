@@ -168,15 +168,18 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
       }
     }
   } else {
-    return {
+    const colDef: ColumnDef<T> = {
       id: field,
       header: _startCase(field.replace('.', ' ')),
       accessorKey: field,
-      cell: cellFn,
       meta: {
         columnType
       }
     }
+    if (cellFn) {
+      colDef.cell = cellFn
+    }
+    return colDef
   }
 }
 
