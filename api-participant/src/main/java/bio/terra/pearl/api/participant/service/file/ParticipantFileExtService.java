@@ -96,7 +96,7 @@ public class ParticipantFileExtService {
     authUtilService.authParticipantToPortal(participantUser.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
-    return participantFileService.findByEnrollee(enrollee);
+    return participantFileService.findByEnrolleeId(enrollee.getId());
   }
 
   // Returns the name of the file without the preceding path

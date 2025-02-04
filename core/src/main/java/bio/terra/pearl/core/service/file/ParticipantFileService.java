@@ -42,9 +42,9 @@ public class ParticipantFileService extends ImmutableEntityService<ParticipantFi
         return dao.findBySurveyResponseId(surveyResponseId);
     }
 
-    public List<ParticipantFile> findByEnrollee(Enrollee enrollee) {
-        List<ParticipantFile> filesForEnrollee = dao.findByEnrolleeId(enrollee.getId());
-        List<SurveyResponse> surveyResponses = surveyResponseService.findByEnrolleeIdWithFiles(enrollee.getId());
+    public List<ParticipantFile> findByEnrolleeId(UUID enrolleeId) {
+        List<ParticipantFile> filesForEnrollee = dao.findByEnrolleeId(enrolleeId);
+        List<SurveyResponse> surveyResponses = surveyResponseService.findByEnrolleeIdWithFiles(enrolleeId);
 
         for (ParticipantFile file : filesForEnrollee) {
             for (SurveyResponse surveyResponse : surveyResponses) {

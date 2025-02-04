@@ -145,7 +145,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
         enrollee.setFamilyEnrollees(familyEnrolleeService.findByEnrolleeId(enrollee.getId()));
         enrollee.setRelations(enrolleeRelationService.findAllByEnrolleeOrTargetId(enrollee.getId()));
-        enrollee.setFiles(participantFileService.findByEnrollee(enrollee));
+        enrollee.setFiles(participantFileService.findByEnrolleeId(enrollee.getId()));
         return enrollee;
     }
 

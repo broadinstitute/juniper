@@ -42,7 +42,7 @@ public class ParticipantFileExtService {
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public List<ParticipantFile> list(PortalEnrolleeAuthContext authContext) {
-    return participantFileService.findByEnrollee(authContext.getEnrollee());
+    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")
