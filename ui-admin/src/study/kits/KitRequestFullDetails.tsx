@@ -43,7 +43,12 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
         </InfoCardHeader>
         <div className={'my-3'}>
           {kitRequest.createdAt && timelineEvent(
-            `Requested by ${users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}`,
+            <>
+              Requested by
+              <span className="fw-semibold ps-1">
+                {users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}
+              </span>
+            </>,
             kitRequest.createdAt
           )}
           {kitRequest.labeledAt && timelineEvent(
@@ -51,11 +56,15 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
             kitRequest.labeledAt
           )}
           {kitRequest.sentAt && timelineEvent(
-            <>Shipped to participant {uspsTrackingLink(kitRequest.trackingNumber)}</>,
+            <>
+              Shipped to participant
+              <span className="fw-semibold">{uspsTrackingLink(kitRequest.trackingNumber)}</span></>,
             kitRequest.sentAt
           )}
           {kitRequest.receivedAt && timelineEvent(
-            <>Returned by participant {fedexTrackingLink(kitRequest.returnTrackingNumber)}</>,
+            <>
+              Returned by participant
+              <span className="fw-semibold">{fedexTrackingLink(kitRequest.returnTrackingNumber)}</span></>,
             kitRequest.receivedAt
           )}
           <div className={'text-center pt-3 fst-italic text-muted'}>
@@ -69,9 +78,9 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
 }
 
 const timelineEvent = (timelineEvent: React.ReactNode, timestamp?: number) => {
-  return <div className={'d-flex my-3'}>
+  return <div className={'d-flex py-2 my-1 bg-light'}>
     {timestamp ?
-      <div className="fw-bold text-center" style={{ width: '40%' }}>{instantToDefaultString(timestamp)}</div> :
+      <div className="fw-semibold text-center" style={{ width: '40%' }}>{instantToDefaultString(timestamp)}</div> :
       <div className="text-muted fw-bold text-center" style={{ width: '40%' }}>|</div>
     }
     <div className="">{timelineEvent}</div>
