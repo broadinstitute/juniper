@@ -42,19 +42,19 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
           </div>
         </InfoCardHeader>
         <div className={'my-3'}>
-          {timelineEvent(
+          {kitRequest.createdAt && timelineEvent(
             `Requested by ${users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}`,
             kitRequest.createdAt
           )}
-          {timelineEvent(
+          {kitRequest.labeledAt && timelineEvent(
             `Queued for shipment`,
             kitRequest.labeledAt
           )}
-          {timelineEvent(
+          {kitRequest.sentAt && timelineEvent(
             <>Shipped to participant {uspsTrackingLink(kitRequest.trackingNumber)}</>,
             kitRequest.sentAt
           )}
-          {timelineEvent(
+          {kitRequest.receivedAt && timelineEvent(
             <>Returned by participant {fedexTrackingLink(kitRequest.returnTrackingNumber)}</>,
             kitRequest.receivedAt
           )}
