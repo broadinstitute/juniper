@@ -89,6 +89,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
+        "participantHostname" : "juniperdemostudy.dev",
         "emailSourceAddress": "support@juniper.terra.bio",
         "defaultLanguage": "en"
       },
