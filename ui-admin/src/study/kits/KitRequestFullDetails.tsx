@@ -9,7 +9,12 @@ import { KitRequestAddress } from '../participants/KitRequests'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFedex, faUsps } from '@fortawesome/free-brands-svg-icons'
 import { AdminUser } from '../../api/adminUser'
-import { faCircleCheck, faQuestion, faSpinner, faTruckFast } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCircleCheck, faCircleExclamation,
+  faQuestion,
+  faSpinner,
+  faTruckFast
+} from '@fortawesome/free-solid-svg-icons'
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 
@@ -38,29 +43,33 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
         </InfoCardHeader>
         <div className={'my-3'}>
           {timelineEvent(
-                  `Requested by ${users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}`,
-                  kitRequest.createdAt
+            `Requested by ${users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}`,
+            kitRequest.createdAt
           )}
           {timelineEvent(
-                  `Queued for shipment`
+            `Queued for shipment`,
+            kitRequest.labeledAt
           )}
           {timelineEvent(
-            <>Shipped to participant {uspsTrackingLink(kitRequest.trackingNumber)}</>
+            <>Shipped to participant {uspsTrackingLink(kitRequest.trackingNumber)}</>,
+            kitRequest.sentAt
           )}
           {timelineEvent(
-            <>Returned by participant {fedexTrackingLink(kitRequest.returnTrackingNumber)}</>
+            <>Returned by participant {fedexTrackingLink(kitRequest.returnTrackingNumber)}</>,
+            kitRequest.receivedAt
           )}
           <div className={'text-center pt-3 fst-italic text-muted'}>
                 Status updates will appear here as they occur
           </div>
         </div>
       </InfoCard>
+      {/*<AdvancedInformation kitRequest={kitRequest}/>*/}
     </div>}
   </>
 }
 
 const timelineEvent = (timelineEvent: React.ReactNode, timestamp?: number) => {
-  return <div className={'d-flex my-2'}>
+  return <div className={'d-flex my-3'}>
     {timestamp ?
       <div className="fw-bold text-center" style={{ width: '40%' }}>{instantToDefaultString(timestamp)}</div> :
       <div className="text-muted fw-bold text-center" style={{ width: '40%' }}>|</div>
@@ -80,6 +89,17 @@ const shippingInformation = (kitRequest: KitRequest, users: AdminUser[]) => {
       {kitRequest.distributionMethod === 'MAILED' ?
         <>
           <KitRequestAddress sentToAddressJson={kitRequest.sentToAddress}/>
+          <div className={'pt-1 fst-italic text-muted'}>
+            {kitRequest.skipAddressValidation ?
+              <span>
+                <FontAwesomeIcon
+                  className="text-danger" icon={faCircleExclamation}/> This address was not validated
+              </span> :
+              <span>
+                <FontAwesomeIcon className="text-success" icon={faCircleCheck}/> This address was validated
+              </span>
+            }
+          </div>
         </> : `This kit was distributed to the participant in person by ${users.find(
           user => user.id === kitRequest.creatingAdminUserId
         )?.username}.`}
@@ -91,10 +111,10 @@ const quickLookInfo = (kitRequest: KitRequest) => {
   return <InfoCard>
     <InfoCardHeader>
       <div className="d-flex justify-content-between align-items-center w-100">
-        <div className="fw-bold lead my-1">Latest Status</div>
+        <div className="fw-bold lead my-1">{kitRequest.kitType.displayName} Kit Status</div>
       </div>
     </InfoCardHeader>
-    <div className={'m-3'}>
+    <div className={'d-flex m-3 align-items-center'}>
       {KitStatusBadge({ status: kitRequest.status })}
     </div>
   </InfoCard>
@@ -104,7 +124,7 @@ const StatusBadge = ({ icon, iconClass, message }: { icon: IconDefinition, iconC
   return (
     <div className="d-flex align-items-center">
       <FontAwesomeIcon className={`fa-4x ${iconClass}`} icon={icon} />
-      <div className={'ms-5'}>{message}</div>
+      <div className={'ms-4'}>{message}</div>
     </div>
   )
 }
@@ -114,7 +134,7 @@ const KitStatusBadge = ({ status } : { status: KitRequestStatus}) => {
     case 'CREATED':
       return <StatusBadge
         icon={faSpinner}
-        message="This kit request has been created in our system and is being processed."
+        message="This kit request has been created in the system and is being processed."
       />
     case 'QUEUED':
       return <StatusBadge
@@ -143,7 +163,7 @@ const KitStatusBadge = ({ status } : { status: KitRequestStatus}) => {
         <div className="d-flex align-items-center">
           <FontAwesomeIcon className="fa-4x" icon={faQuestion} />
           <div className={'ms-4'}>
-              This kit is in an unknown state.
+            This kit is in an unknown state.
             Please contact <a href={`mailto:${SUPPORT_EMAIL_ADDRESS}`}>{SUPPORT_EMAIL_ADDRESS}</a>
             for additional information.
           </div>
@@ -166,7 +186,7 @@ const fedexTrackingLink = (trackingNumber?: string) => {
     </a> : null
 }
 
-const advancedInformation = (kitRequest: KitRequest) => {
+const AdvancedInformation = ({ kitRequest }: {kitRequest: KitRequest}) => {
   return <InfoCard>
     <InfoCardHeader>
       <div className="d-flex justify-content-between align-items-center w-100">
