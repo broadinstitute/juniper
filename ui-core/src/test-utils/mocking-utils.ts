@@ -9,7 +9,7 @@ import {
   Profile
 } from 'src/types/user'
 import { StudyEnvironmentSurvey } from 'src/types/study'
-import { ParticipantFile } from '../../build-types'
+import { ParticipantFile } from 'src/types/participantFile'
 
 /** simplest survey.  one page, no interactive elements */
 export function generateSurvey(overrideObj?: any): Survey { // eslint-disable-line @typescript-eslint/no-explicit-any
