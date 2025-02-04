@@ -1,6 +1,6 @@
 import {
   HtmlPage,
-  LocalSiteContent,
+  LocalSiteContent, ParticipantFile,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -131,5 +131,16 @@ export const mockUsePortalEnv = () => {
     reloadPortal: jest.fn(),
     portalEnv: mockPortalEnvironment(),
     localContent: mockLocalSiteContent()
+  }
+}
+
+export const mockParticipantFile = (fileName: string, surveyResponseIds?: string[]): ParticipantFile => {
+  return {
+    id: fileName,
+    fileName,
+    fileType: 'application/pdf',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    surveyResponseIds: surveyResponseIds || []
   }
 }

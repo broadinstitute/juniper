@@ -1,12 +1,13 @@
 import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
+import { mockParticipantFile, mockUsePortalEnv } from 'test-utils/test-portal-factory'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import DocumentLibrary from './DocumentLibrary'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'
 import Api from 'api/api'
+import { mockParticipantTask } from 'test-utils/test-participant-factory'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -33,8 +34,8 @@ describe('DocumentLibrary', () => {
 
   it('renders documents', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
-      { id: 'file1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0 },
-      { id: 'file2', fileName: 'file2.png', fileType: 'image/png', createdAt: 0, lastUpdatedAt: 0 }
+      mockParticipantFile('file1.pdf'),
+      mockParticipantFile('file2.png')
     ])
 
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
@@ -48,7 +49,7 @@ describe('DocumentLibrary', () => {
 
   it('renders document options', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
-      { id: 'file1', fileName: 'file1.pdf', fileType: 'application/pdf', createdAt: 0, lastUpdatedAt: 0 }
+      mockParticipantFile('file1.pdf')
     ])
 
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
@@ -58,5 +59,45 @@ describe('DocumentLibrary', () => {
     })
 
     expect(screen.getByText('{documentDownloadButton}')).toBeInTheDocument()
+  })
+
+  it('renders no associated tasks message', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([
+      mockParticipantFile('file1.pdf', [])
+    ])
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
+    render(RoutedComponent)
+    await waitFor(() => {
+      expect(screen.getByText('file1.pdf')).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('This document is not associated with any tasks')).toBeInTheDocument()
+  })
+
+  it('renders associated tasks', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([
+      mockParticipantFile('file1.pdf', ['taskId1'])
+    ])
+
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      enrollees: [{
+        ...mockUseActiveUser().enrollees[0],
+        participantTasks: [{
+          ...mockParticipantTask('SURVEY', 'IN_PROGRESS'),
+          surveyResponseId: 'taskId1'
+        }]
+      }]
+    })
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
+    render(RoutedComponent)
+    await waitFor(() => {
+      expect(screen.getByText('file1.pdf')).toBeInTheDocument()
+    })
+
+    //note: this is looking at the i18n key for the task name
+    expect(screen.getByText('{researchSurvey1:1}')).toBeInTheDocument()
   })
 })
