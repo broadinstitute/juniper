@@ -6,7 +6,7 @@ import { StudyEnvParams } from 'src/types/study'
 import { ParticipantFile } from 'src/types/participantFile'
 import { asMockedFn } from 'src/test-utils/asMockedFn'
 import { userEvent } from '@testing-library/user-event'
-import { mockParticipantFile } from '@juniper/ui-participant/src/test-utils/test-portal-factory'
+import { mockParticipantFile } from 'src/test-utils/mocking-utils'
 
 jest.mock('src/participant/ApiProvider')
 

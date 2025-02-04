@@ -1,6 +1,6 @@
-import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, setupRouterTest, mockParticipantFile } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { mockParticipantFile, mockUsePortalEnv } from 'test-utils/test-portal-factory'
+import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import DocumentLibrary from './DocumentLibrary'

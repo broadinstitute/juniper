@@ -1,10 +1,9 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import EnrolleeDocuments from './EnrolleeDocuments'
-import { asMockedFn, mockEnrollee } from '@juniper/ui-core'
+import { asMockedFn, mockEnrollee, mockParticipantFile } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
 import Api from 'api/api'
-import { mockParticipantFile } from '@juniper/ui-participant/src/test-utils/test-portal-factory'
 
 jest.mock('api/api', () => ({
   listParticipantFiles: jest.fn()
