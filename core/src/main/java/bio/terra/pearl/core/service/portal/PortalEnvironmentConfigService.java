@@ -8,23 +8,41 @@ import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
 import bio.terra.pearl.core.service.CrudService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.publishing.PortalEnvPublishable;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PortalEnvironmentConfigService extends CrudService<PortalEnvironmentConfig, PortalEnvironmentConfigDao> implements PortalEnvPublishable {
-
     public PortalEnvironmentConfigService(PortalEnvironmentConfigDao portalEnvironmentConfigDao) {
         super(portalEnvironmentConfigDao);
     }
 
     public Optional<PortalEnvironmentConfig> findByPortalEnvId(UUID portalEnvId) {
         return dao.findByPortalEnvId(portalEnvId);
+    }
+
+    public Map<String, PortalEnvironmentConfig> findAllMappedByCustomDomain() {
+        return dao.findAllWithCustomDomain().stream()
+                .collect(Collectors.toMap(PortalEnvironmentConfig::getParticipantHostname, Function.identity()));
+    }
+
+    public PortalEnvironmentConfig create(PortalEnvironmentConfig portalEnvironmentConfig) {
+        return super.create(portalEnvironmentConfig);
+    }
+
+    public PortalEnvironmentConfig update(PortalEnvironmentConfig portalEnvironmentConfig) {
+        return super.update(portalEnvironmentConfig);
     }
 
     @Override

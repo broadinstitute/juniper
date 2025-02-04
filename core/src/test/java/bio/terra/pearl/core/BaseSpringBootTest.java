@@ -2,6 +2,7 @@ package bio.terra.pearl.core;
 
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import org.junit.jupiter.api.TestInfo;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
