@@ -51,6 +51,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         this.objectMapper = objectMapper;
         this.validator = validator;
 
+        //this is a workaround for dsm connection issues, per https://github.com/reactor/reactor-netty/issues/1774
         ConnectionProvider provider = ConnectionProvider.builder("dsm-connection-provider")
                 .maxConnections(500)
                 .maxIdleTime(Duration.ofSeconds(20))
