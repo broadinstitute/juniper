@@ -230,7 +230,7 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeK
         for (const task of value as { task: string, status: string }[]) {
           facets.push({ label: task.task, value: task.status })
         }
-      } else if (key === 'includeFacetKeys') {
+      } else if (['includeFacets', 'queryFacets', 'includeFacetKeys'].includes(key)) {
         // skip -- not shown directly to users
       } else {
         facets.push({

@@ -178,9 +178,11 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async listOutreachActivities(
-  ): Promise<TaskWithSurvey[]> {
-    const url = `${baseEnvUrl(false)}/tasks?taskType=outreach`
+  async listOutreachActivities(participantUserId?: string): Promise<TaskWithSurvey[]> {
+    const url = `${baseEnvUrl(false)}/tasks?${queryString.stringify({
+      taskType: 'OUTREACH',
+      participantUserId
+    })}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
