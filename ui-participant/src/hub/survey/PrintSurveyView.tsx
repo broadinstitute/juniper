@@ -84,7 +84,7 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
         proxyProfile,
         studyEnvParams: {
           studyShortcode,
-          environmentName: portalEnv.environmentName as EnvironmentName,
+          envName: portalEnv.environmentName as EnvironmentName,
           portalShortcode: portal.shortcode
         },
         enrolleeShortcode: enrollee.shortcode,
