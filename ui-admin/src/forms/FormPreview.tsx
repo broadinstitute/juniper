@@ -4,9 +4,11 @@ import 'survey-core/survey.i18n'
 
 import {
   applyMarkdown,
+  applySurveyJsVariables,
   createAddressValidator,
   FormContent,
   PortalEnvironmentLanguage,
+  Profile,
   surveyJSModelFromFormContent,
   useForceUpdate,
   useI18n
@@ -34,9 +36,17 @@ export const FormPreview = (props: FormPreviewProps) => {
     // as the pages not being url-routable
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
-    model.setVariable('profile', { })
-    model.setVariable('proxyProfile', { })
-    model.setVariable('isGovernedUser', false)
+    applySurveyJsVariables(model, {
+      profile: {} as Profile,
+      studyEnvParams: {
+        studyShortcode: 'TEST_STUDY',
+        envName: 'sandbox',
+        portalShortcode: 'TEST_PORTAL'
+      },
+      enrolleeShortcode: '',
+      referencedAnswers: [],
+      extraVariables: {}
+    })
     model.ignoreValidation = true
     model.locale = currentLanguage.languageCode
     model.onTextMarkdown.add(applyMarkdown)

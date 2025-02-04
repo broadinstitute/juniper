@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
 import {
+  applySurveyJsVariables,
   configureModelForPrint,
   Enrollee,
   makeSurveyJsData,
-  surveyJSModelFromForm, useTaskIdParam,
+  surveyJSModelFromForm,
+  useTaskIdParam,
   waitForImages
 } from '@juniper/ui-core'
 
@@ -30,7 +38,12 @@ type UsePrintableConsentArgs = {
 const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
 
-  const { portalEnv } = usePortalEnv()
+  const { portalEnv, portal } = usePortalEnv()
+
+  const {
+    user,
+    enrollees
+  } = useUser()
 
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
@@ -56,6 +69,21 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
       surveyModel.data = resumableData?.data
       configureModelForPrint(surveyModel)
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
+
+      applySurveyJsVariables(surveyModel, {
+        profile: enrollee.profile,
+        proxyProfile: enrollee.participantUserId !== user?.id
+          ? enrollees.find(enrollee => enrollee.participantUserId === user?.id)?.profile
+          : undefined,
+        studyEnvParams: {
+          studyShortcode,
+          environmentName: portalEnv.environmentName,
+          portalShortcode: portal.shortcode
+        },
+        enrolleeShortcode: enrollee.shortcode,
+        referencedAnswers: [],
+        extraVariables: {}
+      })
 
       return surveyModel
     }
