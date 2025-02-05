@@ -3,7 +3,6 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.EnrolleeApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
-import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -98,19 +97,6 @@ public class EnrolleeController implements EnrolleeApi {
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
-  }
-
-  @Override
-  public ResponseEntity<Object> enrolleesWithKits(
-      String portalShortcode, String studyShortcode, String envName) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    List<Enrollee> enrollees =
-        enrolleeExtService.findForKitManagement(
-            PortalStudyEnvAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, environmentName));
-    return ResponseEntity.ok(enrollees);
   }
 
   public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}

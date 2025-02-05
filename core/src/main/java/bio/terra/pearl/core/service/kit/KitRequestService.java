@@ -105,7 +105,13 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         This only creates the kit request in Juniper, it does not send the request to Pepper.
         Once the kit is collected by staff later on, the kit request will be sent to Pepper as "returnOnly".
      */
-    private KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
+    protected KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
+        //we need to make sure that there aren't any kits with the same label already assigned
+        List<KitRequest> kits = dao.findAllByKitLabel(kitRequestCreationDto.kitLabel);
+        if (!kits.isEmpty()) {
+            throw new IllegalArgumentException("Kit with label %s already exists".formatted(kitRequestCreationDto.kitLabel));
+        }
+
         KitRequest inPersonKitRequest = KitRequest.builder().kitType(kitTypeDao.findByName(kitRequestCreationDto.kitType).get())
                 .id(daoUtils.generateUUID())
                 .kitTypeId(kitTypeDao.findByName(kitRequestCreationDto.kitType).get().getId())

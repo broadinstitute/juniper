@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Role } from '../api/adminUser'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout } from '../util/table/tableUtils'
 import { useLoadingEffect } from '../api/api-utils'
 import Api from '../api/api'
 

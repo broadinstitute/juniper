@@ -16,6 +16,10 @@ code {
   monospace;
 }
 
+.text-primary {
+  color: var(--brand-color) !important;
+}
+
 /* Based on https://getbootstrap.com/docs/5.3/components/buttons/#sass-mixins */
 /* Brand color custom properties defined in App.tsx */
 .btn-primary {

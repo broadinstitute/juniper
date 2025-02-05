@@ -34,7 +34,7 @@
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.0.6",
-    "@types/react-router-hash-link": "^2.4.5"
+    "@types/react-router-hash-link": "^2.4.9"
   },
   "scripts": {
     "start": "vite",

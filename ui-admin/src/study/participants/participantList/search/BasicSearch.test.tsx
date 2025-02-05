@@ -1,21 +1,18 @@
 import React from 'react'
 import {
-  render,
   screen,
   waitFor
 } from '@testing-library/react'
 import BasicSearch from './BasicSearch'
 import { userEvent } from '@testing-library/user-event'
-import { setupRouterTest } from '@juniper/ui-core'
 import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
+import { renderWithRouterAndStore } from 'test-utils/mocking-utils'
 
 describe('keywordSearch', () => {
   test('can specify keyword facet value', async () => {
     const setSearchState = jest.fn()
-    const { RoutedComponent } = setupRouterTest(
-      <BasicSearch searchState={DefaultParticipantSearchState}
-        setSearchState={setSearchState}/>)
-    render(RoutedComponent)
+    renderWithRouterAndStore(<BasicSearch searchState={DefaultParticipantSearchState}
+      setSearchState={setSearchState}/>)
 
     const searchBox = screen.getByPlaceholderText('Search by name, email, or shortcode')
     expect(searchBox).toBeInTheDocument()
@@ -27,7 +24,8 @@ describe('keywordSearch', () => {
         'latestKitStatus': [],
         'sexAtBirth': [],
         'subject': true,
-        'tasks': []
+        'tasks': [],
+        'includeFacetKeys': []
       })
     )
 
@@ -39,7 +37,8 @@ describe('keywordSearch', () => {
         'latestKitStatus': [],
         'sexAtBirth': [],
         'subject': true,
-        'tasks': []
+        'tasks': [],
+        'includeFacetKeys': []
       })
     )
   })

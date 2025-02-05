@@ -21,7 +21,6 @@ import Api, {
   Survey
 } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
-import PrintFormModal from './PrintFormModal'
 import {
   Route,
   Routes
@@ -58,7 +57,7 @@ export type QuestionMetadata = {
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({
-  responseId, answers, resumeData, survey, enrollee, studyEnvContext
+  responseId, answers, survey, enrollee, studyEnvContext
 }: SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
@@ -116,10 +115,6 @@ export default function SurveyFullDataView({
     </div>
     <hr/>
     <Routes>
-      <Route path="print" element={<PrintFormModal answers={answers}
-        resumeData={resumeData}
-        survey={survey}/>
-      }/>
       <Route index element={<dl>
         {questions.map((question, index) =>
           <ItemDisplay key={index} question={question} answerMap={answerMap} supportedLanguages={supportedLanguages}

@@ -116,6 +116,7 @@ function ReadOnlyProfile(
                    `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
       ]}/>
     <InfoCardValue title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
+    <InfoCardValue title={'Sex at Birth'} values={[profile.sexAtBirth || '']}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
     <InfoCardValue title={'Email'} values={[profile.contactEmail || '']}/>
     <InfoCardValue title={'Phone'} values={[profile.phoneNumber || '']}/>

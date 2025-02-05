@@ -38,6 +38,9 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
   const sortedSurveyTaskGroups = groupAndSortTasks(viewableParticipantTasks.filter(task =>
     task.taskType === 'SURVEY'))
 
+  const sortedDocumentRequestGroups = groupAndSortTasks(viewableParticipantTasks.filter(task =>
+    task.taskType === 'DOCUMENT_REQUEST'))
+
   const sortedCurrentTasks = [...activeConsentTaskGroups.map(group => group[0]),
     ...sortedSurveyTaskGroups.map(group => group[0])]
   const nextTask = getNextTask(enrollee, sortedCurrentTasks)
@@ -80,6 +83,12 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
         taskArrays={sortedSurveyTaskGroups}
         studyShortcode={studyShortcode}
         title={i18n('taskTypeSurveys')}
+      />
+      <TaskGrouping
+        enrollee={enrollee}
+        studyShortcode={studyShortcode}
+        taskArrays={sortedDocumentRequestGroups}
+        title={i18n('taskTypeDocumentRequests')}
       />
       <TaskGrouping
         enrollee={enrollee}

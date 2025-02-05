@@ -66,7 +66,7 @@ export function PagedSurveyView({
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const updatedAnswers = getUpdatedAnswers(
-        prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
+      surveyModel, prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
@@ -137,7 +137,8 @@ export function PagedSurveyView({
     const responseDto = {
       resumeData: getResumeData(surveyModel, adminUserId || enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues, selectedLanguage),
+      answers: getUpdatedAnswers(surveyModel,
+          prevSave.current as Record<string, object>, currentModelValues, selectedLanguage),
       creatingParticipantId: adminUserId ? null : enrollee.participantUserId,
       creatingAdminUserId: adminUserId,
       surveyId: form.id,
@@ -166,7 +167,8 @@ export function PagedSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
-    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile, proxyProfile, referencedAnswers
+    form, resumableData, onComplete, pager, studyEnvParams,
+    enrollee.shortcode, enrollee.profile, proxyProfile, referencedAnswers
   )
 
   surveyModel.locale = selectedLanguage

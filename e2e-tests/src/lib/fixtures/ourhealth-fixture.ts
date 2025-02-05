@@ -1,9 +1,8 @@
-import { Fixtures, expect } from '@playwright/test'
-import { fixtureBase as base } from 'src/lib/fixtures/fixture-base'
+import { Fixtures, expect, test as baseTest } from '@playwright/test'
 import Home from 'pages/ourhealth/home'
 
 // Use this fixture in OurHealth study tests
-export const test = base.extend<Fixtures>({
+export const test = baseTest.extend<Fixtures>({
   page: async ({ baseURL, page }, use) => {
     await page.goto(baseURL!)
     const home = new Home(page)

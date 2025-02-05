@@ -27,7 +27,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import {
   faCircleCheck,
-  faCircleHalfStroke,
+  faCircleHalfStroke, faList,
   faMinus
 } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -44,6 +44,7 @@ import {
   navListItemStyle
 } from 'util/subNavStyles'
 import { RequireUserPermission } from 'util/RequireUserPermission'
+import EnrolleeDocuments from './EnrolleeDocuments'
 
 
 export type SurveyWithResponsesT = {
@@ -56,10 +57,14 @@ export type ResponseMapT = { [stableId: string]: SurveyWithResponsesT }
 /** loads an enrollee and renders the view for it */
 export default function EnrolleeView({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { isLoading, enrollee, reload } = useRoutedEnrollee(studyEnvContext)
+
   return <>
     {isLoading && <LoadingSpinner/>}
     {!isLoading && enrollee &&
-        <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={reload}/>}
+        <LoadedEnrolleeView
+          enrollee={enrollee}
+          studyEnvContext={studyEnvContext}
+          onUpdate={reload}/>}
   </>
 }
 
@@ -141,7 +146,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                   <ul className="list-unstyled">
                     {currentEnv.preEnrollSurvey && <li className="mb-2">
                       <NavLink to="preRegistration" className={getLinkCssClasses}>
-                          PreEnrollment
+                        PreEnrollment
                       </NavLink>
                     </li>}
                     <SurveyList surveys={surveys
@@ -166,10 +171,16 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
               <RequireUserPermission superuser>
                 <li style={navListItemStyle}>
                   <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
-                    <SurveyList surveys={surveys
-                      .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
-                    responseMap={responseMap} emptyText={'No document requests'}
-                    />}
+                    <>
+                      <SurveyList surveys={surveys
+                        .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
+                      responseMap={responseMap} emptyText={'No document requests'}
+                      />
+                      <NavLink to="documents" className={getLinkCssClasses}>
+                        <FontAwesomeIcon className="me-2" icon={faList}/>
+                        <span className={'fst-italic'}>View all documents</span>
+                      </NavLink>
+                    </>}
                   />
                 </li>
               </RequireUserPermission>
@@ -229,6 +240,9 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                     onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
+                <Route path="documents" element={
+                  <EnrolleeDocuments enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
                 <Route path="timeline" element={
                   <EnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>

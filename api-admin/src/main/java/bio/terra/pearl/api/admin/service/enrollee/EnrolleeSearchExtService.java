@@ -36,11 +36,14 @@ public class EnrolleeSearchExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public List<EnrolleeSearchExpressionResult> executeSearchExpression(
-      PortalStudyEnvAuthContext authContext, String expression, Integer limit) {
+      PortalStudyEnvAuthContext authContext,
+      String expression,
+      Integer limit,
+      List<EnrolleeSearchOptions.Include> includes) {
 
     return this.enrolleeSearchService.executeSearchExpression(
         authContext.getStudyEnvironment().getId(),
         expression,
-        EnrolleeSearchOptions.builder().limit(limit).build());
+        EnrolleeSearchOptions.builder().limit(limit).includes(includes).build());
   }
 }

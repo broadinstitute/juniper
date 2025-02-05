@@ -160,40 +160,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return enrollee;
     }
 
-    /**
-     * Fetches enrollees, loading all details needed for the kit management view -- currently tasks and kits.
-     * Reduces database round-trips by fetching entities from each table and performing in-memory joins.
-     * Uses Streams to reduce the number of iterations over collections of entities:
-     *  - Streams enrollees into two lists: enrollees and enrollee IDs
-     *    - avoids separately collecting IDs from entities
-     *    - retains order of results (not otherwise guaranteed when using something like Collectors.toMap())
-     *  - Streams tasks and kits into maps grouped by enrollee ID
-     *    - avoids separate iteration to build these maps
-     *  All that remains is a single traversal through the enrollee list to attach their tasks and kits.
-     */
-    @Transactional
-    public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {
-        StudyEnvironment studyEnvironment = studyEnvironmentService.verifyStudy(studyShortcode, envName);
-        Pair<List<Enrollee>, List<UUID>> enrolleesAndIds = dao.streamByStudyEnvironmentId(studyEnvironment.getId())
-                .collect(Collectors.teeing(Collectors.toList(),
-                        Collectors.mapping(Enrollee::getId, Collectors.toList()),
-                Pair::of
-        ));
-
-        List<Enrollee> enrollees = enrolleesAndIds.getFirst();
-        List<UUID> enrolleeIds = enrolleesAndIds.getSecond();
-
-        Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(enrollees);
-        Map<UUID, List<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
-
-        enrollees.forEach(enrollee -> {
-            // Be sure to set empty collections to indicate that they are empty instead of not initialized
-            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
-            enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
-        });
-        return enrollees;
-    }
-
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return dao.findByPreEnrollResponseId(preEnrollResponseId);
     }

@@ -1,6 +1,7 @@
 import {
   AddressValidationResult,
   AlertTrigger,
+  Answer,
   Enrollee,
   EnrolleeRelation,
   EnvironmentName,
@@ -9,7 +10,7 @@ import {
   KitRequest,
   KitType,
   MailingAddress,
-  ParticipantDashboardAlert,
+  ParticipantDashboardAlert, ParticipantFile,
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
@@ -77,11 +78,14 @@ export type StudyEnvironmentUpdate = {
 
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
+  answers: Answer[],
   profile: Profile,
   latestKit?: KitRequest,
   families: Family[]
   participantUser?: ParticipantUser
   portalParticipantUser?: PortalParticipantUser
+  tasks: ParticipantTask[]
+  kitRequests: KitRequest[]
 }
 
 export type ParticipantUsersAndEnrollees = {
@@ -382,6 +386,10 @@ export type SearchValueTypeDefinition = {
   allowOtherDescription: boolean
 }
 
+export type KeyedSearchValueTypeDefinition = SearchValueTypeDefinition & {
+  key: string
+}
+
 export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string
@@ -612,6 +620,31 @@ export default {
 
     const response = await fetch(url, this.getGetInit())
     return await this.processResponse(response)
+  },
+
+  async listParticipantFiles({ studyEnvParams, enrolleeShortcode }: {
+    studyEnvParams: StudyEnvParams,
+    enrolleeShortcode: string
+  }): Promise<ParticipantFile[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollees/${enrolleeShortcode}/file`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file }: {
+    studyEnvParams: StudyEnvParams, enrolleeShortcode: string, file: File
+  }): Promise<ParticipantFile> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollees/${enrolleeShortcode}/file`
+    const headers = this.getInitHeaders()
+    delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+    return await this.processJsonResponse(response)
   },
 
   async getPortalMedia(portalShortcode: string): Promise<SiteMediaMetadata[]> {
@@ -888,14 +921,10 @@ export default {
     studyShortcode: string,
     envName: string,
     expression: string,
-    opts: { limit?: number } = {}):
+    opts: { limit?: number, includes?: ('kitRequests' | 'tasks')[] } = {}):
     Promise<EnrolleeSearchExpressionResult[]> {
-    let url = `${
-      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollee/search/v2?expression=${encodeURIComponent(expression)}`
-    if (opts.limit) {
-      url += `&limit=${opts.limit}`
-    }
+    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2`
+    url += `?${queryString.stringify({ ...opts, expression })}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1002,16 +1031,6 @@ export default {
       body: JSON.stringify(note),
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
-  },
-
-  async fetchEnrolleesWithKits(
-    portalShortcode: string,
-    studyShortcode: string,
-    envName: string
-  ): Promise<Enrollee[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesWithKits`
-    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

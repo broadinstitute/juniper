@@ -56,5 +56,14 @@
         }
       ],
       "currentPageNo": 6
+    },
+    {
+      "surveyStableId": "adminKits",
+      "surveyVersion": 1,
+      "complete": true,
+      "answerPopDtos": [
+        {"questionStableId": "alreadySequenced", "stringValue": "yes"},
+        {"questionStableId": "kitNotes", "stringValue": "Sequenced prior to study beginning, kit label 3524511"}
+      ]
     }]
 }

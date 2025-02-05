@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import Api, { ParticipantTaskListDto, StudyEnvironmentSurvey } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
 import {
   Enrollee,
   instantToDateString,

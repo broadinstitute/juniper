@@ -22,6 +22,12 @@ export default function HubRouter() {
         path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version/print"
         element={<PrintSurveyView/>}
       />
+      <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/document_request/:stableId/:version"
+        element={<SurveyView/>}/>
+      <Route
+        path="study/:studyShortcode/enrollee/:enrolleeShortcode/document_request/:stableId/:version/print"
+        element={<PrintSurveyView/>}
+      />
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/survey/:stableId/:version"
         element={<SurveyView/>}/>
       <Route

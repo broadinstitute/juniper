@@ -37,8 +37,9 @@ public class IncludeExpression implements EnrolleeSearchExpression {
         EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(enrolleeDao, profileDao, studyEnvId);
 
         // Add the join, select, and condition clauses from the inner expression
-        // to the query builder.
-        inner.requiredJoinClauses().forEach(enrolleeSearchQueryBuilder::addJoinClause);
+        // to the query builder, but add the joins as left joins.
+        inner.requiredJoinClauses().forEach(join -> enrolleeSearchQueryBuilder.addJoinClause(
+                new EnrolleeSearchQueryBuilder.JoinClause(join, "left")));
         inner.requiredSelectClauses().forEach(enrolleeSearchQueryBuilder::addSelectClause);
         inner.requiredConditions().ifPresent(enrolleeSearchQueryBuilder::addCondition);
 

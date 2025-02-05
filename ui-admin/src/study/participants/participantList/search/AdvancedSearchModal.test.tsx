@@ -1,15 +1,13 @@
 import React from 'react'
-import { mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockStudyEnvContext, renderWithRouterAndStore } from 'test-utils/mocking-utils'
 import {
   findByText,
   fireEvent,
   getByText,
-  render,
   screen
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
-import { setupRouterTest } from '@juniper/ui-core'
 
 jest.mock('api/api', () => ({
   ...jest.requireActual('api/api'),
@@ -19,7 +17,7 @@ jest.mock('api/api', () => ({
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {
     const mockSetSearchStateFn = jest.fn()
-    const { RoutedComponent } = setupRouterTest(
+    renderWithRouterAndStore(
       <AdvancedSearchModal
         studyEnvContext={mockStudyEnvContext()}
         onDismiss={jest.fn()}
@@ -30,10 +28,10 @@ describe('AdvanceSearchModal', () => {
           sexAtBirth: [],
           tasks: [],
           latestKitStatus: [],
-          custom: ''
+          custom: '',
+          includeFacetKeys: []
         }}
         setSearchState={mockSetSearchStateFn}/>)
-    render(RoutedComponent)
 
     await screen.findAllByText('Keyword')
 
@@ -62,7 +60,8 @@ describe('AdvanceSearchModal', () => {
       minAge: undefined,
       maxAge: undefined,
       sexAtBirth: ['female'],
-      tasks: [{ task: 'survey1', status: 'COMPLETE' }]
+      tasks: [{ task: 'survey1', status: 'COMPLETE' }],
+      includeFacetKeys: []
     })
   })
 })

@@ -11,7 +11,8 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { instantToDefaultString, LogEvent } from '@juniper/ui-core'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout } from 'util/table/tableUtils'
+import { ColumnVisibilityControl } from 'util/table/columnUtils'
 import { useUser } from 'user/UserProvider'
 import { renderPageHeader } from 'util/pageUtils'
 import Modal from 'react-bootstrap/Modal'

@@ -138,9 +138,4 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
             }
         }
     }
-
-    @Override
-    public List<String> getAdditionalPublishIgnoreProps() {
-        return List.of( "surveyId", "survey", "versionedEntity");
-    }
 }

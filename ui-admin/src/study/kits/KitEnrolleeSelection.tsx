@@ -12,15 +12,13 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { ParticipantTask } from 'api/api'
+import Api, { EnrolleeSearchExpressionResult, KeyedSearchValueTypeDefinition, ParticipantTask } from 'api/api'
 import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   basicTableLayout,
-  checkboxColumnCell,
-  ColumnVisibilityControl,
   IndeterminateCheckbox, renderEmptyMessage,
-  RowVisibilityCount
-} from 'util/tableUtils'
+  RowVisibilityCount, checkboxColumnCell
+} from 'util/table/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Enrollee, instantToDateString, KitType, StudyEnvParams } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
@@ -29,8 +27,10 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
+import { useParticipantSearchState } from 'util/participantSearchUtils'
+import { ColumnVisibilityControl, enrolleeConsentedColumn, getDynamicColumn } from 'util/table/columnUtils'
 
-type EnrolleeRow = Enrollee & {
+type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
 }
 
@@ -42,25 +42,30 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const [studyEnvKitTypes, setStudyEnvKitTypes] = useState<KitType[]>([])
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'createdAt', desc: true },
+    { id: 'enrollee.createdAt', desc: true },
     { id: 'optionalSurveys', desc: true }
 
   ])
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: 'consented', value: true },
+    { id: 'enrollee.consented', value: true },
     { id: 'requiredSurveysComplete', value: true }
   ])
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
+
+  const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
+    paramsFromContext(studyEnvContext))
+
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const studyEnvParams: StudyEnvParams = paramsFromContext(studyEnvContext)
 
     const [kitTypes, enrollees] = await Promise.all([
       Api.fetchKitTypes(studyEnvParams),
-      Api.fetchEnrolleesWithKits(portal.shortcode, study.shortcode, currentEnv.environmentName)
+      Api.executeSearchExpression(portal.shortcode, study.shortcode, currentEnv.environmentName,
+        searchExpression, { includes: ['tasks', 'kitRequests'] })
     ])
 
     setStudyEnvKitTypes(kitTypes)
@@ -71,15 +76,17 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       }))
     ])
 
-    const enrolleeRows = enrollees.map(enrollee => {
+    const enrolleeRows: EnrolleeRow[] = enrollees.map(result => {
       const taskCompletionStatus = _mapValues(
-        _keyBy(enrollee.participantTasks, task => task.targetStableId),
+        _keyBy(result.tasks, task => task.targetStableId),
         task => (task as ParticipantTask).status === 'COMPLETE'
       )
-      return { ...enrollee, taskCompletionStatus }
+      return {
+        ...result, taskCompletionStatus
+      }
     })
     setEnrollees(enrolleeRows)
-  }, [studyEnvContext.currentEnvPath])
+  }, [studyEnvContext.currentEnvPath, searchExpression])
 
   const onSubmit = async (anyKitWasCreated: boolean) => {
     setShowRequestKitModal(false)
@@ -92,20 +99,20 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   }
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
-    .map(key => enrollees[parseInt(key)].shortcode)
+    .map(key => enrollees[parseInt(key)].enrollee.shortcode)
   const numSelected = enrolleesSelected.length
   const enableActionButtons = numSelected > 0
 
   const requiredResearchSurveys = currentEnv.configuredSurveys
     .filter(studyEnvSurvey => studyEnvSurvey.survey.required && studyEnvSurvey.survey.surveyType === 'RESEARCH')
-  const hasCompletedAllRequiredResearchSurveys = (enrollee: Enrollee) => {
-    return enrollee.participantTasks.filter(
+  const hasCompletedAllRequiredResearchSurveys = (enrollee: EnrolleeSearchExpressionResult) => {
+    return enrollee.tasks.filter(
       task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
     ).length === requiredResearchSurveys.length
   }
 
-  const optionalSurveysCompleted = (enrollee: Enrollee) => {
-    return enrollee.participantTasks.filter(
+  const optionalSurveysCompleted = (enrollee: EnrolleeSearchExpressionResult) => {
+    return enrollee.tasks.filter(
       task => !task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
     ).length
   }
@@ -124,28 +131,19 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     )
   }, {
     header: 'Enrollee shortcode',
-    accessorKey: 'shortcode',
+    accessorKey: 'enrollee.shortcode',
     meta: {
       columnType: 'string'
     },
     cell: data => <Link to={enrolleeKitRequestPath(currentEnvPath, data.getValue().toString())}>{data.getValue()}</Link>
   }, {
     header: 'Join date',
-    accessorKey: 'createdAt',
+    accessorKey: 'enrollee.createdAt',
+    id: 'enrollee.createdAt',
     cell: data => instantToDateString(Number(data.getValue()))
-  }, {
-    header: 'Consented',
-    accessorKey: 'consented',
-    meta: {
-      columnType: 'boolean',
-      filterOptions: [
-        { value: true, label: 'Consented' },
-        { value: false, label: 'Not Consented' }
-      ]
-    },
-    filterFn: 'equals',
-    cell: checkboxColumnCell
-  }, {
+  },
+  enrolleeConsentedColumn(),
+  {
     header: 'Required surveys complete',
     id: 'requiredSurveysComplete',
     accessorFn: enrollee => hasCompletedAllRequiredResearchSurveys(enrollee),
@@ -177,6 +175,11 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     },
     cell: checkboxColumnCell
   }))]
+  if (searchState.includeFacets) {
+    searchState.includeFacets.forEach(facet => {
+      columns.push(getDynamicColumn(facet))
+    })
+  }
 
   const table = useReactTable({
     data: enrollees,
@@ -192,6 +195,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     getFilteredRowModel: getFilteredRowModel()
   })
 
+  const dynamicColOpts = {
+    facets,
+    dynamicFacets: searchState?.includeFacets ?? [],
+    setDynamicFacets: (dynamicFacets: KeyedSearchValueTypeDefinition[]) => setSearchState({
+      ...searchState,
+      includeFacetKeys: dynamicFacets.map(facet => facet.key)
+    })
+  }
+
   return <LoadingSpinner isLoading={isLoading}>
     <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex align-items-center">
@@ -206,7 +218,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
           <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
         </Button>
-        <ColumnVisibilityControl table={table}/>
+        <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         { showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}

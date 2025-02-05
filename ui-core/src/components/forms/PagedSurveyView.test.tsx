@@ -49,9 +49,11 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }
+        ],
         complete: true,
         resumeData: '{"user1":{"currentPageNo":1}}'
       })
@@ -73,6 +75,7 @@ describe('PagedSurveyView', () => {
     },
     undefined,
     [{
+      format: 'NONE',
       surveyStableId: 'otherSurvey',
       questionStableId: 'question1',
       stringValue: 'my custom response'
@@ -98,9 +101,11 @@ describe('PagedSurveyView', () => {
 
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' },
-          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]),
+        answers: expect.arrayContaining([
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }
+        ]),
         complete: false,
         resumeData: '{"user1":{"currentPageNo":3}}'
       })
@@ -123,13 +128,15 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE',  questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }
+        ]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]
+        answers: [{ 'format': 'NONE', questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -148,14 +155,18 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }
+        ]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#00F', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'colorCode', stringValue: '#00F', viewedLanguage: 'en' }
+        ]
       })
     }))
   })
@@ -174,18 +185,20 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledTimes(3)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }
+        ]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' }]
+        answers: [{ 'format': 'NONE', questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'greenFollow', viewedLanguage: 'en' }]
+        answers: [{ 'format': 'NONE', questionStableId: 'greenFollow', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -206,14 +219,18 @@ describe('PagedSurveyView', () => {
 
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }
+        ]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
-          { questionStableId: 'greenFollow', viewedLanguage: 'en' }]
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'greenFollow', viewedLanguage: 'en' }
+        ]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
@@ -238,8 +255,10 @@ describe('PagedSurveyView', () => {
     triggerAutosave()
     const expectedDiffResponse = expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
-          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
+        answers: [
+          { 'format': 'NONE', questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'format': 'NONE', questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }
+        ],
         complete: false,
         resumeData: '{"user1":{"currentPageNo":2}}'
       })
@@ -267,7 +286,12 @@ describe('PagedSurveyView', () => {
 
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'myTextQuestion', stringValue: 'really smart response', viewedLanguage: 'en' }]
+        answers: [
+          {
+            format: 'NONE', questionStableId: 'myTextQuestion',
+            stringValue: 'really smart response', viewedLanguage: 'en'
+          }
+        ]
       })
     }))
   })
@@ -293,7 +317,7 @@ describe('PagedSurveyView', () => {
 
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'myRadioQuestion', stringValue: 'choice2', viewedLanguage: 'en' }]
+        answers: [{ format: 'NONE', questionStableId: 'myRadioQuestion', stringValue: 'choice2', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -321,7 +345,9 @@ describe('PagedSurveyView', () => {
 
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'myDropdownQuestion', stringValue: 'choice2', viewedLanguage: 'en' }]
+        answers: [
+          { format: 'NONE', questionStableId: 'myDropdownQuestion', stringValue: 'choice2', viewedLanguage: 'en' }
+        ]
       })
     }))
   })
@@ -350,6 +376,7 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: [{
+          format: 'NONE',
           questionStableId: 'myCheckboxQuestion',
           objectValue: '["choice2","choice1"]',
           viewedLanguage: 'en'
@@ -394,6 +421,7 @@ describe('PagedSurveyView', () => {
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: [{
+          format: 'NONE',
           questionStableId: 'myPanelDynamicQuestion',
           objectValue: '[{"myNestedTextQuestion":"answer 1","myOtherNestedTextQuestion":"answer 2"},' +
             '{"myNestedTextQuestion":"answer 3","myOtherNestedTextQuestion":"answer 4"}]',

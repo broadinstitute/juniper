@@ -1,0 +1,55 @@
+{
+  "stableId": "adminKits",
+  "version": 1,
+  "name": "Kit history",
+  "surveyType": "ADMIN",
+  "jsonContent": {
+    "title": {
+      "en": "Kit history"
+    },
+    "logoPosition": "right",
+    "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
+    "progressBarType": "requiredQuestions",
+    "completeText": "Submit",
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "type": "radiogroup",
+            "name": "alreadySequenced",
+            "title": {
+              "en": "Has this participant already been sequenced in another (possibly external) study?"
+            },
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "no",
+                "text": {
+                  "en": "No",
+                  "es": "Me estoy inscribiendo.",
+                  "dev": "DEV_I am enrolling myself."
+                }
+              },
+              {
+                "value": "yes",
+                "text": {
+                  "en": "Yes",
+                  "es": "Me inscribo en nombre de mi hijo/mi dependiente legal.",
+                  "dev": "DEV_I am enrolling on behalf of my child / my legal dependent."
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "isRequired": false,
+            "name": "kitNotes",
+            "title": "Notes"
+          }
+        ]
+      }
+    ]
+  }
+}

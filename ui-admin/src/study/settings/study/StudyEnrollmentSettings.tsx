@@ -10,7 +10,7 @@ import {
   userHasPermission,
   useUser
 } from 'user/UserProvider'
-import { useNonNullReactSingleSelect } from '../../../util/react-select-utils'
+import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import Select from 'react-select'
 
 

@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.1'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.1'
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
@@ -34,19 +35,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
     implementation 'org.yaml:snakeyaml:2.3'
-    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'com.auth0:java-jwt:4.5.0'
     implementation 'org.liquibase:liquibase-core:4.30.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 
     implementation 'net.javacrumbs.shedlock:shedlock-spring:6.0.2'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.2.0'
 
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
             //'org.bouncycastle:bcprov-jdk15on:1.70',
             'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation('org.springframework.boot:spring-boot-starter-test:3.4.0') {
+    testImplementation('org.springframework.boot:spring-boot-starter-test:3.4.2') {
         // Fixes warning about multiple occurrences of JSONObject on the classpath
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }

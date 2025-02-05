@@ -13,6 +13,7 @@ import {
 } from 'src/types/address'
 import { SurveyResponseWithJustification } from 'src/types/forms'
 import { SystemSettings } from 'src/types/maintenance'
+import { ParticipantFile } from 'src/types/participantFile'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
@@ -29,16 +30,43 @@ export type UpdateSurveyResponseFunc = ({
 export type LoadSystemSettingsFunc = () => Promise<SystemSettings>
 export type ValidateAddressFunc = (address: MailingAddress) => Promise<AddressValidationResult>
 
+export type ListParticipantFilesFunc = ({ studyEnvParams, enrolleeShortcode }: {
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string
+}) => Promise<ParticipantFile[]>
+
+export type UploadParticipantFileFunc = ({ studyEnvParams, enrolleeShortcode, file }: {
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string,
+  file: File
+}) => Promise<ParticipantFile>
+
+export type DownloadParticipantFileFunc = ({ studyEnvParams, enrolleeShortcode, fileName }: {
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string,
+  fileName: string
+}) => Promise<Response>
+
+export type DeleteParticipantFileFunc = ({ studyEnvParams, enrolleeShortcode, fileName }: {
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string,
+  fileName: string
+}) => Promise<Response>
+
 /**
  * represents a minimal set of api functions needed to make the participant ui functional outside of the
  * main participant ui app.
  */
 export type ApiContextT = {
-  getImageUrl: ImageUrlFunc
-  submitMailingListContact: SubmitMailingListContactFunc
-  getLanguageTexts: GetLanguageTextsFunc
-  updateSurveyResponse: UpdateSurveyResponseFunc
-  validateAddress: ValidateAddressFunc
+  getImageUrl: ImageUrlFunc,
+  submitMailingListContact: SubmitMailingListContactFunc,
+  getLanguageTexts: GetLanguageTextsFunc,
+  updateSurveyResponse: UpdateSurveyResponseFunc,
+  validateAddress: ValidateAddressFunc,
+  listParticipantFiles: ListParticipantFilesFunc,
+  uploadParticipantFile: UploadParticipantFileFunc,
+  downloadParticipantFile: DownloadParticipantFileFunc,
+  deleteParticipantFile: DeleteParticipantFileFunc
   loadSystemSettings: LoadSystemSettingsFunc
 }
 
@@ -48,6 +76,10 @@ export const emptyApi: ApiContextT = {
   getLanguageTexts: () => Promise.resolve({}),
   updateSurveyResponse: () => Promise.resolve({} as HubResponse),
   validateAddress: () => Promise.resolve({} as AddressValidationResult),
+  listParticipantFiles: () => Promise.resolve([]),
+  uploadParticipantFile: () => Promise.resolve({} as ParticipantFile),
+  downloadParticipantFile: () => Promise.resolve({} as Response),
+  deleteParticipantFile: () => Promise.resolve({} as Response),
   loadSystemSettings: () => Promise.resolve({} as SystemSettings)
 }
 

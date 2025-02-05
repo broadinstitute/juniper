@@ -3,7 +3,7 @@ import { Table } from '@tanstack/react-table'
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSearchParams } from 'react-router-dom'
-import useUpdateEffect from './useUpdateEffect'
+import useUpdateEffect from '../useUpdateEffect'
 
 /** renders a client-side pagination control (as in, the data is all loaded from the server at once, but
  * paged on the UI for readability */

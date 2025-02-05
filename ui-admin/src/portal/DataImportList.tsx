@@ -8,7 +8,7 @@ import {
   IndeterminateCheckbox,
   renderEmptyMessage,
   RowVisibilityCount
-} from 'util/tableUtils'
+} from '../util/table/tableUtils'
 import { Button } from 'components/forms/Button'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.retry.annotation.EnableRetry;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync(proxyTargetClass = true)
 @EnableTransactionManagement
 @EnableConfigurationProperties
+@EnableCaching
 public class ApiParticipantApp {
   public static void main(String[] args) {
     new SpringApplicationBuilder(ApiParticipantApp.class)

@@ -38,8 +38,11 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
   }
 
   return (
-    <div className="d-flex flex-wrap gap-2 mb-4">
+    <div className="d-flex flex-wrap gap-2">
       {advancedSearchFacets.map(f => {
+        if (f.label.startsWith('includeFields')) {
+          return null // don't list includeFields as facets -- they're dynamic columns
+        }
         return (
           <button
             key={f.label}

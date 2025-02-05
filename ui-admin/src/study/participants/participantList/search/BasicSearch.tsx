@@ -33,7 +33,7 @@ const BasicSearch = ({ searchState, setSearchState, disabled = false }: {
   // downloading all the participant data is expensive, so debounce the searchbar
   const handleChange = useCallback(debouncedUpdate, [debouncedUpdate])
 
-  return <form className="rounded-5" onSubmit={e => {
+  return <form className="rounded-5 overflow-x-hidden d-flex" onSubmit={e => {
     e.preventDefault()
     setSearchState({ ...searchState, keywordSearch: searchText })
   }}
