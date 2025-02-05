@@ -4,10 +4,14 @@ databaseChangeLog:
       author: connorlbark
       changes:
         - createIndex:
-            indexName: "idx_enrollee"
+            indexName: "idx_enrollee_id"
             tableName: "enrollee_relation"
             columns:
               - column:
                   name: "enrollee_id"
+        - createIndex:
+            indexName: "idx_target_enrollee_id"
+            tableName: "enrollee_relation"
+            columns:
               - column:
                   name: "target_enrollee_id"
