@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_relation_indices"
+      author: connorlbark
+      changes:
+        - createIndex:
+            indexName: "idx_enrollee"
+            tableName: "enrollee_relation"
+            columns:
+              - column:
+                  name: "enrollee_id"
+              - column:
+                  name: "target_enrollee_id"
