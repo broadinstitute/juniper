@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import {
   getResumeData,
-  getSurveyJsAnswerList, makeSurveyJsData,
+  getSurveyJsAnswerList,
+  makeSurveyJsData,
   SurveyAutoCompleteButton,
   SurveyReviewModeButton,
   useI18n,
@@ -35,9 +36,13 @@ export default function PreEnrollView({ enrollContext, survey }:
     portalShortcode
   } = enrollContext
   const { selectedLanguage } = useI18n()
-  const { profile } = useActiveUser()
-  const { user, enrollees } = useUser()
-  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
+  const { profile, enrollees: activeEnrollees } = useActiveUser()
+  const { user, enrollees: allEnrollees } = useUser()
+
+  const enrollee = activeEnrollees
+    .find(enrollee => enrollee.studyEnvironmentId === studyEnv.id)
+  const proxyProfile = allEnrollees
+    .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
@@ -50,12 +55,15 @@ export default function PreEnrollView({ enrollContext, survey }:
     resumeData,
     handleComplete,
     pager,
-    { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
-    '',
-    profile || undefined,
-    proxyProfile,
-    [],
-    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment, isSubjectEnrollment } }
+    {
+      profile: profile || undefined,
+      proxyProfile,
+      studyEnvParams: { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
+      enrolleeShortcode: enrollee?.shortcode || '',
+      referencedAnswers: [],
+      extraVariables: { isProxyEnrollment, isSubjectEnrollment }
+    },
+    { extraCssClasses: { container: 'my-0' } }
   )
 
   surveyModel.locale = selectedLanguage || 'default'

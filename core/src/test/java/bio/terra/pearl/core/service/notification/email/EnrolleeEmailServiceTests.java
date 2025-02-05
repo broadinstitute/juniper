@@ -60,7 +60,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .contactEmail("test@test.com")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -93,7 +93,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -130,7 +130,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -186,7 +186,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null, null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
@@ -196,7 +196,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null, null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
@@ -205,7 +205,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testDoNotSendSolicitProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(false).doNotEmailSolicit(true).build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(false).doNotEmailSolicit(true).build(), null, null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();

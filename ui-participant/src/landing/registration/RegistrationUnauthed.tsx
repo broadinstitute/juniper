@@ -64,7 +64,8 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
   const { portalEnv } = usePortalEnv()
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager, portalEnv.environmentName as EnvironmentName)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager,
+    { environmentName: portalEnv.environmentName as EnvironmentName })
   const { loginUser } = useUser()
   const { selectedLanguage } = useI18n()
   const navigate = useNavigate()

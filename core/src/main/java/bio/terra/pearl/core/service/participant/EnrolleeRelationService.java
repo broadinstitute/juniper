@@ -240,4 +240,8 @@ public class EnrolleeRelationService extends ParticipantDataAuditedService<Enrol
             relation.setFamily(familyService.find(relation.getFamilyId()).orElse(null));
         }
     }
+
+    public List<EnrolleeRelation> findAllByEnrolleeOrTargetIds(List<UUID> enrolleeIds) {
+        return filterValid(dao.findAllByEnrolleeOrTargetIds(enrolleeIds));
+    }
 }
