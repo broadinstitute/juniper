@@ -36,7 +36,7 @@ import { Markdown } from './participant/landing/Markdown'
 import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
-import { StudyEnvParams } from './types/study'
+import { OptionalStudyEnvParams } from './types/study'
 import { Profile } from 'src/types/user'
 import { DefaultLight } from 'survey-core/themes'
 
@@ -97,7 +97,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
 export type SurveyJsVariableContext = {
   profile?: Profile,
   proxyProfile?: Profile,
-  studyEnvParams?: StudyEnvParams,
+  studyEnvParams?: OptionalStudyEnvParams,
   environmentName?: string,
   enrolleeShortcode?: string,
   referencedAnswers?: Answer[],

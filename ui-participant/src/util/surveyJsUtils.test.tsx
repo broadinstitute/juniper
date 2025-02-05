@@ -243,34 +243,35 @@ test('gets checkbox answers from survey model', () => {
   })
 })
 
+const nullModel: Model = null as unknown as Model
 test('testGetUpdatedAnswersEmpty', () => {
-  expect(getUpdatedAnswers(null as unknown as Model, {}, {})).toEqual([])
+  expect(getUpdatedAnswers(nullModel, {}, {})).toEqual([])
 })
 
 test('testGetUpdatedAnswersRemovedValue', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 'bar' }, {})
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 'bar' }, {})
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo' }])
 })
 
 test('testGetUpdatedAnswersStringNew', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {}, { 'foo': 'bar' })
+  const updatedAnswers = getUpdatedAnswers(nullModel, {}, { 'foo': 'bar' })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', stringValue: 'bar' }])
 })
 
 
 test('testGetUpdatedAnswersStringUnchanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 'bar' }, { 'foo': 'bar' })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 'bar' }, { 'foo': 'bar' })
   expect(updatedAnswers).toEqual([])
 })
 
 
 test('testGetUpdatedAnswersStringUpdated', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 'bar' }, { 'foo': 'baz' })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 'bar' }, { 'foo': 'baz' })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', stringValue: 'baz' }])
 })
 
 test('testGetUpdatedAnswersOtherAdded', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 'bar' }, {
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 'bar' }, {
     'foo': 'baz',
     'foo-Comment': 'blah'
   })
@@ -280,7 +281,7 @@ test('testGetUpdatedAnswersOtherAdded', () => {
 })
 
 test('testGetUpdatedAnswersOtherRemoved', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {
+  const updatedAnswers = getUpdatedAnswers(nullModel, {
     'foo': 'bar',
     'foo-Comment': 'blah'
   }, { 'foo': 'baz' })
@@ -288,58 +289,58 @@ test('testGetUpdatedAnswersOtherRemoved', () => {
 })
 
 test('testGetUpdatedAnswersOtherChanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 'bar', 'foo-Comment': 'blah' },
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 'bar', 'foo-Comment': 'blah' },
     { 'foo': 'baz', 'foo-Comment': 'blah2' })
   expect(updatedAnswers).toEqual(
     [{ format: 'NONE', questionStableId: 'foo', stringValue: 'baz', otherDescription: 'blah2' }])
 })
 
 test('testGetUpdatedAnswersBooleanNew', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {}, { 'foo': false })
+  const updatedAnswers = getUpdatedAnswers(nullModel, {}, { 'foo': false })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', booleanValue: false }])
 })
 
 test('testGetUpdatedAnswersBooleanUnchanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': false }, { 'foo': false })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': false }, { 'foo': false })
   expect(updatedAnswers).toEqual([])
 })
 
 test('testGetUpdatedAnswersBooleanChanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': true }, { 'foo': false })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': true }, { 'foo': false })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', booleanValue: false }])
 })
 
 test('testGetUpdatedAnswersObjectNew', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {}, { 'foo': ['bleck'] })
+  const updatedAnswers = getUpdatedAnswers(nullModel, {}, { 'foo': ['bleck'] })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', objectValue: JSON.stringify(['bleck']) }])
 })
 
 test('testGetUpdatedAnswersObjectChanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': ['blah'] }, { 'foo': ['bleck'] })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': ['blah'] }, { 'foo': ['bleck'] })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', objectValue: JSON.stringify(['bleck']) }])
 })
 
 test('testGetUpdatedAnswersObjectUnchanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': ['blah'] }, { 'foo': ['blah'] })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': ['blah'] }, { 'foo': ['blah'] })
   expect(updatedAnswers).toEqual([])
 })
 
 test('testGetUpdatedAnswersNumberNew', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {}, { 'foo': 2 })
+  const updatedAnswers = getUpdatedAnswers(nullModel, {}, { 'foo': 2 })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', numberValue: 2 }])
 })
 
 test('testGetUpdatedAnswersNumberNewZero', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, {}, { 'foo': 0 })
+  const updatedAnswers = getUpdatedAnswers(nullModel, {}, { 'foo': 0 })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', numberValue: 0 }])
 })
 
 test('testGetUpdatedAnswersNumberChanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 2 }, { 'foo': 3 })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 2 }, { 'foo': 3 })
   expect(updatedAnswers).toEqual([{ format: 'NONE', questionStableId: 'foo', numberValue: 3 }])
 })
 
 test('testGetUpdatedAnswersNumberUnchanged', () => {
-  const updatedAnswers = getUpdatedAnswers(null as unknown as Model, { 'foo': 4 }, { 'foo': 4 })
+  const updatedAnswers = getUpdatedAnswers(nullModel, { 'foo': 4 }, { 'foo': 4 })
   expect(updatedAnswers).toEqual([])
 })

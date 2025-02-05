@@ -17,6 +17,7 @@ import {
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from 'api/api'
 import useUpdateEffect from '../util/useUpdateEffect'
+import { useStudyEnvParamsFromPath } from 'study/StudyEnvironmentRouter'
 
 type FormPreviewProps = {
   formContent: FormContent
@@ -35,14 +36,9 @@ export const FormPreview = (props: FormPreviewProps) => {
     // note that this roughly mimics surveyUtils.newSurveyJSModel but with key differences, such
     // as the pages not being url-routable
     const model = surveyJSModelFromFormContent(formContent)
-    model.setVariable('portalEnvironmentName', 'sandbox')
     applySurveyJsVariables(model, {
       profile: {} as Profile,
-      studyEnvParams: {
-        studyShortcode: 'TEST_STUDY',
-        envName: 'sandbox',
-        portalShortcode: 'TEST_PORTAL'
-      },
+      studyEnvParams: useStudyEnvParamsFromPath(),
       enrolleeShortcode: '',
       referencedAnswers: [],
       extraVariables: {}

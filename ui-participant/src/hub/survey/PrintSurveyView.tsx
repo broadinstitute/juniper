@@ -73,7 +73,6 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
       configureModelForPrint(surveyModel)
-      surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
 
       const proxyProfile = ppUser?.participantUserId != user?.id ? allEnrollees
         .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
