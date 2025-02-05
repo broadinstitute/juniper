@@ -392,7 +392,7 @@ databaseChangeLog:
   - include:
       file: changesets/2025_02_05_create_relation_indices.yaml
       relativeToChangelogFile: true
- - include:
+  - include:
       file: changesets/2025_01_27_prenroll_type.yaml
       relativeToChangelogFile: true
 
