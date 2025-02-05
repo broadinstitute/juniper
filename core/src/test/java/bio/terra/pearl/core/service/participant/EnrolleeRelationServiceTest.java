@@ -262,7 +262,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
 
-        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(governedEnrollee.getId());
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByEnrolleeIdWithEnrolleesAndFamily(governedEnrollee.getId());
 
         assertEquals(1, enrolleeRelations.size());
 

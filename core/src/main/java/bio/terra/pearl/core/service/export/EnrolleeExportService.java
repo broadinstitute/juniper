@@ -277,10 +277,10 @@ public class EnrolleeExportService {
 
     private List<EnrolleeRelation> loadRelations(StudyEnvironmentConfig config, Enrollee enrollee) {
         if (config.isEnableFamilyLinkage()) {
-            return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
+            return enrolleeRelationService.findByEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
         }
         if (config.isAcceptingProxyEnrollment()) {
-            return enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId());
+            return enrolleeRelationService.findByEnrolleeIdWithEnrollees(enrollee.getId());
         }
 
         // for performance reasons, we should grab nothing unless the study environment is configured to use

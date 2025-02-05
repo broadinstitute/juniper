@@ -60,7 +60,7 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
     List<EnrolleeRelation> relations =
-        enrolleeRelationExtService.findRelationsForTargetEnrollee(
+        enrolleeRelationExtService.findRelationsForEnrollee(
             PortalStudyEnvAuthContext.of(
                 operator,
                 studyEnvBundle.getPortal().getShortcode(),
@@ -73,7 +73,7 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
     assertThrows(
         NotFoundException.class,
         () ->
-            enrolleeRelationExtService.findRelationsForTargetEnrollee(
+            enrolleeRelationExtService.findRelationsForEnrollee(
                 PortalStudyEnvAuthContext.of(
                     operator,
                     otherStudyEnv.getPortal().getShortcode(),
@@ -84,7 +84,7 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
     assertThrows(
         NotFoundException.class,
         () ->
-            enrolleeRelationExtService.findRelationsForTargetEnrollee(
+            enrolleeRelationExtService.findRelationsForEnrollee(
                 PortalStudyEnvAuthContext.of(
                     operator,
                     studyEnvBundle.getPortal().getShortcode(),

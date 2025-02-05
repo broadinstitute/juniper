@@ -1,6 +1,6 @@
 import React from 'react'
 import Api from 'api/api'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
 import {
   dateToDefaultString,
@@ -19,6 +19,10 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Families from 'study/participants/Families'
+import { studyEnvParticipantPath } from '../ParticipantsRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLink } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
@@ -27,7 +31,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
   const [participantUser, setParticipantUser] = React.useState<ParticipantUser>()
   const { isLoading: isLoadingRelations } = useLoadingEffect(async () => {
     const [relations, participantUser] = await Promise.all([
-      Api.findRelationsByTargetShortcode(
+      Api.findRelationsByShortcode(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
@@ -37,7 +41,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     ])
     setRelations(relations)
     setParticipantUser(participantUser)
-  })
+  }, [enrollee.shortcode])
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
@@ -83,7 +87,9 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
               <InfoCardValue
                 title={'Name'}
                 values={
-                  [formatName(relation.enrollee?.profile)]
+                  [<Link to={studyEnvParticipantPath(paramsFromContext(studyEnvContext), relation.enrolleeId)}>
+                    {formatName(relation.enrollee?.profile)} <FontAwesomeIcon icon={faLink} className="ms-3" />
+                  </Link>]
                 }
               />
               <InfoCardValue

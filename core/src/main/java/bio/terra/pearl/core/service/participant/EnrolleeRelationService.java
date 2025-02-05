@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.RelationshipType;
-import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
@@ -60,8 +59,13 @@ public class EnrolleeRelationService extends ParticipantDataAuditedService<Enrol
         return filterValid(dao.findAllByEnrolleeId(enrolleeId));
     }
 
-    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
-        List<EnrolleeRelation> relations = this.findByTargetEnrolleeIdWithEnrollees(enrolleeId);
+    public <T extends EnrolleeRelation> List<T> findByEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId, Class<T> mappingClass) {
+        List<EnrolleeRelation> relations = this.findByEnrolleeIdWithEnrolleesAndFamily(enrolleeId, EnrolleeRelation.class);
+        return relations.stream().map(relation -> objectMapper.convertValue(relation, clazz)).toList();
+    }
+
+    public List<EnrolleeRelation> findByEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
+        List<EnrolleeRelation> relations = this.findByEnrolleeIdWithEnrollees(enrolleeId);
         List<UUID> familyIds = relations
                 .stream()
                 .map(EnrolleeRelation::getFamilyId)
@@ -87,21 +91,24 @@ public class EnrolleeRelationService extends ParticipantDataAuditedService<Enrol
         return filterValid(dao.findAllByEnrolleeOrTargetId(enrolleeId));
     }
 
-    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
+    public List<EnrolleeRelation> findByEnrolleeIdWithEnrollees(UUID enrolleeId) {
         Enrollee target = this.enrolleeService.find(enrolleeId).orElseThrow(() -> new NotFoundException("Enrollee not found"));
         profileService
                 .loadWithMailingAddress(target.getProfileId())
                 .ifPresent(target::setProfile);
 
-        List<EnrolleeRelation> relations = findByTargetEnrolleeId(enrolleeId);
+        List<EnrolleeRelation> relations = findAllByEnrolleeId(enrolleeId);
 
         return relations.stream().map(relation -> {
-            relation.setTargetEnrollee(target);
-            relation.setEnrollee(this.enrolleeService.find(relation.getEnrolleeId()).orElse(null));
+            boolean enrolleeIsTarget = enrolleeId.equals(relation.getTargetEnrolleeId());
+            Enrollee relatedEnrollee = enrolleeIsTarget ?
+                    this.enrolleeService.find(relation.getEnrolleeId()).orElse(null) :
+                    this.enrolleeService.find(relation.getTargetEnrolleeId()).orElse(null);
             profileService
-                    .loadWithMailingAddress(relation.getEnrollee().getProfileId())
-                    .ifPresent(relation.getEnrollee()::setProfile);
-
+                    .loadWithMailingAddress(relatedEnrollee.getProfileId())
+                    .ifPresent(relatedEnrollee::setProfile);
+            relation.setTargetEnrollee(enrolleeIsTarget ? target : relatedEnrollee);
+            relation.setEnrollee(enrolleeIsTarget ? relatedEnrollee : target);
             return relation;
         }).toList();
     }

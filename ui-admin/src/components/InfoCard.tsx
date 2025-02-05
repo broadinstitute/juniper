@@ -108,7 +108,7 @@ export function InfoCardRow(
 export function InfoCardValue(
   { title, values, condensed }: {
         title: string,
-        values: string[],
+        values: React.ReactNode[],
         condensed?: boolean
     }
 ) {

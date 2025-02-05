@@ -35,11 +35,11 @@ public class EnrolleeRelationController implements EnrolleeRelationApi {
   }
 
   @Override
-  public ResponseEntity<Object> findRelationsForTargetEnrollee(
+  public ResponseEntity<Object> findRelationsForEnrollee(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<EnrolleeRelation> relations =
-        enrolleeRelationExtService.findRelationsForTargetEnrollee(
+        enrolleeRelationExtService.findRelationsForEnrollee(
             PortalStudyEnvAuthContext.of(
                 adminUser,
                 portalShortcode,
