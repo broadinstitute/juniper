@@ -389,6 +389,9 @@ databaseChangeLog:
   - include:
       file: changesets/2025_01_30_custom_mixpanel_config.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2025_02_05_create_relation_indices.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
