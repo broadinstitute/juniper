@@ -1,8 +1,16 @@
 import React from 'react'
-import Api, { PreregistrationResponse, Survey } from 'api/api'
+import Api, {
+  PreregistrationResponse,
+  Survey
+} from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useNavigate } from 'react-router-dom'
-import { EnvironmentName, getResumeData, getSurveyJsAnswerList, useI18n, useSurveyJSModel } from '@juniper/ui-core'
+import {
+  getResumeData,
+  getSurveyJsAnswerList,
+  useI18n,
+  useSurveyJSModel
+} from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */
@@ -15,7 +23,9 @@ export default function PreRegistration({ registrationContext }: { registrationC
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey, SurveyComponent } =
-    useSurveyJSModel(survey, null, handleComplete, pager, portalEnv.environmentName as EnvironmentName)
+    useSurveyJSModel(survey, null, handleComplete, pager, {
+      environmentName: portalEnv.environmentName
+    })
 
   surveyModel.locale = selectedLanguage || 'default'
 

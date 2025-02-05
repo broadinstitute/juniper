@@ -1,13 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
 import {
+  applySurveyJsVariables,
   configureModelForPrint,
   Enrollee,
+  EnvironmentName,
   makeSurveyJsData,
-  surveyJSModelFromForm, useTaskIdParam,
+  surveyJSModelFromForm,
+  useTaskIdParam,
   waitForImages
 } from '@juniper/ui-core'
 
@@ -17,6 +26,7 @@ import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { enrolleeForStudy } from './SurveyView'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 
 
 type UsePrintableConsentArgs = {
@@ -30,7 +40,15 @@ type UsePrintableConsentArgs = {
 const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
 
-  const { portalEnv } = usePortalEnv()
+  const { portalEnv, portal } = usePortalEnv()
+
+  const {
+    user,
+    enrollees: allEnrollees
+  } = useUser()
+
+  const { ppUser } = useActiveUser()
+
 
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
@@ -55,7 +73,23 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
       configureModelForPrint(surveyModel)
-      surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
+
+      const proxyProfile = ppUser?.participantUserId != user?.id ? allEnrollees
+        .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
+        ?.profile : undefined
+
+      applySurveyJsVariables(surveyModel, {
+        profile: enrollee.profile,
+        proxyProfile,
+        studyEnvParams: {
+          studyShortcode,
+          envName: portalEnv.environmentName as EnvironmentName,
+          portalShortcode: portal.shortcode
+        },
+        enrolleeShortcode: enrollee.shortcode,
+        referencedAnswers: [],
+        extraVariables: {}
+      })
 
       return surveyModel
     }
