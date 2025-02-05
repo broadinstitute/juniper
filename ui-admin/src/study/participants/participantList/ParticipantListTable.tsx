@@ -2,7 +2,11 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
+import {
+  EnrolleeSearchExpressionResult,
+  ExpressionSearchFacets,
+  KeyedSearchValueTypeDefinition
+} from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
@@ -282,7 +286,8 @@ function ParticipantListTable({
         </ul>
 
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
-        {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+        {showEmailModal && <AdHocEmailModal
+          recipient={{ type: 'shortcodes', enrolleeShortcodes: enrolleesSelected }}
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowEmailModal(false)}/>}
         {showSyntheticModal &&

@@ -49,7 +49,7 @@ import {
   triggerName
 } from './workflowUtils'
 import { EllipsisDropdownButton } from 'components/forms/Button'
-import { SendTaskEmailModal } from 'study/notifications/SendTaskEmailModal'
+import AdHocEmailModal from 'study/participants/AdHocEmailModal'
 
 /** shows configuration of notifications for a study */
 export default function WorkflowView({ studyEnvContext, portalContext }:
@@ -271,9 +271,9 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
     { showCreateModal && <CreateTriggerModal studyEnvContext={studyEnvContext} initialOpts={triggerOpts}
       onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
     /> }
-    {taskStableIdForEmailModal && <SendTaskEmailModal
-      taskStableId={taskStableIdForEmailModal}
-      onClose={() => setTaskStableIdForEmailModal(undefined)}
+    {taskStableIdForEmailModal && <AdHocEmailModal
+      recipient={{ type: 'task', enrolleesAssignedTaskStableId: taskStableIdForEmailModal }}
+      onDismiss={() => setTaskStableIdForEmailModal(undefined)}
       studyEnvContext={studyEnvContext}/>}
   </div>
 }
