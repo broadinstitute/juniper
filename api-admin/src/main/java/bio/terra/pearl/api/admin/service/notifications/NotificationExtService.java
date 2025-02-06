@@ -3,8 +3,10 @@ package bio.terra.pearl.api.admin.service.notifications;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.api.admin.service.enrollee.EnrolleeSearchExtService;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationExtService {
+  private final EnrolleeSearchExtService enrolleeSearchExtService;
   private TriggerService triggerService;
   private NotificationDispatcher notificationDispatcher;
   private EnrolleeService enrolleeService;
@@ -40,7 +43,8 @@ public class NotificationExtService {
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
-      StudyService studyService) {
+      StudyService studyService,
+      EnrolleeSearchExtService enrolleeSearchExtService) {
     this.triggerService = triggerService;
     this.notificationDispatcher = notificationDispatcher;
     this.enrolleeService = enrolleeService;
@@ -49,6 +53,7 @@ public class NotificationExtService {
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.studyService = studyService;
+    this.enrolleeSearchExtService = enrolleeSearchExtService;
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
@@ -75,5 +80,22 @@ public class NotificationExtService {
           config, enrolleeRuleDatum, context, customMessages);
     }
     return config;
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
+  public Trigger sendAdHoc(
+      PortalStudyEnvAuthContext authContext,
+      String expression,
+      Map<String, String> customMessages,
+      UUID configId) {
+
+    List<EnrolleeSearchExpressionResult> enrollees =
+        enrolleeSearchExtService.executeSearchExpression(authContext, expression, null, List.of());
+
+    return sendAdHoc(
+        authContext,
+        enrollees.stream().map(result -> result.getEnrollee().getShortcode()).toList(),
+        customMessages,
+        configId);
   }
 }

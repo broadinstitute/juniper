@@ -1,29 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  Link,
+  useNavigate
+} from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import {
   paramsFromContext,
-  StudyEnvContextT, studyEnvFormsParamsPath, studyEnvSurveyPath,
-  studyEnvTriggerPath, studyEnvWorkflowPath,
+  StudyEnvContextT,
+  studyEnvFormsParamsPath,
+  studyEnvSurveyPath,
+  studyEnvTriggerPath,
+  studyEnvWorkflowPath,
   triggerPath
 } from '../StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
-import { LoadedPortalContextT } from '../../portal/PortalProvider'
-import { StudyEnvironmentSurvey, StudyEnvParams, Trigger } from '@juniper/ui-core'
+import { LoadedPortalContextT } from 'portal/PortalProvider'
+import {
+  StudyEnvironmentSurvey,
+  StudyEnvParams,
+  Trigger
+} from '@juniper/ui-core'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateTriggerModal from '../notifications/CreateTriggerModal'
 import {
-  faAsterisk, faEdit, faFilter,
+  faAsterisk,
+  faEdit,
+  faFilter,
   faTasks
 } from '@fortawesome/free-solid-svg-icons'
-import { faCalendarAlt, faClipboard, faEnvelope,   faCheckSquare } from '@fortawesome/free-regular-svg-icons'
+import {
+  faCalendarAlt,
+  faCheckSquare,
+  faClipboard,
+  faEnvelope
+} from '@fortawesome/free-regular-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import _sortBy from 'lodash/sortBy'
-import { minutesToDayString, triggerName } from './workflowUtils'
+import {
+  minutesToDayString,
+  triggerName
+} from './workflowUtils'
 import { EllipsisDropdownButton } from 'components/forms/Button'
+import AdHocEmailModal from 'study/participants/AdHocEmailModal'
 
 /** shows configuration of notifications for a study */
 export default function WorkflowView({ studyEnvContext, portalContext }:
@@ -35,6 +59,7 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
   const [triggerOpts, setTriggerOpts] = useState<Partial<Trigger>>({})
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [taskStableIdForEmailModal, setTaskStableIdForEmailModal] = useState<string>()
 
   const boxClasses = 'p-3 my-3 bg-light'
   const itemClasses = 'my-2 py-2'
@@ -84,7 +109,7 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
               <FontAwesomeIcon icon={faClipboard} className="me-2"/>
               <Link to={studyEnvSurveyPath(paramsFromContext(studyEnvContext),
                 preEnrollSurvey.stableId, preEnrollSurvey.version)}>
-                { preEnrollSurvey.name}
+                {preEnrollSurvey.name}
               </Link>
             </div>
           }
@@ -97,7 +122,8 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
       </li>
       <li className={boxClasses} >
         <h3 className="h5 d-flex align-items-center">Enrollment
-          <AddTriggerMenu triggerOpts={{ eventType: 'STUDY_ENROLLMENT' }}
+          <AddTriggerMenu
+            triggerOpts={{ eventType: 'STUDY_ENROLLMENT' }}
             setTriggerOpts={setTriggerOpts}
             setShowCreateModal={setShowCreateModal}/></h3>
 
@@ -114,10 +140,15 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
         <ul className="list-unstyled">
           { studyEnvSurveys.filter(studyEnvSurveys => studyEnvSurveys.survey.surveyType === 'CONSENT')
             .map(studyEnvSurvey =>
-              <SurveyListItem studyEnvSurvey={studyEnvSurvey} key={studyEnvSurvey.id} triggers={triggers}
+              <SurveyListItem
+                studyEnvSurvey={studyEnvSurvey}
+                key={studyEnvSurvey.id}
+                triggers={triggers}
                 setShowCreateModal={setShowCreateModal} triggerOpts={triggerOpts}
                 setTriggerOpts={setTriggerOpts}
-                studyEnvParams={paramsFromContext(studyEnvContext)}/>
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                setTaskStableIdForEmailModal={setTaskStableIdForEmailModal}
+              />
             )
           }
         </ul>
@@ -144,10 +175,16 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
         <ul className="list-unstyled">
           { studyEnvSurveys.filter(studyEnvSurveys => studyEnvSurveys.survey.surveyType === 'RESEARCH')
             .map(studyEnvSurvey =>
-              <SurveyListItem studyEnvSurvey={studyEnvSurvey} key={studyEnvSurvey.id} triggers={triggers}
-                setShowCreateModal={setShowCreateModal} triggerOpts={triggerOpts}
+              <SurveyListItem
+                studyEnvSurvey={studyEnvSurvey}
+                key={studyEnvSurvey.id}
+                triggers={triggers}
+                setShowCreateModal={setShowCreateModal}
+                triggerOpts={triggerOpts}
                 setTriggerOpts={setTriggerOpts}
-                studyEnvParams={paramsFromContext(studyEnvContext)}/>
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                setTaskStableIdForEmailModal={setTaskStableIdForEmailModal}
+              />
             )
           }
         </ul>
@@ -175,10 +212,15 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
         <ul className="list-unstyled">
           { studyEnvSurveys.filter(studyEnvSurveys => studyEnvSurveys.survey.surveyType === 'OUTREACH')
             .map(studyEnvSurvey =>
-              <SurveyListItem studyEnvSurvey={studyEnvSurvey} key={studyEnvSurvey.id} triggers={triggers}
+              <SurveyListItem
+                studyEnvSurvey={studyEnvSurvey}
+                key={studyEnvSurvey.id}
+                triggers={triggers}
                 setShowCreateModal={setShowCreateModal} triggerOpts={triggerOpts}
                 setTriggerOpts={setTriggerOpts}
-                studyEnvParams={paramsFromContext(studyEnvContext)}/>
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                setTaskStableIdForEmailModal={setTaskStableIdForEmailModal}
+              />
             )
           }
         </ul>
@@ -226,13 +268,25 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
     { showCreateModal && <CreateTriggerModal studyEnvContext={studyEnvContext} initialOpts={triggerOpts}
       onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
     /> }
+    {taskStableIdForEmailModal && <AdHocEmailModal
+      recipient={{ type: 'task', enrolleesAssignedTaskStableId: taskStableIdForEmailModal }}
+      onDismiss={() => setTaskStableIdForEmailModal(undefined)}
+      studyEnvContext={studyEnvContext}/>}
   </div>
 }
 
-const AddTriggerMenu = ({ triggerOpts, setTriggerOpts, setShowCreateModal }:
+const AddTriggerMenu = ({
+  triggerOpts,
+  setTriggerOpts,
+  setShowCreateModal,
+  openTaskEmailModal
+}:
   {triggerOpts: Partial<Trigger>,
     setTriggerOpts: (opts: Partial<Trigger>) => void,
-    setShowCreateModal: (show: boolean) => void}) => {
+    setShowCreateModal: (show: boolean) => void
+    openTaskEmailModal?: () => void
+  }
+) => {
   return <div className="nav-item dropdown ms-2">
     <EllipsisDropdownButton aria-label="configure" className="ms-auto"/>
     <div className="dropdown-menu">
@@ -254,17 +308,35 @@ const AddTriggerMenu = ({ triggerOpts, setTriggerOpts, setShowCreateModal }:
             }}>
             Add action
           </button>
-        </li> }
+        </li>}
+        {openTaskEmailModal && <li>
+          <button className="dropdown-item"
+            onClick={() => {
+              openTaskEmailModal()
+            }}>
+                Send email to participants assigned this task
+          </button>
+        </li>}
       </ul>
     </div>
   </div>
 }
 
-const SurveyListItem = ({ studyEnvSurvey, studyEnvParams, triggers, triggerOpts, setTriggerOpts, setShowCreateModal }:
-  { studyEnvSurvey: StudyEnvironmentSurvey, studyEnvParams: StudyEnvParams, triggers: Trigger[],
+const SurveyListItem = ({
+  studyEnvSurvey,
+  studyEnvParams,
+  triggers,
+  triggerOpts,
+  setTriggerOpts,
+  setShowCreateModal,
+  setTaskStableIdForEmailModal
+}: {
+  studyEnvSurvey: StudyEnvironmentSurvey, studyEnvParams: StudyEnvParams, triggers: Trigger[],
     triggerOpts: Partial<Trigger>,
     setTriggerOpts: (opts: Partial<Trigger>) => void,
-    setShowCreateModal: (show: boolean) => void}) => {
+  setShowCreateModal: (show: boolean) => void,
+  setTaskStableIdForEmailModal: (stableId: string) => void
+}) => {
   const survey = studyEnvSurvey.survey
   const matchedTriggers = triggers.filter(trigger => trigger.filterTargetStableIds.includes(survey.stableId))
 
@@ -289,7 +361,9 @@ const SurveyListItem = ({ studyEnvSurvey, studyEnvParams, triggers, triggerOpts,
         filterTargetStableIds: [survey.stableId]
       }}
       setTriggerOpts={setTriggerOpts}
-      setShowCreateModal={setShowCreateModal}/>
+      setShowCreateModal={setShowCreateModal}
+      openTaskEmailModal={() => setTaskStableIdForEmailModal(survey.stableId)}
+      />
     </div>
     <ul className="list-unstyled ms-5">
       {matchedTriggers.map(trigger => <TriggerListItem key={trigger.id}

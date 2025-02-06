@@ -31,6 +31,14 @@ export type ParticipantTaskStatus =
   | 'VIEWED'
   | 'REMOVED'
 
+export const ParticipantTaskStatusOptions: { label: string, value: ParticipantTaskStatus }[] = [
+  { label: 'New', value: 'NEW' },
+  { label: 'Viewed', value: 'VIEWED' },
+  { label: 'In progress', value: 'IN_PROGRESS' },
+  { label: 'Complete', value: 'COMPLETE' },
+  { label: 'Rejected', value: 'REJECTED' }
+]
+
 export type ParticipantTaskType =
   | 'CONSENT'
   | 'SURVEY'

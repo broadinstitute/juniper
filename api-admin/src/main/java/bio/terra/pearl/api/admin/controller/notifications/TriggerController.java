@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -105,13 +106,26 @@ public class TriggerController implements TriggerApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     AdHocNotification adHoc = objectMapper.convertValue(body, AdHocNotification.class);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    Trigger configUsed =
-        notificationExtService.sendAdHoc(
-            PortalStudyEnvAuthContext.of(
-                adminUser, portalShortcode, studyShortcode, environmentName),
-            adHoc.enrolleeShortcodes,
-            adHoc.customMessages,
-            adHoc.triggerId);
+    Trigger configUsed;
+
+    if (StringUtils.isNotEmpty(adHoc.filter())) {
+      configUsed =
+          notificationExtService.sendAdHoc(
+              PortalStudyEnvAuthContext.of(
+                  adminUser, portalShortcode, studyShortcode, environmentName),
+              adHoc.filter(),
+              adHoc.customMessages,
+              adHoc.triggerId);
+    } else {
+      configUsed =
+          notificationExtService.sendAdHoc(
+              PortalStudyEnvAuthContext.of(
+                  adminUser, portalShortcode, studyShortcode, environmentName),
+              adHoc.enrolleeShortcodes,
+              adHoc.customMessages,
+              adHoc.triggerId);
+    }
+
     return ResponseEntity.ok(configUsed);
   }
 
@@ -143,5 +157,8 @@ public class TriggerController implements TriggerApi {
 
   /** object for specifying an adhoc notification. */
   public record AdHocNotification(
-      List<String> enrolleeShortcodes, UUID triggerId, Map<String, String> customMessages) {}
+      List<String> enrolleeShortcodes,
+      String filter, // if specified, ignore enrolleeShortcodes and use this filter
+      UUID triggerId,
+      Map<String, String> customMessages) {}
 }

@@ -7,6 +7,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+import { ParticipantTaskStatusOptions } from '@juniper/ui-core'
 
 /**
  * Renders the facets that you can search upon in the participant list.
@@ -183,14 +184,6 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
-  const statusOptions = [
-    { label: 'New', value: 'NEW' },
-    { label: 'Viewed', value: 'VIEWED' },
-    { label: 'In progress', value: 'IN_PROGRESS' },
-    { label: 'Complete', value: 'COMPLETE' },
-    { label: 'Rejected', value: 'REJECTED' }
-  ]
-
   return <div>
     {
       studyEnvContext.currentEnv.configuredSurveys.map(
@@ -205,8 +198,8 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
               <Select
                 key={stableId}
                 aria-label={`Select status for ${name}`}
-                options={statusOptions}
-                value={statusOptions.find(opt => opt.value == selectedStatus)}
+                options={ParticipantTaskStatusOptions}
+                value={ParticipantTaskStatusOptions.find(opt => opt.value == selectedStatus)}
                 onChange={selectedOption => {
                   const newSelectedStatus = selectedOption?.value
                   if (newSelectedStatus) {
