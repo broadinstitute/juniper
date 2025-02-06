@@ -9,17 +9,29 @@ import {
 } from '@juniper/ui-core'
 
 import { Textarea } from 'components/forms/Textarea'
-import { i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
+import {
+  i18nSurveyText,
+  updateI18nSurveyText
+} from 'util/juniperSurveyUtils'
 import { BaseFields } from '../questions/BaseFields'
 import { ChoicesList } from '../questions/ChoicesList'
 import { VisibilityFields } from '../questions/VisibilityFields'
 import { TextInput } from 'components/forms/TextInput'
 import { IconButton } from 'components/forms/Button'
-import { faAsterisk, faEye, faGear, faList, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import {
+  faAsterisk,
+  faEye,
+  faGear,
+  faList,
+  faPenToSquare
+} from '@fortawesome/free-solid-svg-icons'
 import QuestionTypeSelector from './QuestionTypeSelector'
 import classNames from 'classnames'
 import { baseQuestions } from '../questions/questionTypes'
-import { Tab, Tabs } from 'react-bootstrap'
+import {
+  Tab,
+  Tabs
+} from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TextFields } from '../questions/TextFields'
 
@@ -165,19 +177,21 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
           />
         </Tab> }
         { (!isTemplated &&
-            (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup')) && <Tab
-          eventKey="choices"
-          title={<><FontAwesomeIcon icon={faList}/> Choices ({question.choices.length})</>}
-        >
-          <ChoicesList
-            question={question}
-            isNewQuestion={isNewQuestion}
-            currentLanguage={currentLanguage}
-            supportedLanguages={supportedLanguages}
-            readOnly={readOnly}
-            onChange={onChange}
-          />
-        </Tab> }
+            (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup'))
+          && question.choices &&
+            <Tab
+              eventKey="choices"
+              title={<><FontAwesomeIcon icon={faList}/> Choices ({question.choices.length})</>}
+            >
+              <ChoicesList
+                question={question}
+                isNewQuestion={isNewQuestion}
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
+                readOnly={readOnly}
+                onChange={onChange}
+              />
+            </Tab>}
         { (!isTemplated && question.type !== 'html') && <Tab
           eventKey="advanced"
           title={<><FontAwesomeIcon icon={faGear}/> Advanced</>}
