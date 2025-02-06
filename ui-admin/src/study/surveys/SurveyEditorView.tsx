@@ -230,7 +230,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 Download form JSON
               </button>
             </li>
-            { (currentForm as Survey).surveyType !== 'PRE_ENROLL' && <li>
+            { (currentForm as Survey).surveyType === 'PRE_ENROLL' && <li>
               <button className="dropdown-item"
                 onClick={() => setShowPreEnrollShortcuts(true)}>
                 Pre-enroll Shortcuts
