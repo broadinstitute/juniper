@@ -17,8 +17,12 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponseWithTaskDto;
 import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
@@ -32,6 +36,7 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -84,6 +89,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyResponseFactory surveyResponseFactory;
     @Autowired
     private ParticipantTaskFactory participantTaskFactory;
+    @Autowired
+    private ParticipantTaskService participantTaskService;
 
     @Test
     @Transactional
@@ -155,7 +162,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         ExportOptionsWithExpression opts = ExportOptionsWithExpression.builder()
                 .fileFormat(ExportFileFormat.TSV)
-                .includeFields(List.of("profile.familyName", "enrollee.shortcode", "account.username" )).build();
+                .includeFields(List.of("profile.familyName", "enrollee.shortcode", "account.username")).build();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         enrolleeExportService.export(opts, studyEnvBundle.getStudyEnv().getId(), stream);
 
@@ -374,7 +381,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                         "type": "radiogroup",
                         "title": "My neighborhood is walkable.",
                         "choices": [
-                          {"text": "Disagre", "value": "disagree"},
+                          {"text": "Disagree", "value": "disagree"},
                           {"text": "Agree", "value": "agree"}
                         ]
                       }
@@ -409,8 +416,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(socialHealthModule.getItemFormatters(), hasSize(7));
         // module should contain both the response properties and question items
         assertThat(socialHealthModule.getItemFormatters().stream()
-                .filter(itemFormatter -> itemFormatter instanceof PropertyItemFormatter)
-                .map(itemFormatter -> ((PropertyItemFormatter) itemFormatter).getPropertyName()).toList(),
+                        .filter(itemFormatter -> itemFormatter instanceof PropertyItemFormatter)
+                        .map(itemFormatter -> ((PropertyItemFormatter) itemFormatter).getPropertyName()).toList(),
                 hasItems("lastUpdatedAt", "complete", "responseMetadata"));
         assertThat(socialHealthModule.getItemFormatters().stream()
                         .filter(itemFormatter -> itemFormatter instanceof AnswerItemFormatter)
@@ -744,5 +751,104 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         export = baos.toString();
         assertThat(export, containsString(",enrollee.createdAt"));
         assertThat(export, containsString(",Created At"));
+    }
+
+    @Test
+    @Transactional
+    public void testExportAllCompletions(TestInfo testInfo) {
+
+        String testName = getTestName(testInfo);
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builder(getTestName(testInfo))
+                        .portalId(bundle.getPortal().getId())
+                        .content(SOCIAL_HEALTH_EXCERPT)
+                        .name("Social Health")
+                        .stableId("socialHealth")
+                        .surveyType(SurveyType.RESEARCH)
+                        .autoAssign(false)
+                        .version(1)
+                        .build());
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, bundle.getPortalEnv(), studyEnv, new Profile());
+
+        ParticipantTask task1 = participantTaskFactory.buildPersisted(
+                enrolleeBundle,
+                survey.getStableId(),
+                TaskStatus.COMPLETE,
+                TaskType.SURVEY
+        );
+
+        ParticipantTask task2 = participantTaskFactory.buildPersisted(
+                enrolleeBundle,
+                survey.getStableId(),
+                TaskStatus.COMPLETE,
+                TaskType.SURVEY
+        );
+
+        SurveyResponse responseTask1 = surveyResponseFactory.buildWithAnswers(
+                enrolleeBundle.enrollee(),
+                survey,
+                Map.of(
+                        "hd_hd_socialHealth_neighborhoodSharesValues", "agree",
+                        "hd_hd_socialHealth_neighborhoodIsWalkable", "agree"
+                )
+        );
+
+        SurveyResponse responseTask2 = surveyResponseFactory.buildWithAnswers(
+                enrolleeBundle.enrollee(),
+                survey,
+                Map.of(
+                        "hd_hd_socialHealth_neighborhoodSharesValues", "disagree",
+                        "hd_hd_socialHealth_neighborhoodIsWalkable", "disagree"
+                )
+        );
+
+        task1.setSurveyResponseId(responseTask1.getId());
+        participantTaskService.update(task1, getAuditInfo(testInfo));
+
+        task2.setSurveyResponseId(responseTask2.getId());
+        participantTaskService.update(task2, getAuditInfo(testInfo));
+
+
+        ExportOptionsWithExpression optionsAllCompletions = ExportOptionsWithExpression
+                .builder()
+                .onlyIncludeMostRecent(false)
+                .build();
+        List<EnrolleeExportData> exportDataAllCompletions = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), optionsAllCompletions);
+        List<ModuleFormatter> exportModuleInfoAllCompletions = enrolleeExportService.generateModuleInfos(optionsAllCompletions, studyEnv.getId(), exportDataAllCompletions);
+
+        List<Map<String, String>> exportMapsAllCompletions = enrolleeExportService.generateExportMaps(exportDataAllCompletions, exportModuleInfoAllCompletions);
+
+        assertThat(exportMapsAllCompletions, hasSize(1));
+        Map<String, String> exportMapAllCompletions = exportMapsAllCompletions.get(0);
+        assertThat(exportMapAllCompletions.get("enrollee.shortcode"), equalTo(enrolleeBundle.enrollee().getShortcode()));
+        assertThat(exportMapAllCompletions.get("enrollee.subject"), equalTo("true"));
+        assertThat(exportMapAllCompletions.get("socialHealth[2].hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Agree"));
+        assertThat(exportMapAllCompletions.get("socialHealth[2].hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Agree"));
+        assertThat(exportMapAllCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Disagree"));
+        assertThat(exportMapAllCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
+
+        ExportOptionsWithExpression optionsLatestCompletions = ExportOptionsWithExpression
+                .builder()
+                .onlyIncludeMostRecent(true)
+                .build();
+        List<EnrolleeExportData> exportDataLatestCompletions = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), optionsLatestCompletions);
+        List<ModuleFormatter> exportModuleInfoLatestCompletions = enrolleeExportService.generateModuleInfos(optionsLatestCompletions, studyEnv.getId(), exportDataLatestCompletions);
+
+        List<Map<String, String>> exportMapsLatestCompletions = enrolleeExportService.generateExportMaps(exportDataLatestCompletions, exportModuleInfoLatestCompletions);
+
+        assertThat(exportMapsLatestCompletions, hasSize(1));
+        Map<String, String> exportMapLatestCompletions = exportMapsAllCompletions.get(0);
+        assertThat(exportMapLatestCompletions.get("enrollee.shortcode"), equalTo(enrolleeBundle.enrollee().getShortcode()));
+        assertThat(exportMapLatestCompletions.get("enrollee.subject"), equalTo("true"));
+        assertThat(exportMapLatestCompletions.containsKey("socialHealth[2].hd_hd_socialHealth_neighborhoodSharesValues"), equalTo(false));
+        assertThat(exportMapLatestCompletions.containsKey("socialHealth[2].hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo(false));
+        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Agree"));
+        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Agree"));
     }
 }

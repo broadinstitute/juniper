@@ -61,6 +61,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return dao.findByEnrolleeIdsNotRemoved(enrolleeIds);
     }
 
+
     public Optional<SurveyResponse> findOneWithAnswers(UUID responseId) {
         return dao.findOneWithAnswers(responseId);
     }

@@ -45,7 +45,10 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                                 left join participant_task task on task.survey_response_id = sr.id
                                 where sr.enrollee_id in (<enrolleeIds>)
                                 and task.status is distinct from 'REMOVED'
-                                """.formatted(tableName))
+                                """
+                                .formatted(
+                                        tableName
+                                ))
                         .bindList("enrolleeIds", enrolleeIds)
                         .mapTo(clazz)
                         .stream().collect(Collectors.groupingBy(SurveyResponse::getEnrolleeId, Collectors.toList()))

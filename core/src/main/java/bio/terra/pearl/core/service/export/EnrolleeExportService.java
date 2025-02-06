@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.Study;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -217,7 +216,12 @@ public class EnrolleeExportService {
         Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses =
                 attachTasksToSurveyResponses(
                         tasks,
-                        surveyResponseService.findByEnrolleeIdsNotRemoved(enrolleeIds));
+                        surveyResponseService.findByEnrolleeIdsNotRemoved(
+                                enrolleeIds));
+        if (exportOptions.isOnlyIncludeMostRecent()) {
+            surveyResponses = filterToMostRecentSurveyResponses(surveyResponses);
+        }
+
         Map<UUID, List<KitRequestDto>> kitRequests = kitRequestService.findByEnrollees(enrollees);
 
         return enrollees.stream()
@@ -243,7 +247,8 @@ public class EnrolleeExportService {
                 surveyResponses
                         .getOrDefault(enrollee.getId(), Collections.emptyList())
                         .stream()
-                        .sorted(Comparator.comparing(SurveyResponse::getCreatedAt).reversed()).toList(),
+                        .sorted(Comparator.comparing(SurveyResponse::getCreatedAt).reversed())
+                        .toList(),
                 kitRequests.getOrDefault(enrollee.getId(), Collections.emptyList()),
                 enrolleeRelations,
                 config.isEnableFamilyLinkage() ? familyService.findByEnrolleeIdWithProband(enrollee.getId()) : Collections.emptyList(),
@@ -312,6 +317,28 @@ public class EnrolleeExportService {
         }
 
         return surveyResponseWithTaskMap;
+    }
+
+    private Map<UUID, List<SurveyResponseWithTaskDto>> filterToMostRecentSurveyResponses(Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponseWithTaskMap) {
+        return surveyResponseWithTaskMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> filterToMostRecentSurveyResponses(entry.getValue())
+                ));
+    }
+
+    private List<SurveyResponseWithTaskDto> filterToMostRecentSurveyResponses(List<SurveyResponseWithTaskDto> surveyResponses) {
+        return surveyResponses
+                .stream()
+                .collect(Collectors.groupingBy(sr -> sr.getTask().getTargetStableId()))
+                .values()
+                .stream()
+                .map(surveyResponsesForTask -> surveyResponsesForTask
+                        .stream()
+                        .max(Comparator.comparing(sr -> sr.getTask().getCreatedAt()))
+                        .orElseThrow())
+                .toList();
     }
 
 
