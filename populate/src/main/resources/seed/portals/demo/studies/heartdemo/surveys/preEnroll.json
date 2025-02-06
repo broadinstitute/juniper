@@ -2,6 +2,7 @@
   "stableId": "hd_hd_preenroll",
   "version": 1,
   "name": "Pre-enroll",
+  "surveyType": "PRE_ENROLL",
   "answerMappings": [
     {
       "questionStableId": "proxy_enrollment",

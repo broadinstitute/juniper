@@ -7,11 +7,9 @@ import {
   paramsFromContext,
   StudyEnvContextT
 } from './StudyEnvironmentRouter'
-import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import {
@@ -20,8 +18,7 @@ import {
   SurveyType
 } from '@juniper/ui-core'
 import {
-  Button,
-  IconButton
+  Button
 } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 import { renderPageHeader } from 'util/pageUtils'
@@ -46,9 +43,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const { currentEnv } = studyEnvContext
   const portalContext = useContext(PortalContext) as PortalContextT
 
-
-  const preEnrollSurvey = currentEnv.preEnrollSurvey
-  const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurveyNamed[]>([])
   const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
@@ -85,6 +79,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const consentSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'CONSENT')
   const adminFormStableIds = getUniqueStableIdsForType(configuredSurveys, 'ADMIN')
   const documnetRequestStableIds = getUniqueStableIdsForType(configuredSurveys, 'DOCUMENT_REQUEST')
+  const preEnrollStableIds = getUniqueStableIdsForType(configuredSurveys, 'PRE_ENROLL')
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Forms & Surveys') }
@@ -92,38 +87,27 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
       <div className="col-12">
         { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
-            <h6>Pre-enrollment Questionnaire</h6>
+            <h2 className="h6">Pre-Enroll Surveys</h2>
             <div className="flex-grow-1 pt-3">
-              {preEnrollSurvey && <ul className="list-unstyled">
-                <li className="d-flex align-items-center">
-                  <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
-                    {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
-                  </Link>
-
-                  {!isReadOnlyEnv && <div className="nav-item dropdown ms-1">
-                    <IconButton icon={faEllipsisH} data-bs-toggle="dropdown"
-                      aria-expanded="false" aria-label="configure pre-enroll menu"/>
-                    <div className="dropdown-menu">
-                      <ul className="list-unstyled">
-                        <li>
-                          <button className="dropdown-item"
-                            onClick={() => alert('To remove a pre-enroll survey, contact support')}>
-                              Remove
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>}
-                </li>
-              </ul>}
-              {(!preEnrollSurvey && !isReadOnlyEnv) && <Button variant="secondary"
-                data-testid={'addPreEnroll'}
-                onClick={() => {
-                  setShowCreatePreEnrollModal(!showCreatePreEnrollSurveyModal)
+              <SurveyEnvironmentTable
+                key={studyEnvContext.currentEnvPath}
+                stableIds={preEnrollStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                configuredSurveys={configuredSurveys}
+                setSelectedSurveyConfig={setSelectedSurveyConfig}
+                updateConfiguredSurveys={updateConfiguredSurveys}
+                setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                showArchiveSurveyModal={showArchiveSurveyModal}
+                showDeleteSurveyModal={showDeleteSurveyModal}
+              />
+              <div>
+                <Button variant="secondary" data-testid={'addPreenrollSurvey'} onClick={() => {
+                  setCreateSurveyType('PRE_ENROLL')
                 }}>
-                <FontAwesomeIcon icon={faPlus}/> Add
-              </Button>
-              }
+                  <FontAwesomeIcon icon={faPlus}/> Add
+                </Button>
+              </div>
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>

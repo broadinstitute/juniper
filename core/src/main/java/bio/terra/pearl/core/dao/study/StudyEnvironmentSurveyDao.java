@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.context.annotation.Lazy;
@@ -88,19 +89,19 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
     public List<StudyEnvironmentSurvey> findAllWithSurvey(UUID studyEnvId, Boolean active) {
         List<StudyEnvironmentSurvey> studyEnvSurvs = findAll(List.of(studyEnvId), null, active);
-        attachSurveys(studyEnvSurvs, ATTACH_SURVEY.WITH_CONTENT);
+        attachSurveys(studyEnvSurvs, AttachSurvey.WITH_CONTENT);
         return studyEnvSurvs;
     }
 
-    public List<StudyEnvironmentSurvey> findAllWithSurveyNoContent(List<UUID> studyEnvironmentIds, String stableId, Boolean active) {
+    public List<StudyEnvironmentSurvey>  findAllWithSurveyNoContent(List<UUID> studyEnvironmentIds, String stableId, Boolean active) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = findAll(studyEnvironmentIds, stableId, active);
-        attachSurveys(studyEnvSurveys, ATTACH_SURVEY.WITHOUT_CONTENT);
+        attachSurveys(studyEnvSurveys, AttachSurvey.WITHOUT_CONTENT);
         return studyEnvSurveys;
     }
 
-    protected void attachSurveys(List<StudyEnvironmentSurvey> studyEnvSurveys, ATTACH_SURVEY attach) {
+    protected void attachSurveys(List<StudyEnvironmentSurvey> studyEnvSurveys, AttachSurvey attach) {
         List<UUID> surveyIds = studyEnvSurveys.stream().map(ses -> ses.getSurveyId()).collect(Collectors.toList());
-        List<Survey> surveys = attach.equals(ATTACH_SURVEY.WITH_CONTENT) ? surveyDao.findAll(surveyIds) : surveyDao.findAllNoContent(surveyIds);
+        List<Survey> surveys = attach.equals(AttachSurvey.WITH_CONTENT) ? surveyDao.findAll(surveyIds) : surveyDao.findAllNoContent(surveyIds);
         for (StudyEnvironmentSurvey ses : studyEnvSurveys) {
             ses.setSurvey(surveys.stream().filter(survey -> survey.getId().equals(ses.getSurveyId()))
                     .findFirst().orElseThrow());
@@ -126,8 +127,31 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
                         .one()) > 0;
     }
 
-    protected enum ATTACH_SURVEY {
-        WITH_CONTENT, // include the content json of the survey
-        WITHOUT_CONTENT  // exclude the content from the retrieval
+    public List<StudyEnvironmentSurvey> findAllByType(List<UUID> studyEnvIds, SurveyType surveyType, Boolean active, AttachSurvey attach) {
+        List<StudyEnvironmentSurvey> studyEnvSurveys = jdbi.withHandle(handle -> {
+            Query query = handle.createQuery("""
+                                select a.* from %s a
+                                    join survey on survey.id = a.survey_id
+                                    where a.study_environment_id IN (<studyEnvIds>)
+                                    %s
+                                    %s
+                                    order by survey.stable_id asc, survey_order asc;
+                                """.formatted(
+                            tableName,
+                            surveyType != null ? " and survey.survey_type = :surveyType" : "",
+                            active != null ? " and a.active = :active" : ""))
+                    .bind("surveyType", surveyType)
+                    .bindList("studyEnvIds", studyEnvIds);
+            if (active != null) {
+                query = query.bind("active", active);
+            }
+            if (surveyType != null) {
+                query = query.bind("surveyType", surveyType);
+            }
+            return query.mapTo(clazz)
+                    .list();
+        });
+        attachSurveys(studyEnvSurveys, attach);
+        return studyEnvSurveys;
     }
 }
