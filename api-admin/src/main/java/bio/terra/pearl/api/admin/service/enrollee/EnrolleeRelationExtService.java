@@ -31,7 +31,7 @@ public class EnrolleeRelationExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public List<EnrolleeRelation> findRelationsForTargetEnrollee(
+  public List<EnrolleeRelation> findRelationsForEnrollee(
       PortalStudyEnvAuthContext authContext, String enrolleeShortcode) {
 
     Enrollee enrollee =
@@ -41,7 +41,7 @@ public class EnrolleeRelationExtService {
                 authContext.getStudyShortcode(),
                 authContext.getEnvironmentName())
             .orElseThrow(() -> new NotFoundException("Enrollee not found"));
-    return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
+    return enrolleeRelationService.findByEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")

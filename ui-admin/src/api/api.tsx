@@ -1035,13 +1035,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async findRelationsByTargetShortcode(
+  async findRelationsByShortcode(
     portalShortcode: string,
     studyShortcode: string,
     envName: EnvironmentName,
     enrolleeShortcode: string): Promise<EnrolleeRelation[]> {
     const url = (
-        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/byTarget/${enrolleeShortcode}`
+        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/${enrolleeShortcode}`
     )
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

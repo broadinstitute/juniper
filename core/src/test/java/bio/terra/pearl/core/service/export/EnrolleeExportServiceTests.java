@@ -282,7 +282,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         // should export relation but not family data
         assertThat(exportMaps, hasSize(2));
-        assertThat(exportMaps.get(0).get("relation.relationshipType"), equalTo("PROXY"));
+        assertThat(exportMaps.get(0).get("relation.relationship"), equalTo("PROXY"));
         assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
         assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
     }
@@ -327,7 +327,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         // no family or relation data should be exported because the study env config has neither enabled
         assertThat(exportMaps, hasSize(2));
         assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
-        assertThat(exportMaps.get(0).containsKey("relation.relationshipType"), equalTo(false));
+        assertThat(exportMaps.get(0).containsKey("relation.relationship"), equalTo(false));
 
         // enable family data
         StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvId);
@@ -347,7 +347,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(exportMaps.get(1).get("family.shortcode"), equalTo(family.getShortcode()));
 
         Map<String, String> targetExportMap = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
-        assertThat(targetExportMap.get("relation.relationshipType"), equalTo("FAMILY"));
+        assertThat(targetExportMap.get("relation.relationship"), equalTo("FAMILY"));
         assertThat(targetExportMap.get("relation.familyRelationship"), equalTo("father"));
         assertThat(targetExportMap.get("relation.family.shortcode"), equalTo("FAMILY1"));
 

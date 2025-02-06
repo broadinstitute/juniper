@@ -27,7 +27,7 @@ export default function useRoutedEnrollee(studyEnvContext: StudyEnvContextT) {
       enrollee = await Api.getEnrollee(portal.shortcode, study.shortcode,
         currentEnv.environmentName, enrolleeShortcodeOrId)
     } else {
-      // if we have, clear the state so the enrollee will be reloaded if the page is refreshed
+      // if we have data, clear the state so the enrollee will be reloaded if the page is refreshed
       window.history.replaceState({}, '')
     }
     if (enrollee.shortcode != enrolleeShortcodeOrId) {

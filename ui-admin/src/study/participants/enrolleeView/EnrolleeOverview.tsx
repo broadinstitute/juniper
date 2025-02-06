@@ -1,6 +1,6 @@
 import React from 'react'
 import Api from 'api/api'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
 import {
   dateToDefaultString,
@@ -19,6 +19,8 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Families from 'study/participants/Families'
+import { studyEnvParticipantPath } from '../ParticipantsRouter'
+import { Link } from 'react-router-dom'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
@@ -27,7 +29,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
   const [participantUser, setParticipantUser] = React.useState<ParticipantUser>()
   const { isLoading: isLoadingRelations } = useLoadingEffect(async () => {
     const [relations, participantUser] = await Promise.all([
-      Api.findRelationsByTargetShortcode(
+      Api.findRelationsByShortcode(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
@@ -37,10 +39,13 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     ])
     setRelations(relations)
     setParticipantUser(participantUser)
-  })
+  }, [enrollee.shortcode])
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
-
+  const proxyForRelations = relations.filter(relation =>
+    relation.relationshipType === 'PROXY' && relation.enrolleeId === enrollee.id)
+  const proxyRelations = relations.filter(relation =>
+    relation.relationshipType === 'PROXY' && relation.enrolleeId !== enrollee.id)
   return <>
     <InfoCard>
       <InfoCardHeader>
@@ -71,29 +76,42 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     </InfoCard>
 
     {isLoadingRelations && <LoadingSpinner/>}
-    {
-      relations
-        .filter(relation => relation.relationshipType === 'PROXY')
-        .map(relation => {
-          return <InfoCard key={relation.id}>
-            <InfoCardHeader>
-              <InfoCardTitle title={'Proxy'}/>
-            </InfoCardHeader>
-            <InfoCardBody>
-              <InfoCardValue
-                title={'Name'}
-                values={
-                  [formatName(relation.enrollee?.profile)]
-                }
-              />
-              <InfoCardValue
-                title={'Contact Email'}
-                values={[relation.enrollee?.profile?.contactEmail || '']}
-              />
-            </InfoCardBody>
-          </InfoCard>
-        })}
-
+    { proxyRelations.length > 0 && <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={'Proxies'}/>
+      </InfoCardHeader>
+      <InfoCardBody>
+        <ul>
+          {proxyRelations.map(relation => <li className="mt-2" key={relation.id}>
+            <span className="fw-bold me-3">{formatName(relation.enrollee!.profile) }</span>
+            <span className="me-3">{relation.enrollee?.profile?.contactEmail}</span>
+              (<Link to={studyEnvParticipantPath(paramsFromContext(studyEnvContext), relation.enrolleeId)}>
+              {relation.enrollee!.shortcode}
+            </Link>)
+          </li>
+          )}
+        </ul>
+      </InfoCardBody>
+    </InfoCard>
+    }
+    { proxyForRelations.length > 0 && <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={'Proxy for'}/>
+      </InfoCardHeader>
+      <InfoCardBody>
+        <ul>
+          {proxyForRelations.map(relation => <li className="mt-2" key={relation.id}>
+            <span className="fw-bold me-3">{formatName(relation.targetEnrollee!.profile) }</span>
+              (<Link to={studyEnvParticipantPath(paramsFromContext(studyEnvContext),
+                  relation.targetEnrollee!.shortcode)}>
+              {relation.targetEnrollee!.shortcode}
+            </Link>)
+          </li>
+          )}
+        </ul>
+      </InfoCardBody>
+    </InfoCard>
+    }
     <div>
       <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
         studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
@@ -110,9 +128,9 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
   </>
 }
 
-const formatName = (profile: Profile | undefined) => {
-  if (!profile) {
-    return ''
+const formatName = (profile: Profile | undefined): React.ReactNode => {
+  if (!profile || (!profile.givenName && !profile.familyName)) {
+    return <span className="text-muted fst-italic">(name not provided)</span>
   }
   return `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
 }

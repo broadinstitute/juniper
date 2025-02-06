@@ -11,7 +11,7 @@ import {
 import EnrolleeOverview from './EnrolleeOverview'
 
 test('renders enrollee participantUser info', async () => {
-  jest.spyOn(Api, 'findRelationsByTargetShortcode').mockResolvedValue([])
+  jest.spyOn(Api, 'findRelationsByShortcode').mockResolvedValue([])
   jest.spyOn(Api, 'fetchParticipantUser').mockResolvedValue({
     ...mockParticipantUser(),
     username: 'someone',
