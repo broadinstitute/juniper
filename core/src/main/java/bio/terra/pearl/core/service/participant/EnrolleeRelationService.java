@@ -59,11 +59,6 @@ public class EnrolleeRelationService extends ParticipantDataAuditedService<Enrol
         return filterValid(dao.findAllByEnrolleeId(enrolleeId));
     }
 
-    public <T extends EnrolleeRelation> List<T> findByEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId, Class<T> mappingClass) {
-        List<EnrolleeRelation> relations = this.findByEnrolleeIdWithEnrolleesAndFamily(enrolleeId, EnrolleeRelation.class);
-        return relations.stream().map(relation -> objectMapper.convertValue(relation, clazz)).toList();
-    }
-
     public List<EnrolleeRelation> findByEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
         List<EnrolleeRelation> relations = this.findByEnrolleeIdWithEnrollees(enrolleeId);
         List<UUID> familyIds = relations
@@ -97,7 +92,7 @@ public class EnrolleeRelationService extends ParticipantDataAuditedService<Enrol
                 .loadWithMailingAddress(target.getProfileId())
                 .ifPresent(target::setProfile);
 
-        List<EnrolleeRelation> relations = findAllByEnrolleeId(enrolleeId);
+        List<EnrolleeRelation> relations = findAllByEnrolleeOrTargetId(enrolleeId);
 
         return relations.stream().map(relation -> {
             boolean enrolleeIsTarget = enrolleeId.equals(relation.getTargetEnrolleeId());

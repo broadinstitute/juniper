@@ -40,7 +40,7 @@ class EnrolleeRelationExtServiceTest extends BaseSpringBootTest {
     AuthTestUtils.assertAllMethodsAnnotated(
         enrolleeRelationExtService,
         Map.of(
-            "findRelationsForTargetEnrollee",
+            "findRelationsForEnrollee",
                 AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
             "create", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
             "delete", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit")));

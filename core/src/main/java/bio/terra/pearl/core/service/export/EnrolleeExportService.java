@@ -244,7 +244,7 @@ public class EnrolleeExportService {
                                                   Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses, Map<UUID, List<KitRequestDto>> kitRequests) {
 
         List<EnrolleeRelation> enrolleeRelations = loadRelations(config, enrollee);
-        List<ParticipantUser> proxies = loadProxyUsers(config, enrolleeRelations);
+        List<ParticipantUser> proxies = loadProxyUsers(config, enrolleeRelations, enrollee);
 
         return new EnrolleeExportData(
                 study,
@@ -264,10 +264,10 @@ public class EnrolleeExportService {
         );
     }
 
-    private List<ParticipantUser> loadProxyUsers(StudyEnvironmentConfig config, List<EnrolleeRelation> relations) {
+    private List<ParticipantUser> loadProxyUsers(StudyEnvironmentConfig config, List<EnrolleeRelation> relations, Enrollee enrollee) {
         if (config.isAcceptingProxyEnrollment()) {
             return relations.stream()
-                    .filter(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY))
+                    .filter(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY) && relation.getTargetEnrolleeId().equals(enrollee.getId()))
                     .map(relation -> participantUserService.findByEnrolleeId(relation.getEnrolleeId()).orElseThrow())
                     .toList();
         }
