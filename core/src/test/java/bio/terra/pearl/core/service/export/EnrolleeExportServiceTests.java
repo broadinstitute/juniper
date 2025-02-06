@@ -843,12 +843,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         List<Map<String, String>> exportMapsLatestCompletions = enrolleeExportService.generateExportMaps(exportDataLatestCompletions, exportModuleInfoLatestCompletions);
 
         assertThat(exportMapsLatestCompletions, hasSize(1));
-        Map<String, String> exportMapLatestCompletions = exportMapsAllCompletions.get(0);
+        Map<String, String> exportMapLatestCompletions = exportMapsLatestCompletions.get(0);
         assertThat(exportMapLatestCompletions.get("enrollee.shortcode"), equalTo(enrolleeBundle.enrollee().getShortcode()));
         assertThat(exportMapLatestCompletions.get("enrollee.subject"), equalTo("true"));
         assertThat(exportMapLatestCompletions.containsKey("socialHealth[2].hd_hd_socialHealth_neighborhoodSharesValues"), equalTo(false));
         assertThat(exportMapLatestCompletions.containsKey("socialHealth[2].hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo(false));
-        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Agree"));
-        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Agree"));
+        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Disagree"));
+        assertThat(exportMapLatestCompletions.get("socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
     }
 }

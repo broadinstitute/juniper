@@ -213,14 +213,14 @@ public class EnrolleeExportService {
         Map<UUID, ParticipantUser> participantUsers = participantUserService.findByParticipantUserIds(participantUserIds);
         Map<UUID, List<Answer>> answers = answerDao.findByEnrolleeIds(enrolleeIds);
         Map<UUID, List<ParticipantTask>> tasks = participantTaskService.findByEnrolleeIds(enrolleeIds);
-        Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses =
+        Map<UUID, List<SurveyResponseWithTaskDto>> allSurveyResponses =
                 attachTasksToSurveyResponses(
                         tasks,
                         surveyResponseService.findByEnrolleeIdsNotRemoved(
                                 enrolleeIds));
-        if (exportOptions.isOnlyIncludeMostRecent()) {
-            surveyResponses = filterToMostRecentSurveyResponses(surveyResponses);
-        }
+        Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses = exportOptions.isOnlyIncludeMostRecent()
+                ? filterToMostRecentSurveyResponses(allSurveyResponses)
+                : allSurveyResponses;
 
         Map<UUID, List<KitRequestDto>> kitRequests = kitRequestService.findByEnrollees(enrollees);
 
