@@ -15,12 +15,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import jakarta.validation.Validator;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
+
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,9 +48,20 @@ public class LivePepperDSMClient implements PepperDSMClient {
                                ObjectMapper objectMapper,
                                Validator validator) {
         this.pepperDSMConfig = pepperDSMConfig;
-        this.webClient = webClientBuilder.build();
         this.objectMapper = objectMapper;
         this.validator = validator;
+
+        //this is a workaround for dsm connection issues, per https://github.com/reactor/reactor-netty/issues/1774
+        ConnectionProvider provider = ConnectionProvider.builder("dsm-connection-provider")
+                .maxConnections(500)
+                .maxIdleTime(Duration.ofSeconds(20))
+                .maxLifeTime(Duration.ofSeconds(500)) //lifetime for both active and idle connections, so let's keep it high
+                .pendingAcquireTimeout(Duration.ofSeconds(60))
+                .evictInBackground(Duration.ofSeconds(120)).build();
+
+        this.webClient = webClientBuilder
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create(provider)))
+                .build();
     }
 
     @Override

@@ -123,7 +123,7 @@ public class ConfigExtServiceTests {
     assertThat(addressValidationConfigMap.get("smartyAuthId"), equalTo("sm_id"));
     assertThat(addressValidationConfigMap.get("smartyAuthToken"), equalTo("sm..."));
 
-    assertThat(testMixpanelConfig.getEnabled(), equalTo("true"));
+    assertThat(testMixpanelConfig.getEnabled(), equalTo(true));
     assertThat(testMixpanelConfig.getToken(), equalTo("mp_token"));
   }
 

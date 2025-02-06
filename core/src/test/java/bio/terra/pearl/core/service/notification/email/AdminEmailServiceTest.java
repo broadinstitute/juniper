@@ -79,7 +79,7 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
                         .builder()
                         .portalParticipantUser(enrolleeBundle.portalParticipantUser())
                         .enrollee(enrolleeBundle.enrollee())
-                        .enrolleeContext(new EnrolleeContext(enrolleeBundle.enrollee(), null, enrolleeBundle.participantUser()))
+                        .enrolleeContext(new EnrolleeContext(enrolleeBundle.enrollee(), null, enrolleeBundle.participantUser(), null))
                         .build());
 
 

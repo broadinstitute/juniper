@@ -30,7 +30,7 @@ export type VersionedForm = {
   footer?: string
 }
 
-export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT' | 'ADMIN' | 'DOCUMENT_REQUEST'
+export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT' | 'ADMIN' | 'DOCUMENT_REQUEST' | 'PRE_ENROLL'
 export type RecurrenceType = 'NONE' | 'LONGITUDINAL' | 'UPDATE'
 export type Survey = VersionedForm & {
   surveyType: SurveyType

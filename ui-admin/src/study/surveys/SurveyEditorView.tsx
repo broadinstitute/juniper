@@ -19,6 +19,7 @@ import FormHistoryModal from './FormHistoryModal'
 import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
 import Select from 'react-select'
 import InfoPopup from 'components/forms/InfoPopup'
+import PreEnrollShortcutModal from './PreEnrollShortcutModal'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -52,6 +53,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
+  const [showPreEnrollShortcuts, setShowPreEnrollShortcuts] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
 
@@ -228,6 +230,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 Download form JSON
               </button>
             </li>
+            { (currentForm as Survey).surveyType === 'PRE_ENROLL' && <li>
+              <button className="dropdown-item"
+                onClick={() => setShowPreEnrollShortcuts(true)}>
+                Pre-enroll Shortcuts
+              </button>
+            </li> }
           </ul>
         </div>
         { showVersionSelector && <FormHistoryModal
@@ -243,6 +251,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             setDraft({ ...currentForm, ...draft, ...props, date: Date.now() })
           }}
           onDismiss={() => setShowAdvancedOptions(false)}/>
+        }
+        { showPreEnrollShortcuts && <PreEnrollShortcutModal
+          studyEnvContext={studyEnvContext}
+          workingForm={{ ...currentForm, ...draft }}
+          onDismiss={() => setShowPreEnrollShortcuts(false)}/>
         }
       </div>
       <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>

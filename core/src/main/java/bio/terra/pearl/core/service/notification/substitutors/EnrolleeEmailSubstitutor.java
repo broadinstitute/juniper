@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -20,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
@@ -44,13 +46,28 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
-        valueMap.put("profile", enrolleeContext.getProfile());
+        if (isProxy(ruleData)) {
+            valueMap.put("isProxy", "true");
+        }
+        valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
         valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
         if (messages != null) {
             valueMap.putAll(messages);
         }
+    }
+
+    private boolean isProxy(EnrolleeContext context) {
+        if (context.getRelations() == null) {
+            return false;
+        }
+
+        return context
+                .getRelations()
+                .stream()
+                .anyMatch(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY)
+                        && relation.getTargetEnrolleeId().equals(context.getEnrollee().getId()));
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
@@ -67,17 +84,54 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, customMessages));
     }
 
-
-
     @Override
     public String lookup(String key) {
         try {
+            if (Ternary.isTernary(key)) {
+                return lookupTernary(key);
+            }
+
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
                     key, contextInfo.portal().getShortcode(), enrolleeContext.getEnrollee().getShortcode());
         }
         return "";
+    }
+
+
+    // matches a ternary expression, e.g. "isProxy ? "yes" : "no""
+    final static Pattern isTernaryPattern = Pattern.compile("[^:]+\\?.+:.+");
+    private record Ternary(String condition, String left, String right) {
+        public static Ternary fromString(String key) {
+            String[] parts = key.split("\\?");
+            String condition = parts[0];
+            String[] values = parts[1].split(":");
+            return new Ternary(condition.trim(), values[0].trim(), values[1].trim());
+        }
+
+
+        public static boolean isTernary(String key) {
+            return isTernaryPattern.matcher(key).matches();
+        }
+    }
+
+    private String lookupTernary(String key) {
+        Ternary ternary = Ternary.fromString(key);
+
+        if (lookup(ternary.condition).equals("true")) {
+            return parseAsStringOrLookup(ternary.left);
+        } else {
+            return parseAsStringOrLookup(ternary.right);
+        }
+    }
+
+    private String parseAsStringOrLookup(String variableOrString) {
+        if (variableOrString.startsWith("\"") && variableOrString.endsWith("\"")) {
+            return variableOrString.substring(1, variableOrString.length() - 1);
+        }
+
+        return lookup(variableOrString);
     }
 
     public String getSiteLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, Portal portal) {

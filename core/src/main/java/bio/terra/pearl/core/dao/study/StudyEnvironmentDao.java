@@ -6,6 +6,7 @@ import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
 import java.util.Optional;
@@ -74,15 +75,16 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
      * returns all the studies associated with the given portal for the given environment
      * So, for example, if a portal has two studies, this might return the 'sandbox' environment for
      * both studies
+     * this attaches the pre-enroll survey so that the "join" process can be done without a separate load
      */
-    public List<StudyEnvironment> findWithPreregContent(String portalShortcode, EnvironmentName envName) {
-        List<String> primaryCols = getQueryColumns.stream().map(col -> "a." + col)
-                .collect(Collectors.toList());
+    public List<StudyEnvironment> findWithPreEnrollContent(String portalShortcode, EnvironmentName envName) {
         List<StudyEnvironment> studyEnvs = jdbi.withHandle(handle ->
-                handle.createQuery("select " + StringUtils.join(primaryCols, ", ") + " from " + tableName
-                                + " a join portal_study on a.study_id = portal_study.study_id "
-                                + " join portal on portal_study.portal_id = portal.id"
-                                + " where portal.shortcode = :portalShortcode and a.environment_name = :environmentName")
+                handle.createQuery("""
+                                    select a.* from %s a 
+                                    join portal_study on a.study_id = portal_study.study_id
+                                    join portal on portal_study.portal_id = portal.id
+                                    where portal.shortcode = :portalShortcode and a.environment_name = :environmentName
+                                    """.formatted(tableName))
                         .bind("portalShortcode", portalShortcode)
                         .bind("environmentName", envName)
                         .mapTo(clazz)
@@ -91,9 +93,8 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         for (StudyEnvironment studyEnv : studyEnvs) {
             studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao
                     .find(studyEnv.getStudyEnvironmentConfigId()).get());
-            if (studyEnv.getPreEnrollSurveyId() != null) {
-                studyEnv.setPreEnrollSurvey(surveyDao.find(studyEnv.getPreEnrollSurveyId()).get());
-            }
+            studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao
+                    .findAllByType(List.of(studyEnv.getId()), SurveyType.PRE_ENROLL, true, AttachSurvey.WITH_CONTENT));
         };
         return studyEnvs;
     }
@@ -103,9 +104,6 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         UUID studyEnvId = studyEnv.getId();
         studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao.find(studyEnv.getStudyEnvironmentConfigId()).get());
         studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllWithSurvey(studyEnvId, true));
-        if (studyEnv.getPreEnrollSurveyId() != null) {
-            studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
-        }
         List<Trigger> triggers = triggerDao.findByStudyEnvironmentId(studyEnvId, true);
         triggerDao.attachTemplates(triggers);
         studyEnv.setTriggers(triggers);

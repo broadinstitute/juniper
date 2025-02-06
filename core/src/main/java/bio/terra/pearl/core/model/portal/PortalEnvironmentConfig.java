@@ -33,4 +33,5 @@ public class PortalEnvironmentConfig extends BaseEntity {
     @Builder.Default
     private String defaultLanguage = "en";
     private String primaryStudy; // study shortcode of a study that all initial participants are enrolled in
+    private String mixpanelToken; // token for mixpanel tracking
 }

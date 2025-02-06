@@ -4,17 +4,21 @@ import 'survey-core/survey.i18n'
 
 import {
   applyMarkdown,
+  applySurveyJsVariables,
   createAddressValidator,
   FormContent,
   PortalEnvironmentLanguage,
+  Profile,
   surveyJSModelFromFormContent,
   useForceUpdate,
-  useI18n
+  useI18n,
+  getSurveyJsAnswerList
 } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from 'api/api'
 import useUpdateEffect from '../util/useUpdateEffect'
+import { useStudyEnvParamsFromPath } from 'study/StudyEnvironmentRouter'
 
 type FormPreviewProps = {
   formContent: FormContent
@@ -33,10 +37,13 @@ export const FormPreview = (props: FormPreviewProps) => {
     // note that this roughly mimics surveyUtils.newSurveyJSModel but with key differences, such
     // as the pages not being url-routable
     const model = surveyJSModelFromFormContent(formContent)
-    model.setVariable('portalEnvironmentName', 'sandbox')
-    model.setVariable('profile', { })
-    model.setVariable('proxyProfile', { })
-    model.setVariable('isGovernedUser', false)
+    applySurveyJsVariables(model, {
+      profile: {} as Profile,
+      studyEnvParams: useStudyEnvParamsFromPath(),
+      enrolleeShortcode: '',
+      referencedAnswers: [],
+      extraVariables: {}
+    })
     model.ignoreValidation = true
     model.locale = currentLanguage.languageCode
     model.onTextMarkdown.add(applyMarkdown)
@@ -57,6 +64,7 @@ export const FormPreview = (props: FormPreviewProps) => {
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
           value={{
+            answers: getSurveyJsAnswerList(surveyModel),
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,
             locale: surveyModel.locale,
@@ -64,6 +72,7 @@ export const FormPreview = (props: FormPreviewProps) => {
             proxyProfile: surveyModel.getVariable('proxyProfile'),
             isGovernedUser: surveyModel.getVariable('isGovernedUser')
           }}
+          forceUpdate={forceUpdate}
           onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile, isGovernedUser }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements

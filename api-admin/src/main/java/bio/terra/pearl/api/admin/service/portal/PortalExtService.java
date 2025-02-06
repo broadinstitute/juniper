@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,12 @@ public class PortalExtService {
             .find(authContext.getPortalEnvironment().getPortalEnvironmentConfigId())
             .orElseThrow(PortalConfigMissing::new);
     BeanUtils.copyProperties(newConfig, config, "id", "createdAt");
+    if (StringUtils.isBlank(config.getParticipantHostname())) {
+      config.setParticipantHostname(null);
+    }
+    if (StringUtils.isBlank(config.getMixpanelToken())) {
+      config.setMixpanelToken(null);
+    }
     config = portalEnvironmentConfigService.update(config);
     return config;
   }

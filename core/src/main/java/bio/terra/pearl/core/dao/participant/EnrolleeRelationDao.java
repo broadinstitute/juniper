@@ -113,4 +113,15 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
                         .list()
         );
     }
+
+    public List<EnrolleeRelation> findAllByEnrolleeOrTargetIds(List<UUID> enrolleeIds) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "SELECT * FROM enrollee_relation " +
+                                        "WHERE enrollee_id IN (<enrolleeIds>) OR target_enrollee_id IN (<enrolleeIds>)")
+                        .bindList("enrolleeIds", enrolleeIds)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
 }

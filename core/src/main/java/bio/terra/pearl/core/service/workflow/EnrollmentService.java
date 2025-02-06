@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.workflow;
 
+import bio.terra.pearl.core.dao.study.AttachSurvey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -17,6 +18,7 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
@@ -54,6 +56,7 @@ public class EnrollmentService {
     private final AnswerMappingDao answerMappingDao;
     private final SurveyResponseService surveyResponseService;
     private final AnswerProcessingService answerProcessingService;
+    private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
 
     public EnrollmentService(SurveyService surveyService,
                              PreEnrollmentResponseDao preEnrollmentResponseDao,
@@ -67,7 +70,8 @@ public class EnrollmentService {
                              ParticipantUserService participantUserService,
                              AnswerMappingDao answerMappingDao,
                              SurveyResponseService surveyResponseService,
-                             AnswerProcessingService answerProcessingService) {
+                             AnswerProcessingService answerProcessingService,
+                             StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -82,6 +86,7 @@ public class EnrollmentService {
         this.answerMappingDao = answerMappingDao;
         this.surveyResponseService = surveyResponseService;
         this.answerProcessingService = answerProcessingService;
+        this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     }
 
     /**
@@ -370,11 +375,13 @@ public class EnrollmentService {
                                                             UUID preEnrollResponseId,
                                                             UUID participantUserId,
                                                             boolean isSubject) {
-        if (studyEnv.getPreEnrollSurveyId() == null) {
-            // no pre-enroll required
-            return null;
-        }
         if (preEnrollResponseId == null) {
+            List<StudyEnvironmentSurvey> preEnrollSurveys = studyEnvironmentSurveyService.findAllByType(
+                    List.of(studyEnv.getId()), SurveyType.PRE_ENROLL, true, AttachSurvey.WITHOUT_CONTENT);
+            if (preEnrollSurveys.isEmpty()) {
+                // no pre-enroll required
+                return null;
+            }
             if (isSubject) {
                 log.warn("Could not match enrollee to pre-enrollment survey results; user {}", participantUserId);
             }

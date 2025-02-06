@@ -14,7 +14,8 @@ import {
 } from 'survey-core'
 
 import {
-  Answer, AnswerFormat,
+  Answer,
+  AnswerFormat,
   FormContent,
   FormElement,
   Survey,
@@ -35,7 +36,7 @@ import { Markdown } from './participant/landing/Markdown'
 import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
-import { StudyEnvParams } from './types/study'
+import { OptionalStudyEnvParams } from './types/study'
 import { Profile } from 'src/types/user'
 import { DefaultLight } from 'survey-core/themes'
 
@@ -91,6 +92,40 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
   const model = new SurveyModel(formContentClone)
   applyDefaultSurveyConfig(model)
   return model
+}
+
+export type SurveyJsVariableContext = {
+  profile?: Profile,
+  proxyProfile?: Profile,
+  studyEnvParams?: OptionalStudyEnvParams,
+  environmentName?: string,
+  enrolleeShortcode?: string,
+  referencedAnswers?: Answer[],
+  extraVariables?: Record<string, unknown>
+}
+
+export const applySurveyJsVariables = (surveyModel: SurveyModel, varContext: SurveyJsVariableContext) => {
+  const {
+    profile, proxyProfile, studyEnvParams, enrolleeShortcode, extraVariables, referencedAnswers, environmentName
+  } = varContext
+
+  // if you add any new variables that are objects (e.g. {profile.givenName}), make sure you add
+  // them to the list of non-survey object variables in SurveyParseUtils
+  surveyModel.setVariable('profile', profile)
+  surveyModel.setVariable('proxyProfile', proxyProfile)
+  surveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
+  surveyModel.setVariable('studyEnvParams', studyEnvParams)
+  surveyModel.setVariable('enrolleeShortcode', enrolleeShortcode)
+  surveyModel.setVariable('portalEnvironmentName', environmentName || studyEnvParams?.envName)
+  referencedAnswers?.forEach(answer => {
+    surveyModel.setVariable(`${answer.surveyStableId}.${answer.questionStableId}`,
+      answer.stringValue ?? answer.numberValue ?? answer.booleanValue ?? answer.objectValue)
+  })
+  if (!isNil(extraVariables)) {
+    Object.keys(extraVariables).forEach(key => {
+      surveyModel.setVariable(key, extraVariables[key])
+    })
+  }
 }
 
 /** Get a VersionedForm's form content. */
@@ -312,7 +347,6 @@ export function useRoutablePageNumber(): PageNumberControl {
 
 type UseSurveyJsModelOpts = {
   extraCssClasses?: Record<string, string>,
-  extraVariables?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 /**
@@ -329,11 +363,7 @@ type UseSurveyJsModelOpts = {
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
  * @param pager the control object for paging the survey
- * @param studyEnvParams
- * @param enrolleeShortcode
- * @param profile
- * @param proxyProfile
- * @param referencedAnswers
+ * @param varContext context for variables to be used in the survey
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
@@ -343,16 +373,11 @@ export function useSurveyJSModel(
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
-  studyEnvParams: StudyEnvParams,
-  enrolleeShortcode: string,
-  profile?: Profile,
-  proxyProfile?: Profile,
-  referencedAnswers: Answer[] = [],
+  varContext: SurveyJsVariableContext,
   opts: UseSurveyJsModelOpts = {}
 ) {
   const {
-    extraCssClasses = {},
-    extraVariables = {}
+    extraCssClasses = {}
   } = opts
 
   const Api = useApiContext()
@@ -390,21 +415,8 @@ export function useSurveyJSModel(
     }
     newSurveyModel.currentPageNo = pageNumber
 
-    // if you add any new variables that are objects (e.g. {profile.givenName}), make sure you add
-    // them to the list of non-survey object variables in SurveyParseUtils
-    newSurveyModel.setVariable('profile', profile)
-    newSurveyModel.setVariable('proxyProfile', proxyProfile)
-    newSurveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
-    newSurveyModel.setVariable('studyEnvParams', studyEnvParams)
-    newSurveyModel.setVariable('enrolleeShortcode', enrolleeShortcode)
-    newSurveyModel.setVariable('portalEnvironmentName', studyEnvParams.envName)
-    referencedAnswers.forEach(answer => {
-      newSurveyModel.setVariable(`${answer.surveyStableId}.${answer.questionStableId}`,
-        answer.stringValue ?? answer.numberValue ?? answer.booleanValue ?? answer.objectValue)
-    })
-    Object.keys(extraVariables).forEach(key => {
-      newSurveyModel.setVariable(key, extraVariables[key])
-    })
+    applySurveyJsVariables(newSurveyModel, varContext)
+
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)

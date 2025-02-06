@@ -117,6 +117,10 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
     })
   }
 
+  const preEnrollSurvey = surveys
+    .find(survey => survey.survey.surveyType === 'PRE_ENROLL')?.survey
+
+
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
       <Link to={`${currentEnvPath}/participants/${enrollee.shortcode}`}>
@@ -144,7 +148,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
               <li style={navListItemStyle}>
                 <CollapsableMenu header={'Forms'} headerClass="text-black" content={
                   <ul className="list-unstyled">
-                    {currentEnv.preEnrollSurvey && <li className="mb-2">
+                    {preEnrollSurvey && <li className="mb-2">
                       <NavLink to="preRegistration" className={getLinkCssClasses}>
                         PreEnrollment
                       </NavLink>
@@ -227,8 +231,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
                   studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
-                {currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
-                  <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
+                {preEnrollSurvey && <Route path="preRegistration/*" element={
+                  <PreEnrollmentView preEnrollSurvey={preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}
                     studyEnvContext={studyEnvContext}/>
                 }/>}

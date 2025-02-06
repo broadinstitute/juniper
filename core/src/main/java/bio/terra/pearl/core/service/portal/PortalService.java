@@ -126,7 +126,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             Optional<PortalEnvironment> portalEnv = portalEnvironmentService
                     .loadWithParticipantSiteContent(portal.getShortcode(), environmentName, language);
             portal.getPortalEnvironments().add(portalEnv.get());
-            List<Study> studies = studyService.findWithPreregContent(portal.getShortcode(), environmentName);
+            List<Study> studies = studyService.findWithPreEnrollContent(portal.getShortcode(), environmentName);
             for (Study study : studies) {
                 portal.getPortalStudies().add(
                         PortalStudy.builder().study(study).build()

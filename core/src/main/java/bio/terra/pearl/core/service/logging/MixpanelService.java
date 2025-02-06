@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.logging;
 
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import com.mixpanel.mixpanelapi.ClientDelivery;
 import com.mixpanel.mixpanelapi.MessageBuilder;
 import com.mixpanel.mixpanelapi.MixpanelAPI;
@@ -13,16 +14,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @Slf4j
 public class MixpanelService {
-    private final Environment env;
+    private static final String MIXPANEL_TOKEN_ENV_VAR = "env.mixpanel.token";
+    private static final String MIXPANEL_ENABLED_ENV_VAR = "env.mixpanel.enabled";
+    private final MixpanelConfig mixpanelConfig;
+    private final LoggingConfigCache loggingConfigCache;
 
-    public MixpanelService(Environment env) {
-        this.env = env;
+    public MixpanelService(MixpanelConfig mixpanelConfig, LoggingConfigCache loggingConfigCache) {
+        this.mixpanelConfig = mixpanelConfig;
+        this.loggingConfigCache = loggingConfigCache;
     }
 
     private Map<String, String> getRedactionPatterns() {
@@ -47,42 +53,58 @@ public class MixpanelService {
     }
 
     public void logEvent(String data) {
-        if(!Boolean.parseBoolean(env.getProperty("env.mixpanel.enabled"))) {
+        if(!mixpanelConfig.enabled) {
             return;
         }
 
         // Filter all the incoming events in one pass, so we don't have
         // to unpack the JSONObject and repack it for each individual event
         String filteredData = filterEventData(data);
-        
+
         //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
         JSONArray events = new JSONArray(filteredData);
 
         ClientDelivery delivery = new ClientDelivery();
+        ClientDelivery customDelivery = null;
 
         for (int i = 0; i < events.length(); i++) {
-            JSONObject mixpanelEvent = buildEvent(events.getJSONObject(i));
+            JSONObject event = events.getJSONObject(i);
+            JSONObject mixpanelEvent = buildEvent(event, mixpanelConfig.token);
             delivery.addMessage(mixpanelEvent);
-        }
+            String eventDomain = getEventCurrentDomain(event);
 
+            /** check if the event comes from a domain with a dedicated mixpanel token, if so, use that token to send the
+             * event to that token in addition to the global mixpanel domain */
+            if (eventDomain != null) {
+                customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
+                Map<String, PortalEnvironmentConfig> configMap = loggingConfigCache.getConfigsWithDomain();
+                PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
+                if (matchedConfig != null && matchedConfig.getMixpanelToken() != null) {
+                    JSONObject domainEvent = buildEvent(event, matchedConfig.getMixpanelToken());
+                    customDelivery.addMessage(domainEvent);
+                }
+            }
+        }
         deliverEvents(delivery);
+        if (customDelivery != null) {
+            deliverEvents(customDelivery);
+        }
     }
 
-    protected JSONObject buildEvent(JSONObject event) {
-        String MIXPANEL_TOKEN_ENV_VAR = "env.mixpanel.token";
-        MessageBuilder messageBuilder = new MessageBuilder(env.getProperty(MIXPANEL_TOKEN_ENV_VAR));
+    protected JSONObject buildEvent(JSONObject event, String apiToken) {
+
+        MessageBuilder messageBuilder = new MessageBuilder(apiToken);
 
         return messageBuilder.event(
                 null,
                 event.getString("event"),
                 event.getJSONObject("properties")
-                        .put("token", env.getProperty(MIXPANEL_TOKEN_ENV_VAR))
+                        .put("token", apiToken)
         );
     }
 
     protected void deliverEvents(ClientDelivery delivery) {
         MixpanelAPI mixpanel = new MixpanelAPI();
-
         try {
             mixpanel.deliver(delivery);
         } catch (IOException e) {
@@ -90,16 +112,41 @@ public class MixpanelService {
         }
     }
 
+    protected String getEventCurrentDomain(JSONObject event) {
+        String domain = null;
+        if (event.has("properties")) {
+            JSONObject properties = event.getJSONObject("properties");
+            if (properties.has("$current_url")) {
+                String url = properties.getString("$current_url");
+                return getDomainName(url);
+            }
+        }
+        return domain;
+    }
+
+    public static String getDomainName(String url) {
+        try {
+            URI uri = new URI(url);
+            String domain = uri.getHost();
+            return domain.startsWith("www.") ? domain.substring(4) : domain;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Component
     @Getter @Setter
     public static class MixpanelConfig {
         private String token;
-        private String enabled;
+        private Boolean enabled;
 
         public MixpanelConfig(Environment environment) {
             this.token = environment.getProperty("env.mixpanel.token");
-            this.enabled = environment.getProperty("env.mixpanel.enabled");
+            this.enabled = Boolean.parseBoolean(environment.getProperty("env.mixpanel.enabled"));
         }
     }
+
+
+
 
 }

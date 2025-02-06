@@ -84,9 +84,9 @@ public class StudyDao  extends BaseMutableJdbiDao<Study> {
      * So, for example, if a portal has two studies, this might return the 'sandbox' environment for
      * both studies
      */
-    public List<Study> findWithPreregContent(String portalShortcode, EnvironmentName envName) {
+    public List<Study> findWithPreEnrollContent(String portalShortcode, EnvironmentName envName) {
         List<Study> studies = findByPortal(portalShortcode);
-        List<StudyEnvironment> studyEnvs =  studyEnvironmentDao.findWithPreregContent(portalShortcode, envName);
+        List<StudyEnvironment> studyEnvs =  studyEnvironmentDao.findWithPreEnrollContent(portalShortcode, envName);
         for (Study study : studies) {
             Optional<StudyEnvironment> studyEnvOpt = studyEnvs.stream()
                     .filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).findFirst();

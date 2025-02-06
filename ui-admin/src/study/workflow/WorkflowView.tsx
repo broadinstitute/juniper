@@ -12,18 +12,16 @@ import {
   paramsFromContext,
   StudyEnvContextT,
   studyEnvFormsParamsPath,
-  studyEnvPreEnrollPath,
   studyEnvSurveyPath,
   studyEnvTriggerPath,
   studyEnvWorkflowPath,
   triggerPath
 } from '../StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
-import { LoadedPortalContextT } from '../../portal/PortalProvider'
+import { LoadedPortalContextT } from 'portal/PortalProvider'
 import {
   StudyEnvironmentSurvey,
   StudyEnvParams,
-  Survey,
   Trigger
 } from '@juniper/ui-core'
 import Api from 'api/api'
@@ -58,7 +56,6 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
   const navigate = useNavigate()
   const [triggers, setTriggers] = useState<Trigger[]>([])
   const [studyEnvSurveys, setStudyEnvSurveys] = useState<StudyEnvironmentSurvey[]>([])
-  const [preEnrollSurvey, setPreEnrollSurvey] = useState<Survey>()
   const [triggerOpts, setTriggerOpts] = useState<Partial<Trigger>>({})
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -74,10 +71,6 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
       Api.findConfiguredSurveys(portalContext.portal.shortcode, studyEnvContext.study.shortcode,
         currentEnv.environmentName, true, undefined)
     ])
-    if (currentEnv.preEnrollSurveyId) {
-      const preEnrollSurvey = await Api.getSurveyById(portalContext.portal.shortcode, currentEnv.preEnrollSurveyId)
-      setPreEnrollSurvey(preEnrollSurvey)
-    }
     setTriggers(triggerList)
     setStudyEnvSurveys(_sortBy(surveyList, 'surveyOrder'))
   }, [currentEnv.environmentName, studyEnvContext.study.shortcode])
@@ -96,6 +89,9 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
     setShowCreateModal(false)
   }
 
+  const preEnrollSurvey = studyEnvSurveys
+    .find(survey => survey.survey.surveyType === 'PRE_ENROLL')?.survey
+
   const formEditLink = <Link to={studyEnvFormsParamsPath(paramsFromContext(studyEnvContext))}>
     <FontAwesomeIcon icon={faEdit} className="ms-2 fa-xs fw-normal"/>
   </Link>
@@ -111,7 +107,8 @@ export default function WorkflowView({ studyEnvContext, portalContext }:
           { preEnrollSurvey &&
             <div>
               <FontAwesomeIcon icon={faClipboard} className="me-2"/>
-              <Link to={studyEnvPreEnrollPath(paramsFromContext(studyEnvContext), preEnrollSurvey.stableId)}>
+              <Link to={studyEnvSurveyPath(paramsFromContext(studyEnvContext),
+                preEnrollSurvey.stableId, preEnrollSurvey.version)}>
                 {preEnrollSurvey.name}
               </Link>
             </div>

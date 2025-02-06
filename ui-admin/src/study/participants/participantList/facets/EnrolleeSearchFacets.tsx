@@ -168,7 +168,8 @@ const SexAssignedAtBirthFacet = ({ searchState, updateSearchState }: {
       isMulti={true}
       options={[
         { label: 'female', value: 'female' },
-        { label: 'male', value: 'male' }
+        { label: 'male', value: 'male' },
+        { label: 'intersex', value: 'intersex' }
       ]}
       value={searchState.sexAtBirth.map(s => ({ label: s, value: s }))}
       onChange={selectedOptions => {
