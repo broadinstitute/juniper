@@ -102,7 +102,8 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
         <ul>
           {proxyForRelations.map(relation => <li className="mt-2" key={relation.id}>
             <span className="fw-bold me-3">{formatName(relation.targetEnrollee!.profile) }</span>
-              (<Link to={studyEnvParticipantPath(paramsFromContext(studyEnvContext), relation.targetEnrolleeId)}>
+              (<Link to={studyEnvParticipantPath(paramsFromContext(studyEnvContext),
+                  relation.targetEnrollee!.shortcode)}>
               {relation.targetEnrollee!.shortcode}
             </Link>)
           </li>
@@ -129,7 +130,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
 
 const formatName = (profile: Profile | undefined): React.ReactNode => {
   if (!profile || (!profile.givenName && !profile.familyName)) {
-    return <span className="text-muted fst-italic">name not provided</span>
+    return <span className="text-muted fst-italic">(name not provided)</span>
   }
   return `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
 }
