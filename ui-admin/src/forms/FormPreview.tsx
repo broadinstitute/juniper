@@ -11,7 +11,8 @@ import {
   Profile,
   surveyJSModelFromFormContent,
   useForceUpdate,
-  useI18n
+  useI18n,
+  getSurveyJsAnswerList
 } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
@@ -63,6 +64,7 @@ export const FormPreview = (props: FormPreviewProps) => {
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
           value={{
+            answers: getSurveyJsAnswerList(surveyModel),
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,
             locale: surveyModel.locale,
@@ -70,6 +72,7 @@ export const FormPreview = (props: FormPreviewProps) => {
             proxyProfile: surveyModel.getVariable('proxyProfile'),
             isGovernedUser: surveyModel.getVariable('isGovernedUser')
           }}
+          forceUpdate={forceUpdate}
           onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile, isGovernedUser }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
