@@ -3,8 +3,8 @@ import React from 'react'
 import Api, { getEnvSpec } from 'api/api'
 import {
   ParticipantNavbar,
-  useI18n
-  , getB2CLocale
+  useI18n,
+  getB2CLocale
 } from '@juniper/ui-core'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'

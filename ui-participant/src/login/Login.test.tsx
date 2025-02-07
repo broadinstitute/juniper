@@ -32,4 +32,30 @@ describe('Login', () => {
       }
     })
   })
+
+  it('calls signinRedirect with the correct converted locale code for b2c', () => {
+    const mockSigninRedirect = jest.fn()
+
+    ;(useAuth as jest.Mock).mockReturnValue({
+      signinRedirect: mockSigninRedirect
+    })
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider selectedLanguage={'zh'}>
+        <Login />
+      </MockI18nProvider>
+    )
+    render(RoutedComponent)
+
+    expect(mockSigninRedirect).toHaveBeenCalledWith({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        originUrl: 'http://localhost',
+        portalEnvironment: 'live',
+        portalShortcode: undefined,
+        // eslint-disable-next-line camelcase
+        ui_locales: 'zh-hans'
+      }
+    })
+  })
 })
