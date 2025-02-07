@@ -183,11 +183,11 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
       }
     }
   } else if (field.startsWith('task')) {
-    const { taskStableId, field } = parseTaskFacet(facet)
+    const { taskStableId, field, header } = parseTaskFacet(facet)
 
     return {
       id: facet.key,
-      header: _startCase(facet.key.replace('task.', '').toLowerCase().replace('.', ' ')),
+      header,
       accessorFn: info => {
         const task = info.tasks.find(task => task.targetStableId === taskStableId)
         if (field === 'status') {
@@ -219,7 +219,13 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
 export function parseTaskFacet(facet: KeyedSearchValueTypeDefinition) {
   const key = facet.key
   const [, taskStableId, field] = key.split('.')
-  return { taskStableId, field }
+
+  let header = taskStableId
+  if (taskStableId.match(/^[a-z]{2}_[a-z]{2}_/)) {
+    header = taskStableId.slice(5)
+  }
+
+  return { taskStableId, field, header: _startCase(`${header} ${field}`) }
 }
 export function parseAnswerFacet(facet: KeyedSearchValueTypeDefinition) {
   const field = facet.key
