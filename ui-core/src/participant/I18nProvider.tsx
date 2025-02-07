@@ -119,7 +119,8 @@ const JUNIPER_TO_B2C_LOCALE_MAP: Record<string, string> = {
   'fr': 'fr',
   'pl': 'pl',
   'tr': 'tr',
-  'zh': 'zh-hans'
+  'zh': 'zh-hans',
+  'dev': 'en' //our custom "dev" language should just use English in b2c
 }
 
 //This defaults to English to guarantee that B2C will function even if the language is unsupported.
