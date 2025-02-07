@@ -1,16 +1,31 @@
-import { CellContext, ColumnDef, Table } from '@tanstack/react-table'
+import {
+  CellContext,
+  ColumnDef,
+  Table
+} from '@tanstack/react-table'
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faColumns
+} from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal'
-import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
+import {
+  EnrolleeSearchExpressionResult,
+  ExpressionSearchFacets,
+  KeyedSearchValueTypeDefinition
+} from 'api/api'
 import LoadingSpinner from '../LoadingSpinner'
 import Select from 'react-select'
 import { Link } from 'react-router-dom'
 import { checkboxColumnCell } from './tableUtils'
-import { instantToDefaultString } from '@juniper/ui-core'
+import {
+  instantToDefaultString,
+  ParticipantTaskStatusOptions
+} from '@juniper/ui-core'
 import _startCase from 'lodash/startCase'
+import { get } from 'lodash'
 
 
 /**
@@ -167,6 +182,24 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
         columnType
       }
     }
+  } else if (field.startsWith('task')) {
+    const { taskStableId, field } = parseTaskFacet(facet)
+
+    return {
+      id: facet.key,
+      header: _startCase(facet.key.replace('task.', '').toLowerCase().replace('.', ' ')),
+      accessorFn: info => {
+        const task = info.tasks.find(task => task.targetStableId === taskStableId)
+        if (field === 'status') {
+          return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
+        }
+
+        return get(task, field)
+      },
+      meta: {
+        columnType
+      }
+    }
   } else {
     const colDef: ColumnDef<T> = {
       id: field,
@@ -183,6 +216,11 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
   }
 }
 
+export function parseTaskFacet(facet: KeyedSearchValueTypeDefinition) {
+  const key = facet.key
+  const [, taskStableId, field] = key.split('.')
+  return { taskStableId, field }
+}
 export function parseAnswerFacet(facet: KeyedSearchValueTypeDefinition) {
   const field = facet.key
   const [, surveyStableId, questionStableId] = field.split('.')
