@@ -10,3 +10,4 @@ import './address-validation-modal-question'
 import './medications-question'
 
 import './surveyJsStyle.scss'
+import './localization'
