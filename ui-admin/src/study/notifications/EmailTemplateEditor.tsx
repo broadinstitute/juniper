@@ -60,13 +60,31 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
         selectedLanguage
       )
 
-  if (!localizedEmailTemplate) {
-    return <div>no localized template found for {defaultLanguage.languageCode}</div>
+  const addLocalContent = () => {
+    if (!selectedLanguage) { return }
+
+    const defaultContent = emailTemplate.localizedEmailTemplates.find(template =>
+      template.language === defaultLanguage.languageCode) ?? {
+      subject: '',
+      body: ''
+    }
+
+    updateEmailTemplate({
+      ...emailTemplate,
+      localizedEmailTemplates: [
+        ...emailTemplate.localizedEmailTemplates,
+        {
+          ...defaultContent,
+          language: selectedLanguage.languageCode,
+          id: undefined
+        }
+      ]
+    })
   }
 
   const replacePlaceholders = (html: string) => {
     return html.replaceAll('${siteMediaBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
-      // support legacy tempaltes that reference this as siteImageBaseUrl
+      // support legacy templates that reference this as siteImageBaseUrl
       .replaceAll('${siteImageBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
   }
   const insertPlaceholders = (html: string) => {
@@ -81,15 +99,18 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
       classic: true
     })
     unlayer.addEventListener('design:updated', () => {
-      if (!emailEditorRef.current?.editor) { return }
+      if (!emailEditorRef.current?.editor || !localizedEmailTemplate) { return }
       emailEditorRef.current.editor.exportHtml(data => {
-        updateEmailTemplate({
-          ...emailTemplateRef.current,
-          localizedEmailTemplates: [{
+        const updatedTemplates = emailTemplateRef.current.localizedEmailTemplates.map(template =>
+          template.language === localizedEmailTemplate.language ? {
             ...localizedEmailTemplate,
             id: undefined,
             body: insertPlaceholders(data.html)
-          }]
+          } : template
+        )
+        updateEmailTemplate({
+          ...emailTemplateRef.current,
+          localizedEmailTemplates: updatedTemplates
         })
       })
     })
@@ -112,49 +133,69 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
           }}/>
       </label>
     </div> }
-    <div>
-      <label className="form-label">Subject
-        <input className="form-control" type="text" size={100} value={localizedEmailTemplate.subject}
-          onChange={e => updateEmailTemplate({
-            ...emailTemplate,
-            localizedEmailTemplates: [{
-              ...localizedEmailTemplate,
-              id: undefined,
-              subject: e.target.value
-            }]
-          })}/>
-      </label>
-    </div>
-    <div>
-      <Tabs
-        activeKey={activeTab ?? undefined}
-        className="mb-1"
-        mountOnEnter
-        unmountOnExit
-        onSelect={setActiveTab}
-      >
-        <Tab eventKey="designer" title="Designer">
-          <EmailEditor
-            ref={emailEditorRef}
-            onLoad={onEditorLoaded}
-            onReady={() => 1}
-            options={{ tools: { image: { enabled: false } }, className: 'w-100' }}
-            style={{ maxWidth: '0px', width: '0px' }}
-          />
-        </Tab>
-        <Tab eventKey="html" title="Html">
-          <textarea rows={20} cols={100} value={localizedEmailTemplate.body}
-            onChange={e => updateEmailTemplate({
-              ...emailTemplate,
-              localizedEmailTemplates: [{
-                ...localizedEmailTemplate,
-                id: undefined,
-                body: e.target.value
-              }]
-            })}/>
-
-        </Tab>
-      </Tabs>
-    </div>
+    { localizedEmailTemplate ? <>
+      <div>
+        <label className="form-label">Subject
+          <input className="form-control" type="text" size={100} value={localizedEmailTemplate.subject}
+            onChange={e => {
+              const updatedTemplates = emailTemplate.localizedEmailTemplates.map(template =>
+                template.language === localizedEmailTemplate.language ? {
+                  ...localizedEmailTemplate,
+                  id: undefined,
+                  subject: e.target.value
+                } : template
+              )
+              updateEmailTemplate({
+                ...emailTemplate,
+                localizedEmailTemplates: updatedTemplates
+              })
+            }}/>
+        </label>
+      </div>
+      <div>
+        <Tabs
+          activeKey={activeTab ?? undefined}
+          className="mb-1"
+          mountOnEnter
+          unmountOnExit
+          onSelect={setActiveTab}
+        >
+          <Tab eventKey="designer" title="Designer">
+            <EmailEditor
+              ref={emailEditorRef}
+              onLoad={onEditorLoaded}
+              onReady={() => 1}
+              options={{ tools: { image: { enabled: false } }, className: 'w-100' }}
+              style={{ maxWidth: '0px', width: '0px' }}
+            />
+          </Tab>
+          <Tab eventKey="html" title="Html">
+            <textarea rows={20} cols={100} value={localizedEmailTemplate.body}
+              onChange={e => {
+                const updatedTemplates = emailTemplate.localizedEmailTemplates.map(template =>
+                  template.language === localizedEmailTemplate.language ? {
+                    ...localizedEmailTemplate,
+                    id: undefined,
+                    body: e.target.value
+                  } : template
+                )
+                updateEmailTemplate({
+                  ...emailTemplate,
+                  localizedEmailTemplates: updatedTemplates
+                })
+              }}/>
+          </Tab>
+        </Tabs>
+      </div>
+    </> :
+      <div className="d-flex flex-column flex-grow-1 mt-2">
+        <div className="alert alert-warning" role="alert">
+            No content has been configured for this language.
+          <button className="btn btn-secondary ms-3" onClick={addLocalContent}>
+              Clone from default
+          </button>
+        </div>
+      </div>
+    }
   </div>
 }
