@@ -47,7 +47,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
         classic: true
       })
     }
-  }, [localizedEmailTemplate])
+  }, [localizedEmailTemplate, selectedLanguage])
 
   const {
     onChange: languageOnChange, options: languageOptions,
@@ -162,6 +162,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
         >
           <Tab eventKey="designer" title="Designer">
             <EmailEditor
+              key={localizedEmailTemplate.language}
               ref={emailEditorRef}
               onLoad={onEditorLoaded}
               onReady={() => 1}
