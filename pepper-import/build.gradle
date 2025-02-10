@@ -37,7 +37,7 @@ dependencies {
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'com.typesafe:config:1.4.3'
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.apache.velocity:velocity-engine-core:2.3'
+    implementation 'org.apache.velocity:velocity-engine-core:2.4.1'
 
     implementation files('libs/pepper-apis/ddp-common-1.0.0-SNAPSHOT.jar')
     implementation files('libs/pepper-apis/dss-core-1.0.0-SNAPSHOT.jar')
