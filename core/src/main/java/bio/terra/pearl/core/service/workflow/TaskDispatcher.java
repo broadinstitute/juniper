@@ -83,6 +83,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         return assign(enrollees, taskConfigOpt.get(), assignDto.overrideEligibility(), assignDto.justification(), operator);
     }
 
+    //this is the one
     public List<ParticipantTask> assign(List<Enrollee> enrollees,
                                         T taskDispatchConfig,
                                         boolean overrideEligibility,
@@ -196,7 +197,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         List<Enrollee> enrollees = enrolleeService.findWithTaskInPast(
                 taskConfig.getStudyEnvironmentId(),
                 taskConfig.getStableId(),
-                Duration.of(taskConfig.getRecurrenceIntervalDays(), ChronoUnit.DAYS));
+                Duration.of(taskConfig.getRecurrenceIntervalDays(), ChronoUnit.SECONDS));
         assign(enrollees, taskConfig, false, "scheduled",
                 new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignRecurringSurvey")));
     }
@@ -276,6 +277,14 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
+        else if(taskDispatchConfig.getRecurrenceType().equals(RecurrenceType.LONGITUDINAL)) {
+            Optional<ParticipantTask> existingTask = existingTasks.stream()
+                    .filter(t -> t.getTargetStableId() != null)
+                    .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .max(Comparator.comparing(ParticipantTask::getCreatedAt));
+            System.out.println("existingTask: " + existingTask);
+            existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
+        }
     }
 
     private boolean isEligible(T taskDispatchConfig, EnrolleeContext enrolleeContext) {
@@ -328,11 +337,11 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
-        return pastTask.getCreatedAt().isBefore(pastCutoffTime);
+                .minusSeconds(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
+        return true;
     }
 
-    private void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {
+    protected void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {
         BeanUtils.copyProperties(
                 oldTask,
                 newTask,

@@ -1,9 +1,8 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyTaskConfigDto;
-import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -16,6 +15,7 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final SurveyService surveyService;
+    private final SurveyResponseService surveyResponseService;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
@@ -38,10 +40,11 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
                                 EnrolleeContextService enrolleeContextService,
-                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, SurveyService surveyService) {
+                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, SurveyService surveyService, SurveyResponseService surveyResponseService) {
         super(studyEnvironmentService, participantTaskService, enrolleeService, enrolleeSearchExpressionParser, enrolleeContextService, portalParticipantUserService);
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyService = surveyService;
+        this.surveyResponseService = surveyResponseService;
     }
 
     @EventListener
@@ -130,5 +133,35 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
         }
 
         return Optional.of(new SurveyTaskConfigDto(sesOpt.get(), surveyOpt.get()));
+    }
+
+    @Override
+    public void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, SurveyTaskConfigDto taskDispatchConfig) {
+        super.copyTaskData(newTask, oldTask, taskDispatchConfig);
+
+        //todo check if task config is set to prepopulate
+        Optional<SurveyResponse> priorResponse = surveyResponseService.findOneWithAnswers(oldTask.getSurveyResponseId());
+
+        //todo check if task config is set to prepopulate
+        if(priorResponse.isPresent()) {
+            //pulls answers off of priorResponse and sets answer ids all to null
+            List<Answer> answers = priorResponse.get().getAnswers().stream()
+                    .map(foo -> (Answer) foo.cleanForCopying())
+                    .collect(Collectors.toList());
+
+
+
+            SurveyResponse newResponse = SurveyResponse.builder()
+                    .surveyId(priorResponse.get().getSurveyId())
+                    .enrolleeId(priorResponse.get().getEnrolleeId())
+                    .answers(answers)
+                    .participantFiles(priorResponse.get().getParticipantFiles())
+                    .build();
+
+            SurveyResponse createdResponse = surveyResponseService.create(newResponse);
+
+            newTask.setStatus(TaskStatus.NEW);
+            newTask.setSurveyResponseId(createdResponse.getId());
+        }
     }
 }
