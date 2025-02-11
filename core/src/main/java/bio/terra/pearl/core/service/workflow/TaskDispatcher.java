@@ -83,7 +83,6 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         return assign(enrollees, taskConfigOpt.get(), assignDto.overrideEligibility(), assignDto.justification(), operator);
     }
 
-    //this is the one
     public List<ParticipantTask> assign(List<Enrollee> enrollees,
                                         T taskDispatchConfig,
                                         boolean overrideEligibility,
@@ -282,7 +281,6 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
                     .filter(t -> t.getTargetStableId() != null)
                     .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
-            System.out.println("existingTask: " + existingTask);
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
     }
@@ -336,8 +334,9 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         if (taskDispatchConfig.getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
+        //TODO switch this back after testing
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusSeconds(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
+                .minusDays(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
         return true;
     }
 

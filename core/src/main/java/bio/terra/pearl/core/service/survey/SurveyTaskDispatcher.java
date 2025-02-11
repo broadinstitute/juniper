@@ -15,7 +15,6 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
