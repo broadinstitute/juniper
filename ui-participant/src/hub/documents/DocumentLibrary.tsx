@@ -133,7 +133,7 @@ const surveyResponseIdsToTaskNames = (
   }).filter((task): task is ParticipantTask => task !== undefined)
 
   if (associatedTasks.length === 0) {
-    return <div className={'mt-2 fst-italic'}>This document is not associated with any tasks</div>
+    return <div className={'mt-2 fst-italic'}>not associated with any tasks</div>
   }
 
   return (
