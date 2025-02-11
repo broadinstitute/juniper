@@ -167,7 +167,7 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
                 .surveyId(priorResponse.getSurveyId())
                 .enrolleeId(priorResponse.getEnrolleeId())
                 .createdAt(Instant.now())
-                .lastUpdatedAt(null)
+                .lastUpdatedAt(Instant.now())
                 .answers(answers)
                 .participantFiles(priorResponse.getParticipantFiles())
                 .build();
