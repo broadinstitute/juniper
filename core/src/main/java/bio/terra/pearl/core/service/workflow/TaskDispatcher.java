@@ -196,7 +196,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         List<Enrollee> enrollees = enrolleeService.findWithTaskInPast(
                 taskConfig.getStudyEnvironmentId(),
                 taskConfig.getStableId(),
-                Duration.of(taskConfig.getRecurrenceIntervalDays(), ChronoUnit.SECONDS));
+                Duration.of(taskConfig.getRecurrenceIntervalDays(), ChronoUnit.DAYS));
         assign(enrollees, taskConfig, false, "scheduled",
                 new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignRecurringSurvey")));
     }
@@ -334,10 +334,9 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         if (taskDispatchConfig.getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
-        //TODO switch this back after testing
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
                 .minusDays(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
-        return true;
+        return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 
     protected void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {
