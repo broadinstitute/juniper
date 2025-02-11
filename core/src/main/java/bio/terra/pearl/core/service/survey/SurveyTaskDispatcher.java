@@ -15,10 +15,12 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -138,6 +140,9 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
     public void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, SurveyTaskConfigDto taskDispatchConfig) {
         super.copyTaskData(newTask, oldTask, taskDispatchConfig);
 
+        newTask.setSurveyResponseId(null);
+        newTask.setCompletedAt(null);
+
         // if the survey is set to prepopulate, copy the answers from the old task to the new task
         // we need to also create a new survey response for the new task and attach it to that task
         if(taskDispatchConfig.getSurvey().isPrepopulate()) {
@@ -161,6 +166,8 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
         SurveyResponse newResponse = SurveyResponse.builder()
                 .surveyId(priorResponse.getSurveyId())
                 .enrolleeId(priorResponse.getEnrolleeId())
+                .createdAt(Instant.now())
+                .lastUpdatedAt(null)
                 .answers(answers)
                 .participantFiles(priorResponse.getParticipantFiles())
                 .build();
