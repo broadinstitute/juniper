@@ -23,13 +23,11 @@ import java.util.UUID;
 @Slf4j
 public class ParticipantFileService extends ImmutableEntityService<ParticipantFile, ParticipantFileDao> {
     private final FileStorageBackend fileStorageBackend;
-    private final SurveyResponseService surveyResponseService;
 
-    public ParticipantFileService(ParticipantFileDao dao, FileStorageBackendProvider fileStorageBackendProvider, SurveyService surveyService, SurveyResponseService surveyResponseService) {
+    public ParticipantFileService(ParticipantFileDao dao, FileStorageBackendProvider fileStorageBackendProvider) {
         super(dao);
 
         this.fileStorageBackend = fileStorageBackendProvider.get();
-        this.surveyResponseService = surveyResponseService;
     }
 
     public ParticipantFile uploadFileAndCreate(ParticipantFile participantFile, InputStream file) {
