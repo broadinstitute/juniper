@@ -8,7 +8,6 @@ import { useActiveUser } from 'providers/ActiveUserProvider'
 import { mockUseActiveUser } from 'test-utils/user-mocking-utils'
 import Api from 'api/api'
 import { mockParticipantTask } from 'test-utils/test-participant-factory'
-import { mockAnswer } from '@juniper/ui-admin/build/src/test-utils/mocking-utils'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -79,7 +78,10 @@ describe('DocumentLibrary', () => {
   it('renders associated tasks', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
       mockParticipantFile('file1.pdf', [{
-        ...mockAnswer(),
+        format: 'FILE_NAME',
+        surveyVersion: 1,
+        stringValue: 'file1.pdf',
+        questionStableId: 'question1',
         surveyResponseId: 'taskId1'
       }])
     ])
