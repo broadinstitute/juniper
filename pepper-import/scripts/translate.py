@@ -95,10 +95,7 @@ def main():
 
     dsm_data = parse_dsm_data(args.in_file)
 
-    if args.limit is not None:
-        dsm_data = dsm_data[:args.limit]
-
-    juniper_data = apply_translations(dsm_data, translations)
+    juniper_data = apply_translations(dsm_data, translations, args.limit)
 
     write_data(args.out_file, juniper_data)
 
@@ -121,6 +118,7 @@ class DataDefinition:
     question_type = None
     format = None  # e.g., if date
     option_values = None  # list of values, no label
+    options = None  # dict of values to labels
     description = None
 
     num_repeats = None
@@ -133,6 +131,7 @@ class DataDefinition:
                  description: str,
                  question_type: str,
                  format: str | None = None,
+                 options: dict[str, str] | None = None,
                  option_values: list[str] | None = None,
                  num_repeats: int | None = None,
                  subquestions: list[Any] | None = None):
@@ -142,7 +141,7 @@ class DataDefinition:
         self.description = description
         self.question_type = question_type
         self.format = format
-        self.option_values = option_values
+        self.option = options
 
         self.num_repeats = num_repeats
         self.subquestions = subquestions
@@ -200,15 +199,22 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
         data_type = str(dsm_data_dict['B' + str(row_idx)].value or '')
         question_type = str(dsm_data_dict['C' + str(row_idx)].value or '')
         description = str(dsm_data_dict['D' + str(row_idx)].value or '')
-        options = str(dsm_data_dict['E' + str(row_idx)].value or '')
+        options_text = str(dsm_data_dict['E' + str(row_idx)].value or '')
 
+        options = None
         option_values = None
-        if options != '':
-            option_texts = options.split('\n')
-            option_values = [option.split(' ')[0] for option in option_texts]
+        if options_text != '':
+            option_lines = list(filter(lambda val: val.strip != '', options_text.split('\n')))
+            print(option_lines)
+            option_texts = [line.split('-', maxsplit =1) for line in option_lines]
+            print(option_texts)
+            options = {text.strip(): value.strip() for [value, text] in option_texts}
+
+            option_values = [option.split(' ')[0] for option in option_lines]
+
 
         question: DataDefinition = DataDefinition(
-            module, stable_id, data_type, description, question_type, option_values=option_values
+            module, stable_id, data_type, description, question_type, options=options, option_values = option_values
         )
         out.append(question)
 
@@ -512,17 +518,19 @@ def parse_dsm_data(filepath: str) -> list[dict[str, Any]]:
 
 necessary_columns = ['account.username', 'profile.birthDate']
 
-def apply_translations(data: list[dict[str, Any]], translations: list[Translation]) -> list[dict[str, Any]]:
+def apply_translations(data: list[dict[str, Any]], translations: list[Translation], limit: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
 
     for row in data:
+        if limit is not None and len(out) >= limit:
+            break
+
+        if not dsm_enrollee_filter(row):
+            continue
+
         new_row = {}
         for translation in translations:
-            # certain modules (e.g. kit requests, families, relations) can be repeated, so we need
-            # to see how many repeats there are and apply the translation to each one
-            if is_in_repeatable_juniper_module(translation.juniper_question_definition.stable_id):
-                apply_repeatable_translation(row, new_row, translation)
-            apply_translation(row, new_row, translation)
+            apply_repeatable_translation(row, new_row, translation)
 
         has_all_needed_columns = True
         for column in necessary_columns:
@@ -530,17 +538,10 @@ def apply_translations(data: list[dict[str, Any]], translations: list[Translatio
                 print(f'Warning: skipping user with missing {column}')
                 has_all_needed_columns = False
 
-        if has_all_needed_columns:
+        if has_all_needed_columns and juniper_enrollee_filter(new_row):
             out.append(new_row)
 
     return out
-
-repeatable_juniper_modules = ['sample_kit', 'family', 'relation']
-def is_in_repeatable_juniper_module(stable_id: str) -> bool:
-    for module in repeatable_juniper_modules:
-        if stable_id.startswith(module):
-            return True
-    return False
 
 def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
     # for each translation, we need to go through all possible
@@ -641,6 +642,12 @@ def translate_value(translation: Translation, value: Any) -> Any:
 
     # possible data types: string, date, boolean, date_time, object_string
 
+    if translation.juniper_question_definition.options is not None:
+        for [key, val] in translation.juniper_question_definition.options.items():
+            if val == value or key == value:
+                return key
+
+
     if translation.juniper_question_definition.data_type in ['string', 'object_string']:
         return str(value)
     elif translation.juniper_question_definition.data_type == 'date':
@@ -712,8 +719,7 @@ def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> li
             index = get_dsm_repeat_index(dsm_question.module, key)
             out[index - 1] = value
 
-    # return the first 5 values; some dsm modules have a ridiculous number of repeats
-    return [out[i] for i in range(min(len(out), 5))]
+    return [out[i] for i in range(len(out))]
 
 
 def is_dsm_repeat_question(module: str, question_stable_id: str, response_stable_id: str) -> bool:
@@ -794,6 +800,17 @@ def write_data(outfile: str, data: list[dict[str, Any]]):
         for row in data:
             writer.writerow(row.values())
 
+def dsm_enrollee_filter(row):
+    if 'E2E' in row['PROFILE.FIRSTNAME']:
+        print('Skipping E2E participant')
+        return False
+    return True
+
+def juniper_enrollee_filter(row):
+    if 'E2E' in row['profile.givenName']:
+        print('Skipping E2E participant')
+        return False
+    return True
 
 if __name__ == '__main__':
     main()
