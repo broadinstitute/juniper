@@ -139,29 +139,33 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
     public void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, SurveyTaskConfigDto taskDispatchConfig) {
         super.copyTaskData(newTask, oldTask, taskDispatchConfig);
 
-        //todo check if task config is set to prepopulate
-        Optional<SurveyResponse> priorResponse = surveyResponseService.findOneWithAnswers(oldTask.getSurveyResponseId());
+        // if the survey is set to prepopulate, copy the answers from the old task to the new task
+        // we need to also create a new survey response for the new task and attach it to that task
+        if(taskDispatchConfig.getSurvey().isPrepopulate()) {
+            Optional<SurveyResponse> priorResponse = surveyResponseService.findOneWithAnswers(oldTask.getSurveyResponseId());
 
-        //todo check if task config is set to prepopulate
-        if(priorResponse.isPresent()) {
-            //pulls answers off of priorResponse and sets answer ids all to null
-            List<Answer> answers = priorResponse.get().getAnswers().stream()
-                    .map(foo -> (Answer) foo.cleanForCopying())
-                    .collect(Collectors.toList());
-
-
-
-            SurveyResponse newResponse = SurveyResponse.builder()
-                    .surveyId(priorResponse.get().getSurveyId())
-                    .enrolleeId(priorResponse.get().getEnrolleeId())
-                    .answers(answers)
-                    .participantFiles(priorResponse.get().getParticipantFiles())
-                    .build();
-
-            SurveyResponse createdResponse = surveyResponseService.create(newResponse);
-
-            newTask.setStatus(TaskStatus.NEW);
-            newTask.setSurveyResponseId(createdResponse.getId());
+            if (priorResponse.isPresent() && taskDispatchConfig.getSurvey().isPrepopulate()) {
+                SurveyResponse createdResponse = createPrepopulatedSurveyResponse(priorResponse.get());
+                newTask.setStatus(TaskStatus.NEW);
+                newTask.setSurveyResponseId(createdResponse.getId());
+            }
         }
+    }
+
+    // creates a new survey response with the same answers as priorResponse
+    // for use with longitudinal recurring surveys
+    private SurveyResponse createPrepopulatedSurveyResponse(SurveyResponse priorResponse) {
+        List<Answer> answers = priorResponse.getAnswers().stream()
+                .map(a -> (Answer) a.cleanForCopying())
+                .collect(Collectors.toList());
+
+        SurveyResponse newResponse = SurveyResponse.builder()
+                .surveyId(priorResponse.getSurveyId())
+                .enrolleeId(priorResponse.getEnrolleeId())
+                .answers(answers)
+                .participantFiles(priorResponse.getParticipantFiles())
+                .build();
+
+        return surveyResponseService.create(newResponse);
     }
 }
