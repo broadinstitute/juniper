@@ -96,7 +96,12 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
                   {fileTypeToIcon(participantFile.fileType)}
                   {participantFile.fileName}
                   <span className='fst-italic text-muted'> ({instantToDateString(participantFile.createdAt)})</span>
-                  {surveyResponseIdsToTaskNames(i18n, studyEnvParams, enrollee, participantFile.surveyResponseIds)}
+                  {surveyResponseIdsToTaskNames(
+                    i18n,
+                    studyEnvParams,
+                    enrollee,
+                    participantFile.associatedAnswers.map(answer => answer.surveyResponseId!))
+                  }
                 </div>
               </td>
               <td className="align-middle">
@@ -133,7 +138,7 @@ const surveyResponseIdsToTaskNames = (
   }).filter((task): task is ParticipantTask => task !== undefined)
 
   if (associatedTasks.length === 0) {
-    return <div className={'mt-2 fst-italic'}>not associated with any tasks</div>
+    return <div className={'mt-2 fst-italic text-muted'}>not associated with any tasks</div>
   }
 
   return (

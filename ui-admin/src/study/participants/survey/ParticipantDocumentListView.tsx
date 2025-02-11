@@ -41,7 +41,9 @@ export const ParticipantDocumentListView = ({
       header: 'Associated Tasks',
       accessorKey: 'surveyResponseIds',
       cell: ({ row }: { row: Row<ParticipantFile> }) => {
-        return surveyResponseIdsToTaskNames(enrollee, row.original.surveyResponseIds)
+        return surveyResponseIdsToTaskNames(
+          enrollee, row.original.associatedAnswers.map(answer => answer.surveyResponseId!)
+        )
       }
     }] : []),
     {

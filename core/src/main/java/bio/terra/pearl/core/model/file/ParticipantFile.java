@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.file;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.survey.Answer;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,5 +34,5 @@ public class ParticipantFile extends BaseEntity {
     private String notes;
 
     @Builder.Default
-    private List<UUID> surveyResponseIds = new ArrayList<>(); //list of survey responses that are associated with this file
+    private List<Answer> associatedAnswers = new ArrayList<>(); //list of answers that are associated with this file
 }

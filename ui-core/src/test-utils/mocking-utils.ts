@@ -1,4 +1,5 @@
 import {
+  Answer,
   Question,
   Survey,
   SurveyResponse
@@ -205,13 +206,13 @@ export const mockProfile = (): Profile => {
   }
 }
 
-export const mockParticipantFile = (fileName: string, surveyResponseIds?: string[]): ParticipantFile => {
+export const mockParticipantFile = (fileName: string, associatedAnswers?: Answer[]): ParticipantFile => {
   return {
     id: fileName,
     fileName,
     fileType: 'application/pdf',
     createdAt: 0,
     lastUpdatedAt: 0,
-    surveyResponseIds: surveyResponseIds || []
+    associatedAnswers: associatedAnswers || []
   }
 }

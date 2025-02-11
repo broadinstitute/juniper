@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerFormat;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,10 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     public List<Answer> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    public List<Answer> findByEnrolleeIdAndAnswerFormat(UUID enrolleeId, AnswerFormat answerFormat) {
+        return findAllByTwoProperties("enrollee_id", enrolleeId, "format", answerFormat);
     }
 
     /**

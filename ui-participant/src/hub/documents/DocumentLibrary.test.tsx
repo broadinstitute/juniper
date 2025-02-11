@@ -72,7 +72,7 @@ describe('DocumentLibrary', () => {
       expect(screen.getByText('file1.pdf')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('This document is not associated with any tasks')).toBeInTheDocument()
+    expect(screen.getByText('not associated with any tasks')).toBeInTheDocument()
   })
 
   it('renders associated tasks', async () => {
