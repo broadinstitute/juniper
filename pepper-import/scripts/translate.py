@@ -205,9 +205,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
         option_values = None
         if options_text != '':
             option_lines = list(filter(lambda val: val.strip != '', options_text.split('\n')))
-            print(option_lines)
             option_texts = [line.split('-', maxsplit =1) for line in option_lines]
-            print(option_texts)
             options = {text.strip(): value.strip() for [value, text] in option_texts}
 
             option_values = [option.split(' ')[0] for option in option_lines]
@@ -554,15 +552,15 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
     # to be safe.
     module_repeat = 1
     while True:
-        dsm_module_repeat_stable_id = generate_dsm_module_repeat_stable_id(translation.dsm_question_definition.stable_id, module_repeat)
-        juniper_module_repeat_stable_id = generate_juniper_module_repeat_stable_id(translation.juniper_question_definition.stable_id, module_repeat)
+        dsm_module_repeat = make_repeat_question(translation.dsm_question_definition, module_repeat)
+        juniper_module_repeat = make_repeat_question(translation.juniper_question_definition, module_repeat)
 
-        if dsm_module_repeat_stable_id not in dsm_data:
+        if not is_question_in_data(dsm_module_repeat, dsm_data):
             break
 
         repeat_translation = deepcopy(translation)
-        repeat_translation.dsm_question_definition.stable_id = dsm_module_repeat_stable_id
-        repeat_translation.juniper_question_definition.stable_id = juniper_module_repeat_stable_id
+        repeat_translation.dsm_question_definition = dsm_module_repeat
+        repeat_translation.juniper_question_definition = juniper_module_repeat
 
         apply_translation(dsm_data, juniper_data, repeat_translation)
         module_repeat += 1
@@ -570,6 +568,30 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
         if module_repeat > 10:
             # dsm sometimes has... a lot of repeats... it's hard to imagine needing more than 10.
             break
+
+def is_question_in_data(question: DataDefinition, data: dict[str, Any]) -> bool:
+    if question.stable_id in data:
+        return True
+
+    if question.subquestions is not None:
+        for subquestion in question.subquestions:
+            if subquestion.stable_id in data:
+                return True
+
+    return False
+
+def make_repeat_question(question: DataDefinition, repeat: int) -> DataDefinition:
+    return DataDefinition(
+        question.module,
+        generate_dsm_module_repeat_stable_id(question.stable_id, repeat),
+        question.data_type,
+        question.description,
+        question.question_type,
+        options=question.options,
+        option_values=question.option_values,
+        num_repeats=question.num_repeats,
+        subquestions=list(map(lambda q: make_repeat_question(q, repeat), question.subquestions)) if question.subquestions is not None else None
+    )
 
 def generate_dsm_module_repeat_stable_id(stable_id: str, repeat: int) -> str:
     if repeat == 1:
@@ -603,11 +625,12 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
     dsm_question = translation.dsm_question_definition
 
     if juniper_question.question_type == 'paneldynamic':
-        juniper_data[juniper_question.stable_id] = json.dumps(get_dynamic_panel_values(translation, dsm_data))
+        vals = get_dynamic_panel_values(translation, dsm_data)
+        juniper_data[juniper_question.stable_id] = json.dumps(vals) if len(vals) > 0 else ''
     elif dsm_question.question_type.lower() == 'multiselect':
-        juniper_data[juniper_question.stable_id] = json.dumps(get_multi_panel_values(translation, dsm_data))
+        juniper_data[juniper_question.stable_id] = get_multiselect_value(translation, dsm_data)
     elif juniper_question.question_type.lower() == 'checkbox' and dsm_question.question_type.lower() == 'picklist':
-        juniper_data[juniper_question.stable_id] = json.dumps([dsm_data[dsm_question.stable_id]] if len(dsm_data[dsm_question.stable_id]) > 0 else [])
+        juniper_data[juniper_question.stable_id] = json.dumps([dsm_data[dsm_question.stable_id]]) if len(dsm_data[dsm_question.stable_id]) > 0 else ''
     else:
         simple_translate(
             translation, dsm_data, juniper_data
@@ -642,10 +665,11 @@ def translate_value(translation: Translation, value: Any) -> Any:
 
     # possible data types: string, date, boolean, date_time, object_string
 
-    if translation.juniper_question_definition.options is not None:
-        for [key, val] in translation.juniper_question_definition.options.items():
-            if val == value or key == value:
-                return key
+    # if translation.juniper_question_definition.options is not None:
+    #     print(value)
+    #     for [key, val] in translation.juniper_question_definition.options.items():
+    #         if val == value or key == value:
+    #             return key
 
 
     if translation.juniper_question_definition.data_type in ['string', 'object_string']:
@@ -783,6 +807,14 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
 def strip_parent_stable_id(parent_stable_id: str, subquestion_stable_id: str) -> str:
     return subquestion_stable_id[len(parent_stable_id) + 1:]
 
+
+def get_multiselect_value (translation: Translation, dsm_data: dict[str, Any]) -> str:
+    values = get_multi_panel_values(translation, dsm_data)
+
+    if len(values) == 0:
+        return ''
+
+    return json.dumps(values)
 
 def get_multi_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[str]:
     out_value = []
