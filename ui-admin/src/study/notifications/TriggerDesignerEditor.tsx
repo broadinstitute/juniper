@@ -401,6 +401,9 @@ const NotificationEditor = (
             emailTemplate={trigger.emailTemplate}
             portalShortcode={studyEnvContext.portal.shortcode}
             updateEmailTemplate={updatedTemplate => {
+              updatedTemplate.localizedEmailTemplates.forEach(template => {
+                template.id = undefined
+              })
               const version = trigger?.emailTemplate?.version || 1
               updateTrigger('emailTemplate', {
                 ...updatedTemplate,
