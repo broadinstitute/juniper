@@ -15,7 +15,7 @@ describe('Registration', () => {
     })
 
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider selectedLanguage={'dev'}>
+      <MockI18nProvider selectedLanguage={'es'}>
         <Registration />
       </MockI18nProvider>
     )
@@ -29,7 +29,7 @@ describe('Registration', () => {
         portalEnvironment: 'live',
         portalShortcode: undefined,
         // eslint-disable-next-line camelcase
-        ui_locales: 'dev'
+        ui_locales: 'es'
       }
     })
   })

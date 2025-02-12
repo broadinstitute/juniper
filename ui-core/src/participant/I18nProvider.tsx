@@ -104,3 +104,27 @@ export function I18nProvider({ defaultLanguage, portalShortcode, environmentName
     </I18nContext.Provider>}
   </>
 }
+
+//Juniper and B2C use slightly different language codes. For example, Simplified Chinese is "zh" in Juniper,
+//but "zh-hans" in B2C. This mapping is used to convert Juniper language codes into B2C locale codes.
+const JUNIPER_TO_B2C_LOCALE_MAP: Record<string, string> = {
+  'en': 'en',
+  'es': 'es',
+  'de': 'de',
+  'hi': 'hi',
+  'ru': 'ru',
+  'pt': 'pt-pt',
+  'ja': 'ja',
+  'it': 'it',
+  'fr': 'fr',
+  'pl': 'pl',
+  'tr': 'tr',
+  'zh': 'zh-hans',
+  'dev': 'en' //our custom "dev" language should just use English in b2c
+}
+
+//This defaults to English to guarantee that B2C will function even if the language is unsupported.
+//The user can always use in-browser translations if needed, and English is our most reliable language.
+export const getB2CLocale = (key: string): string => {
+  return JUNIPER_TO_B2C_LOCALE_MAP[key] || 'en'
+}
