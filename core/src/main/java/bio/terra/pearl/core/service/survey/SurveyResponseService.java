@@ -164,8 +164,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         SurveyResponse response;
         if (shouldCreateNewLongtitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), task)) {
             ParticipantTask newTask = participantTaskService.cleanForCopying(task);
-            task = participantTaskService.create(newTask, null);
             response = create(responseDto);
+            newTask.setSurveyResponseId(response.getId());
+            task = participantTaskService.create(newTask, null);
         } else {
             response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
         }
