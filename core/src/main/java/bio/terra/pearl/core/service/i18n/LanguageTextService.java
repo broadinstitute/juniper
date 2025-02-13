@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,14 +11,13 @@ import java.util.*;
 @Service
 public class LanguageTextService extends CrudService<LanguageText, LanguageTextDao> {
 
-    private LanguageTextDao languageTextDao;
+    private final LanguageTextDao languageTextDao;
 
     public LanguageTextService(LanguageTextDao languageTextDao) {
         super(languageTextDao);
         this.languageTextDao = languageTextDao;
     }
 
-    @Cacheable(value = "languageTexts", key = "#language")
     public HashMap<String, String> getLanguageTextMapForLanguage(UUID portalEnvId, String language) {
         List<LanguageText> languageTexts = languageTextDao.findWithOverridesByPortalEnvId(portalEnvId, language);
 
