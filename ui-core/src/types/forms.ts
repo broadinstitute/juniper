@@ -47,6 +47,7 @@ export type Survey = VersionedForm & {
   allowParticipantStart: boolean
   allowParticipantReedit: boolean
   prepopulate: boolean
+  createNewResponseAfterDays?: number
   eligibilityRule?: string
 }
 

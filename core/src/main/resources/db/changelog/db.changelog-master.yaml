@@ -395,6 +395,9 @@ databaseChangeLog:
   - include:
       file: changesets/2025_01_27_prenroll_type.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2025_02_13_create_new_survey_response_days.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
