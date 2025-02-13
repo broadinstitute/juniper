@@ -234,8 +234,9 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
             # either way, we need to group their subquestions together
             question.stable_id = question.stable_id[2:-2]  # remove the [[]]
             subquestions = list(
-                filter(lambda q: q.stable_id.startswith(question.stable_id) and not q.stable_id.endswith('_DETAIL'),
-                       simple_questions))
+                filter(lambda q: q.stable_id.startswith(question.stable_id) and not (
+                        q.stable_id.endswith('_DETAIL') or q.stable_id.endswith('_DETAILS')
+                ), simple_questions))
 
             # if the description doesn't have "May have up to <?> responses", then it's not a dynamicpanel
             if question.question_type.lower() == 'composite':
@@ -565,9 +566,6 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
         apply_translation(dsm_data, juniper_data, repeat_translation)
         module_repeat += 1
 
-        if module_repeat > 10:
-            # dsm sometimes has... a lot of repeats... it's hard to imagine needing more than 10.
-            break
 
 def is_question_in_data(question: DataDefinition, data: dict[str, Any]) -> bool:
     if question.stable_id in data:
@@ -637,6 +635,29 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
         )
 
 
+def translate_value_repeated(dsm_data: dict[str, Any],
+                             juniper_data: dict[str, Any],
+                             translation: Translation,
+                             translate: callable[[Translation, dict[str, Any], dict[str, Any]], Any]):
+    idx = 1
+
+    while True:
+        dsm_repeat = make_repeat_question(translation.dsm_question_definition, idx)
+        juniper_repeat = make_repeat_question(translation.juniper_question_definition, idx)
+
+        repeat_translation = deepcopy(translation)
+        repeat_translation.dsm_question_definition = dsm_repeat
+        repeat_translation.juniper_question_definition = juniper_repeat
+
+        val = translate(repeat_translation, dsm_data, juniper_data)
+        if val is None or val == '':
+            break
+
+        juniper_data[juniper_repeat.stable_id] = val
+        idx += 1
+
+
+
 def simple_translate(translation: Translation,
                      dsm_data: dict[str, Any],
                      juniper_data: dict[str, Any]) -> Any:
@@ -671,6 +692,10 @@ def translate_value(translation: Translation, value: Any) -> Any:
     #         if val == value or key == value:
     #             return key
 
+    if translation.juniper_question_definition.options is not None and len(translation.juniper_question_definition.options) > 0 and translation.dsm_question_definition.question_type == 'text':
+        for [key, val] in translation.juniper_question_definition.options.items():
+            if val == value or key == value:
+                return val
 
     if translation.juniper_question_definition.data_type in ['string', 'object_string']:
         return str(value)
