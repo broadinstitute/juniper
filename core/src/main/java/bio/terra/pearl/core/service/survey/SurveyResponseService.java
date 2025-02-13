@@ -19,7 +19,12 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
+
+import static org.apache.commons.io.file.attribute.FileTimes.minusSeconds;
 
 @Service
 public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
@@ -129,6 +134,16 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return answers;
     }
 
+    //if the cutoff time has passed, create a new task and response
+    private boolean shouldCreateNewLongtitudinalTaskAndResponse(Integer createNewResponseAfterDays, ParticipantTask task) {
+        if(createNewResponseAfterDays == null) {
+            return false;
+        }
+        Instant cutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
+                .minusSeconds(createNewResponseAfterDays).toInstant(); //todo change back to minusDays
+        return task.getLastUpdatedAt().isBefore(cutoffTime);
+    }
+
     /**
      * Creates a survey response and fires appropriate downstream events.
      */
@@ -138,15 +153,22 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
-
         ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() -> new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
+
+
 
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());
 
-        // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+        SurveyResponse response;
+        if (shouldCreateNewLongtitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), task)) {
+            ParticipantTask newTask = participantTaskService.cleanForCopying(task);
+            task = participantTaskService.create(newTask, null);
+            response = create(responseDto);
+        } else {
+            response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+        }
 
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, justification, survey, ppUser, operator);
         List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
