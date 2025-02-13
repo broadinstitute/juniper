@@ -26,6 +26,8 @@ public class SurveyResponse extends BaseEntity {
     private UUID surveyId;
     @Builder.Default
     private List<Answer> answers = new ArrayList<>();
+    // a list of files uploaded by the participant that are associated with answers in this response
+    // the file references are stored in the associated answers as a stringValue
     @Builder.Default
     private List<ParticipantFile> participantFiles = new ArrayList<>();
     @Builder.Default

@@ -78,6 +78,7 @@ export type Answer = {
   creatingAdminUserId?: string
   createdAt?: number
   lastUpdatedAt?: number
+  surveyResponseId?: string
 }
 
 export type AnswerFormat = 'NONE' | 'FILE_NAME'

@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   ColumnDef,
-  getCoreRowModel,
+  getCoreRowModel, Row,
   useReactTable
 } from '@tanstack/react-table'
 import {
@@ -14,16 +14,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { NavLink } from 'react-router-dom'
 
 export const ParticipantDocumentListView = ({
   studyEnvContext,
   enrollee,
+  showAssociatedTasks,
   documents
 }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee,
+  showAssociatedTasks: boolean,
   documents: ParticipantFile[]
 }) => {
+  // @ts-ignore
   const columns: ColumnDef<ParticipantFile>[] = [
     {
       ...createdAtColumn(),
@@ -33,6 +37,15 @@ export const ParticipantDocumentListView = ({
       header: 'File Name',
       accessorKey: 'fileName'
     },
+    ...(showAssociatedTasks ? [{
+      header: 'Associated Tasks',
+      accessorKey: 'surveyResponseIds',
+      cell: ({ row }: { row: Row<ParticipantFile> }) => {
+        return surveyResponseIdsToTaskNames(
+          enrollee, row.original.associatedAnswers.map(answer => answer.surveyResponseId!)
+        )
+      }
+    }] : []),
     {
       header: 'File Type',
       accessorKey: 'fileType'
@@ -72,4 +85,28 @@ export const ParticipantDocumentListView = ({
     {basicTableLayout(table)}
     { renderEmptyMessage(documents, 'This participant has not uploaded any documents') }
   </>
+}
+
+const surveyResponseIdsToTaskNames = (
+  enrollee: Enrollee, surveyResponseIds: string[]
+) => {
+  const associatedTasks = surveyResponseIds.map(surveyResponseId => {
+    return enrollee.participantTasks.find(task => task.surveyResponseId === surveyResponseId)
+  }).filter(task => task !== undefined)
+
+  if (associatedTasks.length === 0) {
+    return <div className={'fst-italic text-muted'}>This document is not associated with any tasks</div>
+  }
+
+  return (
+    <ul className={'ps-3'}>
+      {associatedTasks.map(task =>
+        <li key={task?.id}>
+          <NavLink to={`../surveys/${task?.targetStableId}${task?.id ? `?taskId=${task.id}` : ''}`}>
+            {task?.targetName}
+          </NavLink>
+        </li>
+      )}
+    </ul>
+  )
 }

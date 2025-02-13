@@ -56,7 +56,6 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return dao.findByEnrolleeId(enrolleeId);
     }
 
-
     public Map<UUID, List<SurveyResponse>> findByEnrolleeIdsNotRemoved(List<UUID> enrolleeIds) {
         return dao.findByEnrolleeIdsNotRemoved(enrolleeIds);
     }

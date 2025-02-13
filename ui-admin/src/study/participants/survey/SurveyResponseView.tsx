@@ -232,6 +232,7 @@ export function RawEnrolleeSurveyView({
           <ParticipantDocumentListView
             studyEnvContext={studyEnvContext}
             enrollee={enrollee}
+            showAssociatedTasks={false}
             documents={response.participantFiles || []}/>
       }
       {view === 'editing' && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
