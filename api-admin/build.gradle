@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core:4.30.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 
-    implementation 'net.javacrumbs.shedlock:shedlock-spring:6.0.2'
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:6.2.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.2.0'
 
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
