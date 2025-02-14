@@ -168,38 +168,9 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
     field = field.replace('user.', 'participantUser.')
   }
   if (field.startsWith('answer')) {
-    const { questionStableId, surveyStableId, header } = parseAnswerFacet(facet)
-    return {
-      id: field,
-      header,
-      accessorFn: info => {
-        const answer = info.answers.find(ans =>
-          ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
-        // we can add code here at a later time to map answer stableId string values to choice labels
-        return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
-      },
-      meta: {
-        columnType
-      }
-    }
+    return dynamicAnswerColumn(facet)
   } else if (field.startsWith('task')) {
-    const { taskStableId, field, header } = parseTaskFacet(facet)
-
-    return {
-      id: facet.key,
-      header,
-      accessorFn: info => {
-        const task = info.tasks.find(task => task.targetStableId === taskStableId)
-        if (field === 'status') {
-          return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
-        }
-
-        return get(task, field)
-      },
-      meta: {
-        columnType
-      }
-    }
+    return dynamicTaskColumn(facet)
   } else {
     const colDef: ColumnDef<T> = {
       id: field,
@@ -213,6 +184,45 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
       colDef.cell = cellFn
     }
     return colDef
+  }
+}
+
+const dynamicTaskColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  const { taskStableId, field, header } = parseTaskFacet(facet)
+
+  return {
+    id: facet.key,
+    header,
+    accessorFn: info => {
+      const task = info.tasks.find(task => task.targetStableId === taskStableId)
+      if (field === 'status') {
+        return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
+      }
+
+      return get(task, field)
+    },
+    meta: {
+      columnType: facet.type.toLowerCase()
+    }
+  }
+}
+
+const dynamicAnswerColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  const { questionStableId, surveyStableId, header } = parseAnswerFacet(facet)
+  return {
+    id: facet.key,
+    header,
+    accessorFn: info => {
+      const answer = info.answers.find(ans =>
+        ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
+      // we can add code here at a later time to map answer stableId string values to choice labels
+      return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+    },
+    meta: {
+      columnType: facet.type.toLowerCase()
+    }
   }
 }
 
