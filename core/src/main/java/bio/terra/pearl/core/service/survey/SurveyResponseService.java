@@ -141,13 +141,13 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     //if the cutoff time has passed, create a new task and response
-    private boolean shouldCreateNewLongtitudinalTaskAndResponse(Integer createNewResponseAfterDays, ParticipantTask task) {
+    private boolean shouldCreateNewLongitudinalTaskAndResponse(Integer createNewResponseAfterDays, Instant surveyResponseLastUpdatedAt) {
         if(createNewResponseAfterDays == null) {
             return false;
         }
         Instant cutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusSeconds(createNewResponseAfterDays).toInstant(); //todo change back to minusDays
-        return task.getLastUpdatedAt().isBefore(cutoffTime);
+                .minusDays(createNewResponseAfterDays).toInstant();
+        return surveyResponseLastUpdatedAt.isBefore(cutoffTime);
     }
 
     /**
@@ -167,11 +167,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         validateResponse(survey, task, responseDto.getAnswers());
 
 
+        SurveyResponse priorResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElse(null);
         SurveyResponse response;
         //if the survey is longitudinal and we're past the cutoff point for updating an existing response, we need to create a new response and task
-        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && shouldCreateNewLongtitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), task)) {
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && priorResponse != null && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), priorResponse.getLastUpdatedAt())) {
             ParticipantTask newTask = participantTaskService.cleanForCopying(task);
-            SurveyResponse priorResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElseThrow(() -> new NotFoundException("No response found for task %s".formatted(taskId)));
+            if(newTask.getCompletedAt() != null) {
+                newTask.setCompletedAt(Instant.now());
+            }
             priorResponse.getAnswers().forEach(a -> a.setSurveyResponseId(null));
             response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(priorResponse);
             newTask.setSurveyResponseId(response.getId());
