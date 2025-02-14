@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "trigger_admin_email_filter"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: trigger
+            columns:
+              - column:
+                  name: admin_email_filter
+                  type: text

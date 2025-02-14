@@ -21,11 +21,12 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
+import com.sendgrid.helpers.mail.Mail;
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.sendgrid.helpers.mail.Mail;
 
 import java.util.List;
 import java.util.UUID;
@@ -111,6 +112,14 @@ public class AdminEmailService {
             .findByPortalEnvironmentId(event.getPortalParticipantUser().getPortalEnvironmentId())
             .orElseThrow(() -> new IllegalStateException("Portal not found"));
     List<AdminUser> adminUsers = adminUserService.findAllWithRolesByPortal(portal.getId());
+
+    if (StringUtils.isNotBlank(trigger.getAdminEmailFilter())) {
+      List<String> emails = List.of(trigger.getAdminEmailFilter().split(",")).stream().map(String::trim).toList();
+
+      adminUsers = adminUsers.stream()
+              .filter(adminUser -> emails.contains(adminUser.getUsername()))
+              .toList();
+    }
 
     EmailTemplate emailTemplate = emailTemplateService.find(trigger.getEmailTemplateId())
             .orElseThrow(() -> new NotFoundException("Email template not found"));

@@ -6,16 +6,16 @@ import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
 import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * configuration for notifications.
@@ -53,6 +53,11 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyE
     private UUID emailTemplateId;
     private EmailTemplate emailTemplate;
     private String rule;
+
+    // for admin notifications, comma separated list of email addresses.
+    // will verify that the email address is valid before sending.
+    // if blank, all admins will be notified
+    private String adminEmailFilter;
     /**
      * notificationTypes of TASK_REMINDER, if specified, will limit to one type of task.  if null,
      * will apply to all tasks.

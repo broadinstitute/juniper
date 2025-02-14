@@ -1,12 +1,16 @@
 import {
-  ParticipantTaskStatus, StudyEnvParams,
+  ParticipantTaskStatus,
+  StudyEnvParams,
   Trigger,
   TriggerActionType,
   TriggerDeliveryType,
   TriggerScope,
   TriggerType
 } from '@juniper/ui-core'
-import React, { useId, useState } from 'react'
+import React, {
+  useId,
+  useState
+} from 'react'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
 import {
@@ -16,7 +20,10 @@ import {
   InfoCardTitle
 } from 'components/InfoCard'
 import EmailTemplateEditor from 'study/notifications/EmailTemplateEditor'
-import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  paramsFromContext,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import InfoPopup from 'components/forms/InfoPopup'
 import { NavLink } from 'react-router-dom'
 import { Checkbox } from 'components/forms/Checkbox'
@@ -390,6 +397,15 @@ const NotificationEditor = (
     <div className="float-end position-relative">
       <NavLink to='notifications'>View sent notifications</NavLink>
     </div>
+    {
+      trigger.actionType === 'ADMIN_NOTIFICATION'
+      && <div className='w-50 mb-2'>
+        <AdminEmailFilterEditor
+          studyEnvContext={studyEnvContext}
+          trigger={trigger}
+          updateTrigger={updateTrigger}/>
+      </div>
+    }
     <label className="form-label">
       Notification Type <InfoPopup content={'Juniper only supports reminders via email.'}/>
       <Select options={deliveryTypeOptions} isDisabled={true}
@@ -422,6 +438,46 @@ const NotificationEditor = (
           </div>}
         </>}
   </>
+}
+
+const AdminEmailFilterEditor = (
+  {
+    studyEnvContext,
+    trigger,
+    updateTrigger
+  }: {
+    studyEnvContext: StudyEnvContextT,
+    trigger: Trigger;
+    updateTrigger: (string: keyof Trigger, value: unknown) => void;
+  }
+) => {
+  const [adminUsers, setAdminUsers] = useState<string[]>([])
+
+  const { isLoading } = useLoadingEffect(async () => {
+    const adminUsers = await Api.fetchAdminUsersByPortal(studyEnvContext.portal.shortcode)
+    setAdminUsers(adminUsers.map(user => user.username))
+  }, [])
+
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  return <div>
+    <label className="form-label" htmlFor="adminEmailFilter">
+      Send notification to <span className='fst-italic'>(leave blank to send to all study staff)</span>
+    </label>
+
+    <Select
+      options={adminUsers.map(username => ({ label: username, value: username }))}
+      inputId="adminEmailFilter"
+      value={adminUsers
+        .filter(username => trigger.adminEmailFilter?.includes(username))
+        .map(username => ({ label: username, value: username }))}
+      isMulti={true}
+      onChange={options => updateTrigger('adminEmailFilter', options.map(opt => opt!.value).join(','))}
+    />
+  </div>
 }
 
 const statusOptions: { label: string, value: ParticipantTaskStatus }[] = [
