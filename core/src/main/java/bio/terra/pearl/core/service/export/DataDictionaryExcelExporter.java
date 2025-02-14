@@ -4,14 +4,11 @@ import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -20,6 +17,11 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Writes a data dictionary file based on the given configs.
  * columns include variable name, type, description, and options.
@@ -27,6 +29,8 @@ import org.apache.poi.xssf.streaming.SXSSFRow;
  * with cell formats
  */
 public class DataDictionaryExcelExporter extends ExcelExporter {
+    private final ObjectMapper objectMapper;
+
     private static final int ROW_ACCESS_WINDOW_SIZE = 200;
     private int currentRowNum = -1;
     private static final String SHEET_NAME = "Data dictionary";
@@ -42,6 +46,7 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
     private static final int QUESTION_TYPE_COL_NUMBER = 2;
     private static final int DESCRIPTION_COL_NUMBER = 3;
     private static final int OPTIONS_COL_NUMBER = 4;
+    private static final int DESCRIPTION_TRANSLATIONS_COL_NUMBER = 5;
 
 
     /**
@@ -61,6 +66,8 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         boldUnderlineFont.setBold(true);
         boldUnderlineFont.setUnderline(Font.U_SINGLE);
         boldUnderlineStyle.setFont(boldUnderlineFont);
+
+        this.objectMapper = objectMapper;
     }
 
     /** writes the dictionary */
@@ -71,6 +78,8 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         sheet.setColumnWidth(QUESTION_TYPE_COL_NUMBER, 12 * 256);
         sheet.setColumnWidth(DESCRIPTION_COL_NUMBER, 60 * 256);
         sheet.setColumnWidth(OPTIONS_COL_NUMBER, 40 * 256);
+        sheet.setColumnWidth(DESCRIPTION_TRANSLATIONS_COL_NUMBER, 60 * 256);
+
 
         for (ModuleFormatter<?, ? extends ItemFormatter<?>> moduleFormatter : moduleFormatters) {
             addModuleHeaderRows(moduleFormatter);
@@ -100,8 +109,8 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         }
         sheet.addMergedRegion(new CellRangeAddress(currentRowNum, currentRowNum, DATATYPE_COL_NUMBER, OPTIONS_COL_NUMBER));
 
-        SXSSFRow columnHeaders = addRowToSheet("Variable Name", "Data type",
-                "Question type", "Description", "Options");
+        SXSSFRow columnHeaders = addColumnHeaderRowToSheet("Variable Name", "Data type",
+                "Question type", "Description", "Options", "Description (all languages)");
         columnHeaders.setRowStyle(boldUnderlineStyle);
     }
 
@@ -215,14 +224,58 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         return choice.stableId() + " - " + choice.text();
     }
 
-    protected SXSSFRow addRowToSheet(String variableName, String dataType, String questionType, String description, String options) {
+    protected SXSSFRow addColumnHeaderRowToSheet(String variableName, String dataType, String questionType, String description, String options, String descriptionTranslations) {
         SXSSFRow newRow = addRowToSheet();
         addCellToRow(newRow, VARIABLE_NAME_COL_NUMBER, variableName != null ? variableName : StringUtils.EMPTY);
         addCellToRow(newRow, DATATYPE_COL_NUMBER, dataType != null ? dataType : StringUtils.EMPTY);
         addCellToRow(newRow, QUESTION_TYPE_COL_NUMBER, questionType != null ? questionType : StringUtils.EMPTY);
         addCellToRow(newRow, DESCRIPTION_COL_NUMBER, description != null ? description : StringUtils.EMPTY);
         addCellToRow(newRow, OPTIONS_COL_NUMBER, options != null ? options : StringUtils.EMPTY);
+        addCellToRow(newRow, DESCRIPTION_TRANSLATIONS_COL_NUMBER, descriptionTranslations != null ? descriptionTranslations : StringUtils.EMPTY);
         return newRow;
+    }
+
+    protected SXSSFRow addRowToSheet(String variableName, String dataType, String questionType, String description, String options) {
+
+        String englishDescription = description != null ? getEnglishTranslation(description) : null;
+        String allDescriptionTranslations = description != null ? wrapTranslationObject(description) : null;
+
+        SXSSFRow newRow = addRowToSheet();
+        addCellToRow(newRow, VARIABLE_NAME_COL_NUMBER, variableName != null ? variableName : StringUtils.EMPTY);
+        addCellToRow(newRow, DATATYPE_COL_NUMBER, dataType != null ? dataType : StringUtils.EMPTY);
+        addCellToRow(newRow, QUESTION_TYPE_COL_NUMBER, questionType != null ? questionType : StringUtils.EMPTY);
+        addCellToRow(newRow, DESCRIPTION_COL_NUMBER, englishDescription != null ? englishDescription : StringUtils.EMPTY);
+        addCellToRow(newRow, OPTIONS_COL_NUMBER, options != null ? options : StringUtils.EMPTY);
+        addCellToRow(newRow, DESCRIPTION_TRANSLATIONS_COL_NUMBER, allDescriptionTranslations != null ? allDescriptionTranslations : StringUtils.EMPTY);
+        return newRow;
+    }
+
+    protected String getEnglishTranslation(String description) {
+        try {
+            ObjectNode node = objectMapper.readValue(description, ObjectNode.class);
+
+            if (node.has("en")) {
+                return node.get("en").asText();
+            }
+
+            return description;
+        } catch (Exception e) {
+            return description; // could be regular string
+        }
+    }
+
+    protected String wrapTranslationObject(String description) {
+
+        try {
+            // if it's a json object, then it should be a translation object
+            objectMapper.readValue(description, ObjectNode.class);
+            return description;
+        } catch (Exception e) {
+            ObjectNode node = objectMapper.createObjectNode();
+            node.set("en", objectMapper.valueToTree(description));
+
+            return node.toString();
+        }
     }
 
     protected SXSSFRow addRowToSheet() {
