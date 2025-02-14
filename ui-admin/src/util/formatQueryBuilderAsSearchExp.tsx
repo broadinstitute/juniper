@@ -55,7 +55,11 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
             if (isNumber(value)) {
               processedValue = value
             } else {
-              processedValue = parseNumber(value, { parseNumbers: true })
+              if (isString(value) && value.trim() === '') {
+                processedValue = 0
+              } else {
+                processedValue = parseNumber(value, { parseNumbers: true })
+              }
             }
           } else if (typeDefinition.type === 'BOOLEAN') {
             if (isBoolean(value)) {
