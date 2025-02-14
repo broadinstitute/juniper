@@ -1,7 +1,7 @@
 import { asMockedFn, MockI18nProvider, setupRouterTest, mockParticipantFile } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { mockUsePortalEnv } from 'test-utils/test-portal-factory'
-import { render, screen, waitFor } from '@testing-library/react'
+import { mockPortal, mockUsePortalEnv } from 'test-utils/test-portal-factory'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import DocumentLibrary from './DocumentLibrary'
 import { useActiveUser } from 'providers/ActiveUserProvider'
@@ -16,7 +16,8 @@ jest.mock('providers/ActiveUserProvider', () => ({
 }))
 
 jest.mock('api/api', () => ({
-  listParticipantFiles: jest.fn()
+  listParticipantFiles: jest.fn(),
+  getPortal: jest.fn()
 }))
 
 beforeEach(() => {
@@ -58,10 +59,15 @@ describe('DocumentLibrary', () => {
       expect(screen.getByText('file1.pdf')).toBeInTheDocument()
     })
 
+    await act(async () => {
+      screen.getByText('Options').click()
+    })
+
+    expect(screen.getByText('Delete')).toBeInTheDocument()
     expect(screen.getByText('{documentDownloadButton}')).toBeInTheDocument()
   })
 
-  it('renders no associated tasks message', async () => {
+  it('does not render any associated tasks', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
       mockParticipantFile('file1.pdf', [])
     ])
@@ -72,7 +78,7 @@ describe('DocumentLibrary', () => {
       expect(screen.getByText('file1.pdf')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('not associated with any tasks')).toBeInTheDocument()
+    expect(screen.queryByText('shared in response to')).not.toBeInTheDocument()
   })
 
   it('renders associated tasks', async () => {
@@ -105,5 +111,73 @@ describe('DocumentLibrary', () => {
 
     //note: this is looking at the i18n key for the task name
     expect(screen.getByText('{researchSurvey1:1}')).toBeInTheDocument()
+  })
+
+
+  it('allows deleting documents that dont have any associated answers', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([
+      mockParticipantFile('file1.pdf')
+    ])
+
+    asMockedFn(Api.getPortal).mockResolvedValue(mockPortal())
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider><DocumentLibrary/></MockI18nProvider>
+    )
+    render(RoutedComponent)
+
+    await waitFor(() => {
+      expect(screen.getByText('file1.pdf')).toBeInTheDocument()
+    })
+
+    await act(async () => {
+      screen.getByText('Options').click()
+    })
+
+    await act(async () => {
+      screen.getByText('Delete').click()
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Are you sure you want to delete this document?', { exact: false })).toBeInTheDocument()
+    })
+  })
+
+  it('shows a warning message when trying to delete a document that has associated answers', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([
+      mockParticipantFile('file1.pdf', [{
+        format: 'FILE_NAME',
+        surveyVersion: 1,
+        stringValue: 'file1.pdf',
+        questionStableId: 'question1',
+        surveyResponseId: 'taskId1'
+      }])
+    ])
+
+    asMockedFn(Api.getPortal).mockResolvedValue(mockPortal())
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider><DocumentLibrary/></MockI18nProvider>
+    )
+    render(RoutedComponent)
+
+    await waitFor(() => {
+      expect(screen.getByText('file1.pdf')).toBeInTheDocument()
+    })
+
+    await act(async () => {
+      screen.getByText('Options').click()
+    })
+
+    await act(async () => {
+      screen.getByText('Delete').click()
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('' +
+          'This document is currently shared in response to at least one survey. ' +
+          'Please remove it from the survey response(s) before deleting it.')
+      ).toBeInTheDocument()
+    })
   })
 })
