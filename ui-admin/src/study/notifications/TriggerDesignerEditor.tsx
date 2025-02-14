@@ -465,7 +465,7 @@ const AdminEmailFilterEditor = (
 
   return <div>
     <label className="form-label" htmlFor="adminEmailFilter">
-      Send notification to <span className='fst-italic'>(leave blank to send to all study staff)</span>
+      Send notification to
     </label>
 
     <Select

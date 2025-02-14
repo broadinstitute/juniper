@@ -126,6 +126,7 @@
         "eventType": "STUDY_ENROLLMENT",
         "actionType": "ADMIN_NOTIFICATION",
         "rule": "{profile.doNotEmailSolicit} = true",
+        "adminEmailFilter": "heartdemostaff@gmail.com",
         "populateFileName": "emails/adminNotificationTest.json"
       }],
       "enrolleeFiles": [

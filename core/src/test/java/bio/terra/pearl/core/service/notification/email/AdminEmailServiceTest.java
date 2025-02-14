@@ -22,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AdminEmailServiceTest extends BaseSpringBootTest {
     @Autowired
@@ -54,20 +53,25 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), bundle.getPortal().getId());
         localizedEmailTemplateService.create(LocalizedEmailTemplate.builder().emailTemplateId(emailTemplate.getId()).language("en").subject("subject").body("body").build());
 
+
+        AdminUserBundle adminUserBundle1 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));
+        AdminUserBundle adminUserBundle2 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));
+        AdminUserBundle adminUserBundle3 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));
+
         Trigger trigger = triggerFactory.buildPersisted(
                 Trigger.builder()
                         .emailTemplateId(emailTemplate.getId())
                         .deliveryType(NotificationDeliveryType.EMAIL)
                         .actionType(TriggerActionType.ADMIN_NOTIFICATION)
+                        .adminEmailFilter(
+                                adminUserBundle1.user().getUsername() + "," + adminUserBundle2.user().getUsername()
+                        )
                         .triggerType(TriggerType.EVENT),
                 bundle.getStudyEnv().getId(),
                 bundle.getPortalEnv().getId());
 
         EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
 
-
-        AdminUserBundle adminUserBundle1 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));
-        AdminUserBundle adminUserBundle2 = portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(bundle.getPortal()));
 
         List<Notification> notificationsBefore = notificationService.findAllByConfigId(trigger.getId(), false);
 
@@ -99,6 +103,7 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
         assertEquals(NotificationType.ADMIN, notification.getNotificationType());
         assertTrue(notification.getSentTo().contains(adminUserBundle1.user().getUsername()));
         assertTrue(notification.getSentTo().contains(adminUserBundle2.user().getUsername()));
+        assertFalse(notification.getSentTo().contains(adminUserBundle3.user().getUsername()));
 
     }
 }

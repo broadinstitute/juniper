@@ -22,7 +22,6 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.helpers.mail.Mail;
-import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.scheduling.annotation.Async;
@@ -113,13 +112,18 @@ public class AdminEmailService {
             .orElseThrow(() -> new IllegalStateException("Portal not found"));
     List<AdminUser> adminUsers = adminUserService.findAllWithRolesByPortal(portal.getId());
 
-    if (StringUtils.isNotBlank(trigger.getAdminEmailFilter())) {
-      List<String> emails = List.of(trigger.getAdminEmailFilter().split(",")).stream().map(String::trim).toList();
 
-      adminUsers = adminUsers.stream()
-              .filter(adminUser -> emails.contains(adminUser.getUsername()))
-              .toList();
+    String emailFilter = trigger.getAdminEmailFilter();
+    if (emailFilter == null) {
+      emailFilter = "";
     }
+
+    List<String> emails = List.of(emailFilter.split(",")).stream().map(String::trim).toList();
+
+    adminUsers = adminUsers.stream()
+            .filter(adminUser -> emails.contains(adminUser.getUsername()))
+            .toList();
+
 
     EmailTemplate emailTemplate = emailTemplateService.find(trigger.getEmailTemplateId())
             .orElseThrow(() -> new NotFoundException("Email template not found"));
