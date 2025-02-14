@@ -1,7 +1,9 @@
 import {
-  Enrollee, EnvironmentName,
+  Enrollee,
+  EnvironmentName,
+  I18nOptions,
   instantToDateString,
-  ParticipantFile,
+  ParticipantFile, ParticipantTask,
   saveBlobAsDownload,
   StudyEnvParams,
   useI18n
@@ -10,14 +12,10 @@ import React, { useEffect, useState } from 'react'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import Api from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faDownload,
-  faFile,
-  faFileImage,
-  faFileLines,
-  faFilePdf
-} from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faFile, faFileImage, faFileLines, faFilePdf } from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { Link } from 'react-router-dom'
+import { getTaskPath } from '../task/taskUtils'
 
 export default function DocumentLibrary() {
   const { i18n } = useI18n()
@@ -46,6 +44,7 @@ export default function DocumentLibrary() {
               <h3>{i18n('documentsPageUploadedDocumentsTitle')}</h3>
               {studiesJoined.map(pStudy =>
                 <DocumentsList
+                  key={pStudy.study.shortcode}
                   studyName={pStudy.study.name}
                   studyEnvParams={{
                     portalShortcode: portal.shortcode,
@@ -82,7 +81,7 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
   return <>
     <h5 className={'mt-3'}>{studyName} ({participantFiles.length})</h5>
     <div className="d-flex flex-column">
-      { participantFiles.length > 0 && <table className="table">
+      {participantFiles.length > 0 && <table className="table">
         <thead>
           <tr>
             <th></th>
@@ -96,9 +95,13 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
                 <div>
                   {fileTypeToIcon(participantFile.fileType)}
                   {participantFile.fileName}
-                  <div className={'text-muted fst-italic'}>
-                    {`${i18n('documentsListCreatedOn')} ${  instantToDateString(participantFile.createdAt)}`}
-                  </div>
+                  <span className='fst-italic text-muted'> ({instantToDateString(participantFile.createdAt)})</span>
+                  {surveyResponseIdsToTaskNames(
+                    i18n,
+                    studyEnvParams,
+                    enrollee,
+                    participantFile.associatedAnswers.map(answer => answer.surveyResponseId!))
+                  }
                 </div>
               </td>
               <td className="align-middle">
@@ -124,6 +127,34 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
       }
     </div>
   </>
+}
+
+const surveyResponseIdsToTaskNames = (
+  i18n: (key: string, options?: I18nOptions) => string, studyEnvParams: StudyEnvParams,
+  enrollee: Enrollee, surveyResponseIds: string[]
+) => {
+  const associatedTasks = surveyResponseIds.map(surveyResponseId => {
+    return enrollee.participantTasks.find(task => task.surveyResponseId === surveyResponseId)
+  }).filter((task): task is ParticipantTask => task !== undefined)
+
+  if (associatedTasks.length === 0) {
+    return <div className={'mt-2 fst-italic text-muted'}>not associated with any tasks</div>
+  }
+
+  return (
+    <div className={'mt-2 text-muted'}>
+      <span>shared in response to:</span>
+      <ul>
+        {associatedTasks.map(task =>
+          <li key={task.id}>
+            <Link to={`../${getTaskPath(task, enrollee.shortcode, studyEnvParams.studyShortcode)}`}>
+              {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+            </Link>
+          </li>
+        )}
+      </ul>
+    </div>
+  )
 }
 
 const fileTypeToIcon = (fileType: string) => {

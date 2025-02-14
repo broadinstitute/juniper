@@ -1,4 +1,5 @@
 import {
+  Answer,
   Question,
   Survey,
   SurveyResponse
@@ -9,6 +10,7 @@ import {
   Profile
 } from 'src/types/user'
 import { StudyEnvironmentSurvey } from 'src/types/study'
+import { ParticipantFile } from 'src/types/participantFile'
 
 /** simplest survey.  one page, no interactive elements */
 export function generateSurvey(overrideObj?: any): Survey { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -201,5 +203,16 @@ export const mockProfile = (): Profile => {
       country: 'US',
       postalCode: '02478'
     }
+  }
+}
+
+export const mockParticipantFile = (fileName: string, associatedAnswers?: Answer[]): ParticipantFile => {
+  return {
+    id: fileName,
+    fileName,
+    fileType: 'application/pdf',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    associatedAnswers: associatedAnswers || []
   }
 }
