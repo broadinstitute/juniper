@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
+import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
@@ -15,10 +16,9 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyTaskConfigDto;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.RecurrenceType;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -59,6 +59,8 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     private SurveyResponseFactory surveyResponseFactory;
     @Autowired
     private TimeShiftDao timeShiftDao;
+    @Autowired
+    private SurveyResponseDao surveyResponseDao;
 
 
     @Test
@@ -365,5 +367,58 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId()), hasSize(0));
         assertThat(participantTaskService.findByEnrolleeId(sandbox2.enrollee().getId()), hasSize(2));
         assertThat(participantTaskService.findByEnrolleeId(sandbox3.enrollee().getId()), hasSize(1));
+    }
+
+    @Test
+    @Transactional
+    public void testLongitudinalPrepopulate(TestInfo testInfo) {
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        EnrolleeBundle enrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        Survey survey = surveyFactory.buildPersisted(Survey.builder()
+                .portalId(sandboxBundle.getPortal().getId())
+                .stableId("lifestyle")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
+                .surveyType(SurveyType.RESEARCH)
+                .name("Lifestyle Survey")
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurrenceIntervalDays(7)
+                .prepopulate(true));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+        ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true, "reason" );
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+        List<ParticipantTask> initialParticipantTasks = participantTaskService.findByEnrolleeId(enrollee.enrollee().getId());
+
+        // confirm the task was assigned
+        assertThat(initialParticipantTasks, hasSize(1));
+        ParticipantTask initialTask = initialParticipantTasks.getFirst();
+
+        // submit an answer to the survey
+        surveyResponseFactory.submitStringAnswer(
+                initialTask,
+                "diagnosis",
+                "sick",
+                false,
+                enrollee);
+
+        // change the task time to 8 days ago, so it can be re-assigned during the next scheduled task assignment
+        timeShiftDao.changeTaskCreationTime(initialTask.getId(), Instant.now().minus(8, ChronoUnit.DAYS));
+
+        // test that task is re-assigned and answer was prepopulated in the new response
+        surveyTaskDispatcher.assignScheduledTasks();
+
+        // confirm the task was re-assigned
+        List<ParticipantTask> latestParticipantTasks = participantTaskService.findByEnrolleeId(enrollee.enrollee().getId());
+        assertThat(latestParticipantTasks, hasSize(2));
+
+        ParticipantTask reassignedTask = latestParticipantTasks.get(1);
+        SurveyResponse reassignedResponse = surveyResponseDao.findOneWithAnswers(reassignedTask.getSurveyResponseId()).get();
+
+        //confirm diagnosis answer was prepopulated in the new response
+        assertThat(reassignedResponse.getAnswers().getFirst().getStringValue(), equalTo("sick"));
+
+        assertThat(reassignedTask.getCreatedAt(), not(equalTo(initialTask.getCreatedAt())));
+        assertThat(reassignedTask.getLastUpdatedAt(), not(equalTo(initialTask.getLastUpdatedAt())));
+        assertThat(reassignedTask.getStatus(), equalTo(TaskStatus.NEW));
     }
 }
