@@ -54,6 +54,7 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private boolean allowParticipantReedit = true; // whether participants can change answers after submission
     @Builder.Default
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recurrence type is LONGITUDINAL)
+    private Integer createNewResponseAfterDays; // how many days after the last completion to create a separate new response if edits are made (if recurrence type is LONGITUDINAL)
     @Builder.Default
     private boolean autoAssign = true; // whether to assign the survey to enrollees automatically once they meet the eligibility criteria
     @Builder.Default
