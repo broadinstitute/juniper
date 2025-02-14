@@ -7,10 +7,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -21,10 +18,15 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
@@ -34,6 +36,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final AnswerProcessingService answerProcessingService;
     private final ParticipantDataChangeService participantDataChangeService;
+    private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final EventService eventService;
     private final EnrolleeContextService enrolleeContextService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
@@ -44,8 +47,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 ParticipantDataChangeService participantDataChangeService,
-                                 EventService eventService, EnrolleeContextService enrolleeContextService) {
+                                 EnrolleeContextService enrolleeContextService,
+                                 ParticipantDataChangeService participantDataChangeService, @Lazy SurveyTaskDispatcher surveyTaskDispatcher, EventService eventService) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
@@ -53,6 +56,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.answerProcessingService = answerProcessingService;
         this.participantDataChangeService = participantDataChangeService;
+        this.surveyTaskDispatcher = surveyTaskDispatcher;
         this.eventService = eventService;
         this.enrolleeContextService = enrolleeContextService;
     }
@@ -136,6 +140,16 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return answers;
     }
 
+    //if the cutoff time has passed, create a new task and response
+    private boolean shouldCreateNewLongtitudinalTaskAndResponse(Integer createNewResponseAfterDays, ParticipantTask task) {
+        if(createNewResponseAfterDays == null) {
+            return false;
+        }
+        Instant cutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
+                .minusSeconds(createNewResponseAfterDays).toInstant(); //todo change back to minusDays
+        return task.getLastUpdatedAt().isBefore(cutoffTime);
+    }
+
     /**
      * Creates a survey response and fires appropriate downstream events.
      */
@@ -152,8 +166,20 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());
 
-        // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+
+        SurveyResponse response;
+        //if the survey is longitudinal and we're past the cutoff point for updating an existing response, we need to create a new response and task
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && shouldCreateNewLongtitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), task)) {
+            ParticipantTask newTask = participantTaskService.cleanForCopying(task);
+            SurveyResponse priorResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElseThrow(() -> new NotFoundException("No response found for task %s".formatted(taskId)));
+            priorResponse.getAnswers().forEach(a -> a.setSurveyResponseId(null));
+            response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(priorResponse);
+            newTask.setSurveyResponseId(response.getId());
+            task = participantTaskService.create(newTask, null);
+        } else {
+            // find or create the SurveyResponse object to attach the snapshot
+            response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+        }
 
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, justification, survey, ppUser, operator);
         List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
