@@ -143,7 +143,7 @@ describe('DocumentLibrary', () => {
     })
   })
 
-  it('shows a warning message when trying to delete a document that has associated answers', async () => {
+  it('shows warning modal when trying to delete a document that has associated answers', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
       mockParticipantFile('file1.pdf', [{
         format: 'FILE_NAME',
