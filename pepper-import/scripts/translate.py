@@ -634,30 +634,6 @@ def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], tr
             translation, dsm_data, juniper_data
         )
 
-
-def translate_value_repeated(dsm_data: dict[str, Any],
-                             juniper_data: dict[str, Any],
-                             translation: Translation,
-                             translate: callable[[Translation, dict[str, Any], dict[str, Any]], Any]):
-    idx = 1
-
-    while True:
-        dsm_repeat = make_repeat_question(translation.dsm_question_definition, idx)
-        juniper_repeat = make_repeat_question(translation.juniper_question_definition, idx)
-
-        repeat_translation = deepcopy(translation)
-        repeat_translation.dsm_question_definition = dsm_repeat
-        repeat_translation.juniper_question_definition = juniper_repeat
-
-        val = translate(repeat_translation, dsm_data, juniper_data)
-        if val is None or val == '':
-            break
-
-        juniper_data[juniper_repeat.stable_id] = val
-        idx += 1
-
-
-
 def simple_translate(translation: Translation,
                      dsm_data: dict[str, Any],
                      juniper_data: dict[str, Any]) -> Any:
