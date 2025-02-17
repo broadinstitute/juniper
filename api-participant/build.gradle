@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
-    implementation 'org.liquibase:liquibase-core:4.30.0'
+    implementation 'org.liquibase:liquibase-core:4.31.0'
     implementation 'com.auth0:java-jwt:4.5.0'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
