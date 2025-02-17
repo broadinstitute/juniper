@@ -22,7 +22,7 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.3",
     "react-oidc-context": "^2.2.0",
-    "react-router-dom": "^6.4.0",
+    "react-router-dom": "^7.1.5",
     "react-router-hash-link": "^2.4.3",
     "survey-core": "1.12.4",
     "survey-react-ui": "1.12.4",
