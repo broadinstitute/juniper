@@ -3,11 +3,17 @@ import { ExportOptions } from 'api/api'
 import { buildFilter } from 'util/exportUtils'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import {
+  faChevronDown,
+  faChevronUp
+} from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { useReactMultiSelect } from 'util/react-select-utils'
 import InfoPopup from 'components/forms/InfoPopup'
-import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import {
+  DocsKey,
+  ZendeskLink
+} from 'util/zendeskUtils'
 
 export const FILE_FORMATS = [{
   label: 'Tab-delimited (.tsv)',
@@ -87,23 +93,6 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
       </Button>
     </div>
     { showAdvancedOptions && <div className="px-3">
-      <div className="py-2">
-        <p className="fw-bold mb-1">
-          Completions included of a survey (for recurring surveys)
-        </p>
-        <label className="form-control border-0">
-          <input type="radio" name="onlyIncludeMostRecent" value="true" checked={exportOptions.onlyIncludeMostRecent}
-            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeMostRecent: true })}
-            className="me-1" disabled={true}/>
-          Only include most recent
-        </label>
-        <label className="form-control border-0">
-          <input type="radio" name="onlyIncludeMostRecent" value="false" checked={!exportOptions.onlyIncludeMostRecent}
-            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeMostRecent: false })}
-            className="me-1" disabled={true}/>
-          Include all completions
-        </label>
-      </div>
       <div className="py-2">
         <p className="fw-bold mb-1">
           Include subheaders for columns

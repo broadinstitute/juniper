@@ -1,16 +1,31 @@
-import { CellContext, ColumnDef, Table } from '@tanstack/react-table'
+import {
+  CellContext,
+  ColumnDef,
+  Table
+} from '@tanstack/react-table'
 import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faColumns
+} from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal'
-import { EnrolleeSearchExpressionResult, ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from 'api/api'
+import {
+  EnrolleeSearchExpressionResult,
+  ExpressionSearchFacets,
+  KeyedSearchValueTypeDefinition
+} from 'api/api'
 import LoadingSpinner from '../LoadingSpinner'
 import Select from 'react-select'
 import { Link } from 'react-router-dom'
 import { checkboxColumnCell } from './tableUtils'
-import { instantToDefaultString } from '@juniper/ui-core'
+import {
+  instantToDefaultString,
+  ParticipantTaskStatusOptions
+} from '@juniper/ui-core'
 import _startCase from 'lodash/startCase'
+import { get } from 'lodash'
 
 
 /**
@@ -153,20 +168,9 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
     field = field.replace('user.', 'participantUser.')
   }
   if (field.startsWith('answer')) {
-    const { questionStableId, surveyStableId, header } = parseAnswerFacet(facet)
-    return {
-      id: field,
-      header,
-      accessorFn: info => {
-        const answer = info.answers.find(ans =>
-          ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
-        // we can add code here at a later time to map answer stableId string values to choice labels
-        return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
-      },
-      meta: {
-        columnType
-      }
-    }
+    return dynamicAnswerColumn(facet)
+  } else if (field.startsWith('task')) {
+    return dynamicTaskColumn(facet)
   } else {
     const colDef: ColumnDef<T> = {
       id: field,
@@ -183,6 +187,56 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
   }
 }
 
+const dynamicTaskColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  const { taskStableId, field, header } = parseTaskFacet(facet)
+
+  return {
+    id: facet.key,
+    header,
+    accessorFn: info => {
+      const task = info.tasks.find(task => task.targetStableId === taskStableId)
+      if (field === 'status') {
+        return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
+      }
+
+      return get(task, field)
+    },
+    meta: {
+      columnType: facet.type.toLowerCase()
+    }
+  }
+}
+
+const dynamicAnswerColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  const { questionStableId, surveyStableId, header } = parseAnswerFacet(facet)
+  return {
+    id: facet.key,
+    header,
+    accessorFn: info => {
+      const answer = info.answers.find(ans =>
+        ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
+      // we can add code here at a later time to map answer stableId string values to choice labels
+      return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+    },
+    meta: {
+      columnType: facet.type.toLowerCase()
+    }
+  }
+}
+
+export function parseTaskFacet(facet: KeyedSearchValueTypeDefinition) {
+  const key = facet.key
+  const [, taskStableId, field] = key.split('.')
+
+  let header = taskStableId
+  if (taskStableId.match(/^[a-z]{2}_[a-z]{2}_/)) {
+    header = taskStableId.slice(5)
+  }
+
+  return { taskStableId, field, header: _startCase(`${header} ${field}`) }
+}
 export function parseAnswerFacet(facet: KeyedSearchValueTypeDefinition) {
   const field = facet.key
   const [, surveyStableId, questionStableId] = field.split('.')

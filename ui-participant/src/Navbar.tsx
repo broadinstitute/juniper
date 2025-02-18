@@ -3,7 +3,8 @@ import React from 'react'
 import Api, { getEnvSpec } from 'api/api'
 import {
   ParticipantNavbar,
-  useI18n
+  useI18n,
+  getB2CLocale
 } from '@juniper/ui-core'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -54,7 +55,7 @@ export default function Navbar(props: NavbarProps) {
         portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
-        ui_locales: selectedLanguage
+        ui_locales: getB2CLocale(selectedLanguage)
       }
     })
   }

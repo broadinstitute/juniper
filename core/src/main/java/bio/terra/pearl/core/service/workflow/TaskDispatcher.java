@@ -276,6 +276,13 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
+        else if(taskDispatchConfig.getRecurrenceType().equals(RecurrenceType.LONGITUDINAL)) {
+            Optional<ParticipantTask> existingTask = existingTasks.stream()
+                    .filter(t -> t.getTargetStableId() != null)
+                    .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .max(Comparator.comparing(ParticipantTask::getCreatedAt));
+            existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
+        }
     }
 
     private boolean isEligible(T taskDispatchConfig, EnrolleeContext enrolleeContext) {
@@ -332,7 +339,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 
-    private void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {
+    protected void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {
         BeanUtils.copyProperties(
                 oldTask,
                 newTask,

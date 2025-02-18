@@ -23,6 +23,7 @@ export default function EnrolleeDocuments({ enrollee, studyEnvContext }: {
   return <LoadingSpinner isLoading={isLoading}>
     <ParticipantDocumentListView
       studyEnvContext={studyEnvContext}
+      showAssociatedTasks={true}
       enrollee={enrollee}
       documents={participantFiles}/>
   </LoadingSpinner>

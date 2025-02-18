@@ -1,9 +1,8 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyTaskConfigDto;
-import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -16,14 +15,17 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
@@ -31,6 +33,7 @@ import java.util.UUID;
 public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final SurveyService surveyService;
+    private final SurveyResponseService surveyResponseService;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
@@ -38,10 +41,11 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
                                 EnrolleeContextService enrolleeContextService,
-                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, SurveyService surveyService) {
+                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, SurveyService surveyService, SurveyResponseService surveyResponseService) {
         super(studyEnvironmentService, participantTaskService, enrolleeService, enrolleeSearchExpressionParser, enrolleeContextService, portalParticipantUserService);
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyService = surveyService;
+        this.surveyResponseService = surveyResponseService;
     }
 
     @EventListener
@@ -130,5 +134,44 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
         }
 
         return Optional.of(new SurveyTaskConfigDto(sesOpt.get(), surveyOpt.get()));
+    }
+
+    @Override
+    public void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, SurveyTaskConfigDto taskDispatchConfig) {
+        super.copyTaskData(newTask, oldTask, taskDispatchConfig);
+
+        newTask.setSurveyResponseId(null);
+        newTask.setCompletedAt(null);
+
+        // if the survey is set to prepopulate, copy the answers from the old task to the new task
+        // we need to also create a new survey response for the new task and attach it to that task
+        if(taskDispatchConfig.getSurvey().isPrepopulate()) {
+            Optional<SurveyResponse> priorResponse = surveyResponseService.findOneWithAnswers(oldTask.getSurveyResponseId());
+
+            if (priorResponse.isPresent() && taskDispatchConfig.getSurvey().isPrepopulate()) {
+                SurveyResponse createdResponse = createPrepopulatedSurveyResponse(priorResponse.get());
+                newTask.setStatus(TaskStatus.NEW);
+                newTask.setSurveyResponseId(createdResponse.getId());
+            }
+        }
+    }
+
+    // creates a new survey response with the same answers as priorResponse
+    // for use with longitudinal recurring surveys
+    private SurveyResponse createPrepopulatedSurveyResponse(SurveyResponse priorResponse) {
+        List<Answer> answers = priorResponse.getAnswers().stream()
+                .map(a -> (Answer) a.cleanForCopying())
+                .collect(Collectors.toList());
+
+        SurveyResponse newResponse = SurveyResponse.builder()
+                .surveyId(priorResponse.getSurveyId())
+                .enrolleeId(priorResponse.getEnrolleeId())
+                .createdAt(Instant.now())
+                .lastUpdatedAt(Instant.now())
+                .answers(answers)
+                .participantFiles(priorResponse.getParticipantFiles())
+                .build();
+
+        return surveyResponseService.create(newResponse);
     }
 }

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { useReturnToLanguage, useReturnToStudy } from 'browserPersistentState'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { useI18n } from '@juniper/ui-core'
+import { useI18n, getB2CLocale } from '@juniper/ui-core'
 import { getEnvSpec } from 'api/api'
 
 /** Show the B2C participant registration page */
@@ -28,7 +28,7 @@ export default function Registration() {
         portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
-        ui_locales: selectedLanguage
+        ui_locales: getB2CLocale(selectedLanguage)
       }
     })
   }

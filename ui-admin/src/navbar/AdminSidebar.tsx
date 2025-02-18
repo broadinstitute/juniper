@@ -9,7 +9,11 @@ import {
   useParams
 } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCaretRight,
+  faPencil,
+  faSave
+} from '@fortawesome/free-solid-svg-icons'
 import { Study } from '@juniper/ui-core'
 import { studyShortcodeFromPath } from 'study/StudyRouter'
 import { useNavContext } from './NavContextProvider'
@@ -26,6 +30,22 @@ const ZONE_COLORS: { [index: string]: string } = {
 }
 
 export const sidebarNavLinkClasses = 'text-white p-1 rounded w-100 d-block sidebar-nav-link'
+
+export type StudySidebarConfig = {
+  hidden: string[]
+}
+
+export type SidebarConfig = {
+  studyConfig?: { [studyShortcode: string]: StudySidebarConfig }
+}
+
+const parseSidebarConfigState = (data: string): SidebarConfig => {
+  try {
+    return JSON.parse(data)
+  } catch (e) {
+    return {}
+  }
+}
 
 /** renders the left navbar of admin tool */
 const AdminSidebar = ({ config }: { config: Config }) => {
@@ -46,6 +66,50 @@ const AdminSidebar = ({ config }: { config: Config }) => {
   const currentStudy = studyList.find(study => study.shortcode === studyShortcode)
   const color = ZONE_COLORS[config.deploymentZone] || ZONE_COLORS['prod']
 
+
+  const sidebarConfig: SidebarConfig = parseSidebarConfigState(localStorage.getItem('sidebarConfig') || '{}')
+
+  const [isEditingSidebarConfig, setIsEditingSidebarConfig] = React.useState(false)
+
+  const getStudyConfig = (studyShortcode: string): StudySidebarConfig => {
+    if (!sidebarConfig.studyConfig) {
+      sidebarConfig.studyConfig = {}
+      localStorage.setItem('sidebarConfig', JSON.stringify(sidebarConfig))
+    }
+
+    if (!sidebarConfig.studyConfig[studyShortcode]) {
+      sidebarConfig.studyConfig[studyShortcode] = { hidden: [] }
+      localStorage.setItem('sidebarConfig', JSON.stringify(sidebarConfig))
+    }
+
+
+    return sidebarConfig.studyConfig[studyShortcode]
+  }
+
+  const setStudyConfig = (studyShortcode: string, studyConfig: StudySidebarConfig) => {
+    if (!sidebarConfig.studyConfig) {
+      sidebarConfig.studyConfig = {}
+    }
+
+    sidebarConfig.studyConfig[studyShortcode] = studyConfig
+    localStorage.setItem('sidebarConfig', JSON.stringify(sidebarConfig))
+  }
+
+  const toggleHiddenItem = (key: string) => {
+    if (!currentStudy) {
+      return
+    }
+
+    const studyConfig = getStudyConfig(currentStudy.shortcode)
+    const hiddenItems = studyConfig.hidden
+    if (hiddenItems.includes(key)) {
+      studyConfig.hidden = hiddenItems.filter(item => item !== key)
+    } else {
+      studyConfig.hidden = [...hiddenItems, key]
+    }
+    setStudyConfig(currentStudy.shortcode, studyConfig)
+  }
+
   // automatically collapse the sidebar for mobile-first routes
   useEffect(() => {
     if (isMobileFirstRoute()) {
@@ -58,8 +122,8 @@ const AdminSidebar = ({ config }: { config: Config }) => {
   }
 
   return <div style={{ backgroundColor: color, minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
-    className="p-2 pt-3">
-    <>
+    className="p-2 pt-3 d-flex flex-column">
+    <div style={{ minHeight: '100vh', height: '100%' }}>
       <div className="d-flex justify-content-between align-items-center">
         { open && <Link to="/" className="text-white fs-4 px-2 rounded-1 sidebar-nav-link flex-grow-1">Juniper</Link> }
         <Button variant="secondary" className="m-1 text-light" tooltipPlacement={'right'}
@@ -73,7 +137,12 @@ const AdminSidebar = ({ config }: { config: Config }) => {
         </Button>
       </div>
       { open && <>
-        { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
+        {currentStudy && <StudySidebar
+          study={currentStudy}
+          isEditingSidebarConfig={isEditingSidebarConfig}
+          toggleHiddenItem={toggleHiddenItem}
+          studySidebarConfig={getStudyConfig(currentStudy.shortcode)}
+          portalList={portalList}
           portalShortcode={portalShortcode!}/> }
 
         {user?.superuser && <CollapsableMenu header={'Superuser Functions'} content={
@@ -95,7 +164,18 @@ const AdminSidebar = ({ config }: { config: Config }) => {
             </li>
           </ul>}/>}
       </>}
-    </>
+    </div>
+    {currentStudy && <div className="sticky-bottom w-100 d-flex justify-content-end p-1 pointer-none">
+      <button
+        className="btn btn-secondary btn-sm text-white hover-opacity-50 pointer-auto"
+        onClick={() => setIsEditingSidebarConfig(!isEditingSidebarConfig)}
+        aria-label={isEditingSidebarConfig ? 'Save sidebar config' : 'Edit sidebar config'}
+      >
+        {isEditingSidebarConfig
+          ? <FontAwesomeIcon icon={faSave}/>
+          : <FontAwesomeIcon icon={faPencil}/>}
+      </button>
+    </div>}
   </div>
 }
 

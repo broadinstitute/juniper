@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { getEnvSpec } from 'api/api'
-import { useI18n } from '@juniper/ui-core'
+import { useI18n, getB2CLocale } from '@juniper/ui-core'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
@@ -17,7 +17,7 @@ function Login() {
         portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
-        ui_locales: selectedLanguage
+        ui_locales: getB2CLocale(selectedLanguage)
       }
     })
   }

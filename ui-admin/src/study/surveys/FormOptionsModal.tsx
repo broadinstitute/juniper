@@ -84,7 +84,8 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
     (val: RecurrenceType) => updateWorkingForm({
       ...workingForm,
       recurrenceType: val,
-      recurrenceIntervalDays: val === 'NONE' ? undefined : workingForm.recurrenceIntervalDays || 365
+      recurrenceIntervalDays: val === 'NONE' ? undefined : workingForm.recurrenceIntervalDays || 365,
+      prepopulate: workingForm.recurrenceType === 'LONGITUDINAL' ? workingForm.prepopulate : false
     }),
     workingForm.recurrenceType || 'NONE')
   return <>
@@ -179,6 +180,16 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 /> days
               </label>
             </div>
+            {workingForm.recurrenceType === 'LONGITUDINAL' &&  <label className="form-label d-block">
+              <input type="checkbox" checked={workingForm.prepopulate}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, prepopulate: e.target.checked
+                })}
+              /> Prepopulate answers <InfoPopup placement="right" content={<div>
+                    For longitudinal surveys, enabling this will automatically
+                    prepopulate answers from the previous survey response
+              </div>}/>
+            </label> }
             <h3 className="h6 mt-4">Eligibility Rule</h3>
             <div className="mb-2">
               <LazySearchQueryBuilder
