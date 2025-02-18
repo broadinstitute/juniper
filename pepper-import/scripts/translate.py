@@ -56,13 +56,10 @@ def main():
     parser.add_argument('-I', '--in-file', required=True)
     parser.add_argument('-O', '--out-file', required=True)
     parser.add_argument('-L', '--limit', type=int, default=None)
-    parser.add_argument('--skip-incomplete-modules', action='store_true', default=False)
 
     args = parser.parse_args()
 
     ensure_files_exist([args.dsm_data_dict, args.juniper_data_dict, args.in_file, args.translation_override])
-
-    skip_incomplete_modules = args.skip_incomplete_modules
 
     # 2: parse data dictionaries
     #    - create list of dsm questions with metadata (survey, etc.)
@@ -100,9 +97,6 @@ def main():
     dsm_data = parse_dsm_data(args.in_file)
 
     juniper_data = apply_translations(dsm_data, translations, args.limit)
-
-    if skip_incomplete_modules:
-        juniper_data = filter_incomplete_modules(juniper_data)
 
     write_data(args.out_file, juniper_data)
 
