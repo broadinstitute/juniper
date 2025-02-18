@@ -3,8 +3,9 @@ import csv
 import json
 import os.path
 import re
-from copy import copy, deepcopy
+from copy import copy
 from datetime import datetime
+from enum import Enum
 from typing import Any, Union
 
 from openpyxl import load_workbook
@@ -55,10 +56,13 @@ def main():
     parser.add_argument('-I', '--in-file', required=True)
     parser.add_argument('-O', '--out-file', required=True)
     parser.add_argument('-L', '--limit', type=int, default=None)
+    parser.add_argument('--skip-incomplete-modules', action='store_true', default=False)
 
     args = parser.parse_args()
 
     ensure_files_exist([args.dsm_data_dict, args.juniper_data_dict, args.in_file, args.translation_override])
+
+    skip_incomplete_modules = args.skip_incomplete_modules
 
     # 2: parse data dictionaries
     #    - create list of dsm questions with metadata (survey, etc.)
@@ -97,6 +101,9 @@ def main():
 
     juniper_data = apply_translations(dsm_data, translations, args.limit)
 
+    if skip_incomplete_modules:
+        juniper_data = filter_incomplete_modules(juniper_data)
+
     write_data(args.out_file, juniper_data)
 
 
@@ -111,7 +118,13 @@ def ensure_files_exist(files: list[Union[str, None]]):
             exit(1)
 
 
+class Source(Enum):
+    DSM = 1
+    JUNIPER = 2
+
 class DataDefinition:
+    source: Source = None
+
     module = None
     stable_id = None
     data_type = None
@@ -125,6 +138,7 @@ class DataDefinition:
     subquestions = None  # list of composite subquestions
 
     def __init__(self,
+                 source: Source,
                  module: str,
                  stable_id: str,
                  data_type: str,
@@ -135,6 +149,7 @@ class DataDefinition:
                  option_values: list[str] | None = None,
                  num_repeats: int | None = None,
                  subquestions: list[Any] | None = None):
+        self.source = source
         self.module = module
         self.stable_id = stable_id
         self.data_type = data_type
@@ -162,7 +177,7 @@ def print_translation(translation, prefix: str = ''):
         print_translation(sub, prefix + '\t')
 
 
-def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
+def simple_parse_data_dict(source: Source, filepath: str) -> list[DataDefinition]:
     dsm_data_dict = load_workbook(filename=filepath)
     dsm_data_dict = dsm_data_dict.worksheets[0]
 
@@ -212,7 +227,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
 
 
         question: DataDefinition = DataDefinition(
-            module, stable_id, data_type, description, question_type, options=options, option_values = option_values
+            source, module, stable_id, data_type, description, question_type, options=options, option_values = option_values
         )
         out.append(question)
 
@@ -223,7 +238,7 @@ def simple_parse_data_dict(filepath: str) -> list[DataDefinition]:
 
 
 def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
-    simple_questions = simple_parse_data_dict(filepath)
+    simple_questions = simple_parse_data_dict(Source.DSM, filepath)
 
     questions = []
 
@@ -264,7 +279,7 @@ def parse_dsm_data_dict(filepath: str) -> list[DataDefinition]:
 
 
 def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
-    simple_questions = simple_parse_data_dict(filepath)
+    simple_questions = simple_parse_data_dict(Source.JUNIPER, filepath)
 
     questions = []
 
@@ -553,19 +568,23 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
     # to be safe.
     module_repeat = 1
     while True:
-        dsm_module_repeat = make_repeat_question(translation.dsm_question_definition, module_repeat)
-        juniper_module_repeat = make_repeat_question(translation.juniper_question_definition, module_repeat)
 
-        if not is_question_in_data(dsm_module_repeat, dsm_data):
+        repeat_translation = make_repeat_translation(translation, module_repeat)
+
+        if not is_question_in_data(repeat_translation.dsm_question_definition, dsm_data):
             break
-
-        repeat_translation = deepcopy(translation)
-        repeat_translation.dsm_question_definition = dsm_module_repeat
-        repeat_translation.juniper_question_definition = juniper_module_repeat
 
         apply_translation(dsm_data, juniper_data, repeat_translation)
         module_repeat += 1
 
+
+def make_repeat_translation(translation: Translation, repeat: int) -> Translation:
+    return Translation(
+        make_repeat_question(translation.dsm_question_definition, repeat),
+        make_repeat_question(translation.juniper_question_definition, repeat),
+        translation.translation_override,
+        list(map(lambda t: make_repeat_translation(t, repeat), translation.subquestion_translations))
+    )
 
 def is_question_in_data(question: DataDefinition, data: dict[str, Any]) -> bool:
     if question.stable_id in data:
@@ -580,8 +599,9 @@ def is_question_in_data(question: DataDefinition, data: dict[str, Any]) -> bool:
 
 def make_repeat_question(question: DataDefinition, repeat: int) -> DataDefinition:
     return DataDefinition(
+        question.source,
         question.module,
-        generate_dsm_module_repeat_stable_id(question.stable_id, repeat),
+        generate_dsm_module_repeat_stable_id(question.stable_id, repeat) if question.source == Source.DSM else generate_juniper_module_repeat_stable_id(question.stable_id, repeat),
         question.data_type,
         question.description,
         question.question_type,
@@ -610,7 +630,11 @@ def generate_juniper_module_repeat_stable_id(stable_id: str, repeat: int) -> str
     if repeat == 1:
         return stable_id
 
-    return stable_id + '[' + str(repeat) + ']'
+
+    split = stable_id.split('.')
+    split[0] = split[0] + '[' + str(repeat) + ']'
+    return '.'.join(split)
+
 
 def apply_translation(dsm_data: dict[str, Any], juniper_data: dict[str, Any], translation: Translation):
     if translation.translation_override is not None and translation.translation_override.constant_value is not None:
@@ -640,20 +664,23 @@ def simple_translate(translation: Translation,
     juniper_question = translation.juniper_question_definition
     dsm_question = translation.dsm_question_definition
 
-    values = get_all_values(dsm_question, dsm_data)
+    value = dsm_data[dsm_question.stable_id]
+    rpt = get_dsm_repeat_index(dsm_question.module, dsm_question.stable_id)
 
-    for idx in range(len(values)):
-        response_stable_id = get_juniper_response_stable_id(juniper_question, idx)
-        value = values[idx]
-        if (response_stable_id in juniper_data
-                and juniper_data[response_stable_id] is not None
-                and len(juniper_data[response_stable_id]) > 0):
-            continue  # assume any value is good enough
-        juniper_data[response_stable_id] = translate_value(translation, value)
+    juniper_stable_id = translation.juniper_question_definition.stable_id
 
-        # at's state province field is, e.g., US-MA for some reason.
-        if juniper_question.stable_id == "PREQUAL.REGISTRATION_STATE_PROVINCE":
-            juniper_data[response_stable_id] = juniper_data[response_stable_id].split("-")[-1]
+    if (value is not None and value != ''):
+        print(f'{dsm_question.stable_id} ({rpt}) -> {juniper_stable_id}: {value}')
+    if (juniper_stable_id in juniper_data
+            and juniper_data[juniper_stable_id] is not None
+            and len(juniper_data[juniper_stable_id]) > 0):
+        return  # assume any value is good enough
+
+    juniper_data[juniper_stable_id] = translate_value(translation, value)
+
+    # at's state province field is, e.g., US-MA for some reason.
+    if juniper_question.stable_id == "PREQUAL.REGISTRATION_STATE_PROVINCE":
+        juniper_data[juniper_stable_id] = juniper_data[juniper_stable_id].split("-")[-1]
 
 
 def translate_value(translation: Translation, value: Any) -> Any:
@@ -734,19 +761,6 @@ def convert_boolean(value: str) -> bool:
     return value.lower() == 'true'
 
 
-def get_all_values(dsm_question: DataDefinition, dsm_data: dict[str, Any]) -> list[str]:
-    out = {0: dsm_data[dsm_question.stable_id]}
-
-    for [key, value] in dsm_data.items():
-        if key == dsm_question.stable_id:
-            out[0] = value
-        elif key.startswith(dsm_question.module) and  is_dsm_repeat_question(dsm_question.module, dsm_question.stable_id, key):
-            index = get_dsm_repeat_index(dsm_question.module, key)
-            out[index - 1] = value
-
-    return [out[i] for i in range(len(out))]
-
-
 def is_dsm_repeat_question(module: str, question_stable_id: str, response_stable_id: str) -> bool:
     # use regex to match the question stable ID
     # format: question_stable_id_response_stable_id_[0-9]+
@@ -757,18 +771,22 @@ def is_dsm_repeat_question(module: str, question_stable_id: str, response_stable
 def get_juniper_response_stable_id(juniper_question: DataDefinition, repeat: int) -> str:
     stable_id = juniper_question.stable_id
 
-    if repeat == 0:
+    if repeat == 1:
         return stable_id
 
     [survey_id, question_id] = stable_id.split('.', 1)
-    return survey_id + '[' + str(repeat+1) + '].' + question_id
+    return survey_id + '[' + str(repeat) + '].' + question_id
 
 
 def get_dsm_repeat_index(module: str, response_stable_id: str) -> int:
-    noprefix = response_stable_id.removeprefix(module + '_')
-    split = noprefix.split('.')
-    return int(split[0])
+    if response_stable_id.startswith(module + '_'):
+        noprefix = response_stable_id.removeprefix(module + '_')
+        split = noprefix.split('.')
+        return int(split[0])
+    if response_stable_id.startswith(module + '.'):
+        return 1
 
+    raise ValueError('Invalid DSM response stable ID: ' + response_stable_id)
 
 
 def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -806,6 +824,11 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
 
 
 def strip_parent_stable_id(parent_stable_id: str, subquestion_stable_id: str) -> str:
+
+    # if [ and ] are present, then it's a module repeat, remove them and the number in between
+    # if '[' in parent_stable_id and ']' in parent_stable_id:
+    #     parent_stable_id = parent_stable_id[:parent_stable_id.index('[')] + parent_stable_id[parent_stable_id.index(']') + 1:]
+
     return subquestion_stable_id[len(parent_stable_id) + 1:]
 
 

@@ -90,7 +90,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         );
     }
 
-    public Optional<ParticipantTask> findTaskForActivityWithCompletionTime(UUID ppUserId, UUID studyEnvironmentId, String activityStableId, Instant completedAt) {
+    public Optional<ParticipantTask> findTaskForActivityWithCreationTime(UUID ppUserId, UUID studyEnvironmentId, String activityStableId, Instant createdAt) {
         return jdbi.withHandle(handle ->
                 // Note: 43200 seconds is 12 hours. Any task that was completed within 12 hours of the given time is considered a match
                 handle.createQuery("""
@@ -100,12 +100,12 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                                 and study_environment_id = :studyEnvironmentId
                                 and %s
                                 limit 1
-                                """.formatted(tableName, approximateDateMatchQueryStr("completed_at", ":completedAt::timestamp", "43200"))
+                                """.formatted(tableName, approximateDateMatchQueryStr("created_at", ":createdAt::timestamp", "60"))
                         )
                         .bind("ppUserId", ppUserId)
                         .bind("activityStableId", activityStableId)
                         .bind("studyEnvironmentId", studyEnvironmentId)
-                        .bind("completedAt", Timestamp.from(completedAt))
+                        .bind("createdAt", Timestamp.from(createdAt))
                         .mapTo(clazz)
                         .findOne()
         );

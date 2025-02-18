@@ -592,7 +592,7 @@ public class EnrolleeImportService {
     private ParticipantTask findTask(PortalParticipantUser ppUser, StudyEnvironment studyEnv, SurveyFormatter formatter, Map<String, String> enrolleeMap, Integer repeatNum, ZoneId zoneId) {
         ParticipantTask relatedTask = null;
 
-        Optional<Instant> completedAt = parseSurveyFieldToInstant(formatter, enrolleeMap, repeatNum, "completedAt", zoneId);
+        Optional<Instant> createdAt = parseSurveyFieldToInstant(formatter, enrolleeMap, repeatNum, "createdAt", zoneId);
 
         // attempt to find existing task to update
         if (repeatNum == 1) {
@@ -601,11 +601,11 @@ public class EnrolleeImportService {
             relatedTask = participantTaskService.findTaskForActivity(ppUser.getId(), studyEnv.getId(), formatter.getModuleName())
                     .orElse(null);
         } else {
-            if (completedAt.isEmpty()) {
-                throw new IllegalStateException("Failed importing %s: completedAt must be specified for importing survey response history".formatted(formatter.getModuleName()));
+            if (createdAt.isEmpty()) {
+                throw new IllegalStateException("Failed importing %s: createdAt must be specified for importing survey response history".formatted(formatter.getModuleName()));
             }
             // case 2: completedAt is specified, find task with that completion time
-            relatedTask = participantTaskService.findTaskForActivityWithCompletionTime(ppUser.getId(), studyEnv.getId(), formatter.getModuleName(), completedAt.get())
+            relatedTask = participantTaskService.findTaskForActivityWithCreationTime(ppUser.getId(), studyEnv.getId(), formatter.getModuleName(), createdAt.get())
                     .orElse(null);
         }
 
