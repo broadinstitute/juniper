@@ -150,7 +150,8 @@ class DataDefinition:
         self.description = description
         self.question_type = question_type
         self.format = format
-        self.option = options
+        self.options = options
+        self.option_values = option_values
 
         self.num_repeats = num_repeats
         self.subquestions = subquestions
@@ -218,7 +219,6 @@ def simple_parse_data_dict(source: Source, filepath: str) -> list[DataDefinition
             options = {text.strip(): value.strip() for [value, text] in option_texts}
 
             option_values = [option.split(' ')[0] for option in option_lines]
-
 
         question: DataDefinition = DataDefinition(
             source, module, stable_id, data_type, description, question_type, options=options, option_values = option_values
@@ -574,7 +574,7 @@ def make_repeat_translation(translation: Translation, repeat: int) -> Translatio
         make_repeat_question(translation.dsm_question_definition, repeat),
         make_repeat_question(translation.juniper_question_definition, repeat),
         translation.translation_override,
-        list(map(lambda t: make_repeat_translation(t, repeat), translation.subquestion_translations))
+        list(map(lambda t: make_repeat_translation(t, repeat), translation.subquestion_translations)),
     )
 
 def is_question_in_data(question: DataDefinition, data: dict[str, Any]) -> bool:
@@ -656,7 +656,6 @@ def simple_translate(translation: Translation,
     dsm_question = translation.dsm_question_definition
 
     value = dsm_data[dsm_question.stable_id]
-    rpt = get_dsm_repeat_index(dsm_question.module, dsm_question.stable_id)
 
     juniper_stable_id = translation.juniper_question_definition.stable_id
 
@@ -677,12 +676,10 @@ def translate_value(translation: Translation, value: Any) -> Any:
         return translation.translation_override.value_if_present if value.strip() != '' else None
 
     # possible data types: string, date, boolean, date_time, object_string
-
-    # if translation.juniper_question_definition.options is not None:
-    #     print(value)
-    #     for [key, val] in translation.juniper_question_definition.options.items():
-    #         if val == value or key == value:
-    #             return key
+    if translation.juniper_question_definition.options is not None and translation.dsm_question_definition.question_type.lower() in ['text', 'radio'] :
+        for [key, val] in translation.juniper_question_definition.options.items():
+            if val == value or key == value:
+                return val
 
     if translation.juniper_question_definition.options is not None and len(translation.juniper_question_definition.options) > 0 and translation.dsm_question_definition.question_type == 'text':
         for [key, val] in translation.juniper_question_definition.options.items():
