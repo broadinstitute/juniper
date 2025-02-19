@@ -1,4 +1,8 @@
-import { Enrollee, HubResponse, ParticipantTask } from '@juniper/ui-core'
+import {
+  Enrollee,
+  HubResponse,
+  ParticipantTask
+} from '@juniper/ui-core'
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
 export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
@@ -47,7 +51,7 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
     .sort((a, b) => a.taskOrder - b.taskOrder)
   if (openRequiredTasks.length) {
-    return task.id === openRequiredTasks[0].id
+    return task.targetStableId === openRequiredTasks[0].targetStableId
   }
   return true
 }

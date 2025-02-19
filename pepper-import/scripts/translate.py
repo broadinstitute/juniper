@@ -291,10 +291,7 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
         if question.question_type == 'paneldynamic':
             question.subquestions = []
             for subquestion in simple_questions:
-                if subquestion.stable_id.startswith(question.stable_id):
-                    # let's not do this, so we can keep track of if they have been matched
-                    # simple_questions.remove(subquestion)
-
+                if subquestion.stable_id.startswith(question.stable_id) and re.match("^.+\[\d+]$", subquestion.stable_id):
                     # remove the index from the stableid
                     subquestion.stable_id = subquestion.stable_id[:-3]
                     question.subquestions.append(subquestion)
@@ -663,8 +660,6 @@ def simple_translate(translation: Translation,
 
     juniper_stable_id = translation.juniper_question_definition.stable_id
 
-    if (value is not None and value != ''):
-        print(f'{dsm_question.stable_id} ({rpt}) -> {juniper_stable_id}: {value}')
     if (juniper_stable_id in juniper_data
             and juniper_data[juniper_stable_id] is not None
             and len(juniper_data[juniper_stable_id]) > 0):
@@ -694,6 +689,9 @@ def translate_value(translation: Translation, value: Any) -> Any:
             if val == value or key == value:
                 return val
 
+    if translation.dsm_question_definition.question_type.lower() == 'date' and translation.juniper_question_definition.data_type == 'string' and translation.juniper_question_definition.question_type == 'text':
+        return convert_date(value)
+
     if translation.juniper_question_definition.data_type in ['string', 'object_string']:
         return str(value)
     elif translation.juniper_question_definition.data_type == 'date':
@@ -721,7 +719,7 @@ def print_wrong_type_warning(dsm_question: DataDefinition, juniper_question: Dat
 
 
 def convert_date(value: str) -> str:
-    return value
+    return value.replace('/','-')
 
 
 def convert_date_to_date_time(value: str) -> str:
@@ -813,16 +811,11 @@ def get_dynamic_panel_values(translation: Translation, dsm_data: dict[str, Any])
             ][
                 strip_parent_stable_id(translation.juniper_question_definition.stable_id,
                                        subquestion_translation.juniper_question_definition.stable_id)
-            ] = subquestion_data
+            ] = translate_value(subquestion_translation, subquestion_data)
     return out_value
 
 
 def strip_parent_stable_id(parent_stable_id: str, subquestion_stable_id: str) -> str:
-
-    # if [ and ] are present, then it's a module repeat, remove them and the number in between
-    # if '[' in parent_stable_id and ']' in parent_stable_id:
-    #     parent_stable_id = parent_stable_id[:parent_stable_id.index('[')] + parent_stable_id[parent_stable_id.index(']') + 1:]
-
     return subquestion_stable_id[len(parent_stable_id) + 1:]
 
 
