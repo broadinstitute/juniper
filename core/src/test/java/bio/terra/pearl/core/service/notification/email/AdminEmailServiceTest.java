@@ -63,7 +63,7 @@ class AdminEmailServiceTest extends BaseSpringBootTest {
                         .emailTemplateId(emailTemplate.getId())
                         .deliveryType(NotificationDeliveryType.EMAIL)
                         .actionType(TriggerActionType.ADMIN_NOTIFICATION)
-                        .adminEmailFilter(
+                        .targetEmails(
                                 adminUserBundle1.user().getUsername() + "," + adminUserBundle2.user().getUsername()
                         )
                         .triggerType(TriggerType.EVENT),

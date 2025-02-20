@@ -113,7 +113,7 @@ public class AdminEmailService {
     List<AdminUser> adminUsers = adminUserService.findAllWithRolesByPortal(portal.getId());
 
 
-    String emailFilter = trigger.getAdminEmailFilter();
+    String emailFilter = trigger.getTargetEmails();
     if (emailFilter == null) {
       emailFilter = "";
     }

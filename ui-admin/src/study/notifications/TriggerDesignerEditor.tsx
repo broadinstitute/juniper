@@ -30,6 +30,7 @@ import { Checkbox } from 'components/forms/Checkbox'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { useLoadingEffect } from 'api/api-utils'
 import Api from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 
 export const TriggerDesignerEditor = (
@@ -400,7 +401,7 @@ const NotificationEditor = (
     {
       trigger.actionType === 'ADMIN_NOTIFICATION'
       && <div className='w-50 mb-2'>
-        <AdminEmailFilterEditor
+        <TargetEmailEditor
           studyEnvContext={studyEnvContext}
           trigger={trigger}
           updateTrigger={updateTrigger}/>
@@ -440,7 +441,7 @@ const NotificationEditor = (
   </>
 }
 
-const AdminEmailFilterEditor = (
+const TargetEmailEditor = (
   {
     studyEnvContext,
     trigger,
@@ -460,22 +461,22 @@ const AdminEmailFilterEditor = (
 
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <LoadingSpinner/>
   }
 
   return <div>
-    <label className="form-label" htmlFor="adminEmailFilter">
+    <label className="form-label" htmlFor="targetEmailEditor">
       Send notification to
     </label>
 
     <Select
       options={adminUsers.map(username => ({ label: username, value: username }))}
-      inputId="adminEmailFilter"
+      inputId="targetEmailEditor"
       value={adminUsers
-        .filter(username => trigger.adminEmailFilter?.includes(username))
+        .filter(username => trigger.targetEmails?.includes(username))
         .map(username => ({ label: username, value: username }))}
       isMulti={true}
-      onChange={options => updateTrigger('adminEmailFilter', options.map(opt => opt!.value).join(','))}
+      onChange={options => updateTrigger('targetEmails', options.map(opt => opt!.value).join(','))}
     />
   </div>
 }

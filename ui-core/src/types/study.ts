@@ -86,7 +86,7 @@ export type Trigger = {
   maxNumReminders: number
   emailTemplateId: string
   emailTemplate: EmailTemplate
-  adminEmailFilter?: string
+  targetEmails?: string
 }
 
 export type EmailTemplate = {

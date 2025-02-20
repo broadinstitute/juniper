@@ -57,7 +57,7 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyE
     // for admin notifications, comma separated list of admin emails.
     // will not send if the email does not have an associated admin account
     // if blank, no admins will be notified
-    private String adminEmailFilter;
+    private String targetEmails;
     /**
      * notificationTypes of TASK_REMINDER, if specified, will limit to one type of task.  if null,
      * will apply to all tasks.
