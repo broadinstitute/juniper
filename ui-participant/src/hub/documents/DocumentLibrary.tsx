@@ -209,7 +209,11 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
       </Modal.Header>
       <Modal.Body>
         {participantFile.associatedAnswers.length === 0 ?
-          <p className="m-0">Are you sure you want to delete this document? This cannot be undone.</p> :
+          <p className="m-0">
+            Are you sure you want to delete this document? This cannot be undone. Please note that if a member
+            of the study staff has already downloaded this document, it will still be accessible to them. Please
+            contact a member of the study staff if you would like to have the document fully removed from all records.
+          </p> :
           <p className="m-0">This document is currently shared in response to at least one survey. Please remove it
                   from the survey response(s) before deleting it.</p>
         }
