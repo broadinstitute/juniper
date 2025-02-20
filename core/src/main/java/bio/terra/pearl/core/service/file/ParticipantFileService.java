@@ -57,10 +57,10 @@ public class ParticipantFileService extends ImmutableEntityService<ParticipantFi
 
     @Override
     public void delete(UUID id, Set<CascadeProperty> cascade) {
-        ParticipantFile participantFile = dao.find(id).orElseThrow(() -> new NotFoundException("File not found"));
+        ParticipantFile participantFile = dao.findWithAnswers(id).orElseThrow(() -> new NotFoundException("File not found"));
         if(!participantFile.getAssociatedAnswers().isEmpty()) {
             throw new IllegalArgumentException("This file is being used in a survey response and cannot be deleted. Please remove the file from the survey response first.");
         }
-        dao.delete(id);
+        super.delete(id, cascade);
     }
 }

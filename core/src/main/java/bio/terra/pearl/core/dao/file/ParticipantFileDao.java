@@ -53,6 +53,17 @@ public class ParticipantFileDao extends BaseJdbiDao<ParticipantFile> {
         return participantFiles;
     }
 
+    public Optional<ParticipantFile> findWithAnswers(UUID id) {
+        Optional<ParticipantFile> participantFile = find(id);
+        participantFile.ifPresent(file -> {
+            List<Answer> answers = answerDao.findByEnrolleeIdAndAnswerFormat(file.getEnrolleeId(), AnswerFormat.FILE_NAME);
+            Map<String, List<Answer>> answersByFileName = answers.stream().collect(Collectors.groupingBy(Answer::getStringValue));
+            List<Answer> answersForFile = answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>());
+            file.setAssociatedAnswers(answersForFile);
+        });
+        return participantFile;
+    }
+
     public List<ParticipantFile> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
