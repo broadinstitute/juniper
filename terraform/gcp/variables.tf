@@ -93,3 +93,8 @@ variable "slack_notification_channel" {
   default = ""
   description = "Slack notification channel"
 }
+
+variable "documents_bucket_name" {
+  type = string
+  description = "The name of the GCP bucket for storing participant documents"
+}
