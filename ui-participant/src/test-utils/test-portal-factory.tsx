@@ -108,7 +108,8 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
     landingPage: mockHtmlPage(),
     navLogoCleanFileName: 'navLogo.png',
     navLogoVersion: 1,
-    languageTextOverrides: []
+    languageTextOverrides: [],
+    primaryBrandColor: '#000000'
   }
 }
 
