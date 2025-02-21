@@ -8,7 +8,7 @@ environment = "dev"
 # note: automatically creates DNS records for these portals under the admin domain
 portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi"]
 k8s_namespace = "juniper-dev"
-documents_bucket_name = "participant-documents-dev"
+documents_bucket_name = "juniper-participant-documents-dev"
 
 # creates DNS records for these customer URLs
 customer_urls = {
