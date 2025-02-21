@@ -14,9 +14,11 @@ public class FileStorageBackendProvider {
 
     public FileStorageBackendProvider(
             FileStorageConfig fileStorageConfig,
-            LocalFileStorageBackend localFileStorageBackend) {
+            LocalFileStorageBackend localFileStorageBackend,
+            GCSFileStorageBackend gcsFileStorageBackend) {
         defaultBackend = fileStorageConfig.getDefaultBackend();
         backendMap.put("LocalFileStorageBackend", localFileStorageBackend);
+        backendMap.put("GCSFileStorageBackend", gcsFileStorageBackend);
     }
 
     public FileStorageBackend get() {

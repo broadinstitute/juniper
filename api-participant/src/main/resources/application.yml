@@ -34,7 +34,7 @@ env:
     enabled: ${MIXPANEL_ENABLED:false}
     token: ${MIXPANEL_TOKEN:}
   fileUpload:
-    backend: LocalFileStorageBackend
+    backend: GCSFileStorageBackend2
     localFileStoragePath: ${LOCAL_FILE_STORAGE_PATH:/tmp/juniper/fileupload}
 # Below here is non-deployment-specific
 
