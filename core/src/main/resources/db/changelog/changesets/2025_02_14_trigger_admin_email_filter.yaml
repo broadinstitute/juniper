@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "trigger_target_emails"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: trigger
+            columns:
+              - column:
+                  name: target_emails
+                  type: text
