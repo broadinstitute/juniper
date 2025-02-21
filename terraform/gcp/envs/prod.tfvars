@@ -6,7 +6,7 @@ db_availability_type = "REGIONAL" # makes database highly available by replicati
 dns_ttl = 300
 admin_url = "juniper-cmi.org"
 environment = "prod"
-documents_bucket_name = "participant-documents-prod"
+documents_bucket_name = "juniper-participant-documents-prod"
 # note: automatically creates DNS records for these portals under the admin domain
 
 portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi", "trccproject", "gvasc"]
