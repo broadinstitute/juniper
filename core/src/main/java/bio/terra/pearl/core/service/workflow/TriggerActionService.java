@@ -72,7 +72,7 @@ public class TriggerActionService {
                 //if event is EnrolleeSurveyEvent, we need to check if the event was a survey
                 //completion or not to determine if we should send the notification
                 if (event instanceof EnrolleeSurveyEvent surveyEvent) {
-                    if (surveyEvent.isComplete()) {
+                    if (surveyEvent.getSurveyResponse().isComplete()) {
                         notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
                                 event.getPortalParticipantUser().getPortalEnvironmentId());
                     }

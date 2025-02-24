@@ -99,7 +99,6 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
                 .participantTask(task)
-                .isComplete(response.isComplete())
                 .build();
         populateEvent(event);
         log.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
