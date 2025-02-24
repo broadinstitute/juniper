@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
+import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -68,8 +69,17 @@ public class TriggerActionService {
 
         for (Trigger trigger: applicableTriggers) {
             if (TriggerActionType.NOTIFICATION.equals(trigger.getActionType())) {
-                notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
-                        event.getPortalParticipantUser().getPortalEnvironmentId());
+                //if event is EnrolleeSurveyEvent, we need to check if the event was a survey
+                //completion or not to determine if we should send the notification
+                if (event instanceof EnrolleeSurveyEvent surveyEvent) {
+                    if (surveyEvent.isComplete()) {
+                        notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
+                                event.getPortalParticipantUser().getPortalEnvironmentId());
+                    }
+                } else {
+                    notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
+                            event.getPortalParticipantUser().getPortalEnvironmentId());
+                }
             } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
                 try {
                     adminEmailService.sendEmailFromTrigger(trigger, event);

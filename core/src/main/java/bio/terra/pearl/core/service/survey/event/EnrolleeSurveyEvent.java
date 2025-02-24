@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 public class EnrolleeSurveyEvent extends EnrolleeEvent {
     private SurveyResponse surveyResponse;
     private ParticipantTask participantTask; // the task corresponding to the response
+    private boolean isComplete; // whether the survey is complete, to help differentiate between completing and updating for email notifs
 
     @Override
     public String getTargetStableId() {
