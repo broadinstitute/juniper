@@ -69,17 +69,8 @@ public class TriggerActionService {
 
         for (Trigger trigger: applicableTriggers) {
             if (TriggerActionType.NOTIFICATION.equals(trigger.getActionType())) {
-                //if event is EnrolleeSurveyEvent, we need to check if the event was a survey
-                //completion or not to determine if we should send the notification
-                if (event instanceof EnrolleeSurveyEvent surveyEvent) {
-                    if (surveyEvent.getSurveyResponse().isComplete()) {
-                        notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
-                                event.getPortalParticipantUser().getPortalEnvironmentId());
-                    }
-                } else {
-                    notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
-                            event.getPortalParticipantUser().getPortalEnvironmentId());
-                }
+                notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
+                        event.getPortalParticipantUser().getPortalEnvironmentId());
             } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
                 try {
                     adminEmailService.sendEmailFromTrigger(trigger, event);
