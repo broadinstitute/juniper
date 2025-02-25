@@ -156,7 +156,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         surveyResponseService.updateResponse(consentResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, consentTask.getId(), consent.getPortalId());
         assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), hasSize(1));
-        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_SURVEY_EVENT), hasSize(2));
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_SURVEY_EVENT), hasSize(1));
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
