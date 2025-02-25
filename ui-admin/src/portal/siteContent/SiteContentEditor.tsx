@@ -9,10 +9,12 @@ import Api, {
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCheck,
   faClockRotateLeft,
   faGlobe,
   faImage,
   faPalette,
+  faPencil,
   faPlus,
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
@@ -79,6 +81,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const { portalEnv } = portalEnvContext
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedPagePath, setSelectedPagePath] = useState<string>()
+
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
 
   const isLandingPage = selectedPagePath === undefined || selectedPagePath === localContent?.landingPage.path
 
@@ -234,7 +238,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     .concat(localContent?.pages || [])
     .map(page => ({ label: page.title || 'Landing page', value: page.path }))
 
-
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2">
@@ -282,16 +285,38 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       <div className="px-2">
         <div className="d-flex flex-grow-1 mb-1">
           <div style={{ width: 250 }}>
-            <Select
-              options={pageOpts}
-              value={pageOpts.find(opt => opt.value === selectedPagePath)}
-              isDisabled={hasInvalidSection} aria-label={'Select a page'}
-              onChange={e => {
-                setSelectedPagePath(
-                  localContent?.pages.find(p => p.path === e?.value)?.path || localContent!.landingPage.path
-                )
-              }}/>
+            {(isEditingTitle && selectedPage) ? <>
+              <input
+                className="form-control"
+                value={selectedPage.title || ''}
+                onChange={e => {
+                  const updatedPage = {
+                    ...selectedPage,
+                    title: e.target.value
+                  }
+                  updatePage(updatedPage, isLandingPage)
+                }}
+              >
+              </input>
+            </>
+              : <Select
+                options={pageOpts}
+                value={pageOpts.find(opt => opt.value === selectedPagePath)}
+                isDisabled={hasInvalidSection} aria-label={'Select a page'}
+                onChange={e => {
+                  setSelectedPagePath(
+                    localContent?.pages.find(p => p.path === e?.value)?.path || localContent!.landingPage.path
+                  )
+                }}/>}
           </div>
+          {!isLandingPage && <Button
+            variant='secondary'
+            onClick={() => setIsEditingTitle(!isEditingTitle)}
+          >
+            {isEditingTitle
+              ? <FontAwesomeIcon icon={faCheck}/>
+              : <FontAwesomeIcon icon={faPencil}/>}
+          </Button>}
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}
