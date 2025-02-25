@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.file.backends;
 
+import bio.terra.pearl.core.service.file.FileStorageConfig;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -13,15 +14,19 @@ import java.util.UUID;
 @Service
 public class GCSFileStorageBackend implements FileStorageBackend {
 
-    private final String BUCKET_NAME = "mb-test-juniper-upload-bucket";
-    private final String PROJECT_NAME = "broad-juniper-dev";
+    private final String bucketName;
+    private final Storage storage;
+
+    public GCSFileStorageBackend(FileStorageConfig storageConfig) {
+        this.storage = storageConfig.getGcsStorageConfig();
+        this.bucketName = storageConfig.getGcsStorageBucketName();
+    }
 
     @Override
     public UUID uploadFile(InputStream data) {
         UUID fileId = UUID.randomUUID();
 
-        Storage storage = StorageOptions.newBuilder().setProjectId(PROJECT_NAME).build().getService();
-        BlobId blobId = BlobId.of(BUCKET_NAME, fileId.toString());
+        BlobId blobId = BlobId.of(bucketName, fileId.toString());
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 
         try {
@@ -35,8 +40,7 @@ public class GCSFileStorageBackend implements FileStorageBackend {
 
     @Override
     public InputStream downloadFile(UUID uploadedFileId) {
-        Storage storage = StorageOptions.newBuilder().setProjectId(PROJECT_NAME).build().getService();
-        BlobId blobId = BlobId.of(BUCKET_NAME, uploadedFileId.toString());
+        BlobId blobId = BlobId.of(bucketName, uploadedFileId.toString());
 
         try {
             byte[] gcsBytes = storage.get(blobId).getContent();
@@ -48,8 +52,7 @@ public class GCSFileStorageBackend implements FileStorageBackend {
 
     @Override
     public void deleteFile(UUID uploadedFileId) {
-        Storage storage = StorageOptions.newBuilder().setProjectId(PROJECT_NAME).build().getService();
-        BlobId blobId = BlobId.of(BUCKET_NAME, uploadedFileId.toString());
+        BlobId blobId = BlobId.of(bucketName, uploadedFileId.toString());
 
         try {
             storage.delete(blobId);
