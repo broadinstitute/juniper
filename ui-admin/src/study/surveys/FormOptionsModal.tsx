@@ -200,8 +200,8 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                   createNewResponseAfterDays: parseInt(val)
                 })}
               /> days <InfoPopup placement="right" content={<div>
-                      If this value is set, a new response will be created for the participant if the make an edit to
-                      their response after this many days
+                      If this value is set, a new task and response will be created for the participant
+                      if they make an edit to their response after this many days
               </div>}/>
             </label>
             </>}
