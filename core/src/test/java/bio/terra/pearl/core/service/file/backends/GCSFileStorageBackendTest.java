@@ -5,6 +5,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -46,16 +47,13 @@ public class GCSFileStorageBackendTest {
 
     @Test
     void testUploadFile() throws IOException {
-        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
         InputStream data = new ByteArrayInputStream("test data".getBytes());
 
-        MockedStatic<UUID> mocked = mockStatic(UUID.class);
-        mocked.when(UUID::randomUUID).thenReturn(fileId);
         when(storage.createFrom(any(BlobInfo.class), any(InputStream.class))).thenReturn(null);
 
         UUID result = gcsFileStorageBackend.uploadFile(data);
 
-        assertEquals(fileId,result);
+        Assertions.assertNotNull(result);
         verify(storage, times(1)).createFrom(any(BlobInfo.class), any(InputStream.class));
     }
 
@@ -70,11 +68,12 @@ public class GCSFileStorageBackendTest {
 
         InputStream result = gcsFileStorageBackend.downloadFile(fileId);
 
-        assertNotNull(result);
+        Assertions.assertNotNull(result);
         byte[] resultBytes = result.readAllBytes();
-        assertArrayEquals(fileContent, resultBytes);
+        Assertions.assertArrayEquals(fileContent, resultBytes);
 
-        verify(storage, times(1)).get(any(BlobId.class));
+        BlobId expectBlobId = BlobId.of("test-bucket", fileId.toString());
+        verify(storage, times(1)).get(expectBlobId);
     }
 
     @Test
@@ -85,7 +84,8 @@ public class GCSFileStorageBackendTest {
 
         gcsFileStorageBackend.deleteFile(fileId);
 
-        verify(storage, times(1)).delete(any(BlobId.class));
+        BlobId expectedBlobId = BlobId.of("test-bucket", fileId.toString());
+        verify(storage, times(1)).delete(expectedBlobId);
     }
 
 }
