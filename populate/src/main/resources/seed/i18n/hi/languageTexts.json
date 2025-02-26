@@ -143,6 +143,19 @@
   {"keyName": "documentsPageTitle", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "अपलोड किए गए दस्तावेज़", "language": "hi", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "अध्ययन में भाग लेने के दौरान, आपसे किसी फ़ॉर्म या सर्वेक्षण के भाग के रूप में दस्तावेज़ अपलोड करने के लिए कहा जा सकता है। नीचे, आप अपने द्वारा अपलोड किए गए दस्तावेज़ों को प्रबंधित कर सकते हैं।", "language": "hi", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureTitle", "text": "क्या आपको यकीन है?", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureMessage", "text": "क्या आप वाकई इस दस्तावेज़ को हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता। कृपया ध्यान दें कि यदि अध्ययन स्टाफ़ के किसी सदस्य ने पहले ही इस दस्तावेज़ को डाउनलोड कर लिया है, तो भी यह उनके लिए सुलभ रहेगा। यदि आप दस्तावेज़ को सभी रिकॉर्ड से पूरी तरह से हटाना चाहते हैं, तो कृपया अध्ययन स्टाफ़ से संपर्क करें।", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseTitle", "text": "यह दस्तावेज़ उपयोग में है", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseMessage", "text": "यह दस्तावेज़ वर्तमान में कम से कम एक सर्वेक्षण के जवाब में साझा किया गया है। कृपया इसे हटाने से पहले सर्वेक्षण प्रतिक्रिया(ओं) से हटा दें।", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentDeleteButton", "text": "मिटाना", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentOptionsButton", "text": "विकल्प", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentSharedInResponseTo", "text": "के जवाब में साझा किया गया", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderSelectedDocuments", "text": "चयनित दस्तावेज़", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderIncludedInResponse", "text": "ये दस्तावेज़ आपके उत्तर में शामिल हैं", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocumentsSelected", "text": "कोई दस्तावेज़ चयनित नहीं है। कृपया एक नया दस्तावेज़ अपलोड करें या नीचे कोई मौजूदा दस्तावेज़ चुनें।", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderAvailableDocuments", "text": "उपलब्ध दस्तावेज़", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderNotIncludedInResponse", "text": "ये दस्तावेज़ आपके उत्तर में शामिल नहीं हैं", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderClickToUpload", "text": "फ़ाइलें यहां डालें या अपलोड करने के लिए क्लिक करें", "language": "hi", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocuments", "text": "कोई दस्तावेज़ उपलब्ध नहीं है", "language": "hi", "machineTranslated": true}
 ]
