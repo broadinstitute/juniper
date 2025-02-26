@@ -468,7 +468,7 @@ const setupSurveyTest = (survey: Survey, profile?: Profile, referencedAnswers?: 
         <PagedSurveyView enrollee={enrollee} form={configuredSurvey.survey} response={mockHubResponse().response}
           studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
           updateResponseMap={jest.fn()} referencedAnswers={referencedAnswers || []}
-          selectedLanguage={'en'} updateProfile={jest.fn()} setAutosaveStatus={jest.fn()}
+          selectedLanguage={'en'} updateProfile={jest.fn()} setAutosaveStatus={jest.fn()} setTaskId={jest.fn()}
           taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
       </MockI18nProvider>
     </ApiProvider>)

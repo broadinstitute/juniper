@@ -21,7 +21,7 @@ import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
 import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import {
-  Enrollee,
+  Enrollee, HubResponse,
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
@@ -40,6 +40,7 @@ export function PagedSurveyView({
   updateEnrollee,
   updateProfile,
   taskId,
+  setTaskId,
   selectedLanguage,
   justification,
   setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
@@ -53,7 +54,9 @@ export function PagedSurveyView({
     updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
     proxyProfile?: Profile,
     justification?: string,
-    taskId: string, adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
+    taskId: string,
+    setTaskId: (taskId: string) => void,
+    adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
   const pager = useRoutablePageNumber()
@@ -102,6 +105,7 @@ export function PagedSurveyView({
         participantTasks: response.tasks,
         profile: response.profile
       }
+      updateTaskId(response)
       /**
        * CAREFUL -- we're updating the enrollee object so that if they navigate back to the dashboard, they'll
        * see this survey as 'in progress' and capture any profile changes.
@@ -121,6 +125,15 @@ export function PagedSurveyView({
       prevSave.current = prevPrevSave
       lastAutoSaveErrored.current = true
     })
+  }
+
+  const updateTaskId = (response: HubResponse) => {
+    //TODO: can we trust that the first task returned is the newest? hmmm
+    const newestTask = response.tasks[0]
+    //set url params to the newest task id
+    if (newestTask && taskId !== newestTask.id) {
+      setTaskId(newestTask.id)
+    }
   }
 
   const cancelAutosave = useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)

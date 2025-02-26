@@ -59,7 +59,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
     ?.profile : undefined
 
   const { i18n, selectedLanguage } = useI18n()
-  const { taskId } = useTaskIdParam() ?? ''
+  const { taskId, setTaskId } = useTaskIdParam()
   const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
@@ -130,7 +130,8 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         onFailure={onFailure}
         updateEnrollee={updateEnrollee}
         updateProfile={updateProfile}
-        taskId={taskId}
+        taskId={taskId || ''}
+        setTaskId={setTaskId}
         showHeaders={showHeaders}
       />
     </ApiProvider>
