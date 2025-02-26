@@ -402,6 +402,15 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     private void saveKitStatus(KitRequest kitRequest, PepperKit pepperKit, Instant pepperStatusFetchedAt) {
         KitRequestStatus priorStatus = kitRequest.getStatus();
+
+        if(priorStatus.equals(KitRequestStatus.DEACTIVATED)) {
+            // if the kit has been deactivated in Juniper, we no longer need to update the status
+            // based on what DSM thinks. this allows us to independently deactivate kits in Juniper
+            // without having to worry about DSM status updates.
+            log.info("Skipping status update for deactivated kit request %s".formatted(kitRequest.getId()));
+            return;
+        }
+
         try {
             kitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKit));
             kitRequest.setExternalKitFetchedAt(pepperStatusFetchedAt);
