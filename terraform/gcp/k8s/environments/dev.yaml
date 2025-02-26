@@ -5,6 +5,7 @@ deploymentZone: dev
 replicas: 1
 dsmUrl: https://dsm-dev.datadonationplatform.org/dsm
 dsmIssuer: admin-d2p.ddp-dev.envs.broadinstitute.org
+gcsFileStorageBucketName: juniper-participant-documents-dev
 # "portals" adds certificates for each portal - both for the juniper-cmi.dev subdomains and the custom domain
 portals:
   - name: demo

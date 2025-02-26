@@ -19,7 +19,7 @@ public class FileStorageConfig {
     public FileStorageConfig(Environment environment) {
         this.defaultBackend = environment.getProperty("env.fileUpload.backend", "LocalFileStorageBackend");
         this.localFileStoragePath = environment.getProperty("env.fileUpload.localFileStoragePath");
-        this.gcsStorageBucketName = "mb-test-juniper-upload-bucket";
+        this.gcsStorageBucketName = environment.getProperty("env.fileUpload.gcsFileStorageBucketName");
         this.gcsStorageConfig = StorageOptions.newBuilder().setProjectId("broad-juniper-dev").build().getService();
     }
 }

@@ -145,6 +145,10 @@ spec:
               value: 'true'
             - name: AIRTABLE_AUTH_TOKEN_SECRET_ID
               value: airtable-auth-token
+            - name: GCS_FILE_STORAGE_BUCKET_NAME
+              value: {{ .Values.gcsFileStorageBucketName }}
+            - name: GCS_FILE_STORAGE_PROJECT_ID
+              value: {{ .Values.gcpProject }}
           resources:
             requests:
               # The proxy's memory use scales linearly with the number of active
