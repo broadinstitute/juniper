@@ -127,12 +127,12 @@ export function PagedSurveyView({
     })
   }
 
-  const updateTaskId = (response: HubResponse) => {
-    //TODO: can we trust that the first task returned is the newest? hmmm
-    const newestTask = response.tasks[0]
+  const updateTaskId = (hubResponse: HubResponse) => {
+    const surveyResponseId = hubResponse.response.id
+    const taskForResponse = hubResponse.tasks.find(task => task.surveyResponseId === surveyResponseId)
     //set url params to the newest task id
-    if (newestTask && taskId !== newestTask.id) {
-      setTaskId(newestTask.id)
+    if (taskForResponse && taskId !== taskForResponse.id) {
+      setTaskId(taskForResponse.id)
     }
   }
 
