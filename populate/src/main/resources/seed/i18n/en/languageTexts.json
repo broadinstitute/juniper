@@ -152,5 +152,12 @@
   {"keyName": "documentDeleteDocumentInUseMessage", "text": "This document is currently shared in response to at least one survey. Please remove it from the survey response(s) before deleting it.", "language": "en"},
   {"keyName": "documentDeleteButton", "text": "Delete", "language": "en"},
   {"keyName": "documentOptionsButton", "text": "Options", "language": "en"},
-  {"keyName": "documentSharedInResponseTo", "text": "shared in response to", "language": "en"}
+  {"keyName": "documentSharedInResponseTo", "text": "shared in response to", "language": "en"},
+  {"keyName": "documentUploaderSelectedDocuments", "text": "Selected documents", "language": "en"},
+  {"keyName": "documentUploaderIncludedInResponse", "text": "These documents are included in your response", "language": "en"},
+  {"keyName": "documentUploaderNoDocumentsSelected", "text": "No documents selected. Please upload a new document or select an existing document below.", "language": "en"},
+  {"keyName": "documentUploaderAvailableDocuments", "text": "Available documents", "language": "en"},
+  {"keyName": "documentUploaderNotIncludedInResponse", "text": "These documents are not included in your response", "language": "en"},
+  {"keyName": "documentUploaderClickToUpload", "text": "Drop files here or click to upload", "language": "en"},
+  {"keyName": "documentUploaderNoDocuments", "text": "No documents available", "language": "en"}
 ]

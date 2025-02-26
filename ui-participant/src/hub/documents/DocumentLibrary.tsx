@@ -139,7 +139,7 @@ const surveyResponseIdsToTaskNames = (
 
   return (
     <div className={'mt-2 text-muted'}>
-      <span>{i18n('documentSharedInResponseTo')}</span>
+      <span>{i18n('documentSharedInResponseTo')}:</span>
       <ul>
         {associatedTasks.map(task =>
           <li key={task.id}>

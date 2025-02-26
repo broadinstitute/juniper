@@ -15,7 +15,7 @@ import LoadingSpinner from '@juniper/ui-admin/src/util/LoadingSpinner'
 import { saveBlobAsDownload } from '../../util/downloadUtils'
 import { ParticipantFile } from '../../types/participantFile'
 import { useApiContext } from '../../participant/ApiProvider'
-import { useI18n } from 'src/participant/I18nProvider'
+import { useI18n } from '../../participant/I18nProvider'
 
 export const DocumentRequestUploader = (
   {
