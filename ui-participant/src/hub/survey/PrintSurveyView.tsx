@@ -16,6 +16,7 @@ import {
   EnvironmentName,
   makeSurveyJsData,
   surveyJSModelFromForm,
+  useI18n,
   useTaskIdParam,
   waitForImages
 } from '@juniper/ui-core'
@@ -41,6 +42,7 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
 
   const { portalEnv, portal } = usePortalEnv()
+  const { selectedLanguage } = useI18n()
 
   const {
     user,
@@ -72,6 +74,7 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
       const surveyModel = surveyJSModelFromForm(form)
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
+      surveyModel.locale = selectedLanguage
       configureModelForPrint(surveyModel)
 
       const proxyProfile = ppUser?.participantUserId != user?.id ? allEnrollees
