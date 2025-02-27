@@ -144,7 +144,7 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
   setNextUpdateDelay(millisecondsUntilNextUpdate)
 
-  return !idleModalVisible
+  return idleModalVisible
     ? <IdleWarningModal secondsUntilTimedOut={secondsUntilTimedOut} onDismiss={() => setIdleModalVisible(false)}/>
     : null
 }
