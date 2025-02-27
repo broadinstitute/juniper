@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Documenti", "language": "it", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Documenti caricati", "language": "it", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Durante la partecipazione a uno studio, potrebbe esserti chiesto di caricare documenti come parte di un modulo o di un sondaggio. Di seguito, puoi gestire i documenti che hai caricato.", "language": "it", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Documenti", "language": "it", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Documenti", "language": "it", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "La tua sessione sta per scadere", "language": "it", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Per garantire la sicurezza e proteggere i tuoi dati, verrai disconnesso tra ${timeRemaining}.", "language": "it", "machineTranslated": true}
 ]

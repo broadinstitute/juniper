@@ -8,6 +8,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import _ from 'lodash'
 import { useUser } from 'providers/UserProvider'
+import { useI18n } from '@juniper/ui-core'
 
 /*
  * This code was copied from Terra UI and modified to:
@@ -87,15 +88,16 @@ const IdleWarningModal = ({ secondsUntilTimedOut, onDismiss }: {
   secondsUntilTimedOut: number,
   onDismiss: () => void
 }) => {
+  const { i18n } = useI18n()
   const minutes = Math.floor(secondsUntilTimedOut / 60)
   const seconds = secondsUntilTimedOut % 60
   const timeRemaining = `${minutes}:${seconds.toString().padStart(2, '0')}`
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header>
-      <Modal.Title>Your session is about to expire</Modal.Title>
+      <Modal.Title>{i18n('idleStatusNoticeTitle')}</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <p>To maintain security and protect your data, you will be logged out in {timeRemaining}.</p>
+      <p>{i18n('idleStatusNoticeMessage', { substitutions: { timeRemaining } })}</p>
     </Modal.Body>
   </Modal>
 }
@@ -142,7 +144,7 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
   setNextUpdateDelay(millisecondsUntilNextUpdate)
 
-  return idleModalVisible
+  return !idleModalVisible
     ? <IdleWarningModal secondsUntilTimedOut={secondsUntilTimedOut} onDismiss={() => setIdleModalVisible(false)}/>
     : null
 }

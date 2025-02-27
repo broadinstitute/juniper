@@ -144,5 +144,7 @@
   {"keyName": "documentsPageTitle", "text": "DEV_Documents", "language": "dev", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "DEV_Uploaded documents", "language": "dev", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "DEV_While participating in a study, you may be asked to upload documents as part of a form or survey. Below, you can review the documents you have uploaded.", "language": "dev", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "DEV_Documents", "language": "dev", "machineTranslated": true}
+  {"keyName": "navbarDocuments", "text": "DEV_Documents", "language": "dev", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "DEV_Your session is about to expire", "language": "dev"},
+  {"keyName": "idleStatusNoticeMessage", "text": "DEV_To maintain security and protect your data, you will be logged out in ${timeRemaining}.", "language": "dev"}
 ]

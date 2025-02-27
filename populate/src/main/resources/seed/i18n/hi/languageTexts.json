@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "अपलोड किए गए दस्तावेज़", "language": "hi", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "अध्ययन में भाग लेने के दौरान, आपसे किसी फ़ॉर्म या सर्वेक्षण के भाग के रूप में दस्तावेज़ अपलोड करने के लिए कहा जा सकता है। नीचे, आप अपने द्वारा अपलोड किए गए दस्तावेज़ों को प्रबंधित कर सकते हैं।", "language": "hi", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "आपका सत्र समाप्त होने वाला है", "language": "hi", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "सुरक्षा बनाए रखने और आपके डेटा की सुरक्षा के लिए, आपको ${timeRemaining} में लॉग आउट कर दिया जाएगा।", "language": "hi", "machineTranslated": true}
 ]

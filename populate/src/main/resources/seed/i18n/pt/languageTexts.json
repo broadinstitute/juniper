@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Documentos", "language": "pt", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Documentos enviados", "language": "pt", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Ao participar num estudo, poderá ser-lhe pedido que envie documentos como parte de um formulário ou inquérito. Abaixo, pode gerir os documentos que enviou.", "language": "pt", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Documentos", "language": "pt", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Documentos", "language": "pt", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Sua sessão está prestes a expirar", "language": "pt", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Para manter a segurança e proteger seus dados, você será desconectado em ${timeRemaining}.", "language": "pt", "machineTranslated": true}
 ]
