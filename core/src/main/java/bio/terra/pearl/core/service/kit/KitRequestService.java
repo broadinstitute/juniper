@@ -407,7 +407,14 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // if the kit has been deactivated in Juniper, we no longer need to update the status
             // based on what DSM thinks. this allows us to independently deactivate kits in Juniper
             // without having to worry about DSM status updates.
-            log.info("Skipping status update for deactivated kit request %s".formatted(kitRequest.getId()));
+            if(!PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()).equals(priorStatus)) {
+                // if the statuses don't match, log a warning so we know about the inconsistency
+                // this case is expected if a kit has been deactivated in Juniper but not DSM
+                log.warn((
+                    "Skipped status update for deactivated kit request %s, " +
+                    "and statuses did not match. Juniper status: %s, DSM status: %s"
+                ).formatted(kitRequest.getId(), priorStatus, pepperKit.getCurrentStatus()));
+            }
             return;
         }
 
