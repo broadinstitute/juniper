@@ -194,15 +194,18 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
      * response reflects the latest task list and profile
      */
     public <T extends BaseEntity> HubResponse<T> buildHubResponse(EnrolleeEvent event, T response) {
+        return buildHubResponse(event.getEnrollee(), event.getEnrolleeContext(), response);
+    }
+
+    public <T extends BaseEntity> HubResponse<T> buildHubResponse(Enrollee enrollee, EnrolleeContext enrolleeContext, T response) {
         HubResponse hubResponse = HubResponse.builder()
                 .response(response)
-                .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
-                .enrollee(event.getEnrollee())
-                .profile(event.getEnrolleeContext().getProfile())
+                .tasks(enrollee.getParticipantTasks().stream().toList())
+                .enrollee(enrollee)
+                .profile(enrolleeContext.getProfile())
                 .build();
         return hubResponse;
     }
-
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;

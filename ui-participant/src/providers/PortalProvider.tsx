@@ -1,5 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Api, { LocalSiteContent, Portal, PortalEnvironment } from 'api/api'
+import React, {
+  useContext,
+  useEffect,
+  useState
+} from 'react'
+import Api, {
+  LocalSiteContent,
+  Portal,
+  PortalEnvironment
+} from 'api/api'
 import { SUPPORT_EMAIL_ADDRESS } from '@juniper/ui-core'
 
 
@@ -40,6 +48,26 @@ export default function PortalProvider({ children }: { children: React.ReactNode
     reloadPortal()
   }, [])
 
+  const updateWebManifest = (portal: Portal) => {
+    const manifest = {
+      'name': portal.name,
+      'short_name': portal.name,
+      'description': '',
+      'start_url': '.',
+      'background_color': '#ffffff',
+      'theme_color': '#000000',
+      'icons': [{
+        'src': 'favicon.ico',
+        'sizes': '64x64 32x32 24x24 16x16',
+        'type': 'image/x-icon'
+      }]
+    }
+    const stringManifest = JSON.stringify(manifest)
+    const blob = new Blob([stringManifest], { type: 'application/json' })
+    const manifestURL = URL.createObjectURL(blob)
+    document.querySelector('#juniper-manifest')?.setAttribute('href', manifestURL)
+  }
+
   const reloadPortal = () => {
     const savedLanguage = localStorage.getItem('selectedLanguage')
     const selectedLanguage = savedLanguage === null ? undefined : savedLanguage
@@ -47,6 +75,7 @@ export default function PortalProvider({ children }: { children: React.ReactNode
     // the ! below is unnecessary and wrong, but Vite ts validation insists on it?
     Api.getPortal(selectedLanguage!).then(result => {
       setEnvState(result)
+      updateWebManifest(result)
       setIsError(false)
       setIsLoading(false)
     }).catch(() => {

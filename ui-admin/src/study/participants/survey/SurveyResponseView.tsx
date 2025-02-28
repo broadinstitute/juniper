@@ -137,6 +137,7 @@ export function RawEnrolleeSurveyView({
   const [view, setView] = useState<SurveyView>(configSurvey.survey.surveyType === 'ADMIN' ? 'editing' : 'viewing')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
   const [showJustificationModal, setShowJustificationModal] = useState(false)
+  const [showReassignModal, setShowReassignModal] = useState(false)
   const [justification, setJustification] = useState<string>('')
   const [showTaskModal, setShowTaskModal] = useState(false)
 
@@ -153,6 +154,14 @@ export function RawEnrolleeSurveyView({
             </Button>
           </div>
           {surveyTaskStatus(task, response)}
+          <div className="ms-2">
+            <Button
+              variant="secondary"
+              onClick={() => setShowReassignModal(true)}
+              tooltip="Assign new instance of the task. Previous responses will still be visible.">
+              Re-assign
+            </Button>
+          </div>
         </div>
 
         <div className="d-flex align-items-center">
@@ -250,6 +259,13 @@ export function RawEnrolleeSurveyView({
         onDismiss={() => setShowJustificationModal(false)}
         changes={[]}
         confirmText={'Continue to edit'}
+      />}
+      {showReassignModal && <SurveyAssignModal
+        studyEnvParams={paramsFromContext(studyEnvContext)}
+        enrollee={enrollee}
+        survey={configSurvey.survey}
+        onDismiss={() => setShowReassignModal(false)}
+        onSubmit={onUpdate}
       />}
       {view === 'printing' && <PrintFormView answers={response?.answers || []} survey={configSurvey.survey}/>}
     </div>

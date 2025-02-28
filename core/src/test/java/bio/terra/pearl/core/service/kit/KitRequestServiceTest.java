@@ -208,6 +208,31 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
+    public void testSkipStatusUpdateForDeactivatedKit(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(testName,
+                enrollee, PepperKitStatus.DEACTIVATED, kitType.getId(), adminUser.getId());
+
+        PepperKit pepperKit = PepperKit.builder()
+                .juniperKitId(kitRequest.getId().toString())
+                .currentStatus(PepperKitStatus.SENT.pepperString)
+                .build();
+        when(mockPepperDSMClient.fetchKitStatus(any(), eq(kitRequest.getId()))).thenReturn(pepperKit);
+
+        kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
+
+        // Verify that the status was not updated
+        KitRequest savedKit = kitRequestDao.find(kitRequest.getId()).get();
+        assertThat(savedKit.getStatus(), equalTo(KitRequestStatus.DEACTIVATED));
+        verify(mockPepperDSMClient).fetchKitStatus(any(), eq(kitRequest.getId()));
+    }
+
+    @Transactional
+    @Test
     public void testGetKitsByStudyEnvironment(TestInfo testInfo) throws Exception {
         // Arrange:
         //   2 kits, one with bogus status JSON

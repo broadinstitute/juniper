@@ -14,8 +14,9 @@ public class DictionaryExportService {
     private EnrolleeExportService enrolleeExportService;
     private ObjectMapper objectMapper;
 
-    public DictionaryExportService(EnrolleeExportService enrolleeExportService) {
+    public DictionaryExportService(EnrolleeExportService enrolleeExportService, ObjectMapper objectMapper) {
         this.enrolleeExportService = enrolleeExportService;
+        this.objectMapper = objectMapper;
     }
 
     public void exportDictionary(ExportOptions exportOptions, UUID portalId,

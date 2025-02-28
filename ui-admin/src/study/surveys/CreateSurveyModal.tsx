@@ -55,6 +55,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     allowParticipantStart: type !== 'ADMIN',
     allowAdminEdit: type !== 'CONSENT',
     required: type === 'CONSENT',
+    autoAssign: type !== 'PRE_ENROLL',
     stableId: '',
     name: '',
     surveyType: type,

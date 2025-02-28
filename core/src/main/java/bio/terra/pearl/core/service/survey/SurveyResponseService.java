@@ -14,6 +14,8 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -33,6 +35,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private final AnswerProcessingService answerProcessingService;
     private final ParticipantDataChangeService participantDataChangeService;
     private final EventService eventService;
+    private final EnrolleeContextService enrolleeContextService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
 
     public SurveyResponseService(SurveyResponseDao dao,
@@ -41,7 +44,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 ParticipantDataChangeService participantDataChangeService, EventService eventService) {
+                                 ParticipantDataChangeService participantDataChangeService,
+                                 EventService eventService, EnrolleeContextService enrolleeContextService) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
@@ -50,6 +54,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         this.answerProcessingService = answerProcessingService;
         this.participantDataChangeService = participantDataChangeService;
         this.eventService = eventService;
+        this.enrolleeContextService = enrolleeContextService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -175,10 +180,20 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         // now update the task status and response id
         task = updateTaskToResponse(task, response, updatedAnswers, auditInfo);
-        EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser, task);
+
+        // we only want to publish the event if the survey is complete
+        // eventually, we may add other types of events like SURVEY_RESPONSE_UPDATED, or something
+        // but for now we only care about eventing on completions or re-completions
+        EnrolleeContext enrolleeContext;
+        if(response.isComplete()) {
+            EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser, task);
+            enrolleeContext = event.getEnrolleeContext();
+        } else {
+            enrolleeContext = enrolleeContextService.fetchData(enrollee);
+        }
 
         logger.info("SurveyResponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
-        HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(event, response);
+        HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(enrollee, enrolleeContext, response);
         return hubResponse;
     }
 

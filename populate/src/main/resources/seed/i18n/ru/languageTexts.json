@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Документы", "language": "ru", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Загруженные документы", "language": "ru", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "При участии в исследовании вас могут попросить загрузить документы как часть формы или опроса. Ниже вы можете управлять загруженными вами документами.", "language": "ru", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Документы", "language": "ru", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Документы", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Ваш сеанс скоро истечет", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Для обеспечения безопасности и защиты ваших данных вы выйдете из системы через ${timeRemaining}.", "language": "ru", "machineTranslated": true}
 ]
