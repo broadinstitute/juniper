@@ -46,6 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -1025,9 +1026,12 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     }
 
     private void verifyKitRequests(ImportItem importItem, List<KitRequestDto> expectedKitRequests) {
-
         List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(importItem.getCreatedEnrolleeId()).get());
         assertThat(kitRequestDtos.size(), equalTo(expectedKitRequests.size()));
+
+        kitRequestDtos.sort(comparing(KitRequestDto::getTrackingNumber));
+        expectedKitRequests.sort(comparing(KitRequestDto::getTrackingNumber));
+
         for (int i = 0; i < expectedKitRequests.size(); i++) {
             KitRequestDto kitRequestDto = kitRequestDtos.get(i);
             KitRequestDto expectedKit = expectedKitRequests.get(i);
