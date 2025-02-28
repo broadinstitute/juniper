@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Unterlagen", "language": "de", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Hochgeladene Dokumente", "language": "de", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Während Sie an einer Studie teilnehmen, werden Sie möglicherweise aufgefordert, im Rahmen eines Formulars oder einer Umfrage Dokumente hochzuladen. Unten können Sie die hochgeladenen Dokumente verwalten.", "language": "de", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Unterlagen", "language": "de", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Unterlagen", "language": "de", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Ihre Sitzung läuft bald ab", "language": "de", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Um die Sicherheit zu gewährleisten und Ihre Daten zu schützen, werden Sie in ${timeRemaining} abgemeldet.", "language": "de", "machineTranslated": true}
 ]

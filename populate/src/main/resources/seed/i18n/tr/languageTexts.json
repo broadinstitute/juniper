@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Belgeler", "language": "tr", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Yüklenen belgeler", "language": "tr", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Bir çalışmaya katılırken, bir form veya anketin parçası olarak belgeleri yüklemeniz istenebilir. Aşağıda, yüklediğiniz belgeleri yönetebilirsiniz.", "language": "tr", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Belgeler", "language": "tr", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Belgeler", "language": "tr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Oturumunuz sona ermek üzere", "language": "tr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Güvenliğinizi sağlamak ve verilerinizi korumak için ${timeRemaining} içinde oturumunuz kapatılacak.", "language": "tr", "machineTranslated": true}
 ]

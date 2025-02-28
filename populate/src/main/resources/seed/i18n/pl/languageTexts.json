@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Dokumenty", "language": "pl", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Przesłane dokumenty", "language": "pl", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Wpodczas uczestnictwa w badaniu możesz zostać poproszony o przesłanie dokumentów jako części formularza lub ankiety. Poniżej możesz zarządzać przesłanymi dokumentami.", "language": "pl", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Dokumenty", "language": "pl", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Dokumenty", "language": "pl", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Twoja sesja wkrótce wygaśnie", "language": "pl", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Aby zachować bezpieczeństwo i chronić Twoje dane, zostaniesz wylogowany za ${timeRemaining}.", "language": "pl", "machineTranslated": true}
 ]

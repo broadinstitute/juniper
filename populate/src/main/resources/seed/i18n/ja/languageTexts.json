@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "文書", "language": "ja", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "アップロードされた文書", "language": "ja", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "調査に参加する際に、フォームまたはアンケートの一部としてドキュメントをアップロードするよう求められる場合があります。以下で、アップロードしたドキュメントを管理できます。", "language": "ja", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "文書", "language": "ja", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "文書", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "セッションの有効期限が切れます", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "セキュリティを維持し、データを保護するため、${timeRemaining} 後にログアウトされます。", "language": "ja", "machineTranslated": true}
 ]
