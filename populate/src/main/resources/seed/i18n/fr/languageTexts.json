@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "Documents disponibles", "language": "fr", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "Ces documents ne sont pas inclus dans votre réponse", "language": "fr", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "Déposez les fichiers ici ou cliquez pour télécharger", "language": "fr", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Aucun document disponible", "language": "fr", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "Aucun document disponible", "language": "fr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Votre session est sur le point d'expirer", "language": "fr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Pour maintenir la sécurité et protéger vos données, vous serez déconnecté dans ${timeRemaining}.", "language": "fr", "machineTranslated": true}
 ]

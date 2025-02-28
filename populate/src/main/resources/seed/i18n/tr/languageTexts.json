@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "Mevcut belgeler", "language": "tr", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "Bu belgeler yanıtınıza dahil değildir", "language": "tr", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "Dosyaları buraya bırakın veya yüklemek için tıklayın", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Hiçbir belge mevcut değil", "language": "tr", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "Hiçbir belge mevcut değil", "language": "tr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Oturumunuz sona ermek üzere", "language": "tr", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Güvenliğinizi sağlamak ve verilerinizi korumak için ${timeRemaining} içinde oturumunuz kapatılacak.", "language": "tr", "machineTranslated": true}
 ]

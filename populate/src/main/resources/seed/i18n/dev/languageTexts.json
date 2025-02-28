@@ -159,5 +159,8 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "DEV_Available documents", "language": "dev"},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "DEV_These documents are not included in your response", "language": "dev"},
   {"keyName": "documentUploaderClickToUpload", "text": "DEV_Drop files here or click to upload", "language": "dev"},
-  {"keyName": "documentUploaderNoDocuments", "text": "DEV_No documents available", "language": "dev"}
+  {"keyName": "documentUploaderNoDocuments", "text": "DEV_No documents available", "language": "dev"},
+  {"keyName": "navbarDocuments", "text": "DEV_Documents", "language": "dev", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "DEV_Your session is about to expire", "language": "dev"},
+  {"keyName": "idleStatusNoticeMessage", "text": "DEV_To maintain security and protect your data, you will be logged out in ${timeRemaining}.", "language": "dev"}
 ]

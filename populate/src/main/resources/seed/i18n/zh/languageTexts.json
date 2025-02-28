@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "可用文件", "language": "zh", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "您的回复中未包含这些文件", "language": "zh", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "将文件拖放到此处或单击上传", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "没有可用文件", "language": "zh", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "没有可用文件", "language": "zh", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "您的会话即将过期", "language": "zh", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "为了维护安全并保护您的数据，您将在 ${timeRemaining} 后退出。", "language": "zh", "machineTranslated": true}
 ]

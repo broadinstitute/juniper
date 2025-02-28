@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "Available documents", "language": "ru", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "Эти документы не включены в ваш ответ", "language": "ru", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "Перетащите файлы сюда или нажмите, чтобы загрузить", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Нет доступных документов", "language": "ru", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "Нет доступных документов", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Ваш сеанс скоро истечет", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Для обеспечения безопасности и защиты ваших данных вы выйдете из системы через ${timeRemaining}.", "language": "ru", "machineTranslated": true}
 ]

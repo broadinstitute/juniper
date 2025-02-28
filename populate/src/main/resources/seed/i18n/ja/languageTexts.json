@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "利用可能な文書", "language": "ja", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "これらの文書は回答に含まれていません", "language": "ja", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "ここにファイルをドロップするか、クリックしてアップロードしてください", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "利用可能な文書はありません", "language": "ja", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "利用可能な文書はありません", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "セッションの有効期限が切れます", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "セキュリティを維持し、データを保護するため、${timeRemaining} 後にログアウトされます。", "language": "ja", "machineTranslated": true}
 ]

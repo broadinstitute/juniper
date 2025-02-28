@@ -159,5 +159,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "Available documents", "language": "en"},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "These documents are not included in your response", "language": "en"},
   {"keyName": "documentUploaderClickToUpload", "text": "Drop files here or click to upload", "language": "en"},
-  {"keyName": "documentUploaderNoDocuments", "text": "No documents available", "language": "en"}
+  {"keyName": "documentUploaderNoDocuments", "text": "No documents available", "language": "en"},
+  {"keyName": "idleStatusNoticeTitle", "text": "Your session is about to expire", "language": "en"},
+  {"keyName": "idleStatusNoticeMessage", "text": "To maintain security and protect your data, you will be logged out in ${timeRemaining}.", "language": "en"}
 ]

@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "Verfügbare Dokumente", "language": "de", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "Diese Dokumente sind nicht in Ihrer Antwort enthalten", "language": "de", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "Legen Sie die Dateien hier ab, oder klicken Sie zum Hochladen", "language": "de", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Keine Dokumente verfügbar", "language": "de", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "Keine Dokumente verfügbar", "language": "de", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Ihre Sitzung läuft bald ab", "language": "de", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Um die Sicherheit zu gewährleisten und Ihre Daten zu schützen, werden Sie in ${timeRemaining} abgemeldet.", "language": "de", "machineTranslated": true}
 ]

@@ -157,5 +157,7 @@
   {"keyName": "documentUploaderAvailableDocuments", "text": "उपलब्ध दस्तावेज़", "language": "hi", "machineTranslated": true},
   {"keyName": "documentUploaderNotIncludedInResponse", "text": "ये दस्तावेज़ आपके उत्तर में शामिल नहीं हैं", "language": "hi", "machineTranslated": true},
   {"keyName": "documentUploaderClickToUpload", "text": "फ़ाइलें यहां डालें या अपलोड करने के लिए क्लिक करें", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "कोई दस्तावेज़ उपलब्ध नहीं है", "language": "hi", "machineTranslated": true}
+  {"keyName": "documentUploaderNoDocuments", "text": "कोई दस्तावेज़ उपलब्ध नहीं है", "language": "hi", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "आपका सत्र समाप्त होने वाला है", "language": "hi", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "सुरक्षा बनाए रखने और आपके डेटा की सुरक्षा के लिए, आपको ${timeRemaining} में लॉग आउट कर दिया जाएगा।", "language": "hi", "machineTranslated": true}
 ]
