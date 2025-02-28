@@ -291,7 +291,7 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
         if question.question_type == 'paneldynamic':
             question.subquestions = []
             for subquestion in simple_questions:
-                if subquestion.stable_id.startswith(question.stable_id) and re.match("^.+\[\d+]$", subquestion.stable_id):
+                if subquestion.stable_id.startswith(question.stable_id) and re.match("^.+\\[\d+]$", subquestion.stable_id):
                     # remove the index from the stableid
                     subquestion.stable_id = subquestion.stable_id[:-3]
                     question.subquestions.append(subquestion)
@@ -397,6 +397,8 @@ def create_translations(
                 juniper_questions.remove(juniper_question)
         else:
             print('Error parsing translation override: ')
+            print(override.dsm_stable_id)
+            print(override.juniper_stable_id)
             if dsm_question is None and override.dsm_stable_id is not None:
                 print('DSM question with stable ID ' + override.dsm_stable_id + ' not found')
             if juniper_question is None:
