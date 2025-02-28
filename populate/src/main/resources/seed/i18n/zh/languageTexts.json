@@ -143,6 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "文件", "language": "zh", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "已上传文件", "language": "zh", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "在参与研究期间，您可能会被要求上传文件作为表格或调查的一部分。下面，您可以管理已上传的文件。", "language": "zh", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "文件", "language": "zh", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "文件", "language": "zh", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "您的会话即将过期", "language": "zh", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "为了维护安全并保护您的数据，您将在 ${timeRemaining} 后退出。", "language": "zh", "machineTranslated": true}
 ]

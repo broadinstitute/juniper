@@ -143,5 +143,7 @@
   {"keyName": "documentsPageTitle", "text": "Documentos", "language": "es", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Documentos cargados", "language": "es", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Mientras participa en un estudio, es posible que se le solicite que cargue documentos como parte de un formulario o encuesta. A continuación, puede administrar los documentos que ha cargado.", "language": "es", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Documentos", "language": "es", "machineTranslated": true}
+  {"keyName": "navbarDocuments", "text": "Documentos", "language": "es", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Su sesión está a punto de expirar", "language": "es", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Para mantener la seguridad y proteger sus datos, se cerrará la sesión en ${timeRemaining}.", "language": "es", "machineTranslated": true}
 ]
