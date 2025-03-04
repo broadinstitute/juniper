@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry:2.0.11'
     implementation 'org.apache.commons:commons-text:1.13.0'
     implementation 'org.apache.commons:commons-csv:1.13.0'
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    implementation 'commons-beanutils:commons-beanutils:1.10.1'
     implementation 'org.liquibase:liquibase-core:4.31.0'
     implementation 'org.yaml:snakeyaml:2.4'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
