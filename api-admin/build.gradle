@@ -23,7 +23,7 @@ dependencies {
     implementation project(':populate')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.13.0'
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    implementation 'commons-beanutils:commons-beanutils:1.10.1'
     implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.1'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.4.1'
