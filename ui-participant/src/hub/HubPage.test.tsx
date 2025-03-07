@@ -84,7 +84,7 @@ jest.mock('../providers/ActiveUserProvider', () => {
 describe('HubPage', () => {
   it('is rendered with the study name', () => {
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider>
+      <MockI18nProvider useDefaultTexts={true}>
         <HubPage/>
       </MockI18nProvider>)
     render(RoutedComponent)

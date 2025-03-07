@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationSender;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -35,11 +36,12 @@ public class EnrolleeEmailService implements NotificationSender {
     private final EmailTemplateService emailTemplateService;
     private final ApplicationRoutingPaths routingPaths;
     private final SendgridClient sendgridClient;
+    private final LanguageTextService languageTextService;
 
     public EnrolleeEmailService(NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
                                 StudyService studyService, EmailTemplateService emailTemplateService,
-                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
+                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient, LanguageTextService languageTextService) {
         this.notificationService = notificationService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
@@ -47,6 +49,7 @@ public class EnrolleeEmailService implements NotificationSender {
         this.emailTemplateService = emailTemplateService;
         this.routingPaths = routingPaths;
         this.sendgridClient = sendgridClient;
+        this.languageTextService = languageTextService;
     }
 
     @Async
@@ -138,6 +141,17 @@ public class EnrolleeEmailService implements NotificationSender {
 
         if (!contextInfo.portalEnv().getEnvironmentName().isLive()) {
             fromName += " (%s)".formatted(contextInfo.portalEnv().getEnvironmentName());
+        }
+
+
+        if (contextInfo.study() != null) {
+            // makes sure study.name returns the name of the study in the preferred language
+            languageTextService
+                    .findBySiteContentLanguageAndKey(
+                            contextInfo.portalEnv().getSiteContentId(),
+                            preferredLanguage,
+                            contextInfo.portal().getShortcode() + "." + contextInfo.study().getShortcode())
+                    .ifPresent(studyNameText -> contextInfo.study().setName(studyNameText.getText()));
         }
 
         Mail mail = sendgridClient.buildEmail(

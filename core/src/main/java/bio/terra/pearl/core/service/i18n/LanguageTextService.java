@@ -40,4 +40,8 @@ public class LanguageTextService extends CrudService<LanguageText, LanguageTextD
     public void deleteByLocalSite(UUID localSiteId, Set<CascadeProperty> cascades) {
         languageTextDao.deleteByLocalSite(localSiteId);
     }
+
+    public Optional<LanguageText> findBySiteContentLanguageAndKey(UUID siteContentId, String language, String key) {
+        return languageTextDao.findBySiteContentLanguageAndKey(siteContentId, language, key);
+    }
 }
