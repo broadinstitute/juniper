@@ -7,7 +7,8 @@ import {
   Route,
   Routes,
   useNavigate,
-  useParams, useSearchParams
+  useParams,
+  useSearchParams
 } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
 import Api, {
@@ -27,7 +28,9 @@ import {
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import {
+  getTranslatedStudyName,
   HubResponse,
+  I18nFn,
   ParticipantUser,
   useI18n
 } from '@juniper/ui-core'
@@ -36,7 +39,10 @@ import {
   enrollProxyUserInStudy
 } from 'util/enrolleeUtils'
 import { logError } from 'util/loggingUtils'
-import { getNextConsentTask, getTaskPath } from 'hub/task/taskUtils'
+import {
+  getNextConsentTask,
+  getTaskPath
+} from 'hub/task/taskUtils'
 import { useEnrollmentParams } from './useEnrollmentParams'
 
 export type StudyEnrollContext = {
@@ -126,6 +132,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   const matchedEnrollee = enrolleesForUser.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
 
+  const translatedStudyName = getTranslatedStudyName(i18n, portal.shortcode, studyShortcode, studyName)
+
   /** route to a page depending on where in the pre-enroll/registration process the user is */
   const determineNextRoute = async () => {
     // if the user is a proxy, they still can enroll in the study
@@ -135,8 +143,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       const hubUpdate: HubUpdate = {
         message: {
           title: isProxyEnrollment
-            ? i18n('hubUpdateGovernedUserAlreadyEnrolledTitle', { substitutions: { studyName } })
-            : i18n('hubUpdateAlreadyEnrolledTitle', { substitutions: { studyName } }),
+            ? i18n('hubUpdateGovernedUserAlreadyEnrolledTitle', { substitutions: { studyName: translatedStudyName } })
+            : i18n('hubUpdateAlreadyEnrolledTitle', { substitutions: { studyName: translatedStudyName } }),
           type: 'INFO'
         }
       }
@@ -160,7 +168,12 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
               studyShortcode, preEnrollResponseId, refreshLoginState
             )
 
-          handleNewStudyEnroll(hubResponse, studyShortcode, navigate, i18n, studyName)
+          handleNewStudyEnroll(
+            hubResponse,
+            studyShortcode,
+            navigate,
+            i18n,
+            translatedStudyName)
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)
           navigate('/hub', { replace: true })
@@ -221,7 +234,7 @@ export function handleNewStudyEnroll(
   hubResponse: HubResponse,
   studyShortcode: string,
   navigate: (path: string, options?: { replace?: boolean, state?: object }) => void,
-  i18n: (key: string, options?: { substitutions?: { [key: string]: string } }) => string,
+  i18n: I18nFn,
   studyName: string
 ) {
   const nextConsentTask = getNextConsentTask(hubResponse)

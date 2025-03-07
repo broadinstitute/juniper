@@ -1,17 +1,28 @@
 import {
   Enrollee,
   EnvironmentName,
+  getTranslatedStudyName,
   I18nOptions,
   instantToDateString,
-  ParticipantFile, ParticipantTask, saveBlobAsDownload,
+  ParticipantFile,
+  ParticipantTask,
+  saveBlobAsDownload,
   StudyEnvParams,
   useI18n
 } from '@juniper/ui-core'
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import Api from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFile, faFileImage, faFileLines, faFilePdf } from '@fortawesome/free-solid-svg-icons'
+import {
+  faFile,
+  faFileImage,
+  faFileLines,
+  faFilePdf
+} from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { Link } from 'react-router-dom'
 import { getTaskPath } from '../task/taskUtils'
@@ -80,7 +91,11 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
   }, [])
 
   return <>
-    <h5 className={'mt-3'}>{studyName} ({participantFiles.length})</h5>
+    <h5
+      className={'mt-3'}>
+      {getTranslatedStudyName(
+        i18n, studyEnvParams.portalShortcode, studyEnvParams.studyShortcode, studyName
+      )} ({participantFiles.length})</h5>
     <div className="d-flex flex-column">
       {participantFiles.length > 0 && <table className="table">
         <thead>

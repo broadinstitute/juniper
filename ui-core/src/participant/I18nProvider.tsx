@@ -15,9 +15,11 @@ export type I18nOptions = {
   defaultValue?: string
 }
 
+export type I18nFn = (key: string, options?: I18nOptions) => string
+
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string, options?: I18nOptions) => string,
+  i18n: I18nFn,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
 }

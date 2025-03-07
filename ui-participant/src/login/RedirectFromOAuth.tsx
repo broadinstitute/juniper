@@ -94,7 +94,11 @@ export const RedirectFromOAuth = () => {
               const hubResponse = await enrollCurrentUserInStudy(
                 defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState)
 
-              handleNewStudyEnroll(hubResponse, defaultEnrollStudy.shortcode, navigate, i18n, defaultEnrollStudy.name)
+              handleNewStudyEnroll(hubResponse,
+                defaultEnrollStudy.shortcode,
+                navigate,
+                i18n,
+                i18n(`${portal.shortcode}.${defaultEnrollStudy.shortcode}`, { defaultValue: defaultEnrollStudy.name }))
             } else {
               navigate('/hub', { replace: true })
             }

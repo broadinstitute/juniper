@@ -18,6 +18,7 @@ import {
 import {
   Enrollee,
   getJoinLink,
+  getTranslatedStudyName,
   ParticipantDashboardAlert,
   useI18n
 } from '@juniper/ui-core'
@@ -143,7 +144,9 @@ const StudySection = (props: StudySectionProps) => {
 
   return (
     <>
-      <h1 className="mb-4">{matchedStudy.name}</h1>
+      <h1 className="mb-4">
+        {getTranslatedStudyName(i18n, portal.shortcode, matchedStudy.shortcode, matchedStudy.name)}
+      </h1>
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests}/>}
       {enrollee.subject
         ? <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
