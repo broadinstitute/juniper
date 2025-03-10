@@ -73,7 +73,7 @@ describe('HubPage with proxies', () => {
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeInTheDocument()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
     selectParticipant('Jonas Salk {youInParens}')
-    await waitFor(() => expect(screen.getByText('{TESTPORTAL.STUDYSHORTCODE}')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('{study:TESTPORTAL.STUDYSHORTCODE}')).toBeInTheDocument())
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonas Salk {youInParens}')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()

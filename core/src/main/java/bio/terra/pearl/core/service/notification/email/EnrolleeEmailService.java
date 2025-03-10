@@ -134,6 +134,28 @@ public class EnrolleeEmailService implements NotificationSender {
             // if this portal environment hasn't been configured with a specific email, just send from the support address
             fromAddress = routingPaths.getSupportEmailAddress();
         }
+
+        if (contextInfo.study() != null) {
+            // makes sure study.name returns the name of the study in the preferred language
+            languageTextService
+                    .findBySiteContentLanguageAndKey(
+                            contextInfo.portalEnv().getSiteContentId(),
+                            preferredLanguage,
+                            "study:" + contextInfo.portal().getShortcode() + "." + contextInfo.study().getShortcode())
+                    .ifPresent(studyNameText -> contextInfo.study().setName(studyNameText.getText()));
+        }
+
+        if (contextInfo.portal() != null) {
+            // makes sure portal.name returns the name of the portal in the preferred language
+            languageTextService
+                    .findBySiteContentLanguageAndKey(
+                            contextInfo.portalEnv().getSiteContentId(),
+                            preferredLanguage,
+                            "portal:" + contextInfo.portal().getShortcode())
+                    .ifPresent(portalNameText -> contextInfo.portal().setName(portalNameText.getText()));
+        }
+
+
         String fromName = "Juniper";
         if (contextInfo.portal().getName() != null) {
             fromName = contextInfo.portal().getName();
@@ -143,16 +165,6 @@ public class EnrolleeEmailService implements NotificationSender {
             fromName += " (%s)".formatted(contextInfo.portalEnv().getEnvironmentName());
         }
 
-
-        if (contextInfo.study() != null) {
-            // makes sure study.name returns the name of the study in the preferred language
-            languageTextService
-                    .findBySiteContentLanguageAndKey(
-                            contextInfo.portalEnv().getSiteContentId(),
-                            preferredLanguage,
-                            contextInfo.portal().getShortcode() + "." + contextInfo.study().getShortcode())
-                    .ifPresent(studyNameText -> contextInfo.study().setName(studyNameText.getText()));
-        }
 
         Mail mail = sendgridClient.buildEmail(
                 localizedEmailTemplate,

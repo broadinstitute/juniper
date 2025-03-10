@@ -204,6 +204,14 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .localizedSiteContentId(localizedSiteContentEs.getId())
                 .build());
 
+        LanguageText esPortalNameLanguageText = languageTextService.create(LanguageText
+                .builder()
+                .keyName("portal1")
+                .language("es")
+                .text("MiPortal")
+                .localizedSiteContentId(localizedSiteContentEs.getId())
+                .build());
+
 
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
@@ -237,7 +245,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("estudio " + esStudyNameLanguageText.getText()));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
-        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.from.getName(), equalTo("MiPortal (irb) (local)"));
         assertThat(email.getSubject(), equalTo("test"));
     }
 

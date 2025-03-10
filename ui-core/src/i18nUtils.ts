@@ -67,5 +67,12 @@ export const getTranslatedStudyName = (
   portalShortcode: string,
   studyShortcode: string,
   studyName: string) => {
-  return i18n(`${portalShortcode}.${studyShortcode}`, { defaultValue: studyName })
+  return i18n(`study:${portalShortcode}.${studyShortcode}`, { defaultValue: studyName })
+}
+
+export const getTranslatedPortalName = (
+  i18n: I18nFn,
+  portalShortcode: string,
+  studyName: string) => {
+  return i18n(`portal:${portalShortcode}`, { defaultValue: studyName })
 }

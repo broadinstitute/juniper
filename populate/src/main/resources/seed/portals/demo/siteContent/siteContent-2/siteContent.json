@@ -37,7 +37,10 @@
     "languageTextOverrides": [
       {
         "text": "Estudio de Demostración",
-        "keyName": "demo.heartdemo"
+        "keyName": "study:demo.heartdemo"
+      }, {
+        "text": "Juniper Demostración",
+        "keyName": "portal:demo"
       }
     ]
   },{
@@ -59,7 +62,10 @@
         "keyName": "navbarJoin"
       }, {
         "text": "DEV_Heart Demo",
-        "keyName": "demo.heartdemo"
+        "keyName": "study:demo.heartdemo"
+      }, {
+        "text": "DEV_Juniper Heart Demo",
+        "keyName": "portal:demo"
       }
     ]
   }]

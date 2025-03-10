@@ -61,6 +61,8 @@ export default function StudyEnrollRouter() {
   const studyShortcode = useParams().studyShortcode
 
   const { portal } = usePortalEnv()
+  const { i18n } = useI18n()
+
   const matchedStudy = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
   const studyEnv = matchedStudy?.studyEnvironments[0]
   if (!studyEnv || !studyShortcode) {
@@ -70,7 +72,7 @@ export default function StudyEnrollRouter() {
     <StudyEnrollOutletMatched
       portal={portal}
       studyEnv={studyEnv}
-      studyName={matchedStudy.name}
+      studyName={getTranslatedStudyName(i18n, portal.shortcode, studyShortcode, matchedStudy.name)}
       studyShortcode={studyShortcode}
     />
   )

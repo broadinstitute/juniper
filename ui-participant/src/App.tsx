@@ -124,7 +124,6 @@ function App() {
   return (
     <ApiProvider api={Api}>
       <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
-      <DocumentTitle />
       <PortalPasswordGate portal={portal}>
         <div
           className="App d-flex flex-column min-vh-100 bg-white"
@@ -145,6 +144,8 @@ function App() {
                             defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
                             portalShortcode={portal.shortcode}
                             environmentName={portalEnv.environmentName as EnvironmentName}>
+                            <DocumentTitle/>
+
                             <Suspense fallback={<PageLoadingIndicator/>}>
                               <IdleStatusMonitor
                                 maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
