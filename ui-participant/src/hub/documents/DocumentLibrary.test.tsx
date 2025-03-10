@@ -60,10 +60,10 @@ describe('DocumentLibrary', () => {
     })
 
     await act(async () => {
-      screen.getByText('Options').click()
+      screen.getByText('{documentOptionsButton}').click()
     })
 
-    expect(screen.getByText('Delete')).toBeInTheDocument()
+    expect(screen.getByText('{documentDeleteButton}')).toBeInTheDocument()
     expect(screen.getByText('{documentDownloadButton}')).toBeInTheDocument()
   })
 
@@ -78,7 +78,7 @@ describe('DocumentLibrary', () => {
       expect(screen.getByText('file1.pdf')).toBeInTheDocument()
     })
 
-    expect(screen.queryByText('shared in response to')).not.toBeInTheDocument()
+    expect(screen.queryByText('{documentSharedInResponseTo}')).not.toBeInTheDocument()
   })
 
   it('renders associated tasks', async () => {
@@ -131,15 +131,15 @@ describe('DocumentLibrary', () => {
     })
 
     await act(async () => {
-      screen.getByText('Options').click()
+      screen.getByText('{documentOptionsButton}').click()
     })
 
     await act(async () => {
-      screen.getByText('Delete').click()
+      screen.getByText('{documentDeleteButton}').click()
     })
 
     await waitFor(() => {
-      expect(screen.queryByText('Are you sure you want to delete this document?', { exact: false })).toBeInTheDocument()
+      expect(screen.queryByText('{documentDeleteAreYouSureMessage}', { exact: false })).toBeInTheDocument()
     })
   })
 
@@ -166,18 +166,15 @@ describe('DocumentLibrary', () => {
     })
 
     await act(async () => {
-      screen.getByText('Options').click()
+      screen.getByText('{documentOptionsButton}').click()
     })
 
     await act(async () => {
-      screen.getByText('Delete').click()
+      screen.getByText('{documentDeleteButton}').click()
     })
 
     await waitFor(() => {
-      expect(screen.queryByText('' +
-          'This document is currently shared in response to at least one survey. ' +
-          'Please remove it from the survey response(s) before deleting it.')
-      ).toBeInTheDocument()
+      expect(screen.queryByText('{documentDeleteDocumentInUseMessage}')).toBeInTheDocument()
     })
   })
 })
