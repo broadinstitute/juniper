@@ -139,7 +139,7 @@ const surveyResponseIdsToTaskNames = (
 
   return (
     <div className={'mt-2 text-muted'}>
-      <span>shared in response to:</span>
+      <span>{i18n('documentSharedInResponseTo')}:</span>
       <ul>
         {associatedTasks.map(task =>
           <li key={task.id}>
@@ -176,14 +176,14 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
     <li className="nav-item dropdown d-flex flex-column">
       <button className="btn btn-outline-primary dropdown-toggle" id="fileOptionsDropdown"
         data-bs-toggle="dropdown" aria-expanded="false">
-            Options
+        {i18n('documentOptionsButton')}
       </button>
       <ul className="dropdown-menu" aria-labelledby="fileOptionsDropdown">
         <li>
           <a role={'button'} className="dropdown-item"
             onClick={() => setShowConfirmDelete(true)}
           >
-                Delete
+            {i18n('documentDeleteButton')}
           </a>
         </li>
         <li>
@@ -203,19 +203,17 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
       <Modal.Header>
         <Modal.Title>
           <h2 className="fw-bold pb-0 mb-0">
-            {participantFile.associatedAnswers.length === 0 ? 'Are you sure?' : 'This document is in use'}
+            {participantFile.associatedAnswers.length === 0 ?
+              i18n('documentDeleteAreYouSureTitle') : i18n('documentDeleteDocumentInUseTitle')}
           </h2>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {participantFile.associatedAnswers.length === 0 ?
           <p className="m-0">
-            Are you sure you want to delete this document? This cannot be undone. Please note that if a member
-            of the study staff has already downloaded this document, it will still be accessible to them. Please
-            contact the study staff if you would like to have the document fully removed from all records.
+            {i18n('documentDeleteAreYouSureMessage')}
           </p> :
-          <p className="m-0">This document is currently shared in response to at least one survey. Please remove it
-                  from the survey response(s) before deleting it.</p>
+          <p className="m-0">{i18n('documentDeleteDocumentInUseMessage')}</p>
         }
       </Modal.Body>
       <Modal.Footer>
@@ -229,7 +227,7 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
               loadDocuments()
               setShowConfirmDelete(false)
             }}>
-                Delete
+            {i18n('documentDeleteButton')}
           </button>
           <button className={'btn btn-outline-secondary m-2'}
             onClick={() => setShowConfirmDelete(false)}>
