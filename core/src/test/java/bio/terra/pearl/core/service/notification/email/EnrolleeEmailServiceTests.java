@@ -198,7 +198,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
         LanguageText esStudyNameLanguageText = languageTextService.create(LanguageText
                 .builder()
-                .keyName("portal1.study1")
+                .keyName("study:portal1.study1")
                 .language("es")
                 .text("spanish study name")
                 .localizedSiteContentId(localizedSiteContentEs.getId())
@@ -206,7 +206,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
         LanguageText esPortalNameLanguageText = languageTextService.create(LanguageText
                 .builder()
-                .keyName("portal1")
+                .keyName("portal:portal1")
                 .language("es")
                 .text("MiPortal")
                 .localizedSiteContentId(localizedSiteContentEs.getId())
