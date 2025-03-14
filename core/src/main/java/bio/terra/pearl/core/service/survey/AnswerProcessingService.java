@@ -24,8 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiFunction;
 
-import static java.lang.Boolean.parseBoolean;
-
 /**
  * Handles mapping ParsedSnapshots (typically received from the frontend) into objects.  This is done with stableIdMaps
  * which map question stableIds to the object properties they should be assigned to.
@@ -168,6 +166,10 @@ public class AnswerProcessingService {
                     mapToDate(answer.getStringValue(), mapping),
             AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> parseBoolean(answer.getStringValue())
     );
+
+    private static Boolean parseBoolean(String value) {
+        return Boolean.parseBoolean(value) || value.equalsIgnoreCase("yes");
+    }
 
     public static LocalDate mapToDate(String dateString, AnswerMapping mapping) {
         try {
