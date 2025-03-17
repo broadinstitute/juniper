@@ -13,7 +13,7 @@ artifact_registry = "juniper"
 artifact_registry_project = "broad-juniper-eng-infra"
 artifact_registry_location = "us-central1"
 malware_scanner_image_name = "juniper-malware-scanner"
-deploy_virus_scanning = true
+documents_bucket_name = "juniper-participant-documents-dev"
 
 # creates DNS records for these customer URLs
 customer_urls = {
@@ -25,3 +25,4 @@ customer_urls = {
 }
 
 slack_notification_channel = "projects/broad-juniper-dev/notificationChannels/13069356383599666729"
+
