@@ -14,9 +14,6 @@ locals {
     "cloudkms.googleapis.com",
     "binaryauthorization.googleapis.com",
     "cloudbuild.googleapis.com",
-    "run.googleapis.com",
-    "cloudscheduler.googleapis.com",
-    "eventarc.googleapis.com"
   ]
 }
 

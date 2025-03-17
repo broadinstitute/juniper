@@ -20,9 +20,9 @@
 ## Lookup the hash of the latest image
 ##
 data "google_artifact_registry_docker_image" "scanner-service-image" {
-  location      = var.artifact_registry_location
-  repository_id = var.artifact_registry
-  project       = var.artifact_registry_project
+  location      = var.region
+  repository_id = google_artifact_registry_repository.juniper_repo.name
+  project       = var.project
   image_name    = "${var.malware_scanner_image_name}:latest"
 }
 
@@ -100,11 +100,9 @@ resource "google_cloud_run_v2_service" "malware_scanner" {
   }
 
   depends_on = [
-    google_storage_bucket.unscanned_participant_documents,
-    google_storage_bucket.clean_participant_documents,
-    google_storage_bucket.quarantined_participant_documents,
-    google_storage_bucket.cvd_mirror_bucket,
-    time_sleep.enable_all_services_with_timeout
+    data.google_storage_bucket.clean_buckets,
+    data.google_storage_bucket.unscanned_buckets,
+    data.google_storage_bucket.quarantined_buckets,
   ]
 }
 
@@ -112,7 +110,9 @@ resource "google_cloud_run_v2_service" "malware_scanner" {
 ## Create EventArc Triggers on unscanned bucket(s)
 #
 resource "google_eventarc_trigger" "gcs-object-written" {
-  name     = "gcs-trigger-${google_storage_bucket.unscanned_participant_documents.name}"
+  for_each = data.google_storage_bucket.unscanned_buckets
+
+  name     = "gcs-trigger-${each.value.name}"
   location = var.region
   matching_criteria {
     attribute = "type"
@@ -120,7 +120,7 @@ resource "google_eventarc_trigger" "gcs-object-written" {
   }
   matching_criteria {
     attribute = "bucket"
-    value     = google_storage_bucket.unscanned_participant_documents.name
+    value     = each.value.name
   }
   destination {
     cloud_run_service {
@@ -129,17 +129,14 @@ resource "google_eventarc_trigger" "gcs-object-written" {
     }
   }
   service_account = google_service_account.malware_scanner_sa.email
-
-  depends_on = [
-    time_sleep.enable_all_services_with_timeout
-  ]
 }
 
 ## Update pubsub subscriptions to increase deadlines
 #
 resource "null_resource" "update-subscription-ack-deadline" {
+  for_each = google_eventarc_trigger.gcs-object-written
   provisioner "local-exec" {
-    command = "gcloud pubsub subscriptions update \"${google_eventarc_trigger.gcs-object-written.transport[0].pubsub[0].subscription}\" --ack-deadline=300"
+    command = "gcloud pubsub subscriptions update \"${each.value.transport[0].pubsub[0].subscription}\" --ack-deadline=300"
   }
 }
 
