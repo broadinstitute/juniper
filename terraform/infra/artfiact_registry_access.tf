@@ -8,6 +8,7 @@ resource "google_artifact_registry_repository_iam_binding" "cluster-artifact-reg
     "serviceAccount:juniper-cluster@broad-juniper-dev.iam.gserviceaccount.com",
     "serviceAccount:juniper-cluster@broad-juniper-prod.iam.gserviceaccount.com",
     "serviceAccount:juniper-cloudbuild-sa@broad-juniper-dev.iam.gserviceaccount.com",
-    "serviceAccount:juniper-cloudbuild-sa@broad-juniper-prod.iam.gserviceaccount.com"
+    "serviceAccount:juniper-cloudbuild-sa@broad-juniper-prod.iam.gserviceaccount.com",
+    "serviceAccount:service-663573365422@serverless-robot-prod.iam.gserviceaccount.com", # cloud run service account
   ]
 }

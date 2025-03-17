@@ -10,6 +10,12 @@ portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi"]
 k8s_namespace = "juniper-dev"
 documents_bucket_name = "juniper-participant-documents-dev"
 
+artifact_registry = "juniper"
+artifact_registry_project = "broad-juniper-eng-infra"
+artifact_registry_location = "us-central1"
+malware_scanner_image_name = "juniper-malware-scanner"
+deploy_virus_scanning = true
+
 # creates DNS records for these customer URLs
 customer_urls = {
   demo = {
