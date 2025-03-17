@@ -55,13 +55,7 @@ resource "google_cloud_run_v2_service" "malware_scanner" {
       env {
         name  = "CONFIG_JSON"
         value = jsonencode({
-          "buckets": [
-            {
-              "unscanned": google_storage_bucket.unscanned_participant_documents.name,
-              "clean": google_storage_bucket.clean_participant_documents.name,
-              "quarantined": google_storage_bucket.quarantined_participant_documents.name,
-            }
-          ],
+          "buckets": var.virus_scanning_buckets,
           "ClamCvdMirrorBucket": google_storage_bucket.cvd_mirror_bucket.name,
           "fileExclusionPatterns": [["\\\\.tmp$","i"]],
           "ignoreZeroLengthFiles": true,
@@ -185,7 +179,4 @@ resource "google_cloud_scheduler_job" "cvd_mirror_update" {
     }
   }
 
-  depends_on = [
-    time_sleep.enable_all_services_with_timeout
-  ]
 }
