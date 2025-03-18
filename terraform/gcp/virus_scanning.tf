@@ -31,7 +31,7 @@ data "google_artifact_registry_docker_image" "scanner-service-image" {
 resource "google_cloud_run_v2_service" "malware_scanner" {
   name     = "juniper-malware-scanner"
   location = var.region
-  ingress  = "INGRESS_TRAFFIC_ALL"
+  ingress  = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   template {
     scaling {
