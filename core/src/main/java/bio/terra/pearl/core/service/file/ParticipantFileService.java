@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class ParticipantFileService extends ImmutableEntityService<ParticipantFile, ParticipantFileDao> {
+public class ParticipantFileService extends CrudService<ParticipantFile, ParticipantFileDao> {
     private final FileStorageBackend fileStorageBackend;
 
     public ParticipantFileService(ParticipantFileDao dao, FileStorageBackendProvider fileStorageBackendProvider) {

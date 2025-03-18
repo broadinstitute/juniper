@@ -7,15 +7,17 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -43,9 +45,12 @@ public class ParticipantFileExtService {
     authUtilService.authParticipantToPortal(participantUser.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
-    return participantFileService
-        .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
-        .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    ParticipantFile file = participantFileService
+            .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
+            .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    return updateScanResult(file);
   }
 
   public InputStream downloadFile(
@@ -61,6 +66,12 @@ public class ParticipantFileExtService {
         participantFileService
             .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
             .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    participantFile = updateScanResult(participantFile);
+
+    if (participantFile.getVirusScanResult() == VirusScanResult.QUARANTINED) {
+      throw new IllegalArgumentException("Virus detected in file");
+    }
 
     return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
   }
@@ -124,5 +135,16 @@ public class ParticipantFileExtService {
 
     participantFileService.delete(participantFile.getId(), Set.of());
     fileStorageBackend.deleteFile(participantFile.getExternalFileId());
+  }
+
+  private ParticipantFile updateScanResult(ParticipantFile participantFile) {
+    if (participantFile.getVirusScanResult() == VirusScanResult.CLEAN) {
+      return participantFile;
+    }
+
+    VirusScanResult scanResult = fileStorageBackend.scanResult(participantFile.getExternalFileId());
+
+    participantFile.setVirusScanResult(scanResult);
+    return participantFileService.update(participantFile);
   }
 }
