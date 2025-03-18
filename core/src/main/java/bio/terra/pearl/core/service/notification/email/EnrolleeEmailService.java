@@ -141,7 +141,7 @@ public class EnrolleeEmailService implements NotificationSender {
                     .findBySiteContentLanguageAndKey(
                             contextInfo.portalEnv().getSiteContentId(),
                             preferredLanguage,
-                            "study:" + contextInfo.portal().getShortcode() + "." + contextInfo.study().getShortcode())
+                            LanguageTextService.formatStudyNameTranslationKey(contextInfo.portal().getShortcode(), contextInfo.study().getShortcode()))
                     .ifPresent(studyNameText -> contextInfo.study().setName(studyNameText.getText()));
         }
 
@@ -151,7 +151,7 @@ public class EnrolleeEmailService implements NotificationSender {
                     .findBySiteContentLanguageAndKey(
                             contextInfo.portalEnv().getSiteContentId(),
                             preferredLanguage,
-                            "portal:" + contextInfo.portal().getShortcode())
+                            LanguageTextService.formatPortalNameTranslationKey(contextInfo.portal().getShortcode()))
                     .ifPresent(portalNameText -> contextInfo.portal().setName(portalNameText.getText()));
         }
 

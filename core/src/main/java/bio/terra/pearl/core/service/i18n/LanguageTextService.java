@@ -44,4 +44,12 @@ public class LanguageTextService extends CrudService<LanguageText, LanguageTextD
     public Optional<LanguageText> findBySiteContentLanguageAndKey(UUID siteContentId, String language, String key) {
         return languageTextDao.findBySiteContentLanguageAndKey(siteContentId, language, key);
     }
+
+    public static String formatStudyNameTranslationKey(String portalShortcode, String studyShortcode) {
+        return String.format("study:%s.%s", portalShortcode, studyShortcode);
+    }
+
+    public static String formatPortalNameTranslationKey(String portalShortcode) {
+        return String.format("portal:%s", portalShortcode);
+    }
 }
