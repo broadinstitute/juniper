@@ -34,11 +34,11 @@ import {
 import { basicTableLayout } from 'util/table/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 import { TextInput } from 'components/forms/TextInput'
-import Select from 'react-select'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { PortalEnvContext } from 'portal/PortalRouter'
+import Creatable from 'react-select/creatable'
 
 
 type EditableLanguageText = Partial<LanguageText> & { isEditing: boolean }
@@ -124,6 +124,8 @@ export default function LanguageTextOverridesEditor(
   const onChangeNewOverrideKey = (key: string) => {
     if (languageKeys.includes(key)) {
       setNewOverride({ ...newOverride, keyName: key, text: languageTexts[key] })
+    } else {
+      setNewOverride({ ...newOverride, keyName: key, text: '' })
     }
   }
 
@@ -142,7 +144,7 @@ export default function LanguageTextOverridesEditor(
       cell: ({ row }) => {
         const value = row.original.keyName
         if (isEditable(row.original)) {
-          return row.original.isEditing && <Select
+          return row.original.isEditing && <Creatable
             aria-label={'New language text override key'}
             options={languageKeys.map(key => {
               return {

@@ -76,4 +76,20 @@ public class LanguageTextDao extends BaseMutableJdbiDao<LanguageText> {
     public List<LanguageText> findByLocalSiteId(UUID id) {
         return findAllByProperty("localized_site_content_id", id);
     }
+
+    public Optional<LanguageText> findBySiteContentLanguageAndKey(UUID siteContentId, String language, String key) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select lt.* from language_text lt
+                                 inner join localized_site_content lsc on lt.localized_site_content_id = lsc.id
+                                 inner join site_content sc on lsc.site_content_id = sc.id
+                                 where sc.id = :siteContentId and lsc.language = :language and lt.language = :language and lt.key_name = :key
+                                """)
+                        .bind("siteContentId", siteContentId)
+                        .bind("language", language)
+                        .bind("key", key)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
 }

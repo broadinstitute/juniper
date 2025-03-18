@@ -1,4 +1,9 @@
-import { isNil, sortBy, uniqBy } from 'lodash'
+import {
+  isNil,
+  sortBy,
+  uniqBy
+} from 'lodash'
+import { I18nFn } from 'src/participant/I18nProvider'
 
 /**
  * Turns a list of 2-alpha country codes (e.g. US, MX, CA) to their
@@ -54,4 +59,20 @@ export const getAllCountries = (lang = 'en') : { code: string, name: string }[] 
   // ensure no duplicates (some countries seem to have multiple codes)
   // and sort
   return sortBy(uniqBy(out, val => val.name), val => val.name)
+}
+
+
+export const getTranslatedStudyName = (
+  i18n: I18nFn,
+  portalShortcode: string,
+  studyShortcode: string,
+  studyName: string) => {
+  return i18n(`study:${portalShortcode}.${studyShortcode}`, { defaultValue: studyName })
+}
+
+export const getTranslatedPortalName = (
+  i18n: I18nFn,
+  portalShortcode: string,
+  studyName: string) => {
+  return i18n(`portal:${portalShortcode}`, { defaultValue: studyName })
 }

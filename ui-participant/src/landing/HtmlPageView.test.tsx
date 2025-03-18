@@ -1,12 +1,16 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import HtmlPageView from './HtmlPageView'
 import { HtmlPage } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { asMockedFn } from '@juniper/ui-core'
 import {
-  mockUsePortalEnv
-} from '../test-utils/test-portal-factory'
+  asMockedFn,
+  MockI18nProvider
+} from '@juniper/ui-core'
+import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
 
 jest.mock('providers/PortalProvider', () => {
   return {
@@ -27,7 +31,7 @@ describe('HTMLPageView', () => {
       title: 'Page title',
       path: ''
     }
-    const { container } = render(<HtmlPageView page={simplePage}/>)
+    const { container } = render(<MockI18nProvider><HtmlPageView page={simplePage}/></MockI18nProvider>)
     expect(container).toBeEmptyDOMElement()
   })
 
@@ -43,7 +47,7 @@ describe('HTMLPageView', () => {
       title: 'Page title',
       path: ''
     }
-    render(<HtmlPageView page={simplePage}/>)
+    render(<MockI18nProvider><HtmlPageView page={simplePage}/></MockI18nProvider>)
     expect(screen.getByText('Hellllo')).toBeInTheDocument()
   })
 })
