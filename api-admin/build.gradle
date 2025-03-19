@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.5.0'
     implementation 'org.liquibase:liquibase-core:4.31.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'com.google.guava:guava:33.4.0-jre'
 
     implementation 'net.javacrumbs.shedlock:shedlock-spring:6.3.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.2.0'
