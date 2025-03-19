@@ -36,7 +36,9 @@ env:
   fileUpload:
     backend: LocalFileStorageBackend
     localFileStoragePath: ${LOCAL_FILE_STORAGE_PATH:/tmp/juniper/fileupload}
-    gcsFileStorageBucketName: ${GCS_FILE_STORAGE_BUCKET_NAME:}
+    gcsStorageUnscannedBucketName: ${GCS_FILE_STORAGE_UNSCANNED_BUCKET_NAME:}
+    gcsStorageCleanBucketName: ${GCS_FILE_STORAGE_CLEAN_BUCKET_NAME:}
+    gcsStorageQuarantinedBucketName: ${GCS_FILE_STORAGE_QUARANTINED_BUCKET_NAME:}
     gcsFileStorageProjectId: ${GCS_FILE_STORAGE_PROJECT_ID:}
 # Below here is non-deployment-specific
 

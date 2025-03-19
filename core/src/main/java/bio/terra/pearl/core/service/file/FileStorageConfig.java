@@ -13,13 +13,17 @@ import org.springframework.core.env.Environment;
 public class FileStorageConfig {
     private String defaultBackend;
     private String localFileStoragePath;
-    private String gcsStorageBucketName;
+    private String gcsStorageUnscannedBucketName;
+    private String gcsStorageCleanBucketName;
+    private String gcsStorageQuarantinedBucketName;
     private Storage gcsStorageConfig;
 
     public FileStorageConfig(Environment environment) {
         this.defaultBackend = environment.getProperty("env.fileUpload.backend", "LocalFileStorageBackend");
         this.localFileStoragePath = environment.getProperty("env.fileUpload.localFileStoragePath");
-        this.gcsStorageBucketName = environment.getProperty("env.fileUpload.gcsFileStorageBucketName");
+        this.gcsStorageUnscannedBucketName = environment.getProperty("env.fileUpload.gcsStorageUnscannedBucketName");
+        this.gcsStorageCleanBucketName = environment.getProperty("env.fileUpload.gcsStorageCleanBucketName");
+        this.gcsStorageQuarantinedBucketName = environment.getProperty("env.fileUpload.gcsStorageQuarantinedBucketName");
         this.gcsStorageConfig = StorageOptions.newBuilder().setProjectId(environment.getProperty("env.fileUpload.gcsFileStorageProjectId")).build().getService();
     }
 }

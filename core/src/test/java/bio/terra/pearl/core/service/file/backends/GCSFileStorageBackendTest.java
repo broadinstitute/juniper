@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.file.backends;
 
 import bio.terra.pearl.core.service.file.FileStorageConfig;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
@@ -18,9 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +37,9 @@ public class GCSFileStorageBackendTest {
         MockitoAnnotations.openMocks(this);
 
         when(fileStorageConfig.getGcsStorageConfig()).thenReturn(storage);
-        when(fileStorageConfig.getGcsStorageBucketName()).thenReturn("test-bucket");
+        when(fileStorageConfig.getGcsStorageCleanBucketName()).thenReturn("test-bucket-clean");
+        when(fileStorageConfig.getGcsStorageUnscannedBucketName()).thenReturn("test-bucket-unscanned");
+        when(fileStorageConfig.getGcsStorageQuarantinedBucketName()).thenReturn("test-bucket-quarantined");
 
         gcsFileStorageBackend = new GCSFileStorageBackend(fileStorageConfig);
     }
@@ -64,7 +63,8 @@ public class GCSFileStorageBackendTest {
 
         Blob blob = mock(Blob.class);
         when(blob.getContent()).thenReturn(fileContent);
-        when(storage.get(any(BlobId.class))).thenReturn(blob);
+        when(storage.get(BlobId.of("test-bucket-clean", fileId.toString()))).thenReturn(blob);
+        when(storage.get(BlobId.of("test-bucket-unscanned", fileId.toString()))).thenReturn(null);
 
         InputStream result = gcsFileStorageBackend.downloadFile(fileId);
 
@@ -72,20 +72,104 @@ public class GCSFileStorageBackendTest {
         byte[] resultBytes = result.readAllBytes();
         Assertions.assertArrayEquals(fileContent, resultBytes);
 
-        BlobId expectBlobId = BlobId.of("test-bucket", fileId.toString());
-        verify(storage, times(1)).get(expectBlobId);
+        // only attempt clean bucket; since it's found, don't attempt unscanned
+        BlobId cleanBlobId = BlobId.of("test-bucket-clean", fileId.toString());
+        BlobId unscannedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        verify(storage, times(1)).get(cleanBlobId);
+        verify(storage, times(0)).get(unscannedBlobId);
+    }
+
+    @Test
+    void testDownloadUnscannedFile() throws IOException {
+        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
+        byte[] fileContent = "test data".getBytes();
+
+        Blob blob = mock(Blob.class);
+        when(blob.getContent()).thenReturn(fileContent);
+        when(storage.get(BlobId.of("test-bucket-clean", fileId.toString()))).thenReturn(null);
+        when(storage.get(BlobId.of("test-bucket-unscanned", fileId.toString()))).thenReturn(blob);
+
+        InputStream result = gcsFileStorageBackend.downloadFile(fileId);
+
+        Assertions.assertNotNull(result);
+        byte[] resultBytes = result.readAllBytes();
+        Assertions.assertArrayEquals(fileContent, resultBytes);
+
+        // attempts to download from both clean and unscanned buckets
+        BlobId cleanBlobId = BlobId.of("test-bucket-clean", fileId.toString());
+        BlobId unscannedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        verify(storage, times(1)).get(cleanBlobId);
+        verify(storage, times(1)).get(unscannedBlobId);
     }
 
     @Test
     void testDeleteFile() {
         UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
 
+        when(storage.get(BlobId.of("test-bucket-clean", fileId.toString()))).thenReturn(mock(Blob.class));
         when(storage.delete(any(BlobId.class))).thenReturn(true);
 
         gcsFileStorageBackend.deleteFile(fileId);
 
-        BlobId expectedBlobId = BlobId.of("test-bucket", fileId.toString());
+        BlobId expectedBlobId = BlobId.of("test-bucket-clean", fileId.toString());
         verify(storage, times(1)).delete(expectedBlobId);
+    }
+
+    @Test
+    void testDeleteFileAlsoSearchesUnscanned() {
+        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
+
+        when(storage.get(BlobId.of("test-bucket-clean", fileId.toString()))).thenReturn(null);
+        when(storage.get(BlobId.of("test-bucket-unscanned", fileId.toString()))).thenReturn(mock(Blob.class));
+
+        when(storage.delete(any(BlobId.class))).thenReturn(true);
+
+        gcsFileStorageBackend.deleteFile(fileId);
+
+        BlobId expectedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        verify(storage, times(1)).delete(expectedBlobId);
+    }
+
+    @Test
+    void testVirusScanClean() {
+        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
+
+        BlobId cleanBlobId = BlobId.of("test-bucket-clean", fileId.toString());
+        BlobId unscannedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        BlobId quarantinedBlobId = BlobId.of("test-bucket-quarantined", fileId.toString());
+        when(storage.get(cleanBlobId)).thenReturn(mock(Blob.class));
+        when(storage.get(unscannedBlobId)).thenReturn(null);
+        when(storage.get(quarantinedBlobId)).thenReturn(null);
+
+        Assertions.assertEquals(gcsFileStorageBackend.scanResult(fileId), VirusScanResult.CLEAN);
+    }
+
+    @Test
+    void testVirusScanUnscanned() {
+        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
+
+        BlobId cleanBlobId = BlobId.of("test-bucket-clean", fileId.toString());
+        BlobId unscannedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        BlobId quarantinedBlobId = BlobId.of("test-bucket-quarantined", fileId.toString());
+        when(storage.get(cleanBlobId)).thenReturn(null);
+        when(storage.get(unscannedBlobId)).thenReturn(mock(Blob.class));
+        when(storage.get(quarantinedBlobId)).thenReturn(null);
+
+        Assertions.assertEquals(gcsFileStorageBackend.scanResult(fileId), VirusScanResult.UNSCANNED);
+    }
+
+    @Test
+    void testVirusScanQuarantined() {
+        UUID fileId = UUID.fromString("906c11cd-5e92-487b-a386-ac300e980861");
+
+        BlobId cleanBlobId = BlobId.of("test-bucket-clean", fileId.toString());
+        BlobId unscannedBlobId = BlobId.of("test-bucket-unscanned", fileId.toString());
+        BlobId quarantinedBlobId = BlobId.of("test-bucket-quarantined", fileId.toString());
+        when(storage.get(cleanBlobId)).thenReturn(null);
+        when(storage.get(unscannedBlobId)).thenReturn(null);
+        when(storage.get(quarantinedBlobId)).thenReturn(mock(Blob.class));
+
+        Assertions.assertEquals(gcsFileStorageBackend.scanResult(fileId), VirusScanResult.QUARANTINED);
     }
 
 }
