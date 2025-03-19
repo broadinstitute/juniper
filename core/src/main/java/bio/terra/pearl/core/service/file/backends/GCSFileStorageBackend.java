@@ -87,7 +87,6 @@ public class GCSFileStorageBackend implements FileStorageBackend {
         BlobId blobId = BlobId.of(cleanBucketName, uploadedFileId.toString());
 
         if (storage.get(blobId) == null) {
-            System.out.println("File not found in clean bucket, checking unscanned bucket");
             blobId = BlobId.of(unscannedBucketName, uploadedFileId.toString());
         }
 
