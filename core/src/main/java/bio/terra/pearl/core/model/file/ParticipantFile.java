@@ -2,7 +2,6 @@ package bio.terra.pearl.core.model.file;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.service.file.VirusScanResult;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,8 +32,6 @@ public class ParticipantFile extends BaseEntity {
     private UUID enrolleeId;
 
     private String notes;
-
-    public VirusScanResult virusScanResult;
 
     @Builder.Default
     private List<Answer> associatedAnswers = new ArrayList<>(); //list of answers that are associated with this file

@@ -61,3 +61,7 @@ b2c:
       clientId: does-not-exist
       policyName: does-not-exist
       tenantName: does-not-exist
+gcsFileStorageBuckets:
+  unscanned: juniper-participant-documents-dev-unscanned
+  clean: juniper-participant-documents-dev-clean
+  quarantined: juniper-participant-documents-dev-quarantined

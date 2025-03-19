@@ -23,7 +23,9 @@ public class GCSFileStorageBackend implements FileStorageBackend {
 
     public GCSFileStorageBackend(FileStorageConfig storageConfig) {
         this.storage = storageConfig.getGcsStorageConfig();
-        this.unscannedBucketName = storageConfig.getGcsStorageBucketName();
+        this.unscannedBucketName = storageConfig.getGcsStorageUnscannedBucketName();
+        this.cleanBucketName = storageConfig.getGcsStorageCleanBucketName();
+        this.quarantinedBucketName = storageConfig.getGcsStorageQuarantinedBucketName();
     }
 
     @Override
@@ -85,6 +87,7 @@ public class GCSFileStorageBackend implements FileStorageBackend {
         BlobId blobId = BlobId.of(cleanBucketName, uploadedFileId.toString());
 
         if (storage.get(blobId) == null) {
+            System.out.println("File not found in clean bucket, checking unscanned bucket");
             blobId = BlobId.of(unscannedBucketName, uploadedFileId.toString());
         }
 
