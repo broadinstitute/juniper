@@ -16,11 +16,7 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -37,9 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -128,6 +122,10 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         AnswerMapping mapping = new AnswerMapping();
         Object result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
                 .apply(Answer.builder().stringValue("true").build(), mapping);
+        assertThat((Boolean) result, equalTo(true));
+
+        result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
+                .apply(Answer.builder().stringValue("Yes").build(), mapping);
         assertThat((Boolean) result, equalTo(true));
 
         result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)

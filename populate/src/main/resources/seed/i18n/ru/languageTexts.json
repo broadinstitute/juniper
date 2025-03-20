@@ -143,6 +143,21 @@
   {"keyName": "documentsPageTitle", "text": "Документы", "language": "ru", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Загруженные документы", "language": "ru", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "При участии в исследовании вас могут попросить загрузить документы как часть формы или опроса. Ниже вы можете управлять загруженными вами документами.", "language": "ru", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Документы", "language": "ru", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "Документы", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureTitle", "text": "Вы уверены?", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureMessage", "text": "Вы уверены, что хотите удалить этот документ? Это действие нельзя отменить. Обратите внимание, что если член исследовательского персонала уже загрузил этот документ, он все равно будет ему доступен. Пожалуйста, свяжитесь с исследовательским персоналом, если вы хотите, чтобы документ был полностью удален из всех записей.", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseTitle", "text": "Этот документ используется", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseMessage", "text": "Этот документ в настоящее время распространяется в ответе по крайней мере на один опрос. Пожалуйста, удалите его из ответов на опросы перед его удалением.", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentDeleteButton", "text": "Удалить", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentOptionsButton", "text": "Параметры", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentSharedInResponseTo", "text": "поделился в ответ на", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderSelectedDocuments", "text": "Избранные документы", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderIncludedInResponse", "text": "Эти документы включены в ваш ответ", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocumentsSelected", "text": "Не выбрано ни одного документа. Загрузите новый документ или выберите существующий документ ниже.", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderAvailableDocuments", "text": "Available documents", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderNotIncludedInResponse", "text": "Эти документы не включены в ваш ответ", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderClickToUpload", "text": "Перетащите файлы сюда или нажмите, чтобы загрузить", "language": "ru", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocuments", "text": "Нет доступных документов", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Ваш сеанс скоро истечет", "language": "ru", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Для обеспечения безопасности и защиты ваших данных вы выйдете из системы через ${timeRemaining}.", "language": "ru", "machineTranslated": true}
 ]

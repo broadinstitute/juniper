@@ -3,6 +3,8 @@
   "version": 1,
   "name": "Pre-enroll",
   "surveyType": "PRE_ENROLL",
+  "assignToAllNewEnrollees": false,
+  "autoAssign": false,
   "answerMappings": [
     {
       "questionStableId": "proxy_enrollment",

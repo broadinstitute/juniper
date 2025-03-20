@@ -7,6 +7,7 @@ import { ParticipantFile } from 'src/types/participantFile'
 import { asMockedFn } from 'src/test-utils/asMockedFn'
 import { userEvent } from '@testing-library/user-event'
 import { mockParticipantFile } from 'src/test-utils/mocking-utils'
+import { MockI18nProvider } from 'src/participant/i18n-testing-utils'
 
 jest.mock('src/participant/ApiProvider')
 
@@ -26,12 +27,14 @@ const studyEnvParams: StudyEnvParams = {
 
 const renderDocumentRequestUpload = () => {
   render(
-    <DocumentRequestUploader
-      studyEnvParams={studyEnvParams}
-      enrolleeShortcode={'HDSALK'}
-      selectedFileNames={[]}
-      setSelectedFileNames={jest.fn()}
-    />
+    <MockI18nProvider>
+      <DocumentRequestUploader
+        studyEnvParams={studyEnvParams}
+        enrolleeShortcode={'HDSALK'}
+        selectedFileNames={[]}
+        setSelectedFileNames={jest.fn()}
+      />
+    </MockI18nProvider>
   )
 }
 

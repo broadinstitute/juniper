@@ -15,6 +15,7 @@ import LoadingSpinner from '@juniper/ui-admin/src/util/LoadingSpinner'
 import { saveBlobAsDownload } from '../../util/downloadUtils'
 import { ParticipantFile } from '../../types/participantFile'
 import { useApiContext } from '../../participant/ApiProvider'
+import { useI18n } from '../../participant/I18nProvider'
 
 export const DocumentRequestUploader = (
   {
@@ -32,6 +33,7 @@ export const DocumentRequestUploader = (
   const [selectedFiles, setSelectedFiles] = useState<ParticipantFile[]>([])
 
   const Api = useApiContext()
+  const { i18n } = useI18n()
 
   const [uploadingFile, setUploadingFile] = useState<string>()
 
@@ -72,12 +74,16 @@ export const DocumentRequestUploader = (
 
   return <div className='pt-2'>
     <div className='mb-2'>
-      <SelectedFileList selectedFiles={selectedFiles} removeFile={unselectFile} onDownload={downloadFile}/>
+      <SelectedFileList
+        i18n={i18n}
+        selectedFiles={selectedFiles}
+        removeFile={unselectFile}
+        onDownload={downloadFile}/>
     </div>
     <div className='mb-2'>
       {/* show on desktops */}
       <div className='d-none d-lg-block'>
-        <DragAndDrop uploadNewFile={uploadAndSelectFile}/>
+        <DragAndDrop i18n={i18n} uploadNewFile={uploadAndSelectFile}/>
       </div>
       {/* show on mobile */}
       <div className={'d-lg-none my-4'}>
@@ -86,6 +92,7 @@ export const DocumentRequestUploader = (
 
     </div>
     <DocumentLibrary
+      i18n={i18n}
       uploadingFile={uploadingFile}
       files={files}
       selectFile={selectFile}
@@ -98,23 +105,25 @@ export const DocumentRequestUploader = (
 
 const SelectedFileList = (
   {
+    i18n,
     selectedFiles,
     removeFile,
     onDownload
   }: {
+        i18n: (key: string) => string,
         selectedFiles: ParticipantFile[],
         removeFile: (file: ParticipantFile) => void,
         onDownload?: (file: ParticipantFile) => void
     }
 ) => {
   return <div className='card'>
-    <p className='card-header p-3'>Selected documents ({selectedFiles.length})</p>
+    <p className='card-header p-3'>{i18n('documentUploaderSelectedDocuments')} ({selectedFiles.length})</p>
     <div className='card-body'>
       {selectedFiles.length > 0 && <div className="fst-italic text-muted text-wrap pb-2">
-        These documents are included in your response:
+        {i18n('documentUploaderIncludedInResponse')}:
       </div>}
       {selectedFiles.length === 0 && <div className='fst-italic text-wrap text-muted my-2'>
-          No documents selected. Please upload a new document or select an existing document below.
+        {i18n('documentUploaderNoDocumentsSelected')}
       </div>}
       {selectedFiles.map(selectedFile => {
         return <FileRow
@@ -134,6 +143,7 @@ const SelectedFileList = (
 
 const DocumentLibrary = (
   {
+    i18n,
     uploadingFile,
     files,
     selectedFiles,
@@ -141,6 +151,7 @@ const DocumentLibrary = (
     unselectFile,
     downloadFile
   }: {
+        i18n: (key: string) => string,
         uploadingFile?: string,
         files: ParticipantFile[],
         selectedFiles: ParticipantFile[],
@@ -159,7 +170,7 @@ const DocumentLibrary = (
 
   return <div className='card'>
     <p className='card-header p-3'>
-          Available documents <span>({unselectedFiles.length})</span>
+      {i18n('documentUploaderAvailableDocuments')} <span>({unselectedFiles.length})</span>
       <button className='btn btn-link p-0 ps-2' onClick={() => setExpanded(!expanded)}>
         <FontAwesomeIcon icon={expanded ? faCaretUp : faCaretDown}/>
       </button>
@@ -173,9 +184,10 @@ const DocumentLibrary = (
       />}
       <>
         {unselectedFiles.length > 0 && <div className="fst-italic text-muted text-wrap pb-2">
-                  These documents are not included in your response:
+          {i18n('documentUploaderNotIncludedInResponse')}:
         </div>}
-        {unselectedFiles.length === 0 && <div className='fst-italic text-muted'>No documents available</div>}
+        {unselectedFiles.length === 0 &&
+            <div className='fst-italic text-muted'>{i18n('documentUploaderNoDocuments')}</div>}
         {unselectedFiles.map(file => {
           return <FileRow
             fileType={file.fileType}
@@ -248,7 +260,9 @@ const FileIcon = ({ mimeType }: { mimeType: string }) => {
   return <FontAwesomeIcon icon={icon}/>
 }
 
-const DragAndDrop = ({ uploadNewFile }: { uploadNewFile: (file: File) => void }) => {
+const DragAndDrop = ({ i18n, uploadNewFile }: {
+    i18n: (key: string) => string,
+    uploadNewFile: (file: File) => void }) => {
   const onDrop = React.useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
       uploadNewFile(file)
@@ -263,9 +277,7 @@ const DragAndDrop = ({ uploadNewFile }: { uploadNewFile: (file: File) => void })
       <div className={'d-flex w-100 h-100 align-items-center justify-content-center flex-column'}>
         <span className='py-5'>
           <FontAwesomeIcon icon={faUpload} className={'text-primary me-1'}/>
-            Drop files here or <a type="button" className='text-decoration-underline'>
-          click to upload
-          </a>
+          <a type="button" className='text-decoration-underline'>{i18n('documentUploaderClickToUpload')}</a>
         </span>
       </div>
     </div>

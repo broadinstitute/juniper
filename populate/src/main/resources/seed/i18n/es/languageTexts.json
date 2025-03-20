@@ -143,5 +143,21 @@
   {"keyName": "documentsPageTitle", "text": "Documentos", "language": "es", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Documentos cargados", "language": "es", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "Mientras participa en un estudio, es posible que se le solicite que cargue documentos como parte de un formulario o encuesta. A continuación, puede administrar los documentos que ha cargado.", "language": "es", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Documentos", "language": "es", "machineTranslated": true}
+  {"keyName": "navbarDocuments", "text": "Documentos", "language": "es", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureTitle", "text": "Estas segura", "language": "es", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureMessage", "text": "¿Está seguro de que desea eliminar este documento? No es posible deshacer esta acción. Tenga en cuenta que si un miembro del personal del estudio ya ha descargado este documento, seguirá teniendo acceso a él. Póngase en contacto con el personal del estudio si desea que el documento se elimine por completo de todos los registros.", "language": "es", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseTitle", "text": "Este documento está en uso", "language": "es", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseMessage", "text": "Este documento se comparte actualmente en respuesta a al menos una encuesta. Elimínelo de las respuestas de la encuesta antes de eliminarlo.", "language": "es", "machineTranslated": true},
+  {"keyName": "documentDeleteButton", "text": "Borrar", "language": "es", "machineTranslated": true},
+  {"keyName": "documentOptionsButton", "text": "Opciones", "language": "es", "machineTranslated": true},
+  {"keyName": "documentSharedInResponseTo", "text": "compartido en respuesta a", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderSelectedDocuments", "text": "Documentos seleccionados", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderIncludedInResponse", "text": "Estos documentos están incluidos en su respuesta.", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocumentsSelected", "text": "No se han seleccionado documentos. Cargue un nuevo documento o seleccione uno existente a continuación.", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderAvailableDocuments", "text": "Documentos disponibles", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderNotIncludedInResponse", "text": "Estos documentos no están incluidos en su respuesta.", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderClickToUpload", "text": "Suelte los archivos aquí o haga clic para cargarlos", "language": "es", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocuments", "text": "No hay documentos disponibles", "language": "es", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "Su sesión está a punto de expirar", "language": "es", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "Para mantener la seguridad y proteger sus datos, se cerrará la sesión en ${timeRemaining}.", "language": "es", "machineTranslated": true}
 ]

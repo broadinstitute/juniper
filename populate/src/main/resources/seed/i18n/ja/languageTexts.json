@@ -143,6 +143,21 @@
   {"keyName": "documentsPageTitle", "text": "文書", "language": "ja", "machineTranslated": true},
   {"keyName": "documentsPageUploadedDocumentsTitle", "text": "アップロードされた文書", "language": "ja", "machineTranslated": true},
   {"keyName": "documentsPageMessage", "text": "調査に参加する際に、フォームまたはアンケートの一部としてドキュメントをアップロードするよう求められる場合があります。以下で、アップロードしたドキュメントを管理できます。", "language": "ja", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "文書", "language": "ja", "machineTranslated": true}
-
+  {"keyName": "navbarDocuments", "text": "文書", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureTitle", "text": "本気ですか？", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentDeleteAreYouSureMessage", "text": "この文書を削除してもよろしいですか? 元に戻すことはできません。研究スタッフのメンバーがすでにこの文書をダウンロードしている場合は、引き続きアクセスできます。すべての記録から文書を完全に削除したい場合は、研究スタッフに連絡してください。", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseTitle", "text": "この文書は使用中です", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentDeleteDocumentInUseMessage", "text": "このドキュメントは現在、少なくとも 1 つのアンケートへの回答として共有されています。削除する前に、アンケートの回答から削除してください。", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentDeleteButton", "text": "消去", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentOptionsButton", "text": "オプション", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentSharedInResponseTo", "text": "への返信として共有", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderSelectedDocuments", "text": "選択された文書", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderIncludedInResponse", "text": "これらの文書はあなたの回答に含まれています", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocumentsSelected", "text": "ドキュメントが選択されていません。新しいドキュメントをアップロードするか、以下の既存のドキュメントを選択してください。", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderAvailableDocuments", "text": "利用可能な文書", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderNotIncludedInResponse", "text": "これらの文書は回答に含まれていません", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderClickToUpload", "text": "ここにファイルをドロップするか、クリックしてアップロードしてください", "language": "ja", "machineTranslated": true},
+  {"keyName": "documentUploaderNoDocuments", "text": "利用可能な文書はありません", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeTitle", "text": "セッションの有効期限が切れます", "language": "ja", "machineTranslated": true},
+  {"keyName": "idleStatusNoticeMessage", "text": "セキュリティを維持し、データを保護するため、${timeRemaining} 後にログアウトされます。", "language": "ja", "machineTranslated": true}
 ]

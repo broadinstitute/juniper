@@ -218,6 +218,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
             EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser, task);
             enrolleeContext = event.getEnrolleeContext();
         } else {
+            enrollee.getParticipantTasks().clear();
+            enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
             enrolleeContext = enrolleeContextService.fetchData(enrollee);
         }
 
