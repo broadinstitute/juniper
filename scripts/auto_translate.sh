@@ -14,6 +14,7 @@ fi
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <keyname> <english>"
+    echo "Example: $0 'helloWorld' 'Hello, World!'"
     exit 1
 fi
 
