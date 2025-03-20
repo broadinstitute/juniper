@@ -53,9 +53,9 @@ add_translation () {
       echo "Adding translation for ${LANGUAGE}"
 
 
-      NEW_LINE="{ \"keyName\": \"$KEYNAME\", \"text\": \"${LANGUAGE}\", \"text\": \"${TRANSLATION}\" }"
+      NEW_LINE="{ \"keyName\": \"$KEYNAME\", \"language\": \"${LANGUAGE}\", \"text\": \"${TRANSLATION}\" }"
       if [ "$MACHINE_TRANSLATED" = 'true' ]; then
-          NEW_LINE="{ \"keyName\": \"$KEYNAME\", \"text\": \"${LANGUAGE}\", \"text\": \"${TRANSLATION}\", \"machineTranslated\": true }"
+          NEW_LINE="{ \"keyName\": \"$KEYNAME\", \"language\": \"${LANGUAGE}\", \"text\": \"${TRANSLATION}\", \"machineTranslated\": true }"
       fi
 
       echo "$NEW_LINE"
