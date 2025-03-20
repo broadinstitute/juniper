@@ -148,6 +148,10 @@ public class EnrollmentService {
         if (!studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
+        if (preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
+            throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
+        }
+
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(operator, studyEnv, preEnrollResponseId, user.getId(), isSubject);
 
         // if the user is signed up, but not a subject, we can just return the existing enrollee,
@@ -161,8 +165,6 @@ public class EnrollmentService {
 
             // backfill the enrollee with the pre-enrollment response data
             this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
-        } else if (hasRequiredPreEnroll(studyEnv.getId())) {
-            throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
 
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);

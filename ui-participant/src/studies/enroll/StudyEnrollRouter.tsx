@@ -112,7 +112,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   /** updates the state and localStorage */
   function updatePreEnrollResponseId(preEnrollId: string | null) {
-    // setPreEnrollResponseId(preEnrollId)
+    setPreEnrollResponseId(preEnrollId)
     setPreEnrollSatisfied(!!preEnrollId)
   }
 
