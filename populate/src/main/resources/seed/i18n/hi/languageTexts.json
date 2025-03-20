@@ -1,163 +1,836 @@
 [
-  {"keyName": "navbarDashboard", "text": "डैशबोर्ड", "language": "hi"},
-  {"keyName": "navbarChangePassword", "text": "पासवर्ड बदलें", "language": "hi"},
-  {"keyName": "navbarLogout", "text": "लॉग आउट करें", "language": "hi"},
-  {"keyName": "profile", "text": "प्रोफ़ाइल", "language": "hi"},
-  {"keyName": "navbarLogin", "text": "लॉग इन करें", "language": "hi"},
-  {"keyName": "navbarJoin", "text": "रजिस्टर करें", "language": "hi"},
-  {"keyName": "taskComplete", "text": "पूरा करें", "language": "hi"},
-  {"keyName": "taskInProgress", "text": "प्रगति में है", "language": "hi"},
-  {"keyName": "taskNotStarted", "text": "शुरू नहीं हुआ", "language": "hi"},
-  {"keyName": "taskDeclined", "text": "अस्वीकार किया गया", "language": "hi"},
-  {"keyName": "taskLocked", "text": "लॉक किया गया", "language": "hi"},
-  {"keyName": "tasksNoneForStudy", "text": "इस स्टडी के लिए कोई टास्क नहीं", "language": "hi"},
-  {"keyName": "taskHistory", "text": "इतिहास", "language": "hi"},
-  {"keyName": "taskNew", "text": "नया", "language": "hi"},
-  {"keyName": "surveysSomeLocked", "text": "कुछ सर्वेक्षण तब तक के लिए लॉक किए गए हैं, जब तक दूसरे आवश्यक टास्क पूरे नहीं हो जाते।", "language": "hi"},
-  {"keyName": "taskTypeSurvey", "text": "सर्वेक्षण", "language": "hi"},
-  {"keyName": "taskTypeSurveys", "text": "सर्वेक्षण", "language": "hi"},
-  {"keyName": "taskTypeConsent", "text": "सहमति", "language": "hi"},
-  {"keyName": "taskTypeForms", "text": "फ़ॉर्म", "language": "hi"},
-  {"keyName": "start", "text": "शुरू करें", "language": "hi"},
-  {"keyName": "continue", "text": "जारी रखें", "language": "hi"},
-  {"keyName": "save", "text": "सेव करें", "language": "hi"},
-  {"keyName": "outreachLearnMore", "text": "अधिक जानें", "language": "hi"},
-  {"keyName": "cancel", "text": "रद्द करें", "language": "hi"},
-  {"keyName": "goBack", "text": "वापस जाएँ", "language": "hi"},
-  {"keyName": "name", "text": "नाम", "language": "hi"},
-  {"keyName": "givenName", "text": "प्रथम नाम", "language": "hi"},
-  {"keyName": "familyName", "text": "कुलनाम", "language": "hi"},
-  {"keyName": "editName", "text": "नाम में बदलाव करें", "language": "hi"},
-  {"keyName": "editBirthDate", "text": "जन्मदिन में बदलाव करें", "language": "hi"},
-  {"keyName": "birthDate", "text": "जन्मदिन", "language": "hi"},
-  {"keyName": "mailingAddress", "text": "डाक पता", "language": "hi"},
-  {"keyName": "editMailingAddress", "text": "डाक पता में बदलाव करें", "language": "hi"},
-  {"keyName": "primaryAddress", "text": "मुख्य पता", "language": "hi"},
-  {"keyName": "editPrimaryAddress", "text": "मुख्य पते में बदलाव करें", "language": "hi"},
-  {"keyName": "street1", "text": "सड़क 1", "language": "hi"},
-  {"keyName": "street2", "text": "सड़क 2", "language": "hi"},
-  {"keyName": "city", "text": "शहर", "language": "hi"},
-  {"keyName": "state", "text": "राज्य\/प्रांत", "language": "hi"},
-  {"keyName": "postalCode", "text": "पिन कोड", "language": "hi"},
-  {"keyName": "country", "text": "देश", "language": "hi"},
-  {"keyName": "communicationPreferences", "text": "संचार की प्राथमिकताएँ", "language": "hi"},
-  {"keyName": "editCommunicationPreferences", "text": "संचार की प्राथमिकताएँ संपादित करें", "language": "hi"},
-  {"keyName": "contactEmail", "text": "संपर्क ईमेल", "language": "hi"},
-  {"keyName": "editContactEmail", "text": "संपर्क ईमेल में बदलाव करें", "language": "hi"},
-  {"keyName": "phoneNumber", "text": "फ़ोन नंबर", "language": "hi"},
-  {"keyName": "editPhoneNumber", "text": "फ़ोन नंबर में बदलाव करें", "language": "hi"},
-  {"keyName": "doNotSolicit", "text": "माँगें नहीं", "language": "hi"},
-  {"keyName": "doNotContact", "text": "संपर्क न करें", "language": "hi"},
-  {"keyName": "editDoNotSolicit", "text": "'माँगें नहीं' में बदलाव करें", "language": "hi"},
-  {"keyName": "editNotifications", "text": "नोटिफ़िकेशन में बदलाव करें", "language": "hi"},
-  {"keyName": "notifications", "text": "नोटिफ़िकेशन", "language": "hi"},
-  {"keyName": "on", "text": "चालू करें", "language": "hi"},
-  {"keyName": "off", "text": "बंद करें", "language": "hi"},
-  {"keyName": "notProvided", "text": "प्रदान नहीं किया गया", "language": "hi"},
-  {"keyName": "editProfileContactEmailWarning", "text": "संचार के लिए इस्तेमाल किए गए ईमेल को अपडेट करने के लिए \"सेव करें\" को दबाएँ। ध्यान दें कि आपकी लॉगइन जानकारी नहीं बदलेगी।", "language": "hi"},
-  {"keyName": "privacyPolicy", "text": "निजता नीति", "language": "hi"},
-  {"keyName": "termsOfUse", "text": "उपयोग की शर्तें", "language": "hi"},
-  {"keyName": "addressInvalidPostalCode", "text": "पिन कोड को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidCountry", "text": "देश को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidState", "text": "राज्य\/प्रांत को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidCity", "text": "शहर को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidHouseNumber", "text": "मकान नंबर को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidStreetName", "text": "सड़क के नाम को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressInvalidStreetType", "text": "सड़क के प्रकार को सत्यापित नहीं किया जा सका।", "language": "hi"},
-  {"keyName": "addressNeedsSubpremise", "text": "कृपया यूनिट\/स्वीट नंबर प्रदान करें।", "language": "hi"},
-  {"keyName": "addressFailedToValidate", "text": "पते की पुष्टि नहीं की जा सकी।", "language": "hi"},
-  {"keyName": "suggestBetterAddressHeader", "text": "क्या यह सही पता है?", "language": "hi"},
-  {"keyName": "suggestBetterAddressBody", "text": "हम एक मिलते-जुलते पते का सत्यापन कर पाए थे। कृपया चुनें कि आप किसका इस्तेमाल करना चाहेंगे।", "language": "hi"},
-  {"keyName": "newAddress", "text": "नया पता", "language": "hi"},
-  {"keyName": "oldAddress", "text": "पुराना पता", "language": "hi"},
-  {"keyName": "you", "text": "आप", "language": "hi"},
-  {"keyName": "yourDependent", "text": "आपका आश्रित", "language": "hi"},
-  {"keyName": "youInParens", "text": "(आप)", "language": "hi"},
-  {"keyName": "allProfiles", "text": "सभी प्रोफ़ाइलें", "language": "hi"},
-  {"keyName": "manageProfiles", "text": "प्रोफ़ाइलें प्रबंधित करें", "language": "hi"},
-  {"keyName": "addNewParticipant", "text": "नया प्रतिभागी जोड़ें", "language": "hi"},
-  {"keyName": "dashboard", "text": "डैशबोर्ड", "language": "hi"},
-  {"keyName": "selectParticipant", "text": "प्रतिभागी का चयन करें", "language": "hi"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "${formName} पूरा हुआ", "language": "hi"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "सभी गतिविधियाँ पूर्ण", "language": "hi"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "आपने इस स्टडी के लिए सभी गतिविधियाँ पूरी कर ली हैं। नई गतिविधियाँ उपलब्ध होते ही, हम आपको सूचना देंगे। आपकी भागीदारी के लिए धन्यवाद!", "language": "hi"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "${studyName} में आपका स्वागत है", "language": "hi"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "जारी रखने के लिए, कृपया नीचे दिए गए सहमति फ़ॉर्म को पढ़कर उस पर हस्ताक्षर करें।", "language": "hi"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "आप पहले से ही ${studyName} में नामांकित हैं।", "language": "hi"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "यह उपयोगकर्ता पहले से ही ${studyName} में नामांकित है।", "language": "hi"},
-  {"keyName": "cookieAlertTitle", "text": "कुकीज़", "language": "hi"},
-  {"keyName": "cookieAlertDetail", "text": "यह साइट हमारी वेबसाइट के सही तरीके से काम करने और उसे सुरक्षित रखने के लिए, और आपके द्वारा उसका उपयोग किए जाने के दौरान आपका अनुभव बेहतर बनाने के लिए, \"कुकीज़\" नामक इंटरनेट टोकनों का इस्तेमाल करती है। हम जो कुकीज़ इस्तेमाल करते हैं वे सभी पूरी तरह से ज़रूरी कुकीज़ होती हैं। इस तरह की कुकी व्यक्तिगत रूप से पहचान योग्य कोई भी जानकारी आपके बारे में एकत्र नहीं करती है और ब्राउज़ करने की आपकी आदतों को ट्रैक नहीं करती है। अधिक जानने के लिए, [हमारी निजता नीति पढ़ें](\/privacy)।", "language": "hi"},
-  {"keyName": "joinStudy", "text": "स्टडी में शामिल हों", "language": "hi"},
-  {"keyName": "ineligibleThankYou", "text": "${studyName} में आपकी रुचि के लिए धन्यवाद", "language": "hi" },
-  {"keyName": "ineligibleDescription", "text": "खेद है कि आप अभी ${studyName} में भाग लेने की पात्रता के मानदंडों को पूरा नहीं करते हैं।", "language": "hi"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "नीचे अपना ईमेल प्रदान करें और हम आपको घटनाक्रम के बारे में अपडेट देते रहेंगे। आप किसी भी समय अनसब्सक्राइब कर सकते हैं।", "language":  "hi"},
-  {"keyName": "ineligibleStayInformed", "text": "सूचना पाते रहें", "language": "hi"},
-  {"keyName": "backToPortalHomepage", "text": "${portalName} के होमपेज पर वापस जाएँ", "language": "hi"},
-  {"keyName": "joinMailingList", "text": "मेलिंग लिस्ट में शामिल हों", "language": "hi"},
-  {"keyName": "mailingFormStayUpdated", "text":  "स्टडी के बारे में समाचारों के अपडेट पाते रहें", "language": "hi"},
-  {"keyName": "yourName", "text": "आपका नाम", "language": "hi"},
-  {"keyName": "yourEmail", "text": "आपका ईमेल", "language": "hi"},
-  {"keyName": "join", "text":  "शामिल हों", "language": "hi"},
-  {"keyName": "thanksForJoining", "text": "शामिल होने के लिए धन्यवाद!", "language": "hi"},
-  {"keyName": "pageNotFoundTitle", "text": "पेज नहीं मिला", "language": "hi"},
-  {"keyName": "pageNotFoundMessage", "text": "अगर आपको लगता है कि यह गलती से हुआ है, तो कृपया ${studyContactEmail} से संपर्क करें", "language": "hi"},
-  {"keyName": "pageNotFoundReturnHome", "text": "होम पेज पर वापस जाएँ", "language": "hi"},
-  {"keyName": "authErrorPageTitle", "text": "कुछ गड़बड़ी हुई", "language": "hi"},
-  {"keyName": "authErrorPageMessage", "text": "हमारी प्रमाणीकरण सेवा में कोई समस्या पेश आई। कृपया फिर से कोशिश करें। अगर समस्या बनी रहती है, तो कृपया ${studyContactEmail} से संपर्क करें।", "language": "hi"},
-  {"keyName": "navbarSampleKits", "text":  "सैंपल किटें", "language": "hi"},
-  {"keyName": "kitsPageTitle", "text": "सैंपल एकत्रीकरण किटें", "language": "hi"},
-  {"keyName": "kitsPageDescription", "text": "सैंपल एकत्रीकरण किटें, स्टडी की प्रक्रिया का एक अहम हिस्सा हैं और इनकी मदद से शोधकर्ताओं को ज़रूरी गहन-जानकारी मिल सकती है। नीचे आपको उन सभी किटों की स्थिति के बारे में जानकारी मिलेगी जो आपको दी गईं थीं।", "language": "hi"},
-  {"keyName": "kitsPageInPersonTitle", "text": "साक्षात व्यक्तिगत रूप से सैंपल दें", "language": "hi"},
-  {"keyName": "kitsPageInPersonDescription", "text": "वर्तमान में यह स्टडी साक्षात व्यक्तिगत रूप से सैंपल एकत्रीकरण किट को पूरा करने का विकल्प दे रही है।", "language": "hi"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "साक्षात व्यक्तिगत रूप से किट पूरी करें", "language": "hi"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "आपकी किटें", "language": "hi"},
-  {"keyName": "kitsPageStatusPreparing", "text": "तैयार किया जा रहा है", "language": "hi"},
-  {"keyName": "kitsPageStatusShipped", "text": "शिप किया गया", "language": "hi"},
-  {"keyName": "kitsPageStatusReturned", "text": "वापस किया गया", "language": "hi"},
-  {"keyName": "kitsPageStatusCreated", "text": "बनाया गया", "language": "hi"},
-  {"keyName": "kitsPageStatusCollected", "text": "एकत्र किया गया", "language": "hi"},
-  {"keyName": "kitsPageNoKits", "text": "अभी आपके पास कोई सैंपल एकत्रीकरण किट नहीं है।", "language": "hi"},
-  {"keyName": "kitsInPersonTitle", "text": "सैंपल किट संबंधी निर्देश", "language": "hi"},
-  {"keyName": "kitsInPersonDescription", "text": "अगर आप साक्षात व्यक्तिगत रूप से सैंपल एकत्रीकरण किट पूरी कर रहे हैं, तो कृपया स्टडी टीम के सदस्य की ओर से दिए गए निर्देशों का पालन करें। ऐसी हर अतिरिक्त जानकारी नीचे दी गई है जिसकी आपको आवश्यकता पड़ सकती है, जैसे कि आपका अनन्य प्रतिभागी पहचानकर्ता।", "language": "hi"},
-  {"keyName": "kitsInPersonSubDescription", "text": "अगर आपके कोई सवाल हैं, तो कृपया स्टडी टीम के किसी सदस्य से पूछें।", "language": "hi"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "आपकी सैंपल एकत्रीकरण किट", "language": "hi"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "टीम के एक सदस्य ने आपको सैंपल एकत्रीकरण किट दी है। यह सैंपल किट आपके खाते से जुड़ी है। अगर आप किसी अन्य व्यक्ति की सैंपल एकत्रीकरण किट के लिए उसकी मदद कर रहे हैं, तो कृपया यह सुनिश्चित करें कि हर प्रतिभागी अपने लिए नियत की गई सैंपल एकत्रीकरण किट को पूरा कर ले।", "language": "hi"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "आपका किट पहचानकर्ता", "language": "hi"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "डैशबोर्ड पर वापस जाएँ", "language": "hi"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "रीफ़्रेश करें", "language": "hi"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "सहमति की ज़रूरत है", "language": "hi"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "सैंपल एकत्रीकरण किट पूरी करने से पहले, आपको स्टडी में नामांकित होना होगा। अगर दिलचस्पी हो, तो आपको नीचे दिए गए लिंक पर सहमति फ़ॉर्म मिल सकता है और आप उस पर हस्ताक्षर कर सकते हैं।", "language": "hi"},
-  {"keyName": "kitsInPersonStartConsent", "text": "सहमति शुरू करें", "language": "hi"},
-  {"keyName": "kitsInPersonError", "text": "आपकी किट की जानकारी को लोड होने में गड़बड़ी हुई। मदद के लिए, कृपया स्टडी टीम के किसी सदस्य से संपर्क करें।", "language": "hi"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "जब आप सैंपल एकत्रीकरण किट को पूरा कर लें, तो कृपया उसे स्टडी टीम के किसी सदस्य को लौटा दें और उसे नीचे दिया गया अपना भागीदारी कोड स्कैन करने दें।", "language": "hi"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "सैंपल एकत्रीकरण किट प्राप्त करने के लिए, स्टडी टीम का कोई सदस्य किसी सैंपल किट को आपके खाते से जोड़ने के उद्देश्य से, नीचे दिए गए आपके अनन्य भागीदारी कोड को स्कैन करेगा।", "language": "hi"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "जब आपको किट प्राप्त हो जाए, तो कृपया इस पेज को रीफ़्रेश करके अपनी किट की जानकारी देखें और आगे के लिए निर्देश पाएँ।", "language": "hi"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "स्टडी टीम के एक सदस्य को आपकी सैंपल एकत्रीकरण किट प्राप्त हो गई है। जब आपका सैंपल संसाधित हो जाएगा, तब आपको एक ईमेल नोटिफ़िकेशन मिलेगा, और आप अपने स्टडी डैशबोर्ड पर सैंपल की स्थिति देख पाएँगे।", "language": "hi"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "आपकी भागीदारी के लिए धन्यवाद।", "language": "hi"},
-  {"keyName": "kitTypeSaliva", "text": "लार किट", "language": "hi"},
-  {"keyName": "kitTypeStool", "text": "मल किट", "language": "hi"},
-  {"keyName": "kitTypeBlood", "text": "रक्त किट", "language": "hi"},
-  {"keyName": "documentDownloadButton", "text": "डाउनलोड करना", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "पर बनाया", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "अपलोड किए गए दस्तावेज़", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "अध्ययन में भाग लेने के दौरान, आपसे किसी फ़ॉर्म या सर्वेक्षण के भाग के रूप में दस्तावेज़ अपलोड करने के लिए कहा जा सकता है। नीचे, आप अपने द्वारा अपलोड किए गए दस्तावेज़ों को प्रबंधित कर सकते हैं।", "language": "hi", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "दस्तावेज़", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "क्या आपको यकीन है?", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "क्या आप वाकई इस दस्तावेज़ को हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता। कृपया ध्यान दें कि यदि अध्ययन स्टाफ़ के किसी सदस्य ने पहले ही इस दस्तावेज़ को डाउनलोड कर लिया है, तो भी यह उनके लिए सुलभ रहेगा। यदि आप दस्तावेज़ को सभी रिकॉर्ड से पूरी तरह से हटाना चाहते हैं, तो कृपया अध्ययन स्टाफ़ से संपर्क करें।", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "यह दस्तावेज़ उपयोग में है", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "यह दस्तावेज़ वर्तमान में कम से कम एक सर्वेक्षण के जवाब में साझा किया गया है। कृपया इसे हटाने से पहले सर्वेक्षण प्रतिक्रिया(ओं) से हटा दें।", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "मिटाना", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "विकल्प", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "के जवाब में साझा किया गया", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "चयनित दस्तावेज़", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "ये दस्तावेज़ आपके उत्तर में शामिल हैं", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "कोई दस्तावेज़ चयनित नहीं है। कृपया एक नया दस्तावेज़ अपलोड करें या नीचे कोई मौजूदा दस्तावेज़ चुनें।", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "उपलब्ध दस्तावेज़", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "ये दस्तावेज़ आपके उत्तर में शामिल नहीं हैं", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "फ़ाइलें यहां डालें या अपलोड करने के लिए क्लिक करें", "language": "hi", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "कोई दस्तावेज़ उपलब्ध नहीं है", "language": "hi", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "आपका सत्र समाप्त होने वाला है", "language": "hi", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "सुरक्षा बनाए रखने और आपके डेटा की सुरक्षा के लिए, आपको ${timeRemaining} में लॉग आउट कर दिया जाएगा।", "language": "hi", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "डैशबोर्ड",
+    "language": "hi"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "पासवर्ड बदलें",
+    "language": "hi"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "लॉग आउट करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "profile",
+    "text": "प्रोफ़ाइल",
+    "language": "hi"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "लॉग इन करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "रजिस्टर करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "पूरा करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "प्रगति में है",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "शुरू नहीं हुआ",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "अस्वीकार किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "लॉक किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "इस स्टडी के लिए कोई टास्क नहीं",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "इतिहास",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "नया",
+    "language": "hi"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "कुछ सर्वेक्षण तब तक के लिए लॉक किए गए हैं, जब तक दूसरे आवश्यक टास्क पूरे नहीं हो जाते।",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "सर्वेक्षण",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "सर्वेक्षण",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "सहमति",
+    "language": "hi"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "फ़ॉर्म",
+    "language": "hi"
+  },
+  {
+    "keyName": "start",
+    "text": "शुरू करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "continue",
+    "text": "जारी रखें",
+    "language": "hi"
+  },
+  {
+    "keyName": "save",
+    "text": "सेव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "अधिक जानें",
+    "language": "hi"
+  },
+  {
+    "keyName": "cancel",
+    "text": "रद्द करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "goBack",
+    "text": "वापस जाएँ",
+    "language": "hi"
+  },
+  {
+    "keyName": "name",
+    "text": "नाम",
+    "language": "hi"
+  },
+  {
+    "keyName": "givenName",
+    "text": "प्रथम नाम",
+    "language": "hi"
+  },
+  {
+    "keyName": "familyName",
+    "text": "कुलनाम",
+    "language": "hi"
+  },
+  {
+    "keyName": "editName",
+    "text": "नाम में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "जन्मदिन में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "जन्मदिन",
+    "language": "hi"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "डाक पता",
+    "language": "hi"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "डाक पता में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "मुख्य पता",
+    "language": "hi"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "मुख्य पते में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "street1",
+    "text": "सड़क 1",
+    "language": "hi"
+  },
+  {
+    "keyName": "street2",
+    "text": "सड़क 2",
+    "language": "hi"
+  },
+  {
+    "keyName": "city",
+    "text": "शहर",
+    "language": "hi"
+  },
+  {
+    "keyName": "state",
+    "text": "राज्य/प्रांत",
+    "language": "hi"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "पिन कोड",
+    "language": "hi"
+  },
+  {
+    "keyName": "country",
+    "text": "देश",
+    "language": "hi"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "संचार की प्राथमिकताएँ",
+    "language": "hi"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "संचार की प्राथमिकताएँ संपादित करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "संपर्क ईमेल",
+    "language": "hi"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "संपर्क ईमेल में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "फ़ोन नंबर",
+    "language": "hi"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "फ़ोन नंबर में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "माँगें नहीं",
+    "language": "hi"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "संपर्क न करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "'माँगें नहीं' में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "नोटिफ़िकेशन में बदलाव करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "notifications",
+    "text": "नोटिफ़िकेशन",
+    "language": "hi"
+  },
+  {
+    "keyName": "on",
+    "text": "चालू करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "off",
+    "text": "बंद करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "प्रदान नहीं किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "संचार के लिए इस्तेमाल किए गए ईमेल को अपडेट करने के लिए \"सेव करें\" को दबाएँ। ध्यान दें कि आपकी लॉगइन जानकारी नहीं बदलेगी।",
+    "language": "hi"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "निजता नीति",
+    "language": "hi"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "उपयोग की शर्तें",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "पिन कोड को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "देश को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "राज्य/प्रांत को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "शहर को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "मकान नंबर को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "सड़क के नाम को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "सड़क के प्रकार को सत्यापित नहीं किया जा सका।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "कृपया यूनिट/स्वीट नंबर प्रदान करें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "पते की पुष्टि नहीं की जा सकी।",
+    "language": "hi"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "क्या यह सही पता है?",
+    "language": "hi"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "हम एक मिलते-जुलते पते का सत्यापन कर पाए थे। कृपया चुनें कि आप किसका इस्तेमाल करना चाहेंगे।",
+    "language": "hi"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "नया पता",
+    "language": "hi"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "पुराना पता",
+    "language": "hi"
+  },
+  {
+    "keyName": "you",
+    "text": "आप",
+    "language": "hi"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "आपका आश्रित",
+    "language": "hi"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(आप)",
+    "language": "hi"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "सभी प्रोफ़ाइलें",
+    "language": "hi"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "प्रोफ़ाइलें प्रबंधित करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "नया प्रतिभागी जोड़ें",
+    "language": "hi"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "डैशबोर्ड",
+    "language": "hi"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "प्रतिभागी का चयन करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "${formName} पूरा हुआ",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "सभी गतिविधियाँ पूर्ण",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "आपने इस स्टडी के लिए सभी गतिविधियाँ पूरी कर ली हैं। नई गतिविधियाँ उपलब्ध होते ही, हम आपको सूचना देंगे। आपकी भागीदारी के लिए धन्यवाद!",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "${studyName} में आपका स्वागत है",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "जारी रखने के लिए, कृपया नीचे दिए गए सहमति फ़ॉर्म को पढ़कर उस पर हस्ताक्षर करें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "आप पहले से ही ${studyName} में नामांकित हैं।",
+    "language": "hi"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "यह उपयोगकर्ता पहले से ही ${studyName} में नामांकित है।",
+    "language": "hi"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "कुकीज़",
+    "language": "hi"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "यह साइट हमारी वेबसाइट के सही तरीके से काम करने और उसे सुरक्षित रखने के लिए, और आपके द्वारा उसका उपयोग किए जाने के दौरान आपका अनुभव बेहतर बनाने के लिए, \"कुकीज़\" नामक इंटरनेट टोकनों का इस्तेमाल करती है। हम जो कुकीज़ इस्तेमाल करते हैं वे सभी पूरी तरह से ज़रूरी कुकीज़ होती हैं। इस तरह की कुकी व्यक्तिगत रूप से पहचान योग्य कोई भी जानकारी आपके बारे में एकत्र नहीं करती है और ब्राउज़ करने की आपकी आदतों को ट्रैक नहीं करती है। अधिक जानने के लिए, [हमारी निजता नीति पढ़ें](/privacy)।",
+    "language": "hi"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "स्टडी में शामिल हों",
+    "language": "hi"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "${studyName} में आपकी रुचि के लिए धन्यवाद",
+    "language": "hi"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "खेद है कि आप अभी ${studyName} में भाग लेने की पात्रता के मानदंडों को पूरा नहीं करते हैं।",
+    "language": "hi"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "नीचे अपना ईमेल प्रदान करें और हम आपको घटनाक्रम के बारे में अपडेट देते रहेंगे। आप किसी भी समय अनसब्सक्राइब कर सकते हैं।",
+    "language": "hi"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "सूचना पाते रहें",
+    "language": "hi"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "${portalName} के होमपेज पर वापस जाएँ",
+    "language": "hi"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "मेलिंग लिस्ट में शामिल हों",
+    "language": "hi"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "स्टडी के बारे में समाचारों के अपडेट पाते रहें",
+    "language": "hi"
+  },
+  {
+    "keyName": "yourName",
+    "text": "आपका नाम",
+    "language": "hi"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "आपका ईमेल",
+    "language": "hi"
+  },
+  {
+    "keyName": "join",
+    "text": "शामिल हों",
+    "language": "hi"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "शामिल होने के लिए धन्यवाद!",
+    "language": "hi"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "पेज नहीं मिला",
+    "language": "hi"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "अगर आपको लगता है कि यह गलती से हुआ है, तो कृपया ${studyContactEmail} से संपर्क करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "होम पेज पर वापस जाएँ",
+    "language": "hi"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "कुछ गड़बड़ी हुई",
+    "language": "hi"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "हमारी प्रमाणीकरण सेवा में कोई समस्या पेश आई। कृपया फिर से कोशिश करें। अगर समस्या बनी रहती है, तो कृपया ${studyContactEmail} से संपर्क करें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "सैंपल किटें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "सैंपल एकत्रीकरण किटें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "सैंपल एकत्रीकरण किटें, स्टडी की प्रक्रिया का एक अहम हिस्सा हैं और इनकी मदद से शोधकर्ताओं को ज़रूरी गहन-जानकारी मिल सकती है। नीचे आपको उन सभी किटों की स्थिति के बारे में जानकारी मिलेगी जो आपको दी गईं थीं।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "साक्षात व्यक्तिगत रूप से सैंपल दें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "वर्तमान में यह स्टडी साक्षात व्यक्तिगत रूप से सैंपल एकत्रीकरण किट को पूरा करने का विकल्प दे रही है।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "साक्षात व्यक्तिगत रूप से किट पूरी करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "आपकी किटें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "तैयार किया जा रहा है",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "शिप किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "वापस किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "बनाया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "एकत्र किया गया",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "अभी आपके पास कोई सैंपल एकत्रीकरण किट नहीं है।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "सैंपल किट संबंधी निर्देश",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "अगर आप साक्षात व्यक्तिगत रूप से सैंपल एकत्रीकरण किट पूरी कर रहे हैं, तो कृपया स्टडी टीम के सदस्य की ओर से दिए गए निर्देशों का पालन करें। ऐसी हर अतिरिक्त जानकारी नीचे दी गई है जिसकी आपको आवश्यकता पड़ सकती है, जैसे कि आपका अनन्य प्रतिभागी पहचानकर्ता।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "अगर आपके कोई सवाल हैं, तो कृपया स्टडी टीम के किसी सदस्य से पूछें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "आपकी सैंपल एकत्रीकरण किट",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "टीम के एक सदस्य ने आपको सैंपल एकत्रीकरण किट दी है। यह सैंपल किट आपके खाते से जुड़ी है। अगर आप किसी अन्य व्यक्ति की सैंपल एकत्रीकरण किट के लिए उसकी मदद कर रहे हैं, तो कृपया यह सुनिश्चित करें कि हर प्रतिभागी अपने लिए नियत की गई सैंपल एकत्रीकरण किट को पूरा कर ले।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "आपका किट पहचानकर्ता",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "डैशबोर्ड पर वापस जाएँ",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "रीफ़्रेश करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "सहमति की ज़रूरत है",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "सैंपल एकत्रीकरण किट पूरी करने से पहले, आपको स्टडी में नामांकित होना होगा। अगर दिलचस्पी हो, तो आपको नीचे दिए गए लिंक पर सहमति फ़ॉर्म मिल सकता है और आप उस पर हस्ताक्षर कर सकते हैं।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "सहमति शुरू करें",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "आपकी किट की जानकारी को लोड होने में गड़बड़ी हुई। मदद के लिए, कृपया स्टडी टीम के किसी सदस्य से संपर्क करें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "जब आप सैंपल एकत्रीकरण किट को पूरा कर लें, तो कृपया उसे स्टडी टीम के किसी सदस्य को लौटा दें और उसे नीचे दिया गया अपना भागीदारी कोड स्कैन करने दें।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "सैंपल एकत्रीकरण किट प्राप्त करने के लिए, स्टडी टीम का कोई सदस्य किसी सैंपल किट को आपके खाते से जोड़ने के उद्देश्य से, नीचे दिए गए आपके अनन्य भागीदारी कोड को स्कैन करेगा।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "जब आपको किट प्राप्त हो जाए, तो कृपया इस पेज को रीफ़्रेश करके अपनी किट की जानकारी देखें और आगे के लिए निर्देश पाएँ।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "स्टडी टीम के एक सदस्य को आपकी सैंपल एकत्रीकरण किट प्राप्त हो गई है। जब आपका सैंपल संसाधित हो जाएगा, तब आपको एक ईमेल नोटिफ़िकेशन मिलेगा, और आप अपने स्टडी डैशबोर्ड पर सैंपल की स्थिति देख पाएँगे।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "आपकी भागीदारी के लिए धन्यवाद।",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "लार किट",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "मल किट",
+    "language": "hi"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "रक्त किट",
+    "language": "hi"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "डाउनलोड करना",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "पर बनाया",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "दस्तावेज़",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "अपलोड किए गए दस्तावेज़",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "अध्ययन में भाग लेने के दौरान, आपसे किसी फ़ॉर्म या सर्वेक्षण के भाग के रूप में दस्तावेज़ अपलोड करने के लिए कहा जा सकता है। नीचे, आप अपने द्वारा अपलोड किए गए दस्तावेज़ों को प्रबंधित कर सकते हैं।",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "दस्तावेज़",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "क्या आपको यकीन है?",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "क्या आप वाकई इस दस्तावेज़ को हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता। कृपया ध्यान दें कि यदि अध्ययन स्टाफ़ के किसी सदस्य ने पहले ही इस दस्तावेज़ को डाउनलोड कर लिया है, तो भी यह उनके लिए सुलभ रहेगा। यदि आप दस्तावेज़ को सभी रिकॉर्ड से पूरी तरह से हटाना चाहते हैं, तो कृपया अध्ययन स्टाफ़ से संपर्क करें।",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "यह दस्तावेज़ उपयोग में है",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "यह दस्तावेज़ वर्तमान में कम से कम एक सर्वेक्षण के जवाब में साझा किया गया है। कृपया इसे हटाने से पहले सर्वेक्षण प्रतिक्रिया(ओं) से हटा दें।",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "मिटाना",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "विकल्प",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "के जवाब में साझा किया गया",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "चयनित दस्तावेज़",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "ये दस्तावेज़ आपके उत्तर में शामिल हैं",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "कोई दस्तावेज़ चयनित नहीं है। कृपया एक नया दस्तावेज़ अपलोड करें या नीचे कोई मौजूदा दस्तावेज़ चुनें।",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "उपलब्ध दस्तावेज़",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "ये दस्तावेज़ आपके उत्तर में शामिल नहीं हैं",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "फ़ाइलें यहां डालें या अपलोड करने के लिए क्लिक करें",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "कोई दस्तावेज़ उपलब्ध नहीं है",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "आपका सत्र समाप्त होने वाला है",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "सुरक्षा बनाए रखने और आपके डेटा की सुरक्षा के लिए, आपको ${timeRemaining} में लॉग आउट कर दिया जाएगा।",
+    "language": "hi",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "hi",
+    "text": "नामांकन प्रक्रिया के दौरान कुछ गलत हो गया। कृपया फिर से फॉर्म भरें।",
+    "machineTranslated": true
+  }
 ]

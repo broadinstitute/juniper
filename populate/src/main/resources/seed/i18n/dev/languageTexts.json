@@ -1,166 +1,829 @@
 [
-  {"keyName": "navbarDashboard", "text": "DEV_Dashboard", "language": "dev"},
-  {"keyName": "navbarChangePassword", "text": "DEV_Change Password", "language": "dev"},
-  {"keyName": "navbarLogout", "text": "DEV_Log Out", "language": "dev"},
-  {"keyName": "profile", "text": "DEV_Profile", "language": "dev"},
-  {"keyName": "navbarLogin", "text": "DEV_Log In", "language": "dev"},
-  {"keyName": "navbarJoin", "text": "DEV_Register", "language": "dev"},
-  {"keyName": "taskComplete", "text": "DEV_Complete", "language": "dev"},
-  {"keyName": "taskInProgress", "text": "DEV_In Progress", "language": "dev"},
-  {"keyName": "taskNotStarted", "text": "DEV_Not Started", "language": "dev"},
-  {"keyName": "taskDeclined", "text": "DEV_Declined", "language": "dev"},
-  {"keyName": "taskRemoved", "text": "DEV_Removed", "language": "dev"},
-  {"keyName": "taskLocked", "text": "DEV_Locked", "language": "dev"},
-  {"keyName": "taskHistory", "text": "DEV_history", "language": "dev"},
-  {"keyName": "taskNew", "text": "DEV_NEW", "language": "dev"},
-  {"keyName": "tasksNoneForStudy", "text": "DEV_No tasks for this study", "language": "dev"},
-  {"keyName": "surveysSomeLocked", "text": "DEV_Some surveys are locked until other required tasks are completed.", "language": "dev"},
-  {"keyName": "taskTypeSurvey", "text": "DEV_Survey", "language": "dev"},
-  {"keyName": "taskTypeSurveys", "text": "DEV_Surveys", "language": "dev"},
-  {"keyName": "taskTypeConsent", "text": "DEV_Consent", "language": "dev"},
-  {"keyName": "taskTypeForms", "text": "DEV_Forms", "language": "dev"},
-  {"keyName": "start", "text": "DEV_Start", "language": "dev"},
-  {"keyName": "continue", "text": "DEV_Continue", "language": "dev"},
-  {"keyName": "save", "text": "DEV_Save", "language": "dev"},
-  {"keyName": "outreachLearnMore", "text": "DEV_Learn More", "language": "dev"},
-  {"keyName": "cancel", "text": "DEV_Cancel", "language": "dev"},
-  {"keyName": "goBack", "text": "DEV_Go Back", "language": "dev"},
-  {"keyName": "name", "text": "DEV_Name", "language": "dev"},
-  {"keyName": "givenName", "text": "DEV_Given Name", "language": "dev"},
-  {"keyName": "familyName", "text": "DEV_Family Name", "language": "dev"},
-  {"keyName": "editName", "text": "DEV_Edit Name", "language": "dev"},
-  {"keyName": "editBirthDate", "text": "DEV_Edit Birthday", "language": "dev"},
-  {"keyName": "birthDate", "text": "DEV_Birthday", "language": "dev"},
-  {"keyName": "mailingAddress", "text": "DEV_Mailing Address", "language": "dev"},
-  {"keyName": "editMailingAddress", "text": "DEV_Edit Mailing Address", "language": "dev"},
-  {"keyName": "primaryAddress", "text": "DEV_Primary Address", "language": "dev"},
-  {"keyName": "editPrimaryAddress", "text": "DEV_Edit Primary Address", "language": "dev"},
-  {"keyName": "street1", "text": "DEV_Street 1", "language": "dev"},
-  {"keyName": "street2", "text": "DEV_Street 2", "language": "dev"},
-  {"keyName": "city", "text": "DEV_City", "language": "dev"},
-  {"keyName": "state", "text": "DEV_State/Province", "language": "dev"},
-  {"keyName": "postalCode", "text": "DEV_Postal Code", "language": "dev"},
-  {"keyName": "country", "text": "DEV_Country", "language": "dev"},
-  {"keyName": "communicationPreferences", "text": "DEV_Communication Preferences", "language": "dev"},
-  {"keyName": "editCommunicationPreferences", "text": "DEV_Edit Communication Preferences", "language": "dev"},
-  {"keyName": "contactEmail", "text": "DEV_Contact Email", "language": "dev"},
-  {"keyName": "editContactEmail", "text": "DEV_Edit Contact Email", "language": "dev"},
-  {"keyName": "phoneNumber", "text": "DEV_Phone Number", "language": "dev"},
-  {"keyName": "editPhoneNumber", "text": "DEV_Edit Phone Number", "language": "dev"},
-  {"keyName": "doNotSolicit", "text": "DEV_Do Not Solicit", "language": "dev"},
-  {"keyName": "doNotContact", "text": "DEV_Do Not Contact", "language": "dev"},
-  {"keyName": "editDoNotSolicit", "text": "DEV_Edit Do Not Solicit", "language": "dev"},
-  {"keyName": "editNotifications", "text": "DEV_Edit Notifications", "language": "dev"},
-  {"keyName": "notifications", "text": "DEV_Notifications", "language": "dev"},
-  {"keyName": "on", "text": "DEV_On", "language": "dev"},
-  {"keyName": "off", "text": "DEV_Off", "language": "dev"},
-  {"keyName": "notProvided", "text": "DEV_Not Provided", "language": "dev"},
-  {"keyName": "editProfileContactEmailWarning", "text": "DEV_Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "dev"},
-  {"keyName": "privacyPolicy", "text": "DEV_Privacy Policy", "language": "dev"},
-  {"keyName": "termsOfUse", "text": "DEV_Terms of Use", "language": "dev"},
-  {"keyName": "addressInvalidPostalCode", "text": "DEV_The postal code could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidCountry", "text": "DEV_The country could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidState", "text": "DEV_The state/province could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidCity", "text": "DEV_The city could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidHouseNumber", "text": "DEV_The house number could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidStreetName", "text": "DEV_The street name could not be verified.", "language": "dev"},
-  {"keyName": "addressInvalidStreetType", "text": "DEV_The street type could not be verified.", "language": "dev"},
-  {"keyName": "addressNeedsSubpremise", "text": "DEV_Please provide a unit/suite number.", "language": "dev"},
-  {"keyName": "addressFailedToValidate", "text": "DEV_Address could not be validated.", "language": "dev"},
-  {"keyName": "suggestBetterAddressHeader", "text": "DEV_Is this the correct address?", "language": "dev"},
-  {"keyName": "suggestBetterAddressBody", "text": "DEV_We were able to verify a similar address. Please select which you would like to use.", "language": "dev"},
-  {"keyName": "newAddress", "text": "DEV_New Address", "language": "dev"},
-  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"},
-  {"keyName": "you", "text": "DEV_You", "language": "dev"},
-  {"keyName": "yourDependent", "text": "DEV_Your Dependent", "language": "dev"},
-  {"keyName": "youInParens", "text": "DEV_(you)", "language": "dev"},
-  {"keyName": "allProfiles", "text": "DEV_All Profiles", "language": "dev"},
-  {"keyName": "manageProfiles", "text": "DEV_Manage Profiles", "language": "dev"},
-  {"keyName": "addNewParticipant", "text": "DEV_Add New Participant", "language": "dev"},
-  {"keyName": "dashboard", "text": "DEV_Dashboard", "language": "dev"},
-  {"keyName": "selectParticipant", "text": "DEV_Select Participant", "language": "dev"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "DEV_${formName} completed", "language": "dev"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "DEV_All activities complete", "language": "dev"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "DEV_You have completed all activities for this study. We will notify you as soon as new activities are available. Thank you for your participation!", "language": "dev"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "DEV_Welcome to ${studyName}", "language": "dev"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "DEV_Please read and sign the consent form below to continue.", "language": "dev"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "DEV_You are already enrolled in ${studyName}.", "language": "dev"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "DEV_This user is already enrolled in ${studyName}.", "language": "dev"},
-  {"keyName": "cookieAlertTitle", "text": "DEV_Cookies", "language": "dev"},
-  {"keyName": "cookieAlertDetail", "text": "DEV_This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "dev"},
-  {"keyName": "joinStudy", "text": "DEV_Join Study", "language": "dev"},
-  {"keyName": "ineligibleThankYou", "text": "DEV_Thank you for your interest in ${studyName}", "language": "dev" },
-  {"keyName": "ineligibleDescription", "text": "DEV_Unfortunately, you do not meet the eligibility criteria to participate in ${studyName} at this time.", "language": "dev"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "DEV_Provide your email below and we’ll keep you up-to-date on developments. You can unsubscribe at any time.", "language": "dev"},
-  {"keyName": "ineligibleStayInformed", "text": "DEV_Stay informed", "language": "dev"},
-  {"keyName": "backToPortalHomepage", "text": "DEV_Back to ${portalName} homepage", "language": "dev"},
-  {"keyName": "joinMailingList", "text": "DEV_Join Mailing List", "language": "dev"},
-  {"keyName": "mailingFormStayUpdated", "text":  "DEV_Stay updated with news about the study", "language": "dev"},
-  {"keyName": "yourName", "text": "DEV_Your name", "language": "dev"},
-  {"keyName": "yourEmail", "text": "DEV_Your email", "language": "dev"},
-  {"keyName": "join", "text":  "DEV_Join", "language": "dev"},
-  {"keyName": "thanksForJoining", "text": "DEV_Thanks for joining!", "language": "dev"},
-  {"keyName": "pageNotFoundTitle", "text": "DEV_Page not found", "language": "dev"},
-  {"keyName": "pageNotFoundMessage", "text": "DEV_If you believe this is an error, please contact ${studyContactEmail}", "language": "dev"},
-  {"keyName": "pageNotFoundReturnHome", "text": "DEV_Return to the home page", "language": "dev"},
-  {"keyName": "authErrorPageTitle", "text": "DEV_Something went wrong", "language": "dev"},
-  {"keyName": "authErrorPageMessage", "text": "DEV_There was an issue with our authentication service. Please try again. If the problem persists, please contact ${studyContactEmail}.", "language": "dev"},
-  {"keyName": "navbarSampleKits", "text":  "DEV_Sample Kits", "language": "dev"},
-  {"keyName": "kitsPageTitle", "text": "DEV_Sample collection kits", "language": "dev"},
-  {"keyName": "kitsPageDescription", "text": "DEV_Sample collection kits are a valuable part of the study process and can help provide researchers with important insights. Below you will find the status of all kits that have been provided to you.", "language": "dev"},
-  {"keyName": "kitsPageInPersonTitle", "text": "DEV_Provide a sample in-person", "language": "dev"},
-  {"keyName": "kitsPageInPersonDescription", "text": "DEV_This study is currently offering the option to complete a sample collection kit in-person.", "language": "dev"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "DEV_Complete a kit in-person", "language": "dev"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "DEV_Your kits", "language": "dev"},
-  {"keyName": "kitsPageStatusPreparing", "text": "DEV_Preparing", "language": "dev"},
-  {"keyName": "kitsPageStatusShipped", "text": "DEV_Shipped", "language": "dev"},
-  {"keyName": "kitsPageStatusReturned", "text": "DEV_Returned", "language": "dev"},
-  {"keyName": "kitsPageStatusCreated", "text": "DEV_Created", "language": "dev"},
-  {"keyName": "kitsPageStatusCollected", "text": "DEV_Collected", "language": "dev"},
-  {"keyName": "kitsPageNoKits", "text": "DEV_You do not have any sample collection kits at this time.", "language": "dev"},
-  {"keyName": "kitsInPersonTitle", "text": "DEV_Sample kit instructions", "language": "dev"},
-  {"keyName": "kitsInPersonDescription", "text": "DEV_If you are completing a sample collection kit in-person, please follow the instructions provided by a member of the study team. Any additional information that you may need, such as your unique participant identifier, will be provided below.", "language": "dev"},
-  {"keyName": "kitsInPersonSubDescription", "text": "DEV_If you have any questions, please ask a member of the study team.", "language": "dev"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "DEV_Your sample collection kit", "language": "dev"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "DEV_A member of the team has provided you with a sample collection kit. This sample kit is associated with your account. If you are assisting someone else with their sample collection kit, please ensure that each participant completes the sample collection kit that was assigned to them.", "language": "dev"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "DEV_Your kit identifier", "language": "dev"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "DEV_Return to dashboard", "language": "dev"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "DEV_Refresh", "language": "dev"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "DEV_Consent Required", "language": "dev"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "DEV_Before completing a sample collection kit, you must first be enrolled in the study. If of interest, you may find and sign the consent form via the link below.", "language": "dev"},
-  {"keyName": "kitsInPersonStartConsent", "text": "DEV_Start Consent", "language": "dev"},
-  {"keyName": "kitsInPersonError", "text": "DEV_There was an error loading your kit information. Please contact a member of the study team for assistance.", "language": "dev"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "DEV_After you have completed the sample collection kit, please return it to a member of the study team and allow them to scan your participation code below.", "language": "dev"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "DEV_To receive a sample collection kit, a member of the study team will scan your unique participation code below to associate a sample kit with your account.", "language": "dev"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "DEV_Once you have received a kit, please refresh this page to view your kit information and receive further instructions.", "language": "dev"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "DEV_A member of the study team has received your sample collection kit. You will receive an email notification when your sample has been processed, and you will be able to view the status of the sample on your study dashboard.", "language": "dev"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "DEV_Thank you for your participation.", "language": "dev"},
-  {"keyName": "kitTypeSaliva", "text": "DEV_Saliva kit", "language": "dev"},
-  {"keyName": "kitTypeStool", "text": "DEV_Stool kit", "language": "dev"},
-  {"keyName": "kitTypeBlood", "text": "DEV_Blood kit", "language": "dev"},
-  {"keyName": "documentDownloadButton", "text": "DEV_Download", "language": "dev"},
-  {"keyName": "documentsListNone", "text": "DEV_You have not uploaded any documents yet", "language": "dev"},
-  {"keyName": "documentsListCreatedOn", "text": "DEV_Created on", "language": "dev"},
-  {"keyName": "documentsPageTitle", "text": "DEV_Documents", "language": "dev"},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "DEV_Uploaded documents", "language": "dev"},
-  {"keyName": "documentsPageMessage", "text": "DEV_While participating in a study, you may be asked to upload documents as part of a form or survey. Below, you can review the documents you have uploaded.", "language": "dev", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "DEV_Documents", "language": "dev"},
-  {"keyName": "taskTypeDocumentRequests", "text": "DEV_Document Requests", "language": "dev"},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "DEV_Are you sure?", "language": "dev"},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "DEV_Are you sure you want to delete this document? This cannot be undone. Please note that if a member of the study staff has already downloaded this document, it will still be accessible to them. Please contact the study staff if you would like to have the document fully removed from all records.", "language": "dev"},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "DEV_This document is in use", "language": "dev"},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "DEV_This document is currently shared in response to at least one survey. Please remove it from the survey response(s) before deleting it.", "language": "dev"},
-  {"keyName": "documentDeleteButton", "text": "DEV_Delete", "language": "dev"},
-  {"keyName": "documentOptionsButton", "text": "DEV_Options", "language": "dev"},
-  {"keyName": "documentSharedInResponseTo", "text": "DEV_shared in response to", "language": "dev"},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "DEV_Selected documents", "language": "dev"},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "DEV_These documents are included in your response", "language": "dev"},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "DEV_No documents selected. Please upload a new document or select an existing document below.", "language": "dev"},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "DEV_Available documents", "language": "dev"},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "DEV_These documents are not included in your response", "language": "dev"},
-  {"keyName": "documentUploaderClickToUpload", "text": "DEV_Drop files here or click to upload", "language": "dev"},
-  {"keyName": "documentUploaderNoDocuments", "text": "DEV_No documents available", "language": "dev"},
-  {"keyName": "navbarDocuments", "text": "DEV_Documents", "language": "dev", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "DEV_Your session is about to expire", "language": "dev"},
-  {"keyName": "idleStatusNoticeMessage", "text": "DEV_To maintain security and protect your data, you will be logged out in ${timeRemaining}.", "language": "dev"}
+  {
+    "keyName": "navbarDashboard",
+    "text": "DEV_Dashboard",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "DEV_Change Password",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "DEV_Log Out",
+    "language": "dev"
+  },
+  {
+    "keyName": "profile",
+    "text": "DEV_Profile",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "DEV_Log In",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "DEV_Register",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "DEV_Complete",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "DEV_In Progress",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "DEV_Not Started",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "DEV_Declined",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskRemoved",
+    "text": "DEV_Removed",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "DEV_Locked",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "DEV_history",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "DEV_NEW",
+    "language": "dev"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "DEV_No tasks for this study",
+    "language": "dev"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "DEV_Some surveys are locked until other required tasks are completed.",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "DEV_Survey",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "DEV_Surveys",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "DEV_Consent",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "DEV_Forms",
+    "language": "dev"
+  },
+  {
+    "keyName": "start",
+    "text": "DEV_Start",
+    "language": "dev"
+  },
+  {
+    "keyName": "continue",
+    "text": "DEV_Continue",
+    "language": "dev"
+  },
+  {
+    "keyName": "save",
+    "text": "DEV_Save",
+    "language": "dev"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "DEV_Learn More",
+    "language": "dev"
+  },
+  {
+    "keyName": "cancel",
+    "text": "DEV_Cancel",
+    "language": "dev"
+  },
+  {
+    "keyName": "goBack",
+    "text": "DEV_Go Back",
+    "language": "dev"
+  },
+  {
+    "keyName": "name",
+    "text": "DEV_Name",
+    "language": "dev"
+  },
+  {
+    "keyName": "givenName",
+    "text": "DEV_Given Name",
+    "language": "dev"
+  },
+  {
+    "keyName": "familyName",
+    "text": "DEV_Family Name",
+    "language": "dev"
+  },
+  {
+    "keyName": "editName",
+    "text": "DEV_Edit Name",
+    "language": "dev"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "DEV_Edit Birthday",
+    "language": "dev"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "DEV_Birthday",
+    "language": "dev"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "DEV_Mailing Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "DEV_Edit Mailing Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "DEV_Primary Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "DEV_Edit Primary Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "street1",
+    "text": "DEV_Street 1",
+    "language": "dev"
+  },
+  {
+    "keyName": "street2",
+    "text": "DEV_Street 2",
+    "language": "dev"
+  },
+  {
+    "keyName": "city",
+    "text": "DEV_City",
+    "language": "dev"
+  },
+  {
+    "keyName": "state",
+    "text": "DEV_State/Province",
+    "language": "dev"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "DEV_Postal Code",
+    "language": "dev"
+  },
+  {
+    "keyName": "country",
+    "text": "DEV_Country",
+    "language": "dev"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "DEV_Communication Preferences",
+    "language": "dev"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "DEV_Edit Communication Preferences",
+    "language": "dev"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "DEV_Contact Email",
+    "language": "dev"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "DEV_Edit Contact Email",
+    "language": "dev"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "DEV_Phone Number",
+    "language": "dev"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "DEV_Edit Phone Number",
+    "language": "dev"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "DEV_Do Not Solicit",
+    "language": "dev"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "DEV_Do Not Contact",
+    "language": "dev"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "DEV_Edit Do Not Solicit",
+    "language": "dev"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "DEV_Edit Notifications",
+    "language": "dev"
+  },
+  {
+    "keyName": "notifications",
+    "text": "DEV_Notifications",
+    "language": "dev"
+  },
+  {
+    "keyName": "on",
+    "text": "DEV_On",
+    "language": "dev"
+  },
+  {
+    "keyName": "off",
+    "text": "DEV_Off",
+    "language": "dev"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "DEV_Not Provided",
+    "language": "dev"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "DEV_Press \"Save\"  to update the email used for communication. Note that your login information will not change.",
+    "language": "dev"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "DEV_Privacy Policy",
+    "language": "dev"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "DEV_Terms of Use",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "DEV_The postal code could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "DEV_The country could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "DEV_The state/province could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "DEV_The city could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "DEV_The house number could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "DEV_The street name could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "DEV_The street type could not be verified.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "DEV_Please provide a unit/suite number.",
+    "language": "dev"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "DEV_Address could not be validated.",
+    "language": "dev"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "DEV_Is this the correct address?",
+    "language": "dev"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "DEV_We were able to verify a similar address. Please select which you would like to use.",
+    "language": "dev"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "DEV_New Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "DEV_Old Address",
+    "language": "dev"
+  },
+  {
+    "keyName": "you",
+    "text": "DEV_You",
+    "language": "dev"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "DEV_Your Dependent",
+    "language": "dev"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "DEV_(you)",
+    "language": "dev"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "DEV_All Profiles",
+    "language": "dev"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "DEV_Manage Profiles",
+    "language": "dev"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "DEV_Add New Participant",
+    "language": "dev"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "DEV_Dashboard",
+    "language": "dev"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "DEV_Select Participant",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "DEV_${formName} completed",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "DEV_All activities complete",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "DEV_You have completed all activities for this study. We will notify you as soon as new activities are available. Thank you for your participation!",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "DEV_Welcome to ${studyName}",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "DEV_Please read and sign the consent form below to continue.",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "DEV_You are already enrolled in ${studyName}.",
+    "language": "dev"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "DEV_This user is already enrolled in ${studyName}.",
+    "language": "dev"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "DEV_Cookies",
+    "language": "dev"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "DEV_This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).",
+    "language": "dev"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "DEV_Join Study",
+    "language": "dev"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "DEV_Thank you for your interest in ${studyName}",
+    "language": "dev"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "DEV_Unfortunately, you do not meet the eligibility criteria to participate in ${studyName} at this time.",
+    "language": "dev"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "DEV_Provide your email below and we’ll keep you up-to-date on developments. You can unsubscribe at any time.",
+    "language": "dev"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "DEV_Stay informed",
+    "language": "dev"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "DEV_Back to ${portalName} homepage",
+    "language": "dev"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "DEV_Join Mailing List",
+    "language": "dev"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "DEV_Stay updated with news about the study",
+    "language": "dev"
+  },
+  {
+    "keyName": "yourName",
+    "text": "DEV_Your name",
+    "language": "dev"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "DEV_Your email",
+    "language": "dev"
+  },
+  {
+    "keyName": "join",
+    "text": "DEV_Join",
+    "language": "dev"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "DEV_Thanks for joining!",
+    "language": "dev"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "DEV_Page not found",
+    "language": "dev"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "DEV_If you believe this is an error, please contact ${studyContactEmail}",
+    "language": "dev"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "DEV_Return to the home page",
+    "language": "dev"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "DEV_Something went wrong",
+    "language": "dev"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "DEV_There was an issue with our authentication service. Please try again. If the problem persists, please contact ${studyContactEmail}.",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "DEV_Sample Kits",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "DEV_Sample collection kits",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "DEV_Sample collection kits are a valuable part of the study process and can help provide researchers with important insights. Below you will find the status of all kits that have been provided to you.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "DEV_Provide a sample in-person",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "DEV_This study is currently offering the option to complete a sample collection kit in-person.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "DEV_Complete a kit in-person",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "DEV_Your kits",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "DEV_Preparing",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "DEV_Shipped",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "DEV_Returned",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "DEV_Created",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "DEV_Collected",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "DEV_You do not have any sample collection kits at this time.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "DEV_Sample kit instructions",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "DEV_If you are completing a sample collection kit in-person, please follow the instructions provided by a member of the study team. Any additional information that you may need, such as your unique participant identifier, will be provided below.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "DEV_If you have any questions, please ask a member of the study team.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "DEV_Your sample collection kit",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "DEV_A member of the team has provided you with a sample collection kit. This sample kit is associated with your account. If you are assisting someone else with their sample collection kit, please ensure that each participant completes the sample collection kit that was assigned to them.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "DEV_Your kit identifier",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "DEV_Return to dashboard",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "DEV_Refresh",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "DEV_Consent Required",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "DEV_Before completing a sample collection kit, you must first be enrolled in the study. If of interest, you may find and sign the consent form via the link below.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "DEV_Start Consent",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "DEV_There was an error loading your kit information. Please contact a member of the study team for assistance.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "DEV_After you have completed the sample collection kit, please return it to a member of the study team and allow them to scan your participation code below.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "DEV_To receive a sample collection kit, a member of the study team will scan your unique participation code below to associate a sample kit with your account.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "DEV_Once you have received a kit, please refresh this page to view your kit information and receive further instructions.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "DEV_A member of the study team has received your sample collection kit. You will receive an email notification when your sample has been processed, and you will be able to view the status of the sample on your study dashboard.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "DEV_Thank you for your participation.",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "DEV_Saliva kit",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "DEV_Stool kit",
+    "language": "dev"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "DEV_Blood kit",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "DEV_Download",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "DEV_You have not uploaded any documents yet",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "DEV_Created on",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "DEV_Documents",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "DEV_Uploaded documents",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "DEV_While participating in a study, you may be asked to upload documents as part of a form or survey. Below, you can review the documents you have uploaded.",
+    "language": "dev",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "DEV_Documents",
+    "language": "dev"
+  },
+  {
+    "keyName": "taskTypeDocumentRequests",
+    "text": "DEV_Document Requests",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "DEV_Are you sure?",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "DEV_Are you sure you want to delete this document? This cannot be undone. Please note that if a member of the study staff has already downloaded this document, it will still be accessible to them. Please contact the study staff if you would like to have the document fully removed from all records.",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "DEV_This document is in use",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "DEV_This document is currently shared in response to at least one survey. Please remove it from the survey response(s) before deleting it.",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "DEV_Delete",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "DEV_Options",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "DEV_shared in response to",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "DEV_Selected documents",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "DEV_These documents are included in your response",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "DEV_No documents selected. Please upload a new document or select an existing document below.",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "DEV_Available documents",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "DEV_These documents are not included in your response",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "DEV_Drop files here or click to upload",
+    "language": "dev"
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "DEV_No documents available",
+    "language": "dev"
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "DEV_Documents",
+    "language": "dev",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "DEV_Your session is about to expire",
+    "language": "dev"
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "DEV_To maintain security and protect your data, you will be logged out in ${timeRemaining}.",
+    "language": "dev"
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "dev",
+    "text": "dev_Something went wrong during the enrollment process. Please fill out the form again."
+  }
 ]

@@ -161,6 +161,8 @@ public class EnrollmentService {
 
             // backfill the enrollee with the pre-enrollment response data
             this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
+        } else if (hasRequiredPreEnroll(studyEnv.getId())) {
+            throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
 
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
@@ -168,6 +170,12 @@ public class EnrollmentService {
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
+    }
+
+    private boolean hasRequiredPreEnroll(UUID studyEnvId) {
+        // should be a single pre-enroll survey, but we'll check all of them
+        List<Survey> preEnrolls = surveyService.findActiveInStudyEnvWithType(studyEnvId, SurveyType.PRE_ENROLL);
+        return preEnrolls.stream().anyMatch(Survey::isRequired);
     }
 
     private Enrollee findOrCreateEnrolleeForEnrollment(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironment studyEnv,

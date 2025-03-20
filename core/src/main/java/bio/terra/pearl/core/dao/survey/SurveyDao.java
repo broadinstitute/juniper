@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -142,6 +143,20 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
                                 where s.portal_id = :portalId and s.id = se.pre_enroll_survey_id
                                 """)
                         .bind("portalId", portalId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    public List<Survey> findActiveInStudyEnvWithType(UUID studyEnvId, SurveyType type) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select s.* from survey s
+                                inner join study_environment_survey ses on s.id = ses.survey_id and ses.active = true
+                                where ses.study_environment_id = :studyEnvId and s.survey_type = :type
+                                """)
+                        .bind("studyEnvId", studyEnvId)
+                        .bind("type", type)
                         .mapTo(clazz)
                         .list()
         );

@@ -26,7 +26,6 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EnrollmentServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -136,6 +136,30 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testEnrollRequiresPreEnrollIfSurveyRequired(TestInfo testInfo) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .surveyType(SurveyType.PRE_ENROLL)
+                .required(true)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
+                getTestName(testInfo));
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
+                            userBundle.user(), userBundle.ppUser(), null, false);
+                });
+
+    }
+
+    @Test
+    @Transactional
     public void testEnrollChecksConfigAllowsEnrollment(TestInfo testInfo) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
@@ -148,7 +172,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
                 getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                     null, false);
         });
