@@ -187,7 +187,7 @@ export function PagedSurveyView({
         .filter(task => task.targetStableId === form.stableId)
 
       if (tasks.length > 0) {
-        const latestTask = tasks.reduce((a, b) => a?.completedAt > b?.completedAt ? a : b)
+        const latestTask = tasks.reduce((a, b) => a.completedAt && b.completedAt && a.completedAt > b.completedAt ? a : b)
 
         // if the task is not the latest task, then it should be readonly
         if (taskId != latestTask.id) {
