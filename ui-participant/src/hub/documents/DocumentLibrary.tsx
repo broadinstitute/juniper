@@ -28,6 +28,8 @@ import { Link } from 'react-router-dom'
 import { getTaskPath } from '../task/taskUtils'
 import Modal from 'react-bootstrap/Modal'
 import ThemedModal from 'components/ThemedModal'
+import { QuarantinedFileModal } from 'hub/documents/QuarantinedFileModal'
+import { UnscannedFileModal } from 'hub/documents/UnscannedFileModal'
 
 export default function DocumentLibrary() {
   const { i18n } = useI18n()
@@ -186,6 +188,22 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
   studyEnvParams: StudyEnvParams, participantFile: ParticipantFile, enrollee: Enrollee, loadDocuments: () => void
 }) => {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const [showQuarantinedFileModal, setShowQuarantinedFileModal] = useState(false)
+  const [showUnscannedFileModal, setShowUnscannedFileModal] = useState(false)
+
+  const tryDownload = async () => {
+    if (participantFile.virusScanResult === 'CLEAN') {
+      const response = await Api.downloadParticipantFile({
+        studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
+      })
+      saveBlobAsDownload(await response.blob(), participantFile.fileName)
+    } else if (participantFile.virusScanResult === 'QUARANTINED') {
+      setShowQuarantinedFileModal(true)
+    } else if (participantFile.virusScanResult === 'UNSCANNED') {
+      setShowUnscannedFileModal(true)
+    }
+  }
+
   const { i18n } = useI18n()
   return (<>
     <li className="nav-item dropdown d-flex flex-column">
@@ -202,12 +220,7 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
           </a>
         </li>
         <li>
-          <a className="dropdown-item" role={'button'} onClick={async () => {
-            const response = await Api.downloadParticipantFile({
-              studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
-            })
-            saveBlobAsDownload(await response.blob(), participantFile.fileName)
-          }}>
+          <a className="dropdown-item" role={'button'} onClick={tryDownload}>
             {i18n('documentDownloadButton')}
           </a>
         </li>
@@ -251,6 +264,16 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
         </div>
       </Modal.Footer>
     </ThemedModal> }
+
+    {showQuarantinedFileModal && <QuarantinedFileModal onClose={() => setShowQuarantinedFileModal(false)}/>}
+    {showUnscannedFileModal && <UnscannedFileModal
+      onClose={() => setShowUnscannedFileModal(false)}
+      enrollee={enrollee}
+      studyEnvParams={studyEnvParams}
+      participantFile={participantFile}
+    />}
+
+
   </>
   )
 }
