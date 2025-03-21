@@ -384,7 +384,9 @@ export function useSurveyJSModel(
   const Api = useApiContext()
   const { i18n } = useI18n()
 
-  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber, opts.readonly))
+  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(
+    resumeData, pager.pageNumber, opts.readonly
+  ))
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
   function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
