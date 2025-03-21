@@ -1,20 +1,32 @@
 import React from 'react'
 import {
   ColumnDef,
-  getCoreRowModel, Row,
+  getCoreRowModel,
+  Row,
   useReactTable
 } from '@tanstack/react-table'
 import {
   Enrollee,
-  ParticipantFile, saveBlobAsDownload
+  ParticipantFile,
+  saveBlobAsDownload
 } from '@juniper/ui-core'
-import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
+import {
+  basicTableLayout,
+  renderEmptyMessage
+} from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faDownload,
+  faSpinner,
+  faX
+} from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { NavLink } from 'react-router-dom'
+import { useUser } from 'user/UserProvider'
+import InfoPopup from 'components/forms/InfoPopup'
 
 export const ParticipantDocumentListView = ({
   studyEnvContext,
@@ -27,6 +39,8 @@ export const ParticipantDocumentListView = ({
   showAssociatedTasks: boolean,
   documents: ParticipantFile[]
 }) => {
+  const { user } = useUser()
+
   // @ts-ignore
   const columns: ColumnDef<ParticipantFile>[] = [
     {
@@ -51,20 +65,64 @@ export const ParticipantDocumentListView = ({
       accessorKey: 'fileType'
     },
     {
+      header: 'Antivirus Result',
+      accessorKey: 'virusScanResult',
+      cell: ({ row }) => {
+        switch (row.original.virusScanResult) {
+          case 'CLEAN':
+            return <>
+              <FontAwesomeIcon
+                icon={faCheck}/>
+              <InfoPopup content={'No malware detected'}/>
+            </>
+          case 'QUARANTINED':
+            return <>
+              <FontAwesomeIcon icon={faX}/>
+              <InfoPopup content={
+                'Malware detected on file. If you believe this to be incorrect, please contact Juniper staff.'
+              }/>
+            </>
+          case 'UNSCANNED':
+            return <>
+              <FontAwesomeIcon icon={faSpinner}/>
+              <InfoPopup content={
+                'Scan in-progress or could not be completed. Please check back later.'
+              }/>
+            </>
+        }
+
+        return <span>(no result)</span>
+      }
+    },
+    {
       header: 'Actions',
       cell: ({ row }) => {
-        return <button className='btn btn-secondary' onClick={() => download(row.original)}>
+        return <button
+          className='btn btn-secondary'
+          onClick={() => download(row.original)}
+          disabled={row.original.virusScanResult === 'QUARANTINED'}
+        >
           <FontAwesomeIcon icon={faDownload}/>
         </button>
       }
     }
   ]
 
+  if (user?.superuser) {
+    columns.push({
+      header: 'External ID',
+      cell: ({ row }) => {
+        return row.original.externalFileId
+      }
+    })
+  }
+
   const table = useReactTable({
     columns,
     data: documents,
     getCoreRowModel: getCoreRowModel()
   })
+
 
   const download = async (file: ParticipantFile) => {
     const response = await Api.downloadParticipantFile(
