@@ -1,13 +1,12 @@
 import Modal from 'react-bootstrap/Modal'
 
 import React from 'react'
-import {
-  ParticipantFile,
-  saveBlobAsDownload,
-  StudyEnvParams
-} from '@juniper/ui-core'
+
 import { ModalProps } from 'react-bootstrap'
 import { useApiContext } from 'src/participant/ApiProvider'
+import { StudyEnvParams } from 'src/types/study'
+import { ParticipantFile } from 'src/types/participantFile'
+import { saveBlobAsDownload } from 'src/util/downloadUtils'
 
 export const UnscannedFileModal = ({
   studyEnvParams,
