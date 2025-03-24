@@ -39,11 +39,12 @@ beforeEach(() => {
 })
 
 describe('DocumentLibrary', () => {
-  it('renders no documents message', () => {
+  it('renders no documents message', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([])
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
     render(RoutedComponent)
     expect(screen.getByText('{documentsPageTitle}')).toBeInTheDocument()
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText('{documentsListNone}')).toBeInTheDocument()
     })
   })
