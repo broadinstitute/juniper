@@ -32,8 +32,10 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     private NotificationContextInfo contextInfo;
     private final ApplicationRoutingPaths routingPaths;
 
-    protected EnrolleeEmailSubstitutor(EnrolleeContext ruleData, NotificationContextInfo contextInfo,
-                                       ApplicationRoutingPaths routingPaths, Map<String, String> messages) {
+    protected EnrolleeEmailSubstitutor(EnrolleeContext ruleData,
+                                       NotificationContextInfo contextInfo,
+                                       ApplicationRoutingPaths routingPaths,
+                                       Map<String, String> messages) {
         this.enrolleeContext = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;

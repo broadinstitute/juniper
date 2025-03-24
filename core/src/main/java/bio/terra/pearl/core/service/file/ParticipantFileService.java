@@ -1,19 +1,14 @@
 package bio.terra.pearl.core.service.file;
 
 import bio.terra.pearl.core.dao.file.ParticipantFileDao;
-import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.file.ParticipantFile;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
-import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import bio.terra.pearl.core.service.survey.SurveyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -24,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class ParticipantFileService extends ImmutableEntityService<ParticipantFile, ParticipantFileDao> {
+public class ParticipantFileService extends CrudService<ParticipantFile, ParticipantFileDao> {
     private final FileStorageBackend fileStorageBackend;
 
     public ParticipantFileService(ParticipantFileDao dao, FileStorageBackendProvider fileStorageBackendProvider) {
@@ -62,5 +57,15 @@ public class ParticipantFileService extends ImmutableEntityService<ParticipantFi
             throw new IllegalArgumentException("This file is being used in a survey response and cannot be deleted. Please remove the file from the survey response first.");
         }
         super.delete(id, cascade);
+    }
+
+    public ScannedParticipantFileDto attachVirusScanResult(ParticipantFile participantFile) {
+        VirusScanResult scanResult = fileStorageBackend.scanResult(participantFile.getExternalFileId());
+
+        return new ScannedParticipantFileDto(participantFile, scanResult);
+    }
+
+    public VirusScanResult getVirusScanResult(UUID fileId) {
+        return fileStorageBackend.scanResult(fileId);
     }
 }

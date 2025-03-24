@@ -68,7 +68,7 @@ jobs:
         # Generate a report if the tests fail or succeed, but not if the user cancels
         # For Dependabot PRs, we'll skip generating the test report to simplify our permissions setup
         if: (success() || failure()) && github.actor != 'dependabot[bot]'
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         with:
           name: JUnit Tests
           path: >

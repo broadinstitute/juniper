@@ -3,10 +3,12 @@ package bio.terra.pearl.api.participant.service.file;
 import bio.terra.pearl.api.participant.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class ParticipantFileExtService {
     this.fileStorageBackend = fileStorageBackendProvider.get();
   }
 
-  public ParticipantFile get(
+  public ScannedParticipantFileDto get(
       String portalShortcode,
       EnvironmentName envName,
       ParticipantUser participantUser,
@@ -43,9 +45,13 @@ public class ParticipantFileExtService {
     authUtilService.authParticipantToPortal(participantUser.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
-    return participantFileService
-        .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
-        .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    ParticipantFile file =
+        participantFileService
+            .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
+            .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    return participantFileService.attachVirusScanResult(file);
   }
 
   public InputStream downloadFile(
@@ -61,6 +67,13 @@ public class ParticipantFileExtService {
         participantFileService
             .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
             .orElseThrow(() -> new NotFoundException("Could not find file"));
+
+    VirusScanResult virusScanResult =
+        participantFileService.getVirusScanResult(participantFile.getExternalFileId());
+
+    if (virusScanResult == VirusScanResult.QUARANTINED) {
+      throw new IllegalArgumentException("Virus detected in file");
+    }
 
     return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
   }

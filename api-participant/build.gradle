@@ -22,11 +22,11 @@ dependencies {
     implementation project(':core')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.13.0'
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
+    implementation 'commons-beanutils:commons-beanutils:1.10.1'
+    implementation 'org.springframework.boot:spring-boot-starter:3.4.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.1'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.4.1'
-    implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.3'
     implementation 'org.yaml:snakeyaml:2.4'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
@@ -36,12 +36,13 @@ dependencies {
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
     implementation 'org.liquibase:liquibase-core:4.31.0'
     implementation 'com.auth0:java-jwt:4.5.0'
+    implementation 'com.google.guava:guava:33.4.0-jre'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
             //'org.bouncycastle:bcprov-jdk15on:1.70',
-            'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
+            'io.jsonwebtoken:jjwt-jackson:0.12.6' // or 'io.jsonwebtoken:jjwt-gson:0.12.6' for gson
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation('org.springframework.boot:spring-boot-starter-test:3.4.2') {
@@ -52,7 +53,7 @@ dependencies {
     testImplementation 'commons-io:commons-io:2.18.0'
     // See https://stackoverflow.com/questions/5644011/multi-project-test-dependencies-with-gradle/60138176#60138176
     testImplementation(testFixtures(project(":core")))
-    testImplementation 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.41.0'
+    testImplementation 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.48.0'
 }
 
 task copyWebApp(type: Copy) {

@@ -40,7 +40,7 @@ describe('HubPage with proxies', () => {
         user={mockUser}
         portal={mockPortal}
       >
-        <MockI18nProvider>
+        <MockI18nProvider useDefaultTexts={true}>
           <HubPage/>
         </MockI18nProvider>
       </ProvideFullTestUserContext>
@@ -73,7 +73,7 @@ describe('HubPage with proxies', () => {
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeInTheDocument()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
     selectParticipant('Jonas Salk {youInParens}')
-    await waitFor(() => expect(screen.getByText('Test Study')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('{study:TESTPORTAL.STUDYSHORTCODE}')).toBeInTheDocument())
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonas Salk {youInParens}')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()

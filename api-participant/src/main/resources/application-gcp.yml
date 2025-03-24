@@ -18,6 +18,8 @@ env:
     smartyAuthToken: ${sm://${SMARTY_AUTH_TOKEN_SECRET_ID}}
   mixpanel:
     token: ${sm://${MIXPANEL_TOKEN_SECRET_ID}}
+  fileUpload:
+    backend: GCSFileStorageBackend
 spring:
   cloud:
     gcp:

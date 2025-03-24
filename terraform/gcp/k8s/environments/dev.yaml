@@ -5,6 +5,7 @@ deploymentZone: dev
 replicas: 1
 dsmUrl: https://dsm-dev.datadonationplatform.org/dsm
 dsmIssuer: admin-d2p.ddp-dev.envs.broadinstitute.org
+gcsFileStorageBucketName: juniper-participant-documents-dev
 # "portals" adds certificates for each portal - both for the juniper-cmi.dev subdomains and the custom domain
 portals:
   - name: demo
@@ -60,3 +61,7 @@ b2c:
       clientId: does-not-exist
       policyName: does-not-exist
       tenantName: does-not-exist
+gcsFileStorageBuckets:
+  unscanned: juniper-participant-documents-dev-unscanned
+  clean: juniper-participant-documents-dev-clean
+  quarantined: juniper-participant-documents-dev-quarantined

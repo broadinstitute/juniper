@@ -33,7 +33,16 @@
       "populateFileName": "es/participation.json"
     }, {
       "populateFileName": "es/learnMore.json"
-    }]
+    }],
+    "languageTextOverrides": [
+      {
+        "text": "Estudio de Demostración",
+        "keyName": "study:demo.heartdemo"
+      }, {
+        "text": "Juniper Demostración",
+        "keyName": "portal:demo"
+      }
+    ]
   },{
     "language": "dev",
     "navLogoCleanFileName": "juniper-demo-logo.png",
@@ -51,6 +60,12 @@
       {
         "text": "DEV_Join Us",
         "keyName": "navbarJoin"
+      }, {
+        "text": "DEV_Heart Demo",
+        "keyName": "study:demo.heartdemo"
+      }, {
+        "text": "DEV_Juniper Heart Demo",
+        "keyName": "portal:demo"
       }
     ]
   }]

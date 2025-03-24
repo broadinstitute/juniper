@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Portal } from 'api/api'
 import {
+  getTranslatedPortalName,
   MailingListForm,
   useI18n
 } from '@juniper/ui-core'
@@ -35,7 +36,11 @@ export default function StudyIneligible(props: StudyIneligibleProps) {
         </div>
         <p className="text-center mt-3">
           <Link to="/">
-            {i18n('backToPortalHomepage', { substitutions: { portalName: portal.name } })}
+            {i18n('backToPortalHomepage', {
+              substitutions: {
+                portalName: getTranslatedPortalName(i18n, portal.shortcode, portal.name)
+              }
+            })}
           </Link>
         </p>
       </div>
