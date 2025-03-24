@@ -271,12 +271,16 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
       </Modal.Footer>
     </ThemedModal> }
 
-    {showQuarantinedFileModal && <QuarantinedFileModal onClose={() => setShowQuarantinedFileModal(false)}/>}
+    {showQuarantinedFileModal && <QuarantinedFileModal
+      onClose={() => setShowQuarantinedFileModal(false)}
+      ModalComponent={ThemedModal}
+    />}
     {showUnscannedFileModal && <UnscannedFileModal
       onClose={() => setShowUnscannedFileModal(false)}
-      enrollee={enrollee}
+      enrolleeShortcode={enrollee.shortcode}
       studyEnvParams={studyEnvParams}
       participantFile={participantFile}
+      ModalComponent={ThemedModal}
     />}
 
 

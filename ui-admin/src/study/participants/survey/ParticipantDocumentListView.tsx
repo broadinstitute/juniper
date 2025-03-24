@@ -16,17 +16,11 @@ import {
 } from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCheck,
-  faDownload,
-  faSpinner,
-  faX
-} from '@fortawesome/free-solid-svg-icons'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { NavLink } from 'react-router-dom'
 import { useUser } from 'user/UserProvider'
-import InfoPopup from 'components/forms/InfoPopup'
 
 export const ParticipantDocumentListView = ({
   studyEnvContext,
@@ -68,27 +62,13 @@ export const ParticipantDocumentListView = ({
       header: 'Antivirus Result',
       accessorKey: 'virusScanResult',
       cell: ({ row }) => {
-        switch (row.original.virusScanResult) {
-          case 'CLEAN':
-            return <>
-              <FontAwesomeIcon
-                icon={faCheck}/>
-              <InfoPopup content={'No malware detected'}/>
-            </>
-          case 'QUARANTINED':
-            return <>
-              <FontAwesomeIcon icon={faX}/>
-              <InfoPopup content={
-                'Malware detected on file. If you believe this to be incorrect, please contact Juniper staff.'
-              }/>
-            </>
-          case 'UNSCANNED':
-            return <>
-              <FontAwesomeIcon icon={faSpinner}/>
-              <InfoPopup content={
-                'Scan in-progress or could not be completed. Please check back later.'
-              }/>
-            </>
+        const result = row.original.virusScanResult
+        if (result === 'CLEAN') {
+          return <span>Clean</span>
+        } else if (result === 'QUARANTINED') {
+          return <span className='text-danger fw-bold'>Malware Detected</span>
+        } else if (result === 'UNSCANNED') {
+          return <span>In Progress</span>
         }
 
         return <span>(no result)</span>

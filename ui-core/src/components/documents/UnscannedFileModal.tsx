@@ -25,7 +25,7 @@ export const UnscannedFileModal = ({
   const Api = useApiContext()
   const downloadAnyway = async () => {
     const response = await Api.downloadParticipantFile({
-      studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
+      studyEnvParams, enrolleeShortcode, fileName: participantFile.fileName
     })
     saveBlobAsDownload(await response.blob(), participantFile.fileName)
   }

@@ -34,7 +34,7 @@ env:
     enabled: ${MIXPANEL_ENABLED:false}
     token: ${MIXPANEL_TOKEN:}
   fileUpload:
-    backend: GCSFileStorageBackend
+    backend: LocalFileStorageBackend
     localFileStoragePath: ${LOCAL_FILE_STORAGE_PATH:/tmp/juniper/fileupload}
     gcsStorageUnscannedBucketName: ${GCS_FILE_STORAGE_UNSCANNED_BUCKET_NAME:}
     gcsStorageCleanBucketName: ${GCS_FILE_STORAGE_CLEAN_BUCKET_NAME:}
