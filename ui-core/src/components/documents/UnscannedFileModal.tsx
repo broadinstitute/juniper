@@ -3,10 +3,10 @@ import Modal from 'react-bootstrap/Modal'
 import React from 'react'
 
 import { ModalProps } from 'react-bootstrap'
-import { useApiContext } from 'src/participant/ApiProvider'
-import { StudyEnvParams } from 'src/types/study'
-import { ParticipantFile } from 'src/types/participantFile'
-import { saveBlobAsDownload } from 'src/util/downloadUtils'
+import { useApiContext } from '../../participant/ApiProvider'
+import { StudyEnvParams } from '../../types/study'
+import { ParticipantFile } from '../../types/participantFile'
+import { saveBlobAsDownload } from '../../util/downloadUtils'
 
 export const UnscannedFileModal = ({
   studyEnvParams,
