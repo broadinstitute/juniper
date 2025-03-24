@@ -291,7 +291,7 @@ def parse_juniper_data_dict(filepath: str) -> list[DataDefinition]:
         if question.question_type == 'paneldynamic':
             question.subquestions = []
             for subquestion in simple_questions:
-                if subquestion.stable_id.startswith(question.stable_id) and re.match("^.+\\[\d+]$", subquestion.stable_id):
+                if subquestion.stable_id.startswith(question.stable_id) and re.match("^.+\\[\\d+]$", subquestion.stable_id):
                     # remove the index from the stableid
                     subquestion.stable_id = subquestion.stable_id[:-3]
                     question.subquestions.append(subquestion)
@@ -681,6 +681,10 @@ def translate_value(translation: Translation, value: Any) -> Any:
     if translation.juniper_question_definition.options is not None and translation.dsm_question_definition.question_type.lower() in ['text', 'radio'] :
         for [key, val] in translation.juniper_question_definition.options.items():
             if val == value or key == value:
+                return val
+            if (val.lower() in ['1', 'true', 'yes']) and (value.lower() in ['1', 'true', 'yes']):
+                return val
+            if (val.lower() in ['0', 'false', 'no']) and (value.lower() in ['0', 'false', 'no']):
                 return val
 
     if translation.juniper_question_definition.options is not None and len(translation.juniper_question_definition.options) > 0 and translation.dsm_question_definition.question_type == 'text':
