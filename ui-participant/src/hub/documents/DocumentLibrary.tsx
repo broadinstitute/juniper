@@ -6,7 +6,6 @@ import {
   instantToDateString,
   ParticipantFile,
   ParticipantTask,
-  saveBlobAsDownload,
   StudyEnvParams,
   useI18n
 } from '@juniper/ui-core'
@@ -30,6 +29,8 @@ import Modal from 'react-bootstrap/Modal'
 import ThemedModal from 'components/ThemedModal'
 import { QuarantinedFileModal } from 'hub/documents/QuarantinedFileModal'
 import { UnscannedFileModal } from 'hub/documents/UnscannedFileModal'
+import { LoadingSpinner } from 'util/LoadingSpinner'
+import { downloadFile } from 'util/downloadUtils'
 
 export default function DocumentLibrary() {
   const { i18n } = useI18n()
@@ -81,6 +82,7 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
 }) => {
   const { i18n } = useI18n()
   const [participantFiles, setParticipantFiles] = useState<ParticipantFile[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const loadDocuments = async () => {
     const enrolleeShortcode = enrollee.shortcode
@@ -89,8 +91,15 @@ const DocumentsList = ({ studyName, studyEnvParams, enrollee }: {
   }
 
   useEffect(() => {
-    loadDocuments()
+    setIsLoading(true)
+    loadDocuments().then(() => {
+      setIsLoading(false)
+    })
   }, [])
+
+  if (isLoading) {
+    return <LoadingSpinner/>
+  }
 
   return <>
     <h5
@@ -193,10 +202,7 @@ const FileOptionsDropdown = ({ studyEnvParams, participantFile, enrollee, loadDo
 
   const tryDownload = async () => {
     if (participantFile.virusScanResult === 'CLEAN') {
-      const response = await Api.downloadParticipantFile({
-        studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
-      })
-      saveBlobAsDownload(await response.blob(), participantFile.fileName)
+      downloadFile(studyEnvParams, enrollee.shortcode, participantFile.fileName)
     } else if (participantFile.virusScanResult === 'QUARANTINED') {
       setShowQuarantinedFileModal(true)
     } else if (participantFile.virusScanResult === 'UNSCANNED') {
