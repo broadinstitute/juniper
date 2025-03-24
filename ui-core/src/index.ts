@@ -10,6 +10,8 @@ export { SurveyAutoCompleteButton } from './components/forms/SurveyAutoCompleteB
 export { SurveyReviewModeButton } from './components/forms/ReviewModeButton'
 export { createAddressValidator } from './surveyjs/address-validator'
 export { DocumentRequestUploader } from './components/documents/DocumentRequestUploader'
+export { UnscannedFileModal } from './components/documents/UnscannedFileModal'
+export { QuarantinedFileModal } from './components/documents/QuarantinedFileModal'
 export { SurveyQuestionDocumentRequest } from './surveyjs/document-request-question'
 
 export * from './types/forms'

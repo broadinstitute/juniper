@@ -1,26 +1,28 @@
 import Modal from 'react-bootstrap/Modal'
 
 import React from 'react'
-import Api from 'api/api'
 import {
-  Enrollee,
   ParticipantFile,
   saveBlobAsDownload,
   StudyEnvParams
 } from '@juniper/ui-core'
-import ThemedModal from 'components/ThemedModal'
+import { ModalProps } from 'react-bootstrap'
+import { useApiContext } from 'src/participant/ApiProvider'
 
 export const UnscannedFileModal = ({
   studyEnvParams,
-  enrollee,
+  enrolleeShortcode,
   participantFile,
-  onClose
+  onClose,
+  ModalComponent = Modal
 } : {
-    studyEnvParams: StudyEnvParams,
-    enrollee: Enrollee,
-    participantFile: ParticipantFile,
-    onClose: () => void
+  studyEnvParams: StudyEnvParams,
+  enrolleeShortcode: string,
+  participantFile: ParticipantFile,
+  onClose: () => void,
+  ModalComponent?: React.ElementType<ModalProps>
 }) => {
+  const Api = useApiContext()
   const downloadAnyway = async () => {
     const response = await Api.downloadParticipantFile({
       studyEnvParams, enrolleeShortcode: enrollee.shortcode, fileName: participantFile.fileName
@@ -28,7 +30,7 @@ export const UnscannedFileModal = ({
     saveBlobAsDownload(await response.blob(), participantFile.fileName)
   }
 
-  return <ThemedModal show={true} onHide={onClose}>
+  return <ModalComponent show={true} onHide={onClose}>
     <Modal.Header>
       <Modal.Title>
         Virus scanning is incomplete for this file.
@@ -55,5 +57,5 @@ export const UnscannedFileModal = ({
 
       </div>
     </Modal.Footer>
-  </ThemedModal>
+  </ModalComponent>
 }

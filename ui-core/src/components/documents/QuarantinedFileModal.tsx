@@ -2,17 +2,20 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  ModalProps,
   ModalTitle
 } from 'react-bootstrap'
 import React from 'react'
-import ThemedModal from 'components/ThemedModal'
+import Modal from 'react-bootstrap/Modal'
 
 export const QuarantinedFileModal = ({
-  onClose
+  onClose,
+  ModalComponent = Modal
 } : {
-  onClose: () => void
+  onClose: () => void,
+  ModalComponent?: React.ElementType<ModalProps>
 }) => {
-  return <ThemedModal show={true} onHide={onClose}>
+  return <ModalComponent show={true} onHide={onClose}>
     <ModalHeader>
       <ModalTitle>
         A virus was detected within this file.
@@ -32,5 +35,5 @@ export const QuarantinedFileModal = ({
         </button>
       </div>
     </ModalFooter>
-  </ThemedModal>
+  </ModalComponent>
 }

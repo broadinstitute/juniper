@@ -93,6 +93,7 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
 
         this.question.value = join(fileNames, ',')
       }}
+      ModalComponent={this.baseModal}
     />
   }
 }

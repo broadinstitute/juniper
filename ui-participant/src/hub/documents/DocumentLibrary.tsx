@@ -6,7 +6,9 @@ import {
   instantToDateString,
   ParticipantFile,
   ParticipantTask,
+  QuarantinedFileModal,
   StudyEnvParams,
+  UnscannedFileModal,
   useI18n
 } from '@juniper/ui-core'
 import React, {
@@ -27,8 +29,6 @@ import { Link } from 'react-router-dom'
 import { getTaskPath } from '../task/taskUtils'
 import Modal from 'react-bootstrap/Modal'
 import ThemedModal from 'components/ThemedModal'
-import { QuarantinedFileModal } from 'hub/documents/QuarantinedFileModal'
-import { UnscannedFileModal } from 'hub/documents/UnscannedFileModal'
 import { LoadingSpinner } from 'util/LoadingSpinner'
 import { downloadFile } from 'util/downloadUtils'
 
