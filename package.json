@@ -65,7 +65,7 @@
     "@types/react-dropzone": "^5.1.0",
     "@yudiel/react-qr-scanner": "^2.0.8",
     "mixpanel-browser": "^2.61.2",
-    "react-dropzone": "^14.3.5",
+    "react-dropzone": "^14.3.8",
     "react-qr-code": "^2.0.15"
   },
   "overrides": {
