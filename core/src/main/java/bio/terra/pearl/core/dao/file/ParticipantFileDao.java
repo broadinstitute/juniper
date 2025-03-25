@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.file;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class ParticipantFileDao extends BaseJdbiDao<ParticipantFile> {
+public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     private final AnswerDao answerDao;
 
     public ParticipantFileDao(Jdbi jdbi, AnswerDao answerDao) {

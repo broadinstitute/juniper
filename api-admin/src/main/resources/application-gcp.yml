@@ -20,6 +20,8 @@ env:
     token: ${sm://${MIXPANEL_TOKEN_SECRET_ID}}
   airtable:
     authToken: ${sm://${AIRTABLE_AUTH_TOKEN_SECRET_ID}}
+  fileUpload:
+    backend: GCSFileStorageBackend
 spring:
   cloud:
     gcp:

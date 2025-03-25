@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.file.backends;
 
 import bio.terra.pearl.core.service.file.FileStorageConfig;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,11 @@ public class LocalFileStorageBackend implements FileStorageBackend {
             }
         }
         return null;
+    }
+
+    @Override
+    public VirusScanResult scanResult(UUID uploadedFileId) {
+        return VirusScanResult.CLEAN;
     }
 
     @Override

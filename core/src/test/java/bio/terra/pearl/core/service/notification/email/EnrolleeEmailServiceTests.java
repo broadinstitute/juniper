@@ -6,17 +6,24 @@ import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.site.SiteContentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
+import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.site.LocalizedSiteContentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.helpers.mail.Mail;
@@ -49,6 +56,12 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private SendgridClient sendgridClient;
     @Autowired
     private EnrolleeEmailService enrolleeEmailService;
+    @Autowired
+    private SiteContentFactory siteContentFactory;
+    @Autowired
+    private LocalizedSiteContentService localizedSiteContentService;
+    @Autowired
+    private LanguageTextService languageTextService;
 
 
     @Test
@@ -151,6 +164,89 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
         assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
         assertThat(email.getSubject(), equalTo("Welcome given"));
+    }
+
+    @Test
+    @Transactional
+    public void testEmailBuildingLocalizesStudyName(TestInfo info) {
+        Profile profileEs = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("es")
+                .build();
+        Profile profileEn = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("en")
+                .build();
+        Enrollee enrollee = Enrollee.builder().build();
+
+        EnrolleeContext ruleDataEs = new EnrolleeContext(enrollee, profileEs, null, null);
+        EnrolleeContext ruleDataEn = new EnrolleeContext(enrollee, profileEn, null, null);
+
+        SiteContent siteContent = siteContentFactory.buildPersisted(getTestName(info));
+
+        LocalizedSiteContent localizedSiteContentEs = LocalizedSiteContent.builder()
+                .siteContentId(siteContent.getId())
+                .language("es")
+                .build();
+
+        localizedSiteContentEs = localizedSiteContentService.create(localizedSiteContentEs);
+
+
+        LanguageText esStudyNameLanguageText = languageTextService.create(LanguageText
+                .builder()
+                .keyName("study:portal1.study1")
+                .language("es")
+                .text("spanish study name")
+                .localizedSiteContentId(localizedSiteContentEs.getId())
+                .build());
+
+        LanguageText esPortalNameLanguageText = languageTextService.create(LanguageText
+                .builder()
+                .keyName("portal:portal1")
+                .language("es")
+                .text("MiPortal")
+                .localizedSiteContentId(localizedSiteContentEs.getId())
+                .build());
+
+
+        PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@portal.org").build();
+        PortalEnvironment portalEnv = PortalEnvironment.builder()
+                .siteContentId(siteContent.getId())
+                .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+        Study study = Study.builder().shortcode("study1").name("default study name").build();
+
+        LocalizedEmailTemplate englishTemplate = LocalizedEmailTemplate.builder()
+                .body("study ${study.name}")
+                .language("en")
+                .subject("test").build();
+        LocalizedEmailTemplate spanishTemplate = LocalizedEmailTemplate.builder()
+                .body("estudio ${study.name}")
+                .language("es")
+                .subject("test").build();
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .localizedEmailTemplates(List.of(englishTemplate, spanishTemplate)).build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, study, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleDataEn, new Notification());
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("study default study name"));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("test"));
+
+        email = enrolleeEmailService.buildEmail(contextInfo, ruleDataEs, new Notification());
+
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("estudio " + esStudyNameLanguageText.getText()));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MiPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("test"));
     }
 
     @Test
