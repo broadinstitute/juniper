@@ -19,10 +19,9 @@ resource "google_service_account" "build_service_account" {
   display_name = "Service Account for malware scanner cloud run service"
 }
 
-resource "google_project_iam_binding" "build_iam" {
-  for_each = toset(["roles/storage.objectViewer", "roles/artifactregistry.writer"])
+resource "google_project_iam_binding" "malware-scanner-object-viewer" {
   project  = var.project
-  role     = each.value
+  role     = "roles/storage.objectViewer"
   members  = ["serviceAccount:${google_service_account.build_service_account.email}"]
 }
 
