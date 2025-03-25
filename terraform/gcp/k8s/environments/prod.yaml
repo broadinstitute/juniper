@@ -5,7 +5,6 @@ deploymentZone: prod
 replicas: 3
 dsmUrl: https://dsm.datadonationplatform.org/dsm
 dsmIssuer: juniper.terra.bio
-gcsFileStorageBucketName: juniper-participant-documents-prod
 # "portals" adds certificates for each portal - both for the admin subdomains and the custom domain
 portals:
   - name: demo
@@ -57,3 +56,7 @@ b2c:
       clientId: 882e287c-8586-456e-8004-b7ff16da3578
       policyName: B2C_1A_ddp_participant_signup_signin_trcc-prod
       changePasswordPolicyName: B2C_1A_ddp_participant_signup_signin_trcc-prod
+gcsFileStorageBuckets:
+  unscanned: juniper-participant-documents-prod-unscanned
+  clean: juniper-participant-documents-prod-clean
+  quarantined: juniper-participant-documents-prod-quarantined

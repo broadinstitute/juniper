@@ -9,6 +9,9 @@ environment = "dev"
 portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi"]
 k8s_namespace = "juniper-dev"
 
+malware_scanner_image_name = "juniper-malware-scanner"
+documents_bucket_name = "juniper-participant-documents-dev"
+
 # creates DNS records for these customer URLs
 customer_urls = {
   demo = {
@@ -19,3 +22,4 @@ customer_urls = {
 }
 
 slack_notification_channel = "projects/broad-juniper-dev/notificationChannels/13069356383599666729"
+
