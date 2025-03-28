@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -227,5 +228,9 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         surveys.addAll(dao.findActivePreEnrolleeSurveysByPortalId(portalId));
 
         return surveys;
+    }
+
+    public List<Survey> findActiveInStudyEnvWithType(UUID studyEnvId, SurveyType type) {
+        return dao.findActiveInStudyEnvWithType(studyEnvId, type);
     }
 }

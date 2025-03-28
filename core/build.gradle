@@ -27,8 +27,8 @@ dependencies {
     implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-postgres', version: '3.34.0'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.1'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.4.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.4'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.4.4'
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.2'
     implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.3'
     implementation 'org.springframework.retry:spring-retry:2.0.11'
@@ -50,8 +50,10 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.16.1'
     implementation 'org.jooq:jooq:3.20.2'
     implementation 'com.mixpanel:mixpanel-java:1.5.3'
+    implementation platform('com.google.cloud:libraries-bom:26.54.0')
+    implementation 'com.google.cloud:google-cloud-storage:2.48.1'
 
-    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager:6.0.0'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager:6.1.1'
     implementation 'com.google.cloud:spring-cloud-gcp-starter:6.0.0'
     implementation 'org.springframework.cloud:spring-cloud-context:4.2.0'
 

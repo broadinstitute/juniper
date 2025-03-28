@@ -105,3 +105,6 @@ customer_urls = {
 }
 
 slack_notification_channel = "projects/broad-juniper-prod/notificationChannels/9072110396476167224"
+
+malware_scanner_image_name = "juniper-malware-scanner"
+documents_bucket_name = "juniper-participant-documents-prod"

@@ -8,7 +8,8 @@ resource "google_project_iam_binding" "cluster-metric-writer" {
   project = var.project
   role    = "roles/monitoring.metricWriter"
   members = [
-    "serviceAccount:${google_service_account.cluster_service_account.email}"
+    "serviceAccount:${google_service_account.cluster_service_account.email}",
+    "serviceAccount:${google_service_account.malware_scanner_sa.email}"
   ]
 }
 
@@ -25,7 +26,8 @@ resource "google_project_iam_binding" "cluster-log-writer" {
   role    = "roles/logging.logWriter"
   members = [
     "serviceAccount:${google_service_account.cluster_service_account.email}",
-    "serviceAccount:${google_service_account.juniper_cloudbuild_service_account.email}"
+    "serviceAccount:${google_service_account.juniper_cloudbuild_service_account.email}",
+    "serviceAccount:${google_service_account.build_service_account.email}"
   ]
 }
 

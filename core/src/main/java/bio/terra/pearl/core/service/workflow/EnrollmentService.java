@@ -148,6 +148,10 @@ public class EnrollmentService {
         if (!studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
+        if (preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
+            throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
+        }
+
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(operator, studyEnv, preEnrollResponseId, user.getId(), isSubject);
 
         // if the user is signed up, but not a subject, we can just return the existing enrollee,
@@ -168,6 +172,12 @@ public class EnrollmentService {
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
+    }
+
+    private boolean hasRequiredPreEnroll(UUID studyEnvId) {
+        // should be a single pre-enroll survey, but we'll check all of them
+        List<Survey> preEnrolls = surveyService.findActiveInStudyEnvWithType(studyEnvId, SurveyType.PRE_ENROLL);
+        return preEnrolls.stream().anyMatch(Survey::isRequired);
     }
 
     private Enrollee findOrCreateEnrolleeForEnrollment(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironment studyEnv,

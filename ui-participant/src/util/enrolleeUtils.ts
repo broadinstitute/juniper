@@ -3,7 +3,8 @@ import Api, {
   Study
 } from 'api/api'
 import {
-  Enrollee, HubResponse,
+  Enrollee,
+  HubResponse,
   useI18n
 } from '@juniper/ui-core'
 import { useUser } from '../providers/UserProvider'
@@ -21,11 +22,13 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 export async function enrollCurrentUserInStudy(
   studyShortcode: string,
   preEnrollResponseId: string | null,
-  refreshLogin: () => Promise<void>
+  refreshLogin: () => Promise<void>,
+  opts?: { alertErrors?: boolean }
 ): Promise<HubResponse> {
   const hubResponse = await Api.createEnrollee({
     studyShortcode,
-    preEnrollResponseId
+    preEnrollResponseId,
+    opts
   })
   await refreshLogin()
   return hubResponse

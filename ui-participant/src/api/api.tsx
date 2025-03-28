@@ -336,8 +336,8 @@ export default {
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId }: {
-    studyShortcode: string, preEnrollResponseId: string | null
+  async createEnrollee({ studyShortcode, preEnrollResponseId, opts }: {
+    studyShortcode: string, preEnrollResponseId: string | null, opts?: { alertErrors?: boolean }
   }):
     Promise<HubResponse> {
     const params = queryString.stringify({ preEnrollResponseId })
@@ -346,7 +346,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    return await this.processJsonResponse(response, opts)
   },
 
   async createGovernedEnrollee({ studyShortcode, preEnrollResponseId, governedPpUserId }: {

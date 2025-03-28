@@ -1,11 +1,16 @@
 import React from 'react'
 import Api from 'api/api'
-import { paramsFromContext, StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import {
+  paramsFromContext,
+  StudyEnvContextT
+} from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
 import {
   dateToDefaultString,
   Enrollee,
-  EnrolleeRelation, instantToDefaultString, ParticipantUser,
+  EnrolleeRelation,
+  instantToDefaultString,
+  ParticipantUser,
   Profile
 } from '@juniper/ui-core'
 import KitRequests from '../KitRequests'
@@ -72,6 +77,10 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
           condensed={true}
           values={[instantToDefaultString(participantUser?.portalParticipantUsers?.[0]?.lastLogin)]}
         />
+        <InfoCardValue
+          title={'Enrolled'}
+          condensed={true}
+          values={[instantToDefaultString(enrollee.createdAt)]}/>
       </InfoCardBody>
     </InfoCard>
 

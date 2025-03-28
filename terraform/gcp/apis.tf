@@ -13,7 +13,10 @@ locals {
     "servicenetworking.googleapis.com",
     "cloudkms.googleapis.com",
     "binaryauthorization.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "cloudbuild.googleapis.com",
+    "run.googleapis.com",
+    "cloudscheduler.googleapis.com",
+    "eventarc.googleapis.com"
   ]
 }
 

@@ -1,163 +1,836 @@
 [
-  {"keyName": "navbarDashboard", "text": "Panel", "language": "pl"},
-  {"keyName": "navbarChangePassword", "text": "Zmień hasło", "language": "pl"},
-  {"keyName": "navbarLogout", "text": "Wyloguj się", "language": "pl"},
-  {"keyName": "profile", "text": "Profil", "language": "pl"},
-  {"keyName": "navbarLogin", "text": "Zaloguj się", "language": "pl"},
-  {"keyName": "navbarJoin", "text": "Rejestracja", "language": "pl"},
-  {"keyName": "taskComplete", "text": "Ukończ", "language": "pl"},
-  {"keyName": "taskInProgress", "text": "W trakcie", "language": "pl"},
-  {"keyName": "taskNotStarted", "text": "Nie rozpoczęto", "language": "pl"},
-  {"keyName": "taskDeclined", "text": "Odrzucono", "language": "pl"},
-  {"keyName": "taskLocked", "text": "Zablokowano", "language": "pl"},
-  {"keyName": "tasksNoneForStudy", "text": "Brak zadań dla tego badania", "language": "pl"},
-  {"keyName": "taskHistory", "text": "historia", "language": "pl"},
-  {"keyName": "taskNew", "text": "NOWE", "language": "pl"},
-  {"keyName": "surveysSomeLocked", "text": "Niektóre badania ankietowe są zablokowane do momentu ukończenia wymaganych zadań.", "language": "pl"},
-  {"keyName": "taskTypeSurvey", "text": "Badanie ankietowe", "language": "pl"},
-  {"keyName": "taskTypeSurveys", "text": "Badania ankietowe", "language": "pl"},
-  {"keyName": "taskTypeConsent", "text": "Zgoda", "language": "pl"},
-  {"keyName": "taskTypeForms", "text": "Formularze", "language": "pl"},
-  {"keyName": "start", "text": "Rozpocznij", "language": "pl"},
-  {"keyName": "continue", "text": "Kontynuuj", "language": "pl"},
-  {"keyName": "save", "text": "Zapisz", "language": "pl"},
-  {"keyName": "outreachLearnMore", "text": "Dowiedz się więcej", "language": "pl"},
-  {"keyName": "cancel", "text": "Anuluj", "language": "pl"},
-  {"keyName": "goBack", "text": "Wróć", "language": "pl"},
-  {"keyName": "name", "text": "Imię i nazwisko", "language": "pl"},
-  {"keyName": "givenName", "text": "Imię", "language": "pl"},
-  {"keyName": "familyName", "text": "Nazwisko", "language": "pl"},
-  {"keyName": "editName", "text": "Edytuj imię i nazwisko", "language": "pl"},
-  {"keyName": "editBirthDate", "text": "Edytuj datę urodzenia", "language": "pl"},
-  {"keyName": "birthDate", "text": "Data urodzenia", "language": "pl"},
-  {"keyName": "mailingAddress", "text": "Adres do korespondencji", "language": "pl"},
-  {"keyName": "editMailingAddress", "text": "Edytuj adres do korespondencji", "language": "pl"},
-  {"keyName": "primaryAddress", "text": "Adres główny", "language": "pl"},
-  {"keyName": "editPrimaryAddress", "text": "Edytuj adres główny", "language": "pl"},
-  {"keyName": "street1", "text": "Ulica, wiersz 1", "language": "pl"},
-  {"keyName": "street2", "text": "Ulica, wiersz 2", "language": "pl"},
-  {"keyName": "city", "text": "Miejscowość", "language": "pl"},
-  {"keyName": "state", "text": "Stan\/region", "language": "pl"},
-  {"keyName": "postalCode", "text": "Kod pocztowy", "language": "pl"},
-  {"keyName": "country", "text": "Kraj", "language": "pl"},
-  {"keyName": "communicationPreferences", "text": "Preferowany kanał komunikacji", "language": "pl"},
-  {"keyName": "editCommunicationPreferences", "text": "Edytuj preferowany kanał komunikacji", "language": "pl"},
-  {"keyName": "contactEmail", "text": "Kontaktowy adres e-mail", "language": "pl"},
-  {"keyName": "editContactEmail", "text": "Edytuj kontaktowy adres e-mail", "language": "pl"},
-  {"keyName": "phoneNumber", "text": "Numer telefonu", "language": "pl"},
-  {"keyName": "editPhoneNumber", "text": "Edytuj numer telefonu", "language": "pl"},
-  {"keyName": "doNotSolicit", "text": "Zakaz namawiania", "language": "pl"},
-  {"keyName": "doNotContact", "text": "Zakaz kontaktu", "language": "pl"},
-  {"keyName": "editDoNotSolicit", "text": "Edytuj zakaz namawiania", "language": "pl"},
-  {"keyName": "editNotifications", "text": "Edytuj powiadomienia", "language": "pl"},
-  {"keyName": "notifications", "text": "Powiadomienia", "language": "pl"},
-  {"keyName": "on", "text": "Wł.", "language": "pl"},
-  {"keyName": "off", "text": "Wył.", "language": "pl"},
-  {"keyName": "notProvided", "text": "Nie podano", "language": "pl"},
-  {"keyName": "editProfileContactEmailWarning", "text": "Naciśnij „Zapisz”, aby zaktualizować adres e-mail wykorzystywany do komunikacji. Pamiętaj, że dane logowania nie ulegną zmianie.", "language": "pl"},
-  {"keyName": "privacyPolicy", "text": "Polityka prywatności", "language": "pl"},
-  {"keyName": "termsOfUse", "text": "Warunki użytkowania", "language": "pl"},
-  {"keyName": "addressInvalidPostalCode", "text": "Nie udało się zweryfikować kodu pocztowego.", "language": "pl"},
-  {"keyName": "addressInvalidCountry", "text": "Nie udało się zweryfikować kraju.", "language": "pl"},
-  {"keyName": "addressInvalidState", "text": "Nie udało się zweryfikować stanu\/regionu.", "language": "pl"},
-  {"keyName": "addressInvalidCity", "text": "Nie udało się zweryfikować miejscowości.", "language": "pl"},
-  {"keyName": "addressInvalidHouseNumber", "text": "Nie udało się zweryfikować numeru budynku.", "language": "pl"},
-  {"keyName": "addressInvalidStreetName", "text": "Nie udało się zweryfikować nazwy ulicy.", "language": "pl"},
-  {"keyName": "addressInvalidStreetType", "text": "Nie udało się zweryfikować rodzaju ulicy.", "language": "pl"},
-  {"keyName": "addressNeedsSubpremise", "text": "Podaj numer jednostki\/mieszkania.", "language": "pl"},
-  {"keyName": "addressFailedToValidate", "text": "Nie udało się zweryfikować adresu.", "language": "pl"},
-  {"keyName": "suggestBetterAddressHeader", "text": "Czy to prawidłowy adres?", "language": "pl"},
-  {"keyName": "suggestBetterAddressBody", "text": "Udało nam się zweryfikować podobny adres. Wybierz ten, którego chcesz używać.", "language": "pl"},
-  {"keyName": "newAddress", "text": "Nowy adres", "language": "pl"},
-  {"keyName": "oldAddress", "text": "Stary adres", "language": "pl"},
-  {"keyName": "you", "text": "Ty", "language": "pl"},
-  {"keyName": "yourDependent", "text": "Twoje osoby zależne", "language": "pl"},
-  {"keyName": "youInParens", "text": "(Ty)", "language": "pl"},
-  {"keyName": "allProfiles", "text": "Wszystkie profile", "language": "pl"},
-  {"keyName": "manageProfiles", "text": "Zarządzaj profilami", "language": "pl"},
-  {"keyName": "addNewParticipant", "text": "Dodaj nowego uczestnika", "language": "pl"},
-  {"keyName": "dashboard", "text": "Panel", "language": "pl"},
-  {"keyName": "selectParticipant", "text": "Wybierz uczestnika", "language": "pl"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "Ukończono ${formName}", "language": "pl"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "Ukończono wszystkie działania", "language": "pl"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "Udało Ci się ukończyć wszystkie działania dla tego badania. Poinformujemy Cię, gdy tylko nowe działania będą dostępne. Dziękujemy za udział!", "language": "pl"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "Witamy w ${studyName}", "language": "pl"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "Zapoznaj się z formularzem zgody i podpisz go, aby kontynuować.", "language": "pl"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "Jesteś już zapisany(-a) do badania ${studyName}.", "language": "pl"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "Użytkownik jest już zapisany(-a) do badania ${studyName}.", "language": "pl"},
-  {"keyName": "cookieAlertTitle", "text": "Pliki cookie", "language": "pl"},
-  {"keyName": "cookieAlertDetail", "text": "Niniejsza strona wykorzystuje tokeny zwane „ciasteczkami” albo plikami cookie w celu zapewnienia prawidłowego działania i bezpieczeństwa naszej strony, a także poprawienia komfortu użytkowania. Wszystkie wykorzystywane przez nas pliki cookie są niezbędnymi plikami cookie. Ten rodzaj plików cookie nie zbiera żadnych danych identyfikujących osobę na temat uzytkowników ani nie śledzi zwyczajów związanych z przeglądaniem. Jeśli chcesz dowiedzieć się więcej, [zapoznaj się z naszą Polityką prywatności](\/privacy).", "language": "pl"},
-  {"keyName": "joinStudy", "text": "Dołącz do badania", "language": "pl"},
-  {"keyName": "ineligibleThankYou", "text": "Dziękujemy za zainteresowanie badaniem ${studyName}", "language": "pl" },
-  {"keyName": "ineligibleDescription", "text": "Niestety nie spełniasz kryteriów kwalifikacji do uczestnictwa w badaniu ${studyName} w tym momencie.", "language": "pl"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "Podaj swój adres e-mail poniżej, a będziemy cię informować na bieżąco o aktualnościach. Może się wypisać z subskrypcji w dowolnym momencie.", "language":  "pl"},
-  {"keyName": "ineligibleStayInformed", "text": "Bądź na bieżąco", "language": "pl"},
-  {"keyName": "backToPortalHomepage", "text": "Wróć do strony głównej ${portalName}", "language": "pl"},
-  {"keyName": "joinMailingList", "text": "Dołącz do listy mailingowej", "language": "pl"},
-  {"keyName": "mailingFormStayUpdated", "text":  "Bądź na bieżąco z wiadomościami dotyczącymi badania", "language": "pl"},
-  {"keyName": "yourName", "text": "Twoje imię i nazwisko", "language": "pl"},
-  {"keyName": "yourEmail", "text": "Twój adres e-mail", "language": "pl"},
-  {"keyName": "join", "text":  "Dołącz", "language": "pl"},
-  {"keyName": "thanksForJoining", "text": "Dziękujemy za dołączenie!", "language": "pl"},
-  {"keyName": "pageNotFoundTitle", "text": "Nie znaleziono strony", "language": "pl"},
-  {"keyName": "pageNotFoundMessage", "text": "Jeżeli uważasz, że wystąpił błąd, skontaktuj się z ${studyContactEmail}", "language": "pl"},
-  {"keyName": "pageNotFoundReturnHome", "text": "Powróć do strony głównej", "language": "pl"},
-  {"keyName": "authErrorPageTitle", "text": "Coś poszło nie tak", "language": "pl"},
-  {"keyName": "authErrorPageMessage", "text": "Wystąpił problem z usługą uwierzytelniania. Spróbuj ponownie. Jeżeli problem będzie się utrzymywał, skontaktuj się z nami pod adresem ${studyContactEmail}.", "language": "pl"},
-  {"keyName": "navbarSampleKits", "text":  "Zestawy do pobierania próbek", "language": "pl"},
-  {"keyName": "kitsPageTitle", "text": "Zestawy do pobierania próbek", "language": "pl"},
-  {"keyName": "kitsPageDescription", "text": "Zestawy do pobierania próbek stanowią istotną część procedury badawczej i pomogą dostarczyć badaczom ważnych spostrzeżeń. Poniżej znajdziesz status wszystkich zestawów, które ci dostarczyliśmy.", "language": "pl"},
-  {"keyName": "kitsPageInPersonTitle", "text": "Przekaż próbkę osobiście", "language": "pl"},
-  {"keyName": "kitsPageInPersonDescription", "text": "Niniejsze badanie obecnie oferuje możliwość osobistego uzupełnienia zestawu do pobierania próbek.", "language": "pl"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "Ukończ zestaw osobiście", "language": "pl"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "Twoje zestawy", "language": "pl"},
-  {"keyName": "kitsPageStatusPreparing", "text": "W przygotowaniu", "language": "pl"},
-  {"keyName": "kitsPageStatusShipped", "text": "Wysłano", "language": "pl"},
-  {"keyName": "kitsPageStatusReturned", "text": "Zwrócono", "language": "pl"},
-  {"keyName": "kitsPageStatusCreated", "text": "Utworzono", "language": "pl"},
-  {"keyName": "kitsPageStatusCollected", "text": "Zebrano", "language": "pl"},
-  {"keyName": "kitsPageNoKits", "text": "W tym momencie nie masz żadnych zestawów do pobierania próbek.", "language": "pl"},
-  {"keyName": "kitsInPersonTitle", "text": "Instrukcje dotyczące zestawu do pobierania próbek", "language": "pl"},
-  {"keyName": "kitsInPersonDescription", "text": "Jeżeli osobiście chcesz ukończyć zestaw do pobierania próbek, postępuj zgodnie z instrukcjami przekazanymi przez członka zespołu realizującego badanie. Wszystkie dodatkowe informacje, które mogą być potrzebne, takie jak unikalny identyfikator uczestnika, zostaną podane poniżej.", "language": "pl"},
-  {"keyName": "kitsInPersonSubDescription", "text": "Jeżeli masz jakieś pytania, spytaj członka zespołu realizującego badanie.", "language": "pl"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "Twój zestaw do pobierania próbek", "language": "pl"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "Członek zespołu realizującego badanie dostarczył ci zestaw do pobierania próbek. Ten zestaw do pobierania próbek jest powiązany z twoim kontem. Jeżeli pomagasz komuś z ich zestawem do pobierania próbek, zwróć uwagę na to, by każdy uczestnik ukończył zestaw do pobierania próbek, który mu przypisano.", "language": "pl"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "Identyfikator twojego zestawu", "language": "pl"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "Powrót do panelu", "language": "pl"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "Odśwież", "language": "pl"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "Wymagana zgoda", "language": "pl"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "Przed ukończeniem zestawu do pobierania próbek, musisz być wpierw zarejestrowany w badaniu. Jeżeli cię to interesuje, możesz znaleźć formularz zgody i podpisać go, korzystając z poniższego łącza.", "language": "pl"},
-  {"keyName": "kitsInPersonStartConsent", "text": "Zacznij proces zgody", "language": "pl"},
-  {"keyName": "kitsInPersonError", "text": "Nastąpił błąd przy wczytywaniu informacji o twoim zestawie. Skontaktuj się z członkiem zespołu realizującego badanie w celu uzyskania pomocy.", "language": "pl"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "Po ukończeniu zestawu do pobierania próbek zwróć go do członka zespołu realizującego badanie i pokaż im poniższy kod uczestnictwa do zeskanowania.", "language": "pl"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "Aby uzyskać zestaw do pobierania próbek, członek zespołu realizującego badanie musi zeskanować twój unikalny kod uczestnictwa poniżej, aby powiązać zestaw do pobierania próbek z twoim kontem.", "language": "pl"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "Po otrzymaniu zestawu odśwież niniejszą stronę, aby wyświetlić informacje o tym zestawie i otrzymać dalsze instrukcje.", "language": "pl"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "Członek zespołu realizującego badanie odebrał twój zestaw do pobierania próbek. Otrzymasz wiadomość e-mail z powiadomieniem, gdy twoja próbka zostanie przetworzona, i będziesz mieć możliwość wyświetlenia stanu próbki na swoim panelu badania.", "language": "pl"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "Dziękujemy za udział.", "language": "pl"},
-  {"keyName": "kitTypeSaliva", "text": "Zestaw do pobierania śliny", "language": "pl"},
-  {"keyName": "kitTypeStool", "text": "Zestaw do pobierania stolca", "language": "pl"},
-  {"keyName": "kitTypeBlood", "text": "Zestaw do pobierania krwi", "language": "pl"},
-  {"keyName": "documentDownloadButton", "text": "Pobierać", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "Nie przesłałeś jeszcze żadnych dokumentów", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "Utworzono dnia", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "Dokumenty", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Przesłane dokumenty", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "Wpodczas uczestnictwa w badaniu możesz zostać poproszony o przesłanie dokumentów jako części formularza lub ankiety. Poniżej możesz zarządzać przesłanymi dokumentami.", "language": "pl", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Dokumenty", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "Jesteś pewien?", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "Czy na pewno chcesz usunąć ten dokument? Tego nie można cofnąć. Należy pamiętać, że jeśli członek personelu badawczego już pobrał ten dokument, nadal będzie on dla niego dostępny. Skontaktuj się z personelem badawczym, jeśli chcesz, aby dokument został całkowicie usunięty ze wszystkich rekordów.", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "Ten dokument jest w użyciu", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "Ten dokument jest obecnie udostępniany w odpowiedzi na co najmniej jedną ankietę. Przed usunięciem usuń go z odpowiedzi na ankietę.", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "Usuwać", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "Opcje", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "udostępniono w odpowiedzi na", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "Wybrane dokumenty", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "Dokumenty te są dołączone do Twojej odpowiedzi", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "Nie wybrano dokumentów. Proszę przesłać nowy dokument lub wybrać istniejący dokument poniżej.", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "Dostępne dokumenty", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "Te dokumenty nie są zawarte w Twojej odpowiedzi", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "Upuść pliki tutaj lub kliknij, aby przesłać", "language": "pl", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Brak dostępnych dokumentów", "language": "pl", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "Twoja sesja wkrótce wygaśnie", "language": "pl", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "Aby zachować bezpieczeństwo i chronić Twoje dane, zostaniesz wylogowany za ${timeRemaining}.", "language": "pl", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "Panel",
+    "language": "pl"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "Zmień hasło",
+    "language": "pl"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "Wyloguj się",
+    "language": "pl"
+  },
+  {
+    "keyName": "profile",
+    "text": "Profil",
+    "language": "pl"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "Zaloguj się",
+    "language": "pl"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "Rejestracja",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "Ukończ",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "W trakcie",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "Nie rozpoczęto",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "Odrzucono",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "Zablokowano",
+    "language": "pl"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "Brak zadań dla tego badania",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "historia",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "NOWE",
+    "language": "pl"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "Niektóre badania ankietowe są zablokowane do momentu ukończenia wymaganych zadań.",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "Badanie ankietowe",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "Badania ankietowe",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "Zgoda",
+    "language": "pl"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "Formularze",
+    "language": "pl"
+  },
+  {
+    "keyName": "start",
+    "text": "Rozpocznij",
+    "language": "pl"
+  },
+  {
+    "keyName": "continue",
+    "text": "Kontynuuj",
+    "language": "pl"
+  },
+  {
+    "keyName": "save",
+    "text": "Zapisz",
+    "language": "pl"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "Dowiedz się więcej",
+    "language": "pl"
+  },
+  {
+    "keyName": "cancel",
+    "text": "Anuluj",
+    "language": "pl"
+  },
+  {
+    "keyName": "goBack",
+    "text": "Wróć",
+    "language": "pl"
+  },
+  {
+    "keyName": "name",
+    "text": "Imię i nazwisko",
+    "language": "pl"
+  },
+  {
+    "keyName": "givenName",
+    "text": "Imię",
+    "language": "pl"
+  },
+  {
+    "keyName": "familyName",
+    "text": "Nazwisko",
+    "language": "pl"
+  },
+  {
+    "keyName": "editName",
+    "text": "Edytuj imię i nazwisko",
+    "language": "pl"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "Edytuj datę urodzenia",
+    "language": "pl"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "Data urodzenia",
+    "language": "pl"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "Adres do korespondencji",
+    "language": "pl"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "Edytuj adres do korespondencji",
+    "language": "pl"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "Adres główny",
+    "language": "pl"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "Edytuj adres główny",
+    "language": "pl"
+  },
+  {
+    "keyName": "street1",
+    "text": "Ulica, wiersz 1",
+    "language": "pl"
+  },
+  {
+    "keyName": "street2",
+    "text": "Ulica, wiersz 2",
+    "language": "pl"
+  },
+  {
+    "keyName": "city",
+    "text": "Miejscowość",
+    "language": "pl"
+  },
+  {
+    "keyName": "state",
+    "text": "Stan/region",
+    "language": "pl"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "Kod pocztowy",
+    "language": "pl"
+  },
+  {
+    "keyName": "country",
+    "text": "Kraj",
+    "language": "pl"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "Preferowany kanał komunikacji",
+    "language": "pl"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "Edytuj preferowany kanał komunikacji",
+    "language": "pl"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "Kontaktowy adres e-mail",
+    "language": "pl"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "Edytuj kontaktowy adres e-mail",
+    "language": "pl"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "Numer telefonu",
+    "language": "pl"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "Edytuj numer telefonu",
+    "language": "pl"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "Zakaz namawiania",
+    "language": "pl"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "Zakaz kontaktu",
+    "language": "pl"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "Edytuj zakaz namawiania",
+    "language": "pl"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "Edytuj powiadomienia",
+    "language": "pl"
+  },
+  {
+    "keyName": "notifications",
+    "text": "Powiadomienia",
+    "language": "pl"
+  },
+  {
+    "keyName": "on",
+    "text": "Wł.",
+    "language": "pl"
+  },
+  {
+    "keyName": "off",
+    "text": "Wył.",
+    "language": "pl"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "Nie podano",
+    "language": "pl"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "Naciśnij „Zapisz”, aby zaktualizować adres e-mail wykorzystywany do komunikacji. Pamiętaj, że dane logowania nie ulegną zmianie.",
+    "language": "pl"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "Polityka prywatności",
+    "language": "pl"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "Warunki użytkowania",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "Nie udało się zweryfikować kodu pocztowego.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "Nie udało się zweryfikować kraju.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "Nie udało się zweryfikować stanu/regionu.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "Nie udało się zweryfikować miejscowości.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "Nie udało się zweryfikować numeru budynku.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "Nie udało się zweryfikować nazwy ulicy.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "Nie udało się zweryfikować rodzaju ulicy.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "Podaj numer jednostki/mieszkania.",
+    "language": "pl"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "Nie udało się zweryfikować adresu.",
+    "language": "pl"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "Czy to prawidłowy adres?",
+    "language": "pl"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "Udało nam się zweryfikować podobny adres. Wybierz ten, którego chcesz używać.",
+    "language": "pl"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "Nowy adres",
+    "language": "pl"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "Stary adres",
+    "language": "pl"
+  },
+  {
+    "keyName": "you",
+    "text": "Ty",
+    "language": "pl"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "Twoje osoby zależne",
+    "language": "pl"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(Ty)",
+    "language": "pl"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "Wszystkie profile",
+    "language": "pl"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "Zarządzaj profilami",
+    "language": "pl"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "Dodaj nowego uczestnika",
+    "language": "pl"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "Panel",
+    "language": "pl"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "Wybierz uczestnika",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "Ukończono ${formName}",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "Ukończono wszystkie działania",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "Udało Ci się ukończyć wszystkie działania dla tego badania. Poinformujemy Cię, gdy tylko nowe działania będą dostępne. Dziękujemy za udział!",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "Witamy w ${studyName}",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "Zapoznaj się z formularzem zgody i podpisz go, aby kontynuować.",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "Jesteś już zapisany(-a) do badania ${studyName}.",
+    "language": "pl"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "Użytkownik jest już zapisany(-a) do badania ${studyName}.",
+    "language": "pl"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "Pliki cookie",
+    "language": "pl"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "Niniejsza strona wykorzystuje tokeny zwane „ciasteczkami” albo plikami cookie w celu zapewnienia prawidłowego działania i bezpieczeństwa naszej strony, a także poprawienia komfortu użytkowania. Wszystkie wykorzystywane przez nas pliki cookie są niezbędnymi plikami cookie. Ten rodzaj plików cookie nie zbiera żadnych danych identyfikujących osobę na temat uzytkowników ani nie śledzi zwyczajów związanych z przeglądaniem. Jeśli chcesz dowiedzieć się więcej, [zapoznaj się z naszą Polityką prywatności](/privacy).",
+    "language": "pl"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "Dołącz do badania",
+    "language": "pl"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "Dziękujemy za zainteresowanie badaniem ${studyName}",
+    "language": "pl"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "Niestety nie spełniasz kryteriów kwalifikacji do uczestnictwa w badaniu ${studyName} w tym momencie.",
+    "language": "pl"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "Podaj swój adres e-mail poniżej, a będziemy cię informować na bieżąco o aktualnościach. Może się wypisać z subskrypcji w dowolnym momencie.",
+    "language": "pl"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "Bądź na bieżąco",
+    "language": "pl"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "Wróć do strony głównej ${portalName}",
+    "language": "pl"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "Dołącz do listy mailingowej",
+    "language": "pl"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "Bądź na bieżąco z wiadomościami dotyczącymi badania",
+    "language": "pl"
+  },
+  {
+    "keyName": "yourName",
+    "text": "Twoje imię i nazwisko",
+    "language": "pl"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "Twój adres e-mail",
+    "language": "pl"
+  },
+  {
+    "keyName": "join",
+    "text": "Dołącz",
+    "language": "pl"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "Dziękujemy za dołączenie!",
+    "language": "pl"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "Nie znaleziono strony",
+    "language": "pl"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "Jeżeli uważasz, że wystąpił błąd, skontaktuj się z ${studyContactEmail}",
+    "language": "pl"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "Powróć do strony głównej",
+    "language": "pl"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "Coś poszło nie tak",
+    "language": "pl"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "Wystąpił problem z usługą uwierzytelniania. Spróbuj ponownie. Jeżeli problem będzie się utrzymywał, skontaktuj się z nami pod adresem ${studyContactEmail}.",
+    "language": "pl"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "Zestawy do pobierania próbek",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "Zestawy do pobierania próbek",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "Zestawy do pobierania próbek stanowią istotną część procedury badawczej i pomogą dostarczyć badaczom ważnych spostrzeżeń. Poniżej znajdziesz status wszystkich zestawów, które ci dostarczyliśmy.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "Przekaż próbkę osobiście",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "Niniejsze badanie obecnie oferuje możliwość osobistego uzupełnienia zestawu do pobierania próbek.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "Ukończ zestaw osobiście",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "Twoje zestawy",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "W przygotowaniu",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "Wysłano",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "Zwrócono",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "Utworzono",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "Zebrano",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "W tym momencie nie masz żadnych zestawów do pobierania próbek.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "Instrukcje dotyczące zestawu do pobierania próbek",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "Jeżeli osobiście chcesz ukończyć zestaw do pobierania próbek, postępuj zgodnie z instrukcjami przekazanymi przez członka zespołu realizującego badanie. Wszystkie dodatkowe informacje, które mogą być potrzebne, takie jak unikalny identyfikator uczestnika, zostaną podane poniżej.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "Jeżeli masz jakieś pytania, spytaj członka zespołu realizującego badanie.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "Twój zestaw do pobierania próbek",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "Członek zespołu realizującego badanie dostarczył ci zestaw do pobierania próbek. Ten zestaw do pobierania próbek jest powiązany z twoim kontem. Jeżeli pomagasz komuś z ich zestawem do pobierania próbek, zwróć uwagę na to, by każdy uczestnik ukończył zestaw do pobierania próbek, który mu przypisano.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "Identyfikator twojego zestawu",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "Powrót do panelu",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "Odśwież",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "Wymagana zgoda",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "Przed ukończeniem zestawu do pobierania próbek, musisz być wpierw zarejestrowany w badaniu. Jeżeli cię to interesuje, możesz znaleźć formularz zgody i podpisać go, korzystając z poniższego łącza.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "Zacznij proces zgody",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "Nastąpił błąd przy wczytywaniu informacji o twoim zestawie. Skontaktuj się z członkiem zespołu realizującego badanie w celu uzyskania pomocy.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "Po ukończeniu zestawu do pobierania próbek zwróć go do członka zespołu realizującego badanie i pokaż im poniższy kod uczestnictwa do zeskanowania.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "Aby uzyskać zestaw do pobierania próbek, członek zespołu realizującego badanie musi zeskanować twój unikalny kod uczestnictwa poniżej, aby powiązać zestaw do pobierania próbek z twoim kontem.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "Po otrzymaniu zestawu odśwież niniejszą stronę, aby wyświetlić informacje o tym zestawie i otrzymać dalsze instrukcje.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "Członek zespołu realizującego badanie odebrał twój zestaw do pobierania próbek. Otrzymasz wiadomość e-mail z powiadomieniem, gdy twoja próbka zostanie przetworzona, i będziesz mieć możliwość wyświetlenia stanu próbki na swoim panelu badania.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "Dziękujemy za udział.",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "Zestaw do pobierania śliny",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "Zestaw do pobierania stolca",
+    "language": "pl"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "Zestaw do pobierania krwi",
+    "language": "pl"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "Pobierać",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "Nie przesłałeś jeszcze żadnych dokumentów",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "Utworzono dnia",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "Dokumenty",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "Przesłane dokumenty",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "Wpodczas uczestnictwa w badaniu możesz zostać poproszony o przesłanie dokumentów jako części formularza lub ankiety. Poniżej możesz zarządzać przesłanymi dokumentami.",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "Dokumenty",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "Jesteś pewien?",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "Czy na pewno chcesz usunąć ten dokument? Tego nie można cofnąć. Należy pamiętać, że jeśli członek personelu badawczego już pobrał ten dokument, nadal będzie on dla niego dostępny. Skontaktuj się z personelem badawczym, jeśli chcesz, aby dokument został całkowicie usunięty ze wszystkich rekordów.",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "Ten dokument jest w użyciu",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "Ten dokument jest obecnie udostępniany w odpowiedzi na co najmniej jedną ankietę. Przed usunięciem usuń go z odpowiedzi na ankietę.",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "Usuwać",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "Opcje",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "udostępniono w odpowiedzi na",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "Wybrane dokumenty",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "Dokumenty te są dołączone do Twojej odpowiedzi",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "Nie wybrano dokumentów. Proszę przesłać nowy dokument lub wybrać istniejący dokument poniżej.",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "Dostępne dokumenty",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "Te dokumenty nie są zawarte w Twojej odpowiedzi",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "Upuść pliki tutaj lub kliknij, aby przesłać",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "Brak dostępnych dokumentów",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "Twoja sesja wkrótce wygaśnie",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "Aby zachować bezpieczeństwo i chronić Twoje dane, zostaniesz wylogowany za ${timeRemaining}.",
+    "language": "pl",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "pl",
+    "text": "Coś poszło nie tak podczas procesu rejestracji. Wypełnij ponownie formularz.",
+    "machineTranslated": true
+  }
 ]
