@@ -396,8 +396,12 @@ databaseChangeLog:
       file: changesets/2025_01_27_prenroll_type.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2025_02_13_create_new_survey_response_days.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2025_02_14_trigger_admin_email_filter.yaml
       relativeToChangelogFile: true
+
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

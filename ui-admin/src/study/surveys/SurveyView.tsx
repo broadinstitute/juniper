@@ -26,6 +26,7 @@ export type SaveableFormProps = {
   rule?: string
   recurrenceType: RecurrenceType
   prepopulate: boolean
+  createNewResponseAfterDays?: number
   recurrenceIntervalDays?: number
   daysAfterEligible?: number
   allowAdminEdit?: boolean

@@ -19,7 +19,7 @@ export default function SurveyResponseEditor({
   updateResponseMap: (stableId: string, response: SurveyResponse) => void, justification?: string
 }) {
   const { defaultLanguage } = usePortalLanguage()
-  const { taskId } = useTaskIdParam()
+  const { taskId, setTaskId } = useTaskIdParam()
   if (!taskId) {
     return <span>Task Id must be specified</span>
   }
@@ -57,6 +57,7 @@ export default function SurveyResponseEditor({
         updateProfile={() => { /*no-op for admins*/ }}
         updateEnrollee={() => { /*no-op for admins*/ }}
         taskId={taskId}
+        setTaskId={setTaskId}
         justification={justification}
         showHeaders={false}/>
     </div>
