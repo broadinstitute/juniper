@@ -12,6 +12,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.file.ParticipantFile;
@@ -499,6 +500,10 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
                 enrolleeBundle.portalParticipantUser(), enrollee, task2.getId(), survey.getPortalId());
 
+        // doesn't throw if admin updates old response
+        surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(new AdminUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
     }
 
 }

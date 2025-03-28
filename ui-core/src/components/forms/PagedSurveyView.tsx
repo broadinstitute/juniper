@@ -26,6 +26,7 @@ import {
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
+import { isNil } from 'lodash'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
@@ -181,7 +182,7 @@ export function PagedSurveyView({
   }
 
   const shouldBeReadonly = () => {
-    if (form.recurrenceType === 'LONGITUDINAL') {
+    if (form.recurrenceType === 'LONGITUDINAL' && isNil(adminUserId)) {
       const tasks = enrollee
         .participantTasks
         .filter(task => task.targetStableId === form.stableId)
