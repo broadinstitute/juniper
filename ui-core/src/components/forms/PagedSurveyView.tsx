@@ -107,6 +107,7 @@ export function PagedSurveyView({
         participantTasks: response.tasks,
         profile: response.profile
       }
+      // update the taskId in case this is an update to a longitudinal survey which will create a new task & response
       updateTaskId(response)
       /**
        * CAREFUL -- we're updating the enrollee object so that if they navigate back to the dashboard, they'll

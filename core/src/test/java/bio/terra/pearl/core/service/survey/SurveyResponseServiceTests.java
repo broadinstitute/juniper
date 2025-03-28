@@ -448,6 +448,50 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testLongitudinalDoesNotSaveEditAsNewTaskForAdmins(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee2 = enrolleeBundle2.enrollee();
+
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle2.enrollee(), enrolleeBundle2.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        SurveyResponse newResponse2 = SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // update response2
+        HubResponse<SurveyResponse> hubResponse2 = surveyResponseService.updateResponse(
+                newResponse2, new ResponsibleEntity(new AdminUser()), "test",
+                enrolleeBundle2.portalParticipantUser(), enrollee2, task2.getId(), survey.getPortalId());
+
+        ParticipantTask responseTask2 = hubResponse2.getTasks().stream().filter(t -> t.getSurveyResponseId().equals(hubResponse2.getResponse().getId())).findFirst().get();
+
+        // did not create a new task
+        assertThat(responseTask2.getId(), equalTo(task2.getId()));
+    }
+
+    @Test
+    @Transactional
     public void testCannotUpdatePreviousLongitudinalResponses(TestInfo info) {
         StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
