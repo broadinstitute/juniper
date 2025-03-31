@@ -21,10 +21,12 @@ import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
 import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import {
-  Enrollee, HubResponse,
+  Enrollee,
+  HubResponse,
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
+import { isNil } from 'lodash'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
@@ -180,6 +182,27 @@ export function PagedSurveyView({
     }
   }
 
+  const shouldBeReadonly = () => {
+    if (form.recurrenceType === 'LONGITUDINAL' && isNil(adminUserId)) {
+      const tasks = enrollee
+        .participantTasks
+        .filter(task => task.targetStableId === form.stableId)
+
+      if (tasks.length > 0) {
+        const latestTask = tasks.reduce(
+          (
+            a, b
+          ) => a.completedAt && b.completedAt && a.completedAt > b.completedAt ? a : b)
+
+        // if the task is not the latest task, then it should be readonly
+        if (taskId != latestTask.id) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
     form, resumableData, onComplete, pager, {
       studyEnvParams,
@@ -188,7 +211,8 @@ export function PagedSurveyView({
       proxyProfile,
       referencedAnswers,
       extraVariables: {}
-    }
+    },
+    { readonly: shouldBeReadonly() }
   )
 
   surveyModel.locale = selectedLanguage

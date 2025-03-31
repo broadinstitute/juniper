@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
@@ -150,6 +149,18 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return surveyResponseLastUpdatedAt.isBefore(cutoffTime);
     }
 
+    private boolean isMostRecentResponse(SurveyResponse surveyResponse) {
+        List<SurveyResponse> surveyResponses = dao.findAllByEnrolleeAndSurveyId(
+                surveyResponse.getEnrolleeId(), surveyResponse.getSurveyId());
+
+        SurveyResponse latest = surveyResponses
+                .stream()
+                .max(Comparator.comparing(SurveyResponse::getCreatedAt))
+                .orElseThrow();
+
+        return surveyResponse.getId().equals(latest.getId());
+    }
+
     /**
      * Creates a survey response and fires appropriate downstream events.
      */
@@ -169,8 +180,23 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         SurveyResponse priorResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElse(null);
         SurveyResponse response;
+
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
+                && priorResponse != null
+                && !isMostRecentResponse(priorResponse)
+                // admins should be able to update old responses
+                && operator.getParticipantUser() != null) {
+            throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");
+        }
+
         //if the survey is longitudinal and we're past the cutoff point for updating an existing response, we need to create a new response and task
-        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && priorResponse != null && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), priorResponse.getLastUpdatedAt())) {
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
+                && priorResponse != null
+                && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), priorResponse.getLastUpdatedAt())
+                // admin saving update should never trigger a new response;
+                // they can re-assign if they want a fresh response
+                && operator.getParticipantUser() != null
+        ) {
             ParticipantTask newTask = participantTaskService.cleanForCopying(task);
             if(newTask.getCompletedAt() != null) {
                 newTask.setCompletedAt(Instant.now());

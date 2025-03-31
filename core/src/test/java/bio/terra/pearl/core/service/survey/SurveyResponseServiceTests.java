@@ -12,6 +12,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.file.ParticipantFile;
@@ -19,7 +20,9 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.RecurrenceType;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -32,12 +35,15 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -365,6 +371,183 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         // check that the SurveyResponse is still marked as complete
         savedResponse = surveyResponseService.findByEnrolleeId(enrolleeBundle.enrollee().getId()).get(0);
         assertThat(savedResponse.isComplete(), equalTo(true));
+    }
+
+    @Test
+    @Transactional
+    public void testLongitudinalSavesEditAsNewTask(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee1 = enrolleeBundle1.enrollee();
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee2 = enrolleeBundle2.enrollee();
+
+
+        SurveyResponse response1 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee1.getId())
+                .creatingParticipantUserId(enrollee1.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task1 = surveyTaskDispatcher.buildTask(enrolleeBundle1.enrollee(), enrolleeBundle1.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task1.setSurveyResponseId(response1.getId());
+        task1 = participantTaskService.create(task1, getAuditInfo(info));
+
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle2.enrollee(), enrolleeBundle2.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        SurveyResponse newResponse1 = SurveyResponse.builder()
+                .enrolleeId(enrollee1.getId())
+                .creatingParticipantUserId(enrollee1.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+        // update response1
+        HubResponse<SurveyResponse> hubResponse = surveyResponseService.updateResponse(
+                newResponse1, new ResponsibleEntity(enrolleeBundle1.participantUser()), null,
+                enrolleeBundle1.portalParticipantUser(), enrollee1, task1.getId(), survey.getPortalId());
+
+        ParticipantTask responseTask = hubResponse.getTasks().stream().filter(t -> t.getSurveyResponseId().equals(hubResponse.getResponse().getId())).findFirst().get();
+
+        // did not create a new task
+        assertThat(responseTask.getId(), equalTo(task1.getId()));
+
+        SurveyResponse newResponse2 = SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // update response2
+        HubResponse<SurveyResponse> hubResponse2 = surveyResponseService.updateResponse(
+                newResponse2, new ResponsibleEntity(enrolleeBundle2.participantUser()), null,
+                enrolleeBundle2.portalParticipantUser(), enrollee2, task2.getId(), survey.getPortalId());
+
+        ParticipantTask responseTask2 = hubResponse2.getTasks().stream().filter(t -> t.getSurveyResponseId().equals(hubResponse2.getResponse().getId())).findFirst().get();
+
+        // created a new task
+        assertThat(responseTask2.getId(), not(equalTo(task2.getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testLongitudinalDoesNotSaveEditAsNewTaskForAdmins(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee2 = enrolleeBundle2.enrollee();
+
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle2.enrollee(), enrolleeBundle2.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        SurveyResponse newResponse2 = SurveyResponse.builder()
+                .enrolleeId(enrollee2.getId())
+                .creatingParticipantUserId(enrollee2.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // update response2
+        HubResponse<SurveyResponse> hubResponse2 = surveyResponseService.updateResponse(
+                newResponse2, new ResponsibleEntity(new AdminUser()), "test",
+                enrolleeBundle2.portalParticipantUser(), enrollee2, task2.getId(), survey.getPortalId());
+
+        ParticipantTask responseTask2 = hubResponse2.getTasks().stream().filter(t -> t.getSurveyResponseId().equals(hubResponse2.getResponse().getId())).findFirst().get();
+
+        // did not create a new task
+        assertThat(responseTask2.getId(), equalTo(task2.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testCannotUpdatePreviousLongitudinalResponses(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee = enrolleeBundle.enrollee();
+
+        SurveyResponse response1 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task1 = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task1.setSurveyResponseId(response1.getId());
+        task1 = participantTaskService.create(task1, getAuditInfo(info));
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        SurveyResponse newResponse = SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // throws updating old response
+        ParticipantTask finalTask1 = task1;
+        assertThrows(IllegalArgumentException.class, () -> {
+            surveyResponseService.updateResponse(
+                    newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                    enrolleeBundle.portalParticipantUser(), enrollee, finalTask1.getId(), survey.getPortalId());
+        });
+        // doesn't throw updating newest
+        surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task2.getId(), survey.getPortalId());
+
+        // doesn't throw if admin updates old response
+        surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(new AdminUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
     }
 
 }
