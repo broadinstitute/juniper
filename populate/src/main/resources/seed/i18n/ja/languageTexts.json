@@ -832,5 +832,35 @@
     "language": "ja",
     "text": "登録プロセス中に何かがうまくいかなかった。もう一度フォームに記入してください。",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "ja",
+    "text": "このファイルでウイルスが検出されました。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "ja",
+    "text": "このファイルのウイルススキャンは不完全です。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "ja",
+    "text": "このファイルは隔離されており、ダウンロードできません。これが間違いだと思われる場合は、サポートに連絡してください。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "ja",
+    "text": "とにかくダウンロードしてください",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "ja",
+    "text": "このファイルが安全にダウンロードできるかどうかを確認できません。後で戻ってくるか、今すぐ自分の責任でダウンロードしてください。",
+    "machineTranslated": true
   }
 ]

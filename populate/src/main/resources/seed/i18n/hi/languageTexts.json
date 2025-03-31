@@ -832,5 +832,35 @@
     "language": "hi",
     "text": "नामांकन प्रक्रिया के दौरान कुछ गलत हो गया। कृपया फिर से फॉर्म भरें।",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "hi",
+    "text": "इस फ़ाइल में एक वायरस का पता चला था।",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "hi",
+    "text": "इस फ़ाइल के लिए वायरस स्कैनिंग अधूरी है।",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "hi",
+    "text": "इस फ़ाइल को संगरोध किया गया है और इसे डाउनलोड नहीं किया जा सकता है। यदि आप मानते हैं कि यह एक गलती है, तो कृपया समर्थन से संपर्क करें।",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "hi",
+    "text": "वैसे भी डाउनलोड करें",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "hi",
+    "text": "यदि यह फ़ाइल डाउनलोड करने के लिए सुरक्षित है तो हम सत्यापित नहीं कर सकते। कृपया बाद में वापस आएं या अब अपने जोखिम पर डाउनलोड करें।",
+    "machineTranslated": true
   }
 ]

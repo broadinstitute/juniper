@@ -832,5 +832,35 @@
     "language": "fr",
     "text": "Quelque chose s'est mal passé pendant le processus d'inscription. Veuillez remplir à nouveau le formulaire.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "fr",
+    "text": "Un virus a été détecté dans ce fichier.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "fr",
+    "text": "La numérisation du virus est incomplète pour ce fichier.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "fr",
+    "text": "Ce fichier a été mis en quarantaine et ne peut pas être téléchargé. Si vous pensez que c'est une erreur, veuillez contacter l'assistance.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "fr",
+    "text": "Télécharger de toute façon",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "fr",
+    "text": "Nous ne pouvons pas vérifier si ce fichier est sûr à télécharger. Veuillez revenir plus tard ou télécharger maintenant à vos propres risques.",
+    "machineTranslated": true
   }
 ]

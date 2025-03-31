@@ -832,5 +832,35 @@
     "language": "es",
     "text": "Algo salió mal durante el proceso de inscripción. Por favor, complete el formulario nuevamente.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "es",
+    "text": "Se detectó un virus en este archivo.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "es",
+    "text": "El escaneo de virus está incompleto para este archivo.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "es",
+    "text": "Este archivo ha sido en cuarentena y no se puede descargar. Si cree que esto es un error, comuníquese con el soporte.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "es",
+    "text": "Descargar de todos modos",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "es",
+    "text": "No podemos verificar si este archivo es seguro de descargar. Vuelva más tarde o descargue ahora bajo su propio riesgo.",
+    "machineTranslated": true
   }
 ]

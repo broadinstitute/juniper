@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap'
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
+import { useI18n } from 'src/participant/I18nProvider'
 
 export const QuarantinedFileModal = ({
   onClose,
@@ -15,15 +16,16 @@ export const QuarantinedFileModal = ({
   onClose: () => void,
   ModalComponent?: React.ElementType<ModalProps>
 }) => {
+  const { i18n } = useI18n()
+
   return <ModalComponent show={true} onHide={onClose}>
     <ModalHeader>
       <ModalTitle>
-        A virus was detected within this file.
+        {i18n('virusDetected')}
       </ModalTitle>
     </ModalHeader>
     <ModalBody>
-      This file has been quarantined and cannot be downloaded.
-      If you believe this is a mistake, please contact support.
+      {i18n('fileQuarantinedCannotDownload')}
     </ModalBody>
     <ModalFooter>
       <div className={'d-flex w-100'}>
@@ -31,7 +33,7 @@ export const QuarantinedFileModal = ({
           onClick={onClose}
           className='btn btn-outline-secondary mx-2'
         >
-          Close
+          {i18n('goBack')}
         </button>
       </div>
     </ModalFooter>

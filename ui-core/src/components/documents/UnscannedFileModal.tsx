@@ -7,6 +7,7 @@ import { useApiContext } from '../../participant/ApiProvider'
 import { StudyEnvParams } from '../../types/study'
 import { ParticipantFile } from '../../types/participantFile'
 import { saveBlobAsDownload } from '../../util/downloadUtils'
+import { useI18n } from 'src/participant/I18nProvider'
 
 export const UnscannedFileModal = ({
   studyEnvParams,
@@ -21,6 +22,8 @@ export const UnscannedFileModal = ({
   onClose: () => void,
   ModalComponent?: React.ElementType<ModalProps>
 }) => {
+  const { i18n } = useI18n()
+
   const Api = useApiContext()
   const downloadAnyway = async () => {
     const response = await Api.downloadParticipantFile({
@@ -32,11 +35,11 @@ export const UnscannedFileModal = ({
   return <ModalComponent show={true} onHide={onClose}>
     <Modal.Header>
       <Modal.Title>
-        Virus scanning is incomplete for this file.
+        {i18n('virusScanningIncomplete')}
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      We cannot verify if this file is safe to download. Please come back later or download now at your own risk.
+      {i18n('virusScanningIncompleteCannotVerify')}
     </Modal.Body>
     <Modal.Footer>
       <div className={'d-flex w-100'}>
@@ -44,16 +47,15 @@ export const UnscannedFileModal = ({
           onClick={downloadAnyway}
           className='btn btn-primary mx-2'
         >
-          Download Anyway
+          {i18n('downloadAnyway')}
         </button>
 
         <button
           onClick={onClose}
           className='btn btn-outline-secondary mx-2'
         >
-          Close
+          {i18n('goBack')}
         </button>
-
       </div>
     </Modal.Footer>
   </ModalComponent>

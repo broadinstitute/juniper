@@ -825,5 +825,30 @@
     "keyName": "failedToEnroll",
     "language": "dev",
     "text": "dev_Something went wrong during the enrollment process. Please fill out the form again."
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "dev",
+    "text": "dev_A virus was detected in this file."
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "dev",
+    "text": "dev_Virus scanning is incomplete for this file."
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "dev",
+    "text": "dev_This file has been quarantined and cannot be downloaded. If you believe this is a mistake, please contact support."
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "dev",
+    "text": "dev_Download Anyway"
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "dev",
+    "text": "dev_We cannot verify if this file is safe to download. Please come back later or download now at your own risk."
   }
 ]
