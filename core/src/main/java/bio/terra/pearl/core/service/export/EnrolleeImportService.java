@@ -11,12 +11,11 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.survey.SurveyResponseWithTaskDto;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.export.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.export.dataimport.ImportService;
@@ -27,14 +26,12 @@ import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
-import bio.terra.pearl.core.service.survey.AnswerProcessingService;
-import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import bio.terra.pearl.core.service.survey.SurveyService;
-import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
+import bio.terra.pearl.core.service.survey.*;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +61,7 @@ public class EnrolleeImportService {
     private final SurveyService surveyService;
     private final AnswerProcessingService answerProcessingService;
     private final AnswerMappingDao answerMappingDao;
+    private final PreEnrollmentResponseService preEnrollmentResponseService;
 
     ExportOptions IMPORT_OPTIONS_TSV = ExportOptions
             .builder()
@@ -97,6 +95,7 @@ public class EnrolleeImportService {
     private final ImportItemService importItemService;
     private final KitRequestService kitRequestService;
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
+    private final ObjectMapper objectMapper;
     private final char CSV_DELIMITER = ',';
     private final char TSV_DELIMITER = '\t';
 
@@ -105,8 +104,14 @@ public class EnrolleeImportService {
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
                                  EnrolleeRelationService enrolleeRelationService,
-                                 TimeShiftDao timeShiftDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
-                                 PortalParticipantUserService portalParticipantUserService, KitRequestService kitRequestService, SurveyService surveyService, AnswerProcessingService answerProcessingService, AnswerMappingDao answerMappingDao, StudyEnvironmentConfigService studyEnvironmentConfigService) {
+                                 TimeShiftDao timeShiftDao, EnrolleeService enrolleeService,
+                                 ParticipantUserService participantUserService,
+                                 PortalParticipantUserService portalParticipantUserService,
+                                 KitRequestService kitRequestService, SurveyService surveyService,
+                                 AnswerProcessingService answerProcessingService,
+                                 AnswerMappingDao answerMappingDao,
+                                 StudyEnvironmentConfigService studyEnvironmentConfigService,
+                                 ObjectMapper objectMapper, PreEnrollmentResponseService preEnrollmentResponseService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -127,6 +132,8 @@ public class EnrolleeImportService {
         this.answerProcessingService = answerProcessingService;
         this.answerMappingDao = answerMappingDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
+        this.objectMapper = objectMapper;
+        this.preEnrollmentResponseService = preEnrollmentResponseService;
     }
 
     @Transactional
@@ -483,17 +490,11 @@ public class EnrolleeImportService {
         List<SurveyFormatter> surveyModules = enrolleeExportService.generateSurveyModules(exportOptions, studyEnv.getId(), List.of());
         List<SurveyResponse> responses = new ArrayList<>();
         UUID portalId = portalService.findOneByShortcode(portalShortcode).orElseThrow().getId();
-        Survey preEnroll = studyEnv.getPreEnrollSurveyId() != null ? surveyService.find(studyEnv.getPreEnrollSurveyId()).orElse(null) : null;
 
         for (SurveyFormatter formatter : surveyModules) {
             List<SurveyResponse> surveyResponses;
 
-            if (preEnroll != null && formatter.getModuleName().equals(preEnroll.getStableId())) {
-                surveyResponses = List.of(importPreEnrollResponse(preEnroll, portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, user, enrollee, auditInfo));
-            } else {
-                surveyResponses = importSurveyResponses(portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo);
-            }
-
+            surveyResponses = importSurveyResponses(portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo);
             if (surveyResponses != null) {
                 responses.addAll(surveyResponses);
             }
@@ -501,38 +502,6 @@ public class EnrolleeImportService {
         return responses;
     }
 
-    protected SurveyResponse importPreEnrollResponse(Survey preEnroll,
-                                                     UUID portalId,
-                                                     SurveyFormatter formatter,
-                                                     Map<String, String> enrolleeMap,
-                                                     ExportOptions exportOptions,
-                                                     StudyEnvironment studyEnv,
-                                                     PortalParticipantUser ppUser,
-                                                     ParticipantUser participantUser,
-                                                     Enrollee enrollee,
-                                                     DataAuditInfo auditInfo) {
-        SurveyResponse response = formatter.fromStringMap(studyEnv.getId(), enrolleeMap, 1);
-        if (response == null) {
-            return null;
-        }
-
-        response.setEnrolleeId(enrollee.getId());
-        response.setCreatingParticipantUserId(ppUser.getParticipantUserId());
-        response.setSurveyId(preEnroll.getId());
-
-        SurveyResponse created = surveyResponseService.create(response);
-
-        // process any answers that need to be propagated elsewhere to the data model
-        answerProcessingService.processAllAnswerMappings(
-                enrollee,
-                response.getAnswers(),
-                answerMappingDao.findBySurveyId(preEnroll.getId()),
-                ppUser,
-                new ResponsibleEntity(participantUser),
-                auditInfo);
-
-        return created;
-    }
 
     protected List<SurveyResponse> importSurveyResponses(UUID portalId, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
                                                   StudyEnvironment studyEnv, PortalParticipantUser ppUser, Enrollee enrollee, DataAuditInfo auditInfo) {
@@ -551,8 +520,9 @@ public class EnrolleeImportService {
     }
 
     private SurveyResponse importSurveyResponse(PortalParticipantUser ppUser, Enrollee enrollee, StudyEnvironment studyEnv, SurveyFormatter formatter, SurveyResponseWithTaskDto response, UUID portalId, DataAuditInfo auditInfo, Map<String, String> enrolleeMap, Integer repeatNum, ExportOptions options) {
-
         ParticipantTask relatedTask = findOrCreateTask(ppUser, enrollee, studyEnv, formatter, response, portalId, auditInfo, enrolleeMap, repeatNum, options.getZoneId());
+
+        Survey survey = surveyService.findByStableId(relatedTask.getTargetStableId(), relatedTask.getTargetAssignedVersion(), portalId).orElseThrow(() -> new NotFoundException("Survey %s not found".formatted(relatedTask.getTargetStableId())));
 
         SurveyResponse updatedResponse = surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
                 "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
@@ -560,6 +530,9 @@ public class EnrolleeImportService {
 
         shiftTime(updatedResponse, relatedTask, formatter, enrolleeMap, repeatNum, options.getZoneId());
 
+        if (survey.getSurveyType().equals(SurveyType.PRE_ENROLL)) {
+            attachPreEnrollResponse(enrollee, survey, updatedResponse);
+        }
         return updatedResponse;
     }
 
@@ -636,6 +609,27 @@ public class EnrolleeImportService {
         }
         if (lastUpdatedAt != null) {
             timeShiftDao.changeSurveyResponseLastUpdatedTime(surveyResponse.getId(), lastUpdatedAt);
+        }
+    }
+
+    private void attachPreEnrollResponse(Enrollee enrollee, Survey preEnroll, SurveyResponse response) {
+        PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+
+        try {
+            PreEnrollmentResponse preEnrollmentResponse = PreEnrollmentResponse.builder()
+                    .portalParticipantUserId(ppUser.getId())
+                    .surveyId(preEnroll.getId())
+                    .qualified(true)
+                    .fullData(objectMapper.writeValueAsString(response.getAnswers()))
+                    .studyEnvironmentId(enrollee.getStudyEnvironmentId())
+                    .build();
+
+            preEnrollmentResponse = preEnrollmentResponseService.create(preEnrollmentResponse);
+
+            enrollee.setPreEnrollmentResponseId(preEnrollmentResponse.getId());
+            enrolleeService.update(enrollee);
+        } catch (IOException e) {
+            log.warn("Failed to created pre-enrollment response: {}", e.getMessage());
         }
     }
 

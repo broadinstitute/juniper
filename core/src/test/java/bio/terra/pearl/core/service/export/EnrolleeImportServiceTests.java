@@ -27,8 +27,12 @@ import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import bio.terra.pearl.core.service.survey.PreEnrollmentResponseService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -41,7 +45,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,6 +91,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private EnrolleeFactory enrolleeFactory;
     @Autowired
     private SurveyResponseService surveyResponseService;
+    @Autowired
+    private PreEnrollmentResponseService preEnrollmentResponseService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @Autowired
@@ -401,12 +411,13 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testImportPreEnroll(TestInfo info) {
+    public void testImportPreEnroll(TestInfo info) throws JsonProcessingException {
         StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         Survey preEnroll = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .stableId("preEnroll")
                 .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"name\",\"title\":\"What is your name?\"}]}]}")
+                .surveyType(SurveyType.PRE_ENROLL)
                 .portalId(bundle.getPortal().getId()));
 
         surveyFactory.attachToEnv(preEnroll, bundle.getStudyEnv().getId(), true);
@@ -441,6 +452,27 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Answer answer = answers.getFirst();
         assertThat(answer.getQuestionStableId(), equalTo("name"));
         assertThat(answer.getStringValue(), equalTo("Alex"));
+
+
+        enrollee = enrolleeService.find(enrollee.getId()).orElseThrow();
+        assertThat(enrollee.getPreEnrollmentResponseId(), notNullValue());
+
+        PreEnrollmentResponse preEnrollmentResponse = preEnrollmentResponseService.find(enrollee.getPreEnrollmentResponseId()).orElseThrow();
+
+        assertThat(preEnrollmentResponse.getSurveyId(), equalTo(preEnroll.getId()));
+
+        PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+        assertThat(preEnrollmentResponse.getPortalParticipantUserId(), equalTo(ppUser.getId()));
+
+        JsonNode node = objectMapper.readTree(preEnrollmentResponse.getFullData());
+
+        assertThat(node.isArray(), equalTo(true));
+        assertThat(node.size(), equalTo(1));
+
+        JsonNode questionNode = node.get(0);
+
+        assertThat(questionNode.get("questionStableId").asText(), equalTo("name"));
+        assertThat(questionNode.get("stringValue").asText(), equalTo("Alex"));
 
     }
 
