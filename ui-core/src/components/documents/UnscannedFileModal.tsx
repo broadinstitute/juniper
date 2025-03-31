@@ -7,7 +7,7 @@ import { useApiContext } from '../../participant/ApiProvider'
 import { StudyEnvParams } from '../../types/study'
 import { ParticipantFile } from '../../types/participantFile'
 import { saveBlobAsDownload } from '../../util/downloadUtils'
-import { useI18n } from 'src/participant/I18nProvider'
+import { useI18n } from '../../participant/I18nProvider'
 
 export const UnscannedFileModal = ({
   studyEnvParams,

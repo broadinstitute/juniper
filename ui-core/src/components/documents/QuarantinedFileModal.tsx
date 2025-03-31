@@ -7,7 +7,7 @@ import {
 } from 'react-bootstrap'
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { useI18n } from 'src/participant/I18nProvider'
+import { useI18n } from '../../participant/I18nProvider'
 
 export const QuarantinedFileModal = ({
   onClose,
