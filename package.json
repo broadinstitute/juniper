@@ -14,7 +14,7 @@
     "@babel/preset-typescript": "^7.26.0",
     "@prosopo/vite-plugin-watch-workspace": "^1.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
-    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
