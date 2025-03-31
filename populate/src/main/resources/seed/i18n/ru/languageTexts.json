@@ -832,5 +832,35 @@
     "language": "ru",
     "text": "Что -то пошло не так в процессе зачисления. Пожалуйста, заполните форму еще раз.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "ru",
+    "text": "В этом файле был обнаружен вирус.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "ru",
+    "text": "Сканирование вируса является неполным для этого файла.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "ru",
+    "text": "Этот файл был карантин и не может быть загружен. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с поддержкой.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "ru",
+    "text": "Скачать все равно",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "ru",
+    "text": "Мы не можем проверить, безопасен ли этот файл. Пожалуйста, вернитесь позже или скачайте сейчас на свой риск.",
+    "machineTranslated": true
   }
 ]

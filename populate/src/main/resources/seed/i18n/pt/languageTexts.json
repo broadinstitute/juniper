@@ -832,5 +832,35 @@
     "language": "pt",
     "text": "Algo deu errado durante o processo de inscrição. Por favor, preencha o formulário novamente.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "pt",
+    "text": "Um vírus foi detectado neste arquivo.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "pt",
+    "text": "A varredura de vírus está incompleta para este arquivo.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "pt",
+    "text": "Este arquivo foi em quarentena e não pode ser baixado. Se você acredita que isso é um erro, entre em contato com o suporte.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "pt",
+    "text": "Baixar de qualquer maneira",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "pt",
+    "text": "Não podemos verificar se esse arquivo é seguro para baixar. Volte mais tarde ou faça o download agora por sua conta e risco.",
+    "machineTranslated": true
   }
 ]

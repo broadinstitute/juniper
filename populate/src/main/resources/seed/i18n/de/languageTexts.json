@@ -832,5 +832,35 @@
     "language": "de",
     "text": "Während des Registrierungsprozesses ging etwas schief. Bitte füllen Sie das Formular erneut aus.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "de",
+    "text": "In dieser Datei wurde ein Virus festgestellt.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "de",
+    "text": "Das Scannen von Viren ist für diese Datei unvollständig.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "de",
+    "text": "Diese Datei wurde unter Quarantäne gestellt und kann nicht heruntergeladen werden. Wenn Sie glauben, dass dies ein Fehler ist, wenden Sie sich bitte an Support.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "de",
+    "text": "Laden Sie trotzdem herunter",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "de",
+    "text": "Wir können nicht überprüfen, ob diese Datei sicher heruntergeladen werden kann. Bitte kommen Sie später zurück oder laden Sie jetzt auf eigenes Risiko herunter.",
+    "machineTranslated": true
   }
 ]

@@ -78,7 +78,7 @@ public class ParticipantFileExtService {
     return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
   }
 
-  public ParticipantFile uploadFile(
+  public ScannedParticipantFileDto uploadFile(
       String portalShortcode,
       EnvironmentName envName,
       ParticipantUser participantUser,
@@ -89,19 +89,21 @@ public class ParticipantFileExtService {
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
 
     try {
-      return participantFileService.uploadFileAndCreate(
-          ParticipantFile.builder()
-              .enrolleeId(enrollee.getId())
-              .fileName(getFileName(file.getOriginalFilename()))
-              .fileType(file.getContentType())
-              .build(),
-          file.getInputStream());
+      return new ScannedParticipantFileDto(
+          participantFileService.uploadFileAndCreate(
+              ParticipantFile.builder()
+                  .enrolleeId(enrollee.getId())
+                  .fileName(getFileName(file.getOriginalFilename()))
+                  .fileType(file.getContentType())
+                  .build(),
+              file.getInputStream()),
+          VirusScanResult.UNSCANNED);
     } catch (IOException e) {
       throw new RuntimeException("Error uploading file");
     }
   }
 
-  public List<ParticipantFile> list(
+  public List<ScannedParticipantFileDto> list(
       String portalShortcode,
       EnvironmentName envName,
       ParticipantUser participantUser,
@@ -109,7 +111,9 @@ public class ParticipantFileExtService {
     authUtilService.authParticipantToPortal(participantUser.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
-    return participantFileService.findByEnrolleeId(enrollee.getId());
+    return participantFileService.findByEnrolleeId(enrollee.getId()).stream()
+        .map(participantFileService::attachVirusScanResult)
+        .toList();
   }
 
   // Returns the name of the file without the preceding path

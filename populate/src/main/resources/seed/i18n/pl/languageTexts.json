@@ -832,5 +832,35 @@
     "language": "pl",
     "text": "Coś poszło nie tak podczas procesu rejestracji. Wypełnij ponownie formularz.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "pl",
+    "text": "W tym pliku wykryto wirus.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "pl",
+    "text": "Skanowanie wirusów jest niekompletne dla tego pliku.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "pl",
+    "text": "Ten plik został poddany kwarantannie i nie można go pobrać. Jeśli uważasz, że to błąd, skontaktuj się z wsparciem.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "pl",
+    "text": "Pobierz i tak",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "pl",
+    "text": "Nie możemy sprawdzić, czy ten plik jest bezpieczny do pobrania. Wróć później lub pobierz teraz na własne ryzyko.",
+    "machineTranslated": true
   }
 ]

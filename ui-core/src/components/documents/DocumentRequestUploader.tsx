@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { useDropzone } from 'react-dropzone'
 import './DocumentRequestUploader.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCaretDown,
   faCaretUp,
-  faFile, faFileImage,
-  faFilePdf, faSquareMinus, faSquarePlus,
+  faFile,
+  faFileImage,
+  faFilePdf,
+  faSquareMinus,
+  faSquarePlus,
   faUpload
 } from '@fortawesome/free-solid-svg-icons'
 import { isNil } from 'lodash'
@@ -16,18 +22,24 @@ import { saveBlobAsDownload } from '../../util/downloadUtils'
 import { ParticipantFile } from '../../types/participantFile'
 import { useApiContext } from '../../participant/ApiProvider'
 import { useI18n } from '../../participant/I18nProvider'
+import { UnscannedFileModal } from './UnscannedFileModal'
+import { QuarantinedFileModal } from './QuarantinedFileModal'
+import Modal from 'react-bootstrap/Modal'
+import { ModalProps } from 'react-bootstrap'
 
 export const DocumentRequestUploader = (
   {
     studyEnvParams,
     enrolleeShortcode,
     selectedFileNames,
-    setSelectedFileNames
+    setSelectedFileNames,
+    ModalComponent = Modal
   } : {
         studyEnvParams: StudyEnvParams,
         enrolleeShortcode: string,
         selectedFileNames: string[]
-        setSelectedFileNames: (fileNames: string[]) => void
+    setSelectedFileNames: (fileNames: string[]) => void,
+    ModalComponent?: React.ElementType<ModalProps>
     }) => {
   const [files, setFiles] = useState<ParticipantFile[]>([])
   const [selectedFiles, setSelectedFiles] = useState<ParticipantFile[]>([])
@@ -67,10 +79,21 @@ export const DocumentRequestUploader = (
   }
 
   const downloadFile = async (file: ParticipantFile) => {
-    const response = await Api.downloadParticipantFile({ studyEnvParams, enrolleeShortcode, fileName: file.fileName })
+    if (file.virusScanResult === 'QUARANTINED') {
+      setShowQuarantinedFileModal(file)
+    } else if (file.virusScanResult === 'UNSCANNED') {
+      setShowUnscannedFileModal(file)
+    } else {
+      const response = await Api.downloadParticipantFile({
+        studyEnvParams, enrolleeShortcode, fileName: file.fileName
+      })
 
-    saveBlobAsDownload(await response.blob(), file.fileName)
+      saveBlobAsDownload(await response.blob(), file.fileName)
+    }
   }
+
+  const [showQuarantinedFileModal, setShowQuarantinedFileModal] = useState<ParticipantFile>()
+  const [showUnscannedFileModal, setShowUnscannedFileModal] = useState<ParticipantFile>()
 
   return <div className='pt-2'>
     <div className='mb-2'>
@@ -100,6 +123,18 @@ export const DocumentRequestUploader = (
       selectedFiles={selectedFiles}
       downloadFile={downloadFile}
     />
+
+    {showQuarantinedFileModal && <QuarantinedFileModal
+      onClose={() => setShowQuarantinedFileModal(undefined)}
+      ModalComponent={ModalComponent}
+    />}
+    {showUnscannedFileModal && <UnscannedFileModal
+      onClose={() => setShowUnscannedFileModal(undefined)}
+      enrolleeShortcode={enrolleeShortcode}
+      studyEnvParams={studyEnvParams}
+      participantFile={showUnscannedFileModal}
+      ModalComponent={ModalComponent}
+    />}
   </div>
 }
 

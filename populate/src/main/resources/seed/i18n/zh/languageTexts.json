@@ -832,5 +832,35 @@
     "language": "zh",
     "text": "在入学过程中出现了问题。请再次填写表格。",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "zh",
+    "text": "该文件中检测到病毒。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "zh",
+    "text": "该文件的病毒扫描是不完整的。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "zh",
+    "text": "该文件已被隔离，无法下载。如果您认为这是一个错误，请联系支持。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "zh",
+    "text": "无论如何下载",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "zh",
+    "text": "我们无法验证此文件是否安全下载。请稍后再返回或立即下载。",
+    "machineTranslated": true
   }
 ]

@@ -832,5 +832,35 @@
     "language": "tr",
     "text": "Kayıt sürecinde bir şeyler ters gitti. Lütfen formu tekrar doldurun.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "tr",
+    "text": "Bu dosyada bir virüs tespit edildi.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "tr",
+    "text": "Virüs taraması bu dosya için eksik.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "tr",
+    "text": "Bu dosya karantinaya alınmıştır ve indirilemez. Bunun bir hata olduğuna inanıyorsanız, lütfen destekle iletişime geçin.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "tr",
+    "text": "Yine de indir",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "tr",
+    "text": "Bu dosyanın indirilmesinin güvenli olup olmadığını doğrulayamayız. Lütfen daha sonra tekrar gelin veya şimdi kendi sorumluluğunuzda indirin.",
+    "machineTranslated": true
   }
 ]

@@ -832,5 +832,35 @@
     "language": "it",
     "text": "Qualcosa è andato storto durante il processo di iscrizione. Si prega di compilare di nuovo il modulo.",
     "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "it",
+    "text": "In questo file è stato rilevato un virus.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "it",
+    "text": "La scansione dei virus è incompleta per questo file.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "it",
+    "text": "Questo file è stato messo in quarantena e non può essere scaricato. Se ritieni che questo sia un errore, contatta il supporto.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "it",
+    "text": "Scarica comunque",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "it",
+    "text": "Non possiamo verificare se questo file è sicuro da scaricare. Torna più tardi o scarica ora a tuo rischio.",
+    "machineTranslated": true
   }
 ]
