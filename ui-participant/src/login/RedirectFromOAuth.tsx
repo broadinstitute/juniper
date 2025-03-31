@@ -91,14 +91,20 @@ export const RedirectFromOAuth = () => {
 
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
-              const hubResponse = await enrollCurrentUserInStudy(
-                defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState)
+              try {
+                const hubResponse = await enrollCurrentUserInStudy(
+                  defaultEnrollStudy.shortcode, preEnrollResponseId, refreshLoginState, { alertErrors: false })
 
-              handleNewStudyEnroll(hubResponse,
-                defaultEnrollStudy.shortcode,
-                navigate,
-                i18n,
-                i18n(`${portal.shortcode}.${defaultEnrollStudy.shortcode}`, { defaultValue: defaultEnrollStudy.name }))
+                handleNewStudyEnroll(hubResponse,
+                  defaultEnrollStudy.shortcode,
+                  navigate,
+                  i18n,
+                  i18n(`${portal.shortcode}.${defaultEnrollStudy.shortcode}`, { defaultValue: defaultEnrollStudy.name })
+                )
+              } catch (e) {
+                alert(i18n('failedToEnroll'))
+                navigate(`/studies/${defaultEnrollStudy.shortcode}/join/preEnroll`, { replace: true })
+              }
             } else {
               navigate('/hub', { replace: true })
             }

@@ -158,7 +158,7 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
 
     // creates a new survey response with the same answers as priorResponse
     // for use with longitudinal recurring surveys
-    private SurveyResponse createPrepopulatedSurveyResponse(SurveyResponse priorResponse) {
+    protected SurveyResponse createPrepopulatedSurveyResponse(SurveyResponse priorResponse) {
         List<Answer> answers = priorResponse.getAnswers().stream()
                 .map(a -> (Answer) a.cleanForCopying())
                 .collect(Collectors.toList());

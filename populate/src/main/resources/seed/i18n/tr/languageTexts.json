@@ -1,163 +1,836 @@
 [
-  {"keyName": "navbarDashboard", "text": "Gösterge Paneli", "language": "tr"},
-  {"keyName": "navbarChangePassword", "text": "Parola Değiştir", "language": "tr"},
-  {"keyName": "navbarLogout", "text": "Oturumu Kapat", "language": "tr"},
-  {"keyName": "profile", "text": "Profil", "language": "tr"},
-  {"keyName": "navbarLogin", "text": "Oturumu Aç", "language": "tr"},
-  {"keyName": "navbarJoin", "text": "Kayıt Ol", "language": "tr"},
-  {"keyName": "taskComplete", "text": "Tamam", "language": "tr"},
-  {"keyName": "taskInProgress", "text": "Devam Ediyor", "language": "tr"},
-  {"keyName": "taskNotStarted", "text": "Başlatılmadı", "language": "tr"},
-  {"keyName": "taskDeclined", "text": "Reddedildi", "language": "tr"},
-  {"keyName": "taskLocked", "text": "Kilitlendi", "language": "tr"},
-  {"keyName": "tasksNoneForStudy", "text": "Bu çalışma için herhangi bir görev yok", "language": "tr"},
-  {"keyName": "taskHistory", "text": "geçmiş", "language": "tr"},
-  {"keyName": "taskNew", "text": "YENİ", "language": "tr"},
-  {"keyName": "surveysSomeLocked", "text": "Bazı anketler, gerekli diğer görevler tamamlanana kadar kilitli kalır.", "language": "tr"},
-  {"keyName": "taskTypeSurvey", "text": "Anket", "language": "tr"},
-  {"keyName": "taskTypeSurveys", "text": "Anketler", "language": "tr"},
-  {"keyName": "taskTypeConsent", "text": "Onay", "language": "tr"},
-  {"keyName": "taskTypeForms", "text": "Formlar", "language": "tr"},
-  {"keyName": "start", "text": "Başlat", "language": "tr"},
-  {"keyName": "continue", "text": "Devam Et", "language": "tr"},
-  {"keyName": "save", "text": "Kaydet", "language": "tr"},
-  {"keyName": "outreachLearnMore", "text": "Daha Fazla Bilgi", "language": "tr"},
-  {"keyName": "cancel", "text": "İptal Et", "language": "tr"},
-  {"keyName": "goBack", "text": "Geri Dön", "language": "tr"},
-  {"keyName": "name", "text": "Tam Adı", "language": "tr"},
-  {"keyName": "givenName", "text": "Adı", "language": "tr"},
-  {"keyName": "familyName", "text": "Soyadı", "language": "tr"},
-  {"keyName": "editName", "text": "Tam Adı Düzenle", "language": "tr"},
-  {"keyName": "editBirthDate", "text": "Doğum Gününü Düzenle", "language": "tr"},
-  {"keyName": "birthDate", "text": "Doğum günü", "language": "tr"},
-  {"keyName": "mailingAddress", "text": "Posta Adresi", "language": "tr"},
-  {"keyName": "editMailingAddress", "text": "Posta Adresini Düzenle", "language": "tr"},
-  {"keyName": "primaryAddress", "text": "Birincil Adres", "language": "tr"},
-  {"keyName": "editPrimaryAddress", "text": "Birincil Adres", "language": "tr"},
-  {"keyName": "street1", "text": "Sokak Adı 1", "language": "tr"},
-  {"keyName": "street2", "text": "Sokak Adı 2", "language": "tr"},
-  {"keyName": "city", "text": "Şehir", "language": "tr"},
-  {"keyName": "state", "text": "Bölge\/İl", "language": "tr"},
-  {"keyName": "postalCode", "text": "Posta Kodu", "language": "tr"},
-  {"keyName": "country", "text": "Ülke", "language": "tr"},
-  {"keyName": "communicationPreferences", "text": "İletişim Tercihleri", "language": "tr"},
-  {"keyName": "editCommunicationPreferences", "text": "İletişim Tercihlerini Düzenle", "language": "tr"},
-  {"keyName": "contactEmail", "text": "İletişim E-Posta Adresi", "language": "tr"},
-  {"keyName": "editContactEmail", "text": "İletişim E-Posta Adresini Düzenle", "language": "tr"},
-  {"keyName": "phoneNumber", "text": "Telefon Numarası", "language": "tr"},
-  {"keyName": "editPhoneNumber", "text": "Telefon Numarasını Düzenle", "language": "tr"},
-  {"keyName": "doNotSolicit", "text": "Talepte Bulunmayın", "language": "tr"},
-  {"keyName": "doNotContact", "text": "İletişimde Bulunmayın", "language": "tr"},
-  {"keyName": "editDoNotSolicit", "text": "Talepte Bulunmayın Seçeneğini Düzenle", "language": "tr"},
-  {"keyName": "editNotifications", "text": "Bildirimleri Düzenle", "language": "tr"},
-  {"keyName": "notifications", "text": "Bildirimler", "language": "tr"},
-  {"keyName": "on", "text": "Açık", "language": "tr"},
-  {"keyName": "off", "text": "Kapalı", "language": "tr"},
-  {"keyName": "notProvided", "text": "Belirtilmedi", "language": "tr"},
-  {"keyName": "editProfileContactEmailWarning", "text": "İletişim için kullanılacak e-postayı güncellemek için \"Kaydet\" seçeneğine basın. Oturum açma bilgilerinizin değişmeyeceğini unutmayın.", "language": "tr"},
-  {"keyName": "privacyPolicy", "text": "Gizlilik Politikası", "language": "tr"},
-  {"keyName": "termsOfUse", "text": "Kullanım Koşulları", "language": "tr"},
-  {"keyName": "addressInvalidPostalCode", "text": "Posta kodu doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidCountry", "text": "Ülke doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidState", "text": "Bölge\/İl doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidCity", "text": "Şehir doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidHouseNumber", "text": "Ev numarası doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidStreetName", "text": "Sokak adı doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressInvalidStreetType", "text": "Sokak türü doğrulanamadı.", "language": "tr"},
-  {"keyName": "addressNeedsSubpremise", "text": "Lütfen bir apartman\/daire numarası girin.", "language": "tr"},
-  {"keyName": "addressFailedToValidate", "text": "Adres doğrulanamadı.", "language": "tr"},
-  {"keyName": "suggestBetterAddressHeader", "text": "Doğru adresi girdiğinizden emin misiniz?", "language": "tr"},
-  {"keyName": "suggestBetterAddressBody", "text": "Benzer bir adresi doğrulayabiliyoruz. Lütfen hangisini kullanmak istediğinizi seçin.", "language": "tr"},
-  {"keyName": "newAddress", "text": "Yeni Adres", "language": "tr"},
-  {"keyName": "oldAddress", "text": "Eski Adres", "language": "tr"},
-  {"keyName": "you", "text": "Siz", "language": "tr"},
-  {"keyName": "yourDependent", "text": "Bakmakla Yükümlü Olduğunuz Kişi", "language": "tr"},
-  {"keyName": "youInParens", "text": "(siz)", "language": "tr"},
-  {"keyName": "allProfiles", "text": "Tüm Profiller", "language": "tr"},
-  {"keyName": "manageProfiles", "text": "Profilleri Yönet", "language": "tr"},
-  {"keyName": "addNewParticipant", "text": "Yeni Katılımcı Ekle", "language": "tr"},
-  {"keyName": "dashboard", "text": "Gösterge Paneli", "language": "tr"},
-  {"keyName": "selectParticipant", "text": "Katılımcı Seç", "language": "tr"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "${formName} tamamlandı", "language": "tr"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "Tüm eylemler tamamlandı", "language": "tr"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "Bu çalışma ile ilgili tüm eylemleri tamamladınız. Yeni eylemler mevcut olduğunda sizi bilgilendireceğiz. Katılımınız için teşekkür ederiz!", "language": "tr"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "${studyName} Çalışmasına Hoş Geldiniz", "language": "tr"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "Devam etmek için lütfen aşağıdaki onay formunu okuyun ve imzalayın.", "language": "tr"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "${studyName} çalışmasına zaten kayıtlısınız.", "language": "tr"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "Bu kullanıcı ${studyName} çalışmasına zaten kayıtlı.", "language": "tr"},
-  {"keyName": "cookieAlertTitle", "text": "Çerezler", "language": "tr"},
-  {"keyName": "cookieAlertDetail", "text": "Bu site, web sitemizin düzgün çalışmasını ve güvenliğini sağlamak ve web sitemizi kullanırken deneyiminizi iyileştirmek amacıyla &quot;çerezler&quot; adı verilen internet belirteçlerini kullanır. Kullandığımız çerezlerin tümü kesinlikle gerekli çerezlerdir. Bu çerez türü, hakkınızda kişisel olarak tanımlanabilir herhangi bir bilgi toplamaz ve tarama alışkanlıklarınızı takip etmez. Daha fazla bilgi edinmek için [Gizlilik Politikamızı okuyun](\/privacy).", "language": "tr"},
-  {"keyName": "joinStudy", "text": "Çalışmaya Katıl", "language": "tr"},
-  {"keyName": "ineligibleThankYou", "text": "${studyName} çalışmasına gösterdiğiniz ilgi için teşekkür ederiz", "language": "tr" },
-  {"keyName": "ineligibleDescription", "text": "Ne yazık ki, şu anda ${studyName} çalışmasına katılmak için uygunluk kriterlerini karşılamıyorsunuz.", "language": "tr"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "Sizi gelişmelerden haberdar edebilmemiz için e-posta adresinizi aşağıdaki alana girin. Dilediğiniz zaman abonelikten çıkabilirsiniz.", "language":  "tr"},
-  {"keyName": "ineligibleStayInformed", "text": "Gelişmelerden haberdar kalın", "language": "tr"},
-  {"keyName": "backToPortalHomepage", "text": "${portalName} ana sayfasına geri dön", "language": "tr"},
-  {"keyName": "joinMailingList", "text": "Posta Listesine Katıl", "language": "tr"},
-  {"keyName": "mailingFormStayUpdated", "text":  "Çalışmayla ilgili gelişmelerden haberdar olun", "language": "tr"},
-  {"keyName": "yourName", "text": "Adınız", "language": "tr"},
-  {"keyName": "yourEmail", "text": "E-posta adresiniz", "language": "tr"},
-  {"keyName": "join", "text":  "Katıl", "language": "tr"},
-  {"keyName": "thanksForJoining", "text": "Katıldığınız için teşekkürler", "language": "tr"},
-  {"keyName": "pageNotFoundTitle", "text": "Sayfa bulunamadı", "language": "tr"},
-  {"keyName": "pageNotFoundMessage", "text": "Bunun bir hata olduğunu düşünüyorsanız, lütfen ${studyContactEmail} adresiyle iletişime geçin", "language": "tr"},
-  {"keyName": "pageNotFoundReturnHome", "text": "Ana sayfaya geri dön", "language": "tr"},
-  {"keyName": "authErrorPageTitle", "text": "Bir hata oluştu", "language": "tr"},
-  {"keyName": "authErrorPageMessage", "text": "Kimlik doğrulama hizmetimizle ilgili bir sorun oluştu. Lütfen tekrar deneyin. Sorunun devam etmesi durumunda, lütfen ${studyContactEmail} adresiyle iletişime geçin.", "language": "tr"},
-  {"keyName": "navbarSampleKits", "text":  "Numune Kitleri", "language": "tr"},
-  {"keyName": "kitsPageTitle", "text": "Numune toplama kitleri", "language": "tr"},
-  {"keyName": "kitsPageDescription", "text": "Numune toplama kitleri, çalışma sürecinin önemli parçalarıdır ve araştırmacıların önemli iç görüler elde etmesine yardımcı olabilir. Aşağıda size sağlanan tüm kitlerin durumunu görebilirsiniz.", "language": "tr"},
-  {"keyName": "kitsPageInPersonTitle", "text": "Numuneyi şahsen sağlayın", "language": "tr"},
-  {"keyName": "kitsPageInPersonDescription", "text": "Bu çalışma şu anda bir numune toplama kitini şahsen tamamlama seçeneği sunuyor.", "language": "tr"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "Bir kiti şahsen tamamlayın", "language": "tr"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "Kitleriniz", "language": "tr"},
-  {"keyName": "kitsPageStatusPreparing", "text": "Hazırlanıyor", "language": "tr"},
-  {"keyName": "kitsPageStatusShipped", "text": "Gönderildi", "language": "tr"},
-  {"keyName": "kitsPageStatusReturned", "text": "İade Edildi", "language": "tr"},
-  {"keyName": "kitsPageStatusCreated", "text": "Oluşturuldu", "language": "tr"},
-  {"keyName": "kitsPageStatusCollected", "text": "Toplandı", "language": "tr"},
-  {"keyName": "kitsPageNoKits", "text": "Şu anda elinizde herhangi bir numune toplama kiti bulunmamaktadır.", "language": "tr"},
-  {"keyName": "kitsInPersonTitle", "text": "Numune kiti talimatları", "language": "tr"},
-  {"keyName": "kitsInPersonDescription", "text": "Numune toplama kitini şahsen tamamlayacaksanız, lütfen çalışma ekibinin bir üyesi tarafından verilmiş olan talimatları izleyin. Benzersiz katılımcı tanımlayıcınız gibi ihtiyaç duyabileceğiniz her türlü ek bilgiye aşağıdan ulaşabilirsiniz.", "language": "tr"},
-  {"keyName": "kitsInPersonSubDescription", "text": "Herhangi bir sorunuz olması durumunda lütfen çalışma ekibinin bir üyesine sorun.", "language": "tr"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "Numune toplama kitiniz", "language": "tr"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "Ekibin bir üyesi size bir numune toplama kiti sundu. Bu numune kiti hesabınızla ilişkilendirildi. Bir başkasına numune toplama kiti konusunda yardımcı oluyorsanız, lütfen her katılımcının kendisine atanan numune toplama kitini tamamladığından emin olun.", "language": "tr"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "Kit tanımlayıcınız", "language": "tr"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "Gösterge paneline geri dön", "language": "tr"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "Yenile", "language": "tr"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "Onay Gerekiyor", "language": "tr"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "Numune toplama kitini tamamlamadan önce çalışmaya kaydolmanız gereklidir. Çalışmayla ilgileniyorsanız, aşağıdaki bağlantıdan onay formuna erişebilir ve formu imzalayabilirsiniz.", "language": "tr"},
-  {"keyName": "kitsInPersonStartConsent", "text": "Onay Aşamasını Başlat", "language": "tr"},
-  {"keyName": "kitsInPersonError", "text": "Kit bilgileriniz yüklenirken bir hata oluştu. Yardım için lütfen çalışma ekibinin bir üyesiyle iletişime geçin.", "language": "tr"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "Numune toplama kitini tamamladıktan sonra, lütfen çalışma ekibinin bir üyesine teslim edin ve aşağıda yer alan size özel katılım kodunu taramasını sağlayın.", "language": "tr"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "Bir numune toplama kiti alabilmeniz için, çalışma ekibinden bir üye aşağıdaki size özel sağlanan benzersiz katılım kodunu tarayarak bir numune kitini hesabınızla ilişkilendirir.", "language": "tr"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "Kiti teslim aldıktan sonra, kit bilgilerinizi görüntülemek ve daha fazla talimata erişmek için lütfen bu sayfayı yenileyin.", "language": "tr"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "Ekibin bir üyesi numune toplama kitinizi teslim aldı. Numunenizin işlenmesinin ardından tarafınıza bir e-posta bildirimi gönderilir ve numunenizin durumunu çalışmanın gösterge paneli üzerinden görüntüleyebilirsiniz.", "language": "tr"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "Katılımınız için teşekkür ederiz.", "language": "tr"},
-  {"keyName": "kitTypeSaliva", "text": "Tükürük kiti", "language": "tr"},
-  {"keyName": "kitTypeStool", "text": "Dışkı kiti", "language": "tr"},
-  {"keyName": "kitTypeBlood", "text": "Kan kiti", "language": "tr"},
-  {"keyName": "documentDownloadButton", "text": "İndirmek", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "Henüz herhangi bir belge yüklemediniz", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "Oluşturuldu", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "Belgeler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Yüklenen belgeler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "Bir çalışmaya katılırken, bir form veya anketin parçası olarak belgeleri yüklemeniz istenebilir. Aşağıda, yüklediğiniz belgeleri yönetebilirsiniz.", "language": "tr", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Belgeler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "Emin misin?", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "Bu belgeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz. Çalışma ekibinden bir üye bu belgeyi daha önce indirmişse, belgenin onlar için hala erişilebilir olacağını lütfen unutmayın. Belgenin tüm kayıtlardan tamamen kaldırılmasını istiyorsanız lütfen çalışma ekibiyle iletişime geçin.", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "Bu belge kullanımda", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "Bu belge şu anda en az bir ankete yanıt olarak paylaşılıyor. Lütfen silmeden önce anket yanıtlarından kaldırın.", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "Silmek", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "Seçenekler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "yanıt olarak paylaşıldı", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "Seçilmiş belgeler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "Bu belgeler yanıtınıza dahildir", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "Hiçbir belge seçilmedi. Lütfen yeni bir belge yükleyin veya aşağıdan mevcut bir belgeyi seçin.", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "Mevcut belgeler", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "Bu belgeler yanıtınıza dahil değildir", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "Dosyaları buraya bırakın veya yüklemek için tıklayın", "language": "tr", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Hiçbir belge mevcut değil", "language": "tr", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "Oturumunuz sona ermek üzere", "language": "tr", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "Güvenliğinizi sağlamak ve verilerinizi korumak için ${timeRemaining} içinde oturumunuz kapatılacak.", "language": "tr", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "Gösterge Paneli",
+    "language": "tr"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "Parola Değiştir",
+    "language": "tr"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "Oturumu Kapat",
+    "language": "tr"
+  },
+  {
+    "keyName": "profile",
+    "text": "Profil",
+    "language": "tr"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "Oturumu Aç",
+    "language": "tr"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "Kayıt Ol",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "Tamam",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "Devam Ediyor",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "Başlatılmadı",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "Reddedildi",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "Kilitlendi",
+    "language": "tr"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "Bu çalışma için herhangi bir görev yok",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "geçmiş",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "YENİ",
+    "language": "tr"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "Bazı anketler, gerekli diğer görevler tamamlanana kadar kilitli kalır.",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "Anket",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "Anketler",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "Onay",
+    "language": "tr"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "Formlar",
+    "language": "tr"
+  },
+  {
+    "keyName": "start",
+    "text": "Başlat",
+    "language": "tr"
+  },
+  {
+    "keyName": "continue",
+    "text": "Devam Et",
+    "language": "tr"
+  },
+  {
+    "keyName": "save",
+    "text": "Kaydet",
+    "language": "tr"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "Daha Fazla Bilgi",
+    "language": "tr"
+  },
+  {
+    "keyName": "cancel",
+    "text": "İptal Et",
+    "language": "tr"
+  },
+  {
+    "keyName": "goBack",
+    "text": "Geri Dön",
+    "language": "tr"
+  },
+  {
+    "keyName": "name",
+    "text": "Tam Adı",
+    "language": "tr"
+  },
+  {
+    "keyName": "givenName",
+    "text": "Adı",
+    "language": "tr"
+  },
+  {
+    "keyName": "familyName",
+    "text": "Soyadı",
+    "language": "tr"
+  },
+  {
+    "keyName": "editName",
+    "text": "Tam Adı Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "Doğum Gününü Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "Doğum günü",
+    "language": "tr"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "Posta Adresi",
+    "language": "tr"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "Posta Adresini Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "Birincil Adres",
+    "language": "tr"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "Birincil Adres",
+    "language": "tr"
+  },
+  {
+    "keyName": "street1",
+    "text": "Sokak Adı 1",
+    "language": "tr"
+  },
+  {
+    "keyName": "street2",
+    "text": "Sokak Adı 2",
+    "language": "tr"
+  },
+  {
+    "keyName": "city",
+    "text": "Şehir",
+    "language": "tr"
+  },
+  {
+    "keyName": "state",
+    "text": "Bölge/İl",
+    "language": "tr"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "Posta Kodu",
+    "language": "tr"
+  },
+  {
+    "keyName": "country",
+    "text": "Ülke",
+    "language": "tr"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "İletişim Tercihleri",
+    "language": "tr"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "İletişim Tercihlerini Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "İletişim E-Posta Adresi",
+    "language": "tr"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "İletişim E-Posta Adresini Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "Telefon Numarası",
+    "language": "tr"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "Telefon Numarasını Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "Talepte Bulunmayın",
+    "language": "tr"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "İletişimde Bulunmayın",
+    "language": "tr"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "Talepte Bulunmayın Seçeneğini Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "Bildirimleri Düzenle",
+    "language": "tr"
+  },
+  {
+    "keyName": "notifications",
+    "text": "Bildirimler",
+    "language": "tr"
+  },
+  {
+    "keyName": "on",
+    "text": "Açık",
+    "language": "tr"
+  },
+  {
+    "keyName": "off",
+    "text": "Kapalı",
+    "language": "tr"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "Belirtilmedi",
+    "language": "tr"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "İletişim için kullanılacak e-postayı güncellemek için \"Kaydet\" seçeneğine basın. Oturum açma bilgilerinizin değişmeyeceğini unutmayın.",
+    "language": "tr"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "Gizlilik Politikası",
+    "language": "tr"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "Kullanım Koşulları",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "Posta kodu doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "Ülke doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "Bölge/İl doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "Şehir doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "Ev numarası doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "Sokak adı doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "Sokak türü doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "Lütfen bir apartman/daire numarası girin.",
+    "language": "tr"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "Adres doğrulanamadı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "Doğru adresi girdiğinizden emin misiniz?",
+    "language": "tr"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "Benzer bir adresi doğrulayabiliyoruz. Lütfen hangisini kullanmak istediğinizi seçin.",
+    "language": "tr"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "Yeni Adres",
+    "language": "tr"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "Eski Adres",
+    "language": "tr"
+  },
+  {
+    "keyName": "you",
+    "text": "Siz",
+    "language": "tr"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "Bakmakla Yükümlü Olduğunuz Kişi",
+    "language": "tr"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(siz)",
+    "language": "tr"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "Tüm Profiller",
+    "language": "tr"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "Profilleri Yönet",
+    "language": "tr"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "Yeni Katılımcı Ekle",
+    "language": "tr"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "Gösterge Paneli",
+    "language": "tr"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "Katılımcı Seç",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "${formName} tamamlandı",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "Tüm eylemler tamamlandı",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "Bu çalışma ile ilgili tüm eylemleri tamamladınız. Yeni eylemler mevcut olduğunda sizi bilgilendireceğiz. Katılımınız için teşekkür ederiz!",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "${studyName} Çalışmasına Hoş Geldiniz",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "Devam etmek için lütfen aşağıdaki onay formunu okuyun ve imzalayın.",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "${studyName} çalışmasına zaten kayıtlısınız.",
+    "language": "tr"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "Bu kullanıcı ${studyName} çalışmasına zaten kayıtlı.",
+    "language": "tr"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "Çerezler",
+    "language": "tr"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "Bu site, web sitemizin düzgün çalışmasını ve güvenliğini sağlamak ve web sitemizi kullanırken deneyiminizi iyileştirmek amacıyla &quot;çerezler&quot; adı verilen internet belirteçlerini kullanır. Kullandığımız çerezlerin tümü kesinlikle gerekli çerezlerdir. Bu çerez türü, hakkınızda kişisel olarak tanımlanabilir herhangi bir bilgi toplamaz ve tarama alışkanlıklarınızı takip etmez. Daha fazla bilgi edinmek için [Gizlilik Politikamızı okuyun](/privacy).",
+    "language": "tr"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "Çalışmaya Katıl",
+    "language": "tr"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "${studyName} çalışmasına gösterdiğiniz ilgi için teşekkür ederiz",
+    "language": "tr"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "Ne yazık ki, şu anda ${studyName} çalışmasına katılmak için uygunluk kriterlerini karşılamıyorsunuz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "Sizi gelişmelerden haberdar edebilmemiz için e-posta adresinizi aşağıdaki alana girin. Dilediğiniz zaman abonelikten çıkabilirsiniz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "Gelişmelerden haberdar kalın",
+    "language": "tr"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "${portalName} ana sayfasına geri dön",
+    "language": "tr"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "Posta Listesine Katıl",
+    "language": "tr"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "Çalışmayla ilgili gelişmelerden haberdar olun",
+    "language": "tr"
+  },
+  {
+    "keyName": "yourName",
+    "text": "Adınız",
+    "language": "tr"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "E-posta adresiniz",
+    "language": "tr"
+  },
+  {
+    "keyName": "join",
+    "text": "Katıl",
+    "language": "tr"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "Katıldığınız için teşekkürler",
+    "language": "tr"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "Sayfa bulunamadı",
+    "language": "tr"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "Bunun bir hata olduğunu düşünüyorsanız, lütfen ${studyContactEmail} adresiyle iletişime geçin",
+    "language": "tr"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "Ana sayfaya geri dön",
+    "language": "tr"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "Bir hata oluştu",
+    "language": "tr"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "Kimlik doğrulama hizmetimizle ilgili bir sorun oluştu. Lütfen tekrar deneyin. Sorunun devam etmesi durumunda, lütfen ${studyContactEmail} adresiyle iletişime geçin.",
+    "language": "tr"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "Numune Kitleri",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "Numune toplama kitleri",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "Numune toplama kitleri, çalışma sürecinin önemli parçalarıdır ve araştırmacıların önemli iç görüler elde etmesine yardımcı olabilir. Aşağıda size sağlanan tüm kitlerin durumunu görebilirsiniz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "Numuneyi şahsen sağlayın",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "Bu çalışma şu anda bir numune toplama kitini şahsen tamamlama seçeneği sunuyor.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "Bir kiti şahsen tamamlayın",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "Kitleriniz",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "Hazırlanıyor",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "Gönderildi",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "İade Edildi",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "Oluşturuldu",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "Toplandı",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "Şu anda elinizde herhangi bir numune toplama kiti bulunmamaktadır.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "Numune kiti talimatları",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "Numune toplama kitini şahsen tamamlayacaksanız, lütfen çalışma ekibinin bir üyesi tarafından verilmiş olan talimatları izleyin. Benzersiz katılımcı tanımlayıcınız gibi ihtiyaç duyabileceğiniz her türlü ek bilgiye aşağıdan ulaşabilirsiniz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "Herhangi bir sorunuz olması durumunda lütfen çalışma ekibinin bir üyesine sorun.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "Numune toplama kitiniz",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "Ekibin bir üyesi size bir numune toplama kiti sundu. Bu numune kiti hesabınızla ilişkilendirildi. Bir başkasına numune toplama kiti konusunda yardımcı oluyorsanız, lütfen her katılımcının kendisine atanan numune toplama kitini tamamladığından emin olun.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "Kit tanımlayıcınız",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "Gösterge paneline geri dön",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "Yenile",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "Onay Gerekiyor",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "Numune toplama kitini tamamlamadan önce çalışmaya kaydolmanız gereklidir. Çalışmayla ilgileniyorsanız, aşağıdaki bağlantıdan onay formuna erişebilir ve formu imzalayabilirsiniz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "Onay Aşamasını Başlat",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "Kit bilgileriniz yüklenirken bir hata oluştu. Yardım için lütfen çalışma ekibinin bir üyesiyle iletişime geçin.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "Numune toplama kitini tamamladıktan sonra, lütfen çalışma ekibinin bir üyesine teslim edin ve aşağıda yer alan size özel katılım kodunu taramasını sağlayın.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "Bir numune toplama kiti alabilmeniz için, çalışma ekibinden bir üye aşağıdaki size özel sağlanan benzersiz katılım kodunu tarayarak bir numune kitini hesabınızla ilişkilendirir.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "Kiti teslim aldıktan sonra, kit bilgilerinizi görüntülemek ve daha fazla talimata erişmek için lütfen bu sayfayı yenileyin.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "Ekibin bir üyesi numune toplama kitinizi teslim aldı. Numunenizin işlenmesinin ardından tarafınıza bir e-posta bildirimi gönderilir ve numunenizin durumunu çalışmanın gösterge paneli üzerinden görüntüleyebilirsiniz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "Katılımınız için teşekkür ederiz.",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "Tükürük kiti",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "Dışkı kiti",
+    "language": "tr"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "Kan kiti",
+    "language": "tr"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "İndirmek",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "Henüz herhangi bir belge yüklemediniz",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "Oluşturuldu",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "Belgeler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "Yüklenen belgeler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "Bir çalışmaya katılırken, bir form veya anketin parçası olarak belgeleri yüklemeniz istenebilir. Aşağıda, yüklediğiniz belgeleri yönetebilirsiniz.",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "Belgeler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "Emin misin?",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "Bu belgeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz. Çalışma ekibinden bir üye bu belgeyi daha önce indirmişse, belgenin onlar için hala erişilebilir olacağını lütfen unutmayın. Belgenin tüm kayıtlardan tamamen kaldırılmasını istiyorsanız lütfen çalışma ekibiyle iletişime geçin.",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "Bu belge kullanımda",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "Bu belge şu anda en az bir ankete yanıt olarak paylaşılıyor. Lütfen silmeden önce anket yanıtlarından kaldırın.",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "Silmek",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "Seçenekler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "yanıt olarak paylaşıldı",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "Seçilmiş belgeler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "Bu belgeler yanıtınıza dahildir",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "Hiçbir belge seçilmedi. Lütfen yeni bir belge yükleyin veya aşağıdan mevcut bir belgeyi seçin.",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "Mevcut belgeler",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "Bu belgeler yanıtınıza dahil değildir",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "Dosyaları buraya bırakın veya yüklemek için tıklayın",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "Hiçbir belge mevcut değil",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "Oturumunuz sona ermek üzere",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "Güvenliğinizi sağlamak ve verilerinizi korumak için ${timeRemaining} içinde oturumunuz kapatılacak.",
+    "language": "tr",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "tr",
+    "text": "Kayıt sürecinde bir şeyler ters gitti. Lütfen formu tekrar doldurun.",
+    "machineTranslated": true
+  }
 ]

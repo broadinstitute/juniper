@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_new_survey_response_days"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: create_new_response_after_days, type: integer }
