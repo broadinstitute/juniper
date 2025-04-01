@@ -35,64 +35,72 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
         {shippingInformation(kitRequest, users)}
       </div>
 
-      <InfoCard>
-        <InfoCardHeader>
-          <div className="d-flex justify-content-between align-items-center w-100">
-            <div className="fw-bold lead my-1">Timeline</div>
-          </div>
-        </InfoCardHeader>
-        <div className={'my-3'}>
-          {kitRequest.createdAt && timelineEvent(
-            <>
-              Requested by
-              <span className="fw-semibold ps-1">
-                {users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}
-              </span>
-            </>,
-            kitRequest.createdAt
-          )}
-          {kitRequest.collectingAdminUserId && timelineEvent(
-            <>
-              Collected by
-              <span className="fw-semibold ps-1">
-                {users.find(user => user.id === kitRequest.collectingAdminUserId)?.username}
-              </span>
-            </>
-          )}
-          {kitRequest.labeledAt && timelineEvent(
-            `Queued for shipment`,
-            kitRequest.labeledAt
-          )}
-          {kitRequest.sentAt && timelineEvent(
-            <>
-              Shipped to participant
-              <span className="fw-semibold">{uspsTrackingLink(kitRequest.trackingNumber)}</span></>,
-            kitRequest.sentAt
-          )}
-          {kitRequest.receivedAt && timelineEvent(
-            <>
-              Returned by participant
-              <span className="fw-semibold">{fedexTrackingLink(kitRequest.returnTrackingNumber)}</span></>,
-            kitRequest.receivedAt
-          )}
-          <div className={'text-center pt-3 fst-italic text-muted'}>
-              Status updates will appear here as they occur
-          </div>
-        </div>
-      </InfoCard>
+      <KitTimeline kitRequest={kitRequest} users={users}/>
       <AdvancedInformation kitRequest={kitRequest}/>
     </div>}
   </>
 }
 
+const KitTimeline = ({ kitRequest, users }: { kitRequest: KitRequest, users: AdminUser[] }) => {
+  return (
+    <InfoCard>
+      <InfoCardHeader>
+        <div className="d-flex justify-content-between align-items-center w-100">
+          <div className="fw-bold lead my-1">Timeline</div>
+        </div>
+      </InfoCardHeader>
+      <div className={'my-3'}>
+        {kitRequest.createdAt && timelineEvent(
+          <>
+                Requested by
+            <span className="fw-semibold ps-1">
+              {users.find(user => user.id === kitRequest.creatingAdminUserId)?.username}
+            </span>
+          </>,
+          kitRequest.createdAt
+        )}
+        {kitRequest.collectingAdminUserId && timelineEvent(
+          <>
+                Collected by
+            <span className="fw-semibold ps-1">
+              {users.find(user => user.id === kitRequest.collectingAdminUserId)?.username}
+            </span>
+          </>
+        )}
+        {kitRequest.labeledAt && timelineEvent(
+              `Queued for shipment`,
+              kitRequest.labeledAt
+        )}
+        {kitRequest.sentAt && timelineEvent(
+          <>
+                Shipped to participant
+            <span className="fw-semibold">{uspsTrackingLink(kitRequest.trackingNumber)}</span></>,
+          kitRequest.sentAt
+        )}
+        {kitRequest.receivedAt && timelineEvent(
+          <>
+                Returned by participant
+            <span className="fw-semibold">{fedexTrackingLink(kitRequest.returnTrackingNumber)}</span></>,
+          kitRequest.receivedAt
+        )}
+        <div className={'text-center pt-3 fst-italic text-muted'}>
+            Status updates will appear here as they occur
+        </div>
+      </div>
+    </InfoCard>
+  )
+}
+
 const timelineEvent = (timelineEvent: React.ReactNode, timestamp?: number) => {
-  return <div className={'d-flex py-2 my-1 bg-light'}>
-    {timestamp ?
-      <div className="fw-semibold text-center" style={{ width: '40%' }}>{instantToDefaultString(timestamp)}</div> :
-      <div className="text-muted fw-bold text-center" style={{ width: '40%' }}>|</div>
-    }
-    <div className="">{timelineEvent}</div>
-  </div>
+  return (
+    <div className={'d-flex py-2 my-1 bg-light'}>
+      {timestamp ?
+        <div className="fw-semibold text-center" style={{ width: '40%' }}>{instantToDefaultString(timestamp)}</div> :
+        <div className="text-muted fw-bold text-center" style={{ width: '40%' }}>|</div>
+      }
+      <div className="">{timelineEvent}</div>
+    </div>
+  )
 }
 
 const shippingInformation = (kitRequest: KitRequest, users: AdminUser[]) => {
@@ -132,7 +140,7 @@ const quickLookInfo = (kitRequest: KitRequest) => {
       </div>
     </InfoCardHeader>
     <div className={'d-flex m-3 align-items-center'}>
-      {KitStatusBadge({ status: kitRequest.status })}
+      {getKitStatusBadge(kitRequest.status)}
     </div>
   </InfoCard>
 }
@@ -146,7 +154,7 @@ const StatusBadge = ({ icon, iconClass, message }: { icon: IconDefinition, iconC
   )
 }
 
-const KitStatusBadge = ({ status } : { status: KitRequestStatus}) => {
+const getKitStatusBadge = (status: KitRequestStatus) => {
   switch (status) {
     case 'CREATED':
       return <StatusBadge
