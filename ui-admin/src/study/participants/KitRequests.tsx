@@ -127,6 +127,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }: {
 
 export const prettifyString = (value: string) => {
   if (!value) { return '' }
+  if (value === 'MAILED') { return 'Mail' }
   //takes a string such as COLLECTED_BY_STAFF and converts it to Collected By Staff
   return value.split('_').map(s => startCase(s.toLowerCase())).join(' ')
 }

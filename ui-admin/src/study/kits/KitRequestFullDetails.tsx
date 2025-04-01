@@ -3,14 +3,14 @@ import React from 'react'
 import { InfoCard, InfoCardHeader } from 'components/InfoCard'
 import { useParams } from 'react-router-dom'
 import { Enrollee, instantToDefaultString, KitRequest, KitRequestStatus, SUPPORT_EMAIL_ADDRESS } from '@juniper/ui-core'
-import { NavBreadcrumb } from '../../navbar/AdminNavbar'
-import { useAdminUserContext } from '../../providers/AdminUserProvider'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { KitRequestAddress } from '../participants/KitRequests'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFedex, faUsps } from '@fortawesome/free-brands-svg-icons'
-import { AdminUser } from '../../api/adminUser'
+import { AdminUser } from 'api/adminUser'
 import {
-  faCircleCheck, faCircleExclamation,
+  faCircleCheck, faCircleExclamation, faHandshake,
   faQuestion,
   faSpinner,
   faTruckFast
@@ -51,6 +51,14 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
             </>,
             kitRequest.createdAt
           )}
+          {kitRequest.collectingAdminUserId && timelineEvent(
+            <>
+              Collected by
+              <span className="fw-semibold ps-1">
+                {users.find(user => user.id === kitRequest.collectingAdminUserId)?.username}
+              </span>
+            </>
+          )}
           {kitRequest.labeledAt && timelineEvent(
             `Queued for shipment`,
             kitRequest.labeledAt
@@ -68,11 +76,11 @@ export function KitRequestFullDetails({ enrollee, studyEnvContext }: {
             kitRequest.receivedAt
           )}
           <div className={'text-center pt-3 fst-italic text-muted'}>
-                Status updates will appear here as they occur
+              Status updates will appear here as they occur
           </div>
         </div>
       </InfoCard>
-      {/*<AdvancedInformation kitRequest={kitRequest}/>*/}
+      <AdvancedInformation kitRequest={kitRequest}/>
     </div>}
   </>
 }
@@ -94,9 +102,9 @@ const shippingInformation = (kitRequest: KitRequest, users: AdminUser[]) => {
         <div className="fw-bold lead my-1">Shipping Address</div>
       </div>
     </InfoCardHeader>
-    <div className={'m-3'}>
+    <div className={'d-flex m-3 align-items-center'}>
       {kitRequest.distributionMethod === 'MAILED' ?
-        <>
+        <div>
           <KitRequestAddress sentToAddressJson={kitRequest.sentToAddress}/>
           <div className={'pt-1 fst-italic text-muted'}>
             {kitRequest.skipAddressValidation ?
@@ -109,7 +117,7 @@ const shippingInformation = (kitRequest: KitRequest, users: AdminUser[]) => {
               </span>
             }
           </div>
-        </> : `This kit was distributed to the participant in person by ${users.find(
+        </div> : `This kit was distributed to the participant in person by ${users.find(
           user => user.id === kitRequest.creatingAdminUserId
         )?.username}.`}
     </div>
@@ -149,6 +157,11 @@ const KitStatusBadge = ({ status } : { status: KitRequestStatus}) => {
       return <StatusBadge
         icon={faSpinner}
         message="This kit is being queued for shipment."
+      />
+    case 'COLLECTED_BY_STAFF':
+      return <StatusBadge
+        icon={faHandshake}
+        message="This kit has been collected by a member of the study staff."
       />
     case 'SENT':
       return <StatusBadge
@@ -203,8 +216,18 @@ const AdvancedInformation = ({ kitRequest }: {kitRequest: KitRequest}) => {
       </div>
     </InfoCardHeader>
     <div className={'m-3'}>
-      <div className="d-flex">Skip address validation: {kitRequest.skipAddressValidation ? 'yes' : 'no'}</div>
-      {kitRequest.details || ''}
+      <div className="d-flex">
+        <div className={'fw-bold pe-1'}>Kit Type:</div>
+        {kitRequest.kitType.displayName || 'N/A'}
+      </div>
+      <div className="d-flex">
+        <div className={'fw-bold pe-1'}>Manufacturer Barcode:</div>
+        {kitRequest.kitLabel || 'N/A'}
+      </div>
+      <div className="d-flex mt-1">
+        <div className={'fw-bold pe-1'}>Other Details:</div>
+        {<code>{kitRequest.details || 'N/A'}</code>}
+      </div>
     </div>
   </InfoCard>
 }
