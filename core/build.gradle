@@ -51,7 +51,7 @@ dependencies {
     implementation 'org.jooq:jooq:3.20.2'
     implementation 'com.mixpanel:mixpanel-java:1.5.3'
     implementation platform('com.google.cloud:libraries-bom:26.54.0')
-    implementation 'com.google.cloud:google-cloud-storage:2.48.1'
+    implementation 'com.google.cloud:google-cloud-storage:2.50.0'
 
     implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager:6.1.1'
     implementation 'com.google.cloud:spring-cloud-gcp-starter:6.1.1'
