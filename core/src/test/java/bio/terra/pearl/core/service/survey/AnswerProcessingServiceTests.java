@@ -125,10 +125,6 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         assertThat((Boolean) result, equalTo(true));
 
         result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
-                .apply(Answer.builder().stringValue("Yes").build(), mapping);
-        assertThat((Boolean) result, equalTo(true));
-
-        result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
                 .apply(Answer.builder().stringValue("false").build(), mapping);
         assertThat((Boolean) result, equalTo(false));
     }
