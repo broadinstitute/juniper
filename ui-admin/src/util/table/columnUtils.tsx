@@ -122,8 +122,12 @@ export function DynamicColumnControl({ facets, dynamicFacets, setDynamicFacets }
   </div>
 }
 
-
-export const enrolleeShortcodeColumn = <T extends EnrolleeSearchExpressionResult, >(currentEnvPath: string):
+export type HasEnrolleeShortcode = {
+  enrollee?: {
+    shortcode: string
+  }
+}
+export const enrolleeShortcodeColumn = <T extends HasEnrolleeShortcode, >(currentEnvPath: string):
   ColumnDef<T> => {
   return {
     header: 'Shortcode',

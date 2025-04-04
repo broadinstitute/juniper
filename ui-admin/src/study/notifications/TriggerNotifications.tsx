@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
-import { instantToDefaultString } from '@juniper/ui-core'
+import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { useLoadingEffect } from '../../api/api-utils'
 import Api, { Notification } from '../../api/api'
-import { basicTableLayout } from 'util/table/tableUtils'
+import { basicTableLayout, DownloadControl } from 'util/table/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { NavLink, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import InfoPopup from '../../components/forms/InfoPopup'
 import { renderEmailActivityIcon } from '../participants/enrolleeView/EnrolleeTimeline'
+import { enrolleeShortcodeColumn } from '../../util/table/columnUtils'
 
 /** loads the list of notifications for a given trigger config */
 export default function TriggerNotifications({ studyEnvContext }:
@@ -21,16 +22,7 @@ export default function TriggerNotifications({ studyEnvContext }:
 
 
   const columns: ColumnDef<Notification>[] = [
-    {
-      header: 'Enrollee',
-      id: 'enrollee',
-      cell: ({ row }) => <>
-        {row.original.enrollee && <NavLink
-          to={`../../participants/${row.original.enrollee?.shortcode}`}>
-          {row.original.enrollee?.shortcode}
-        </NavLink>}
-      </>
-    },
+    enrolleeShortcodeColumn(studyEnvContext.currentEnvPath),
     {
       header: 'Sent To',
       accessorKey: 'sentTo'
@@ -57,7 +49,10 @@ export default function TriggerNotifications({ studyEnvContext }:
             }
           /></div>
         </div>,
-      accessorKey: 'opened',
+      accessorKey: 'eventDetails.opensCount',
+      meta: {
+        columnType: 'boolean'
+      },
       cell: ({ row }) => {
         return renderEmailActivityIcon(row.original)
       }
@@ -65,6 +60,9 @@ export default function TriggerNotifications({ studyEnvContext }:
     {
       header: 'time',
       accessorKey: 'createdAt',
+      meta: {
+        columnType: 'instant'
+      },
       cell: info => instantToDefaultString(info.getValue() as number)
     }
   ]
@@ -94,6 +92,8 @@ export default function TriggerNotifications({ studyEnvContext }:
     <h5>Notifications</h5>
     {/* eslint-disable-next-line react/jsx-no-undef */}
     <LoadingSpinner isLoading={isLoading}>
+      <DownloadControl table={table}
+        fileName={`SentNotifications-${currentIsoDate()}`}/>
       {basicTableLayout(table)}
     </LoadingSpinner>
   </div>

@@ -17,10 +17,10 @@ import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRoute
 import {
   basicTableLayout,
   IndeterminateCheckbox, renderEmptyMessage,
-  RowVisibilityCount, checkboxColumnCell
+  RowVisibilityCount, checkboxColumnCell, DownloadControl
 } from 'util/table/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Enrollee, instantToDateString, KitType, StudyEnvParams } from '@juniper/ui-core'
+import { currentIsoDate, Enrollee, instantToDateString, KitType, StudyEnvParams } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
@@ -140,6 +140,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     header: 'Join date',
     accessorKey: 'enrollee.createdAt',
     id: 'enrollee.createdAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: data => instantToDateString(Number(data.getValue()))
   },
   enrolleeConsentedColumn(),
@@ -160,6 +163,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     header: '# Optional surveys complete',
     id: 'optionalSurveys',
     enableColumnFilter: false,
+    meta: {
+      columnType: 'number'
+    },
     accessorFn: enrollee => optionalSurveysCompleted(enrollee)
   },
   ...studyEnvKitTypes.map(kitType => ({
@@ -219,6 +225,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
         </Button>
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
+        <div><DownloadControl table={table}
+          fileName={`kits-${currentIsoDate()}`}/></div>
         { showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
