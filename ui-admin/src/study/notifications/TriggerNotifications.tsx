@@ -92,8 +92,12 @@ export default function TriggerNotifications({ studyEnvContext }:
     <h5>Notifications</h5>
     {/* eslint-disable-next-line react/jsx-no-undef */}
     <LoadingSpinner isLoading={isLoading}>
-      <DownloadControl table={table}
-        fileName={`SentNotifications-${currentIsoDate()}`}/>
+      <div className="d-flex align-items-center">
+        Sent {tableData.length} notifications
+        <DownloadControl table={table}
+          fileName={`SentNotifications-${currentIsoDate()}`}/>
+      </div>
+
       {basicTableLayout(table)}
     </LoadingSpinner>
   </div>

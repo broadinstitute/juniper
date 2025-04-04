@@ -153,11 +153,11 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
 export function renderEmailActivityIcon(row: Notification) {
   const notificationEventDetails = row.eventDetails
   if (notificationEventDetails && notificationEventDetails.opensCount > 0) {
-    return <FontAwesomeIcon icon={faEnvelopeOpen} aria-label={'Email opened'}/>
+    return <FontAwesomeIcon icon={faEnvelopeOpen} aria-label={'Email opened'} />
   }
 
   if (notificationEventDetails) {
-    return <FontAwesomeIcon icon={faEnvelope} aria-label={'Email not yet opened'}/>
+    return <FontAwesomeIcon icon={faEnvelope} aria-label={'Email not yet opened'} />
   }
 
   return <span className="fw-light fst-italic">n/a</span>
