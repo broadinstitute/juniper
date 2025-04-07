@@ -12,7 +12,7 @@
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.26.3",
     "@babel/preset-typescript": "^7.26.0",
-    "@prosopo/vite-plugin-watch-workspace": "^1.0.2",
+    "@prosopo/vite-plugin-watch-workspace": "^2.5.5",
     "@rollup/plugin-typescript": "^12.1.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.0",
