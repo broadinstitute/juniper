@@ -81,6 +81,12 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
           title={'Enrolled'}
           condensed={true}
           values={[instantToDefaultString(enrollee.createdAt)]}/>
+        {!enrollee.subject &&
+            <InfoCardValue
+              title={'Account Type'}
+              condensed={true}
+              values={['Non-subject (proxy only)']}
+            />}
       </InfoCardBody>
     </InfoCard>
 

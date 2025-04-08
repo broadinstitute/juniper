@@ -27,7 +27,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import {
   faCircleCheck,
-  faCircleHalfStroke, faList,
+  faCircleHalfStroke,
+  faList,
   faMinus
 } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -120,7 +121,6 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
   const preEnrollSurvey = surveys
     .find(survey => survey.survey.surveyType === 'PRE_ENROLL')?.survey
 
-
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
       <Link to={`${currentEnvPath}/participants/${enrollee.shortcode}`}>
@@ -145,66 +145,68 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
               </li>
-              <li style={navListItemStyle}>
-                <CollapsableMenu header={'Forms'} headerClass="text-black" content={
-                  <ul className="list-unstyled">
-                    {preEnrollSurvey && <li className="mb-2">
-                      <NavLink to="preRegistration" className={getLinkCssClasses}>
-                        PreEnrollment
-                      </NavLink>
-                    </li>}
-                    <SurveyList surveys={surveys
-                      .filter(survey => survey.survey.surveyType === 'CONSENT')}
-                    responseMap={responseMap} emptyText={'No consent forms'}/>
-                  </ul>}/>
-              </li>
-              <li style={navListItemStyle}>
-                <CollapsableMenu header={'Research Surveys'} headerClass="text-black" content={
-                  <SurveyList surveys={surveys
-                    .filter(survey => survey.survey.surveyType === 'RESEARCH')}
-                  responseMap={responseMap} emptyText={'No research forms'}/>}
-                />
-              </li>
-              <li style={navListItemStyle}>
-                <CollapsableMenu header={'Study Staff Forms'} headerClass="text-black" content={
-                  <SurveyList surveys={surveys
-                    .filter(survey => survey.survey.surveyType === 'ADMIN')}
-                  responseMap={responseMap} emptyText={'No study staff forms'}/>}
-                />
-              </li>
-              <RequireUserPermission superuser>
+              {enrollee.subject && <>
                 <li style={navListItemStyle}>
-                  <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
-                    <>
+                  <CollapsableMenu header={'Forms'} headerClass="text-black" content={
+                    <ul className="list-unstyled">
+                      {preEnrollSurvey && <li className="mb-2">
+                        <NavLink to="preRegistration" className={getLinkCssClasses}>
+                        PreEnrollment
+                        </NavLink>
+                      </li>}
                       <SurveyList surveys={surveys
-                        .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
-                      responseMap={responseMap} emptyText={'No document requests'}
-                      />
-                      <NavLink to="documents" className={getLinkCssClasses}>
-                        <FontAwesomeIcon className="me-2" icon={faList}/>
-                        <span className={'fst-italic'}>View all documents</span>
-                      </NavLink>
-                    </>}
+                        .filter(survey => survey.survey.surveyType === 'CONSENT')}
+                      responseMap={responseMap} emptyText={'No consent forms'}/>
+                    </ul>}/>
+                </li>
+                <li style={navListItemStyle}>
+                  <CollapsableMenu header={'Research Surveys'} headerClass="text-black" content={
+                    <SurveyList surveys={surveys
+                      .filter(survey => survey.survey.surveyType === 'RESEARCH')}
+                    responseMap={responseMap} emptyText={'No research forms'}/>}
                   />
                 </li>
-              </RequireUserPermission>
-              <li style={navListItemStyle}>
-                <CollapsableMenu header={'Outreach'} headerClass="text-black" content={
-                  <SurveyList surveys={surveys
-                    .filter(survey => survey.survey.surveyType === 'OUTREACH')}
-                  responseMap={responseMap} emptyText={'No outreach forms'}/>}
-                />
-              </li>
-              <li style={navListItemStyle} className="ps-3 d-flex justify-content-between align-items-center">
-                <NavLink to="kitRequests" className={getLinkCssClasses}>
+                <li style={navListItemStyle}>
+                  <CollapsableMenu header={'Study Staff Forms'} headerClass="text-black" content={
+                    <SurveyList surveys={surveys
+                      .filter(survey => survey.survey.surveyType === 'ADMIN')}
+                    responseMap={responseMap} emptyText={'No study staff forms'}/>}
+                  />
+                </li>
+                <RequireUserPermission superuser>
+                  <li style={navListItemStyle}>
+                    <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
+                      <>
+                        <SurveyList surveys={surveys
+                          .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
+                        responseMap={responseMap} emptyText={'No document requests'}
+                        />
+                        <NavLink to="documents" className={getLinkCssClasses}>
+                          <FontAwesomeIcon className="me-2" icon={faList}/>
+                          <span className={'fst-italic'}>View all documents</span>
+                        </NavLink>
+                      </>}
+                    />
+                  </li>
+                </RequireUserPermission>
+                <li style={navListItemStyle}>
+                  <CollapsableMenu header={'Outreach'} headerClass="text-black" content={
+                    <SurveyList surveys={surveys
+                      .filter(survey => survey.survey.surveyType === 'OUTREACH')}
+                    responseMap={responseMap} emptyText={'No outreach forms'}/>}
+                  />
+                </li>
+                <li style={navListItemStyle} className="ps-3 d-flex justify-content-between align-items-center">
+                  <NavLink to="kitRequests" className={getLinkCssClasses}>
                   Kit requests
-                </NavLink>
-                {
-                  <span className="badge align-middle bg-secondary ms-1 mb-1">
-                    {enrollee.kitRequests.length}
-                  </span>
-                }
-              </li>
+                  </NavLink>
+                  {
+                    <span className="badge align-middle bg-secondary ms-1 mb-1">
+                      {enrollee.kitRequests.length}
+                    </span>
+                  }
+                </li>
+              </>}
               <li style={navListItemStyle}>
                 <CollapsableMenu header={'History & Advanced'} headerClass="text-black" content={
                   <ul className="list-unstyled">
