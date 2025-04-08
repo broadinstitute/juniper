@@ -1,7 +1,20 @@
-import { asMockedFn, MockI18nProvider, setupRouterTest, mockParticipantFile } from '@juniper/ui-core'
+import {
+  asMockedFn,
+  MockI18nProvider,
+  mockParticipantFile,
+  setupRouterTest
+} from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { mockPortal, mockUsePortalEnv } from 'test-utils/test-portal-factory'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import {
+  mockPortal,
+  mockUsePortalEnv
+} from 'test-utils/test-portal-factory'
+import {
+  act,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import React from 'react'
 import DocumentLibrary from './DocumentLibrary'
 import { useActiveUser } from 'providers/ActiveUserProvider'
@@ -26,11 +39,14 @@ beforeEach(() => {
 })
 
 describe('DocumentLibrary', () => {
-  it('renders no documents message', () => {
+  it('renders no documents message', async () => {
+    asMockedFn(Api.listParticipantFiles).mockResolvedValue([])
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><DocumentLibrary/></MockI18nProvider>)
     render(RoutedComponent)
     expect(screen.getByText('{documentsPageTitle}')).toBeInTheDocument()
-    expect(screen.getByText('{documentsListNone}')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('{documentsListNone}')).toBeInTheDocument()
+    })
   })
 
   it('renders documents', async () => {

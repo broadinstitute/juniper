@@ -213,6 +213,8 @@ export const mockParticipantFile = (fileName: string, associatedAnswers?: Answer
     fileType: 'application/pdf',
     createdAt: 0,
     lastUpdatedAt: 0,
-    associatedAnswers: associatedAnswers || []
+    associatedAnswers: associatedAnswers || [],
+    virusScanResult: 'CLEAN',
+    externalFileId: 'externalId'
   }
 }

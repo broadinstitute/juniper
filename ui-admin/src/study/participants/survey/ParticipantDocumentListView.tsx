@@ -1,20 +1,26 @@
 import React from 'react'
 import {
   ColumnDef,
-  getCoreRowModel, Row,
+  getCoreRowModel,
+  Row,
   useReactTable
 } from '@tanstack/react-table'
 import {
   Enrollee,
-  ParticipantFile, saveBlobAsDownload
+  ParticipantFile,
+  saveBlobAsDownload
 } from '@juniper/ui-core'
-import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
+import {
+  basicTableLayout,
+  renderEmptyMessage
+} from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { NavLink } from 'react-router-dom'
+import { useUser } from 'user/UserProvider'
 
 export const ParticipantDocumentListView = ({
   studyEnvContext,
@@ -27,6 +33,8 @@ export const ParticipantDocumentListView = ({
   showAssociatedTasks: boolean,
   documents: ParticipantFile[]
 }) => {
+  const { user } = useUser()
+
   // @ts-ignore
   const columns: ColumnDef<ParticipantFile>[] = [
     {
@@ -51,20 +59,50 @@ export const ParticipantDocumentListView = ({
       accessorKey: 'fileType'
     },
     {
+      header: 'Antivirus Result',
+      accessorKey: 'virusScanResult',
+      cell: ({ row }) => {
+        const result = row.original.virusScanResult
+        if (result === 'CLEAN') {
+          return <span>Clean</span>
+        } else if (result === 'QUARANTINED') {
+          return <span className='text-danger fw-bold'>Malware Detected</span>
+        } else if (result === 'UNSCANNED') {
+          return <span>In Progress</span>
+        }
+
+        return <span>(no result)</span>
+      }
+    },
+    {
       header: 'Actions',
       cell: ({ row }) => {
-        return <button className='btn btn-secondary' onClick={() => download(row.original)}>
+        return <button
+          className='btn btn-secondary'
+          onClick={() => download(row.original)}
+          disabled={row.original.virusScanResult === 'QUARANTINED'}
+        >
           <FontAwesomeIcon icon={faDownload}/>
         </button>
       }
     }
   ]
 
+  if (user?.superuser) {
+    columns.push({
+      header: 'External ID',
+      cell: ({ row }) => {
+        return row.original.externalFileId
+      }
+    })
+  }
+
   const table = useReactTable({
     columns,
     data: documents,
     getCoreRowModel: getCoreRowModel()
   })
+
 
   const download = async (file: ParticipantFile) => {
     const response = await Api.downloadParticipantFile(

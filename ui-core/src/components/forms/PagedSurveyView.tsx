@@ -22,9 +22,11 @@ import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import {
   Enrollee,
+  HubResponse,
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
+import { isNil } from 'lodash'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
@@ -40,6 +42,7 @@ export function PagedSurveyView({
   updateEnrollee,
   updateProfile,
   taskId,
+  setTaskId,
   selectedLanguage,
   justification,
   setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
@@ -53,7 +56,9 @@ export function PagedSurveyView({
     updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
     proxyProfile?: Profile,
     justification?: string,
-    taskId: string, adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
+    taskId: string,
+    setTaskId: (taskId: string) => void,
+    adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
   const pager = useRoutablePageNumber()
@@ -102,6 +107,8 @@ export function PagedSurveyView({
         participantTasks: response.tasks,
         profile: response.profile
       }
+      // update the taskId in case this is an update to a longitudinal survey which will create a new task & response
+      updateTaskId(response)
       /**
        * CAREFUL -- we're updating the enrollee object so that if they navigate back to the dashboard, they'll
        * see this survey as 'in progress' and capture any profile changes.
@@ -121,6 +128,15 @@ export function PagedSurveyView({
       prevSave.current = prevPrevSave
       lastAutoSaveErrored.current = true
     })
+  }
+
+  const updateTaskId = (hubResponse: HubResponse) => {
+    const surveyResponseId = hubResponse.response.id
+    const taskForResponse = hubResponse.tasks.find(task => task.surveyResponseId === surveyResponseId)
+    //set url params to the newest task id
+    if (taskForResponse && taskId !== taskForResponse.id) {
+      setTaskId(taskForResponse.id)
+    }
   }
 
   const cancelAutosave = useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
@@ -166,6 +182,27 @@ export function PagedSurveyView({
     }
   }
 
+  const shouldBeReadonly = () => {
+    if (form.recurrenceType === 'LONGITUDINAL' && isNil(adminUserId)) {
+      const tasks = enrollee
+        .participantTasks
+        .filter(task => task.targetStableId === form.stableId)
+
+      if (tasks.length > 0) {
+        const latestTask = tasks.reduce(
+          (
+            a, b
+          ) => a.completedAt && b.completedAt && a.completedAt > b.completedAt ? a : b)
+
+        // if the task is not the latest task, then it should be readonly
+        if (taskId != latestTask.id) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
     form, resumableData, onComplete, pager, {
       studyEnvParams,
@@ -174,7 +211,8 @@ export function PagedSurveyView({
       proxyProfile,
       referencedAnswers,
       extraVariables: {}
-    }
+    },
+    { readonly: shouldBeReadonly() }
   )
 
   surveyModel.locale = selectedLanguage

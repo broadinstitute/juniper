@@ -1,163 +1,866 @@
 [
-  {"keyName": "navbarDashboard", "text": "ダッシュボード", "language": "ja"},
-  {"keyName": "navbarChangePassword", "text": "パスワードの変更", "language": "ja"},
-  {"keyName": "navbarLogout", "text": "ログアウト", "language": "ja"},
-  {"keyName": "profile", "text": "プロファイル", "language": "ja"},
-  {"keyName": "navbarLogin", "text": "ログイン", "language": "ja"},
-  {"keyName": "navbarJoin", "text": "登録", "language": "ja"},
-  {"keyName": "taskComplete", "text": "完了", "language": "ja"},
-  {"keyName": "taskInProgress", "text": "進行中", "language": "ja"},
-  {"keyName": "taskNotStarted", "text": "未開始", "language": "ja"},
-  {"keyName": "taskDeclined", "text": "拒否", "language": "ja"},
-  {"keyName": "taskLocked", "text": "ロック済み", "language": "ja"},
-  {"keyName": "tasksNoneForStudy", "text": "この治験にタスクはありません", "language": "ja"},
-  {"keyName": "taskHistory", "text": "履歴", "language": "ja"},
-  {"keyName": "taskNew", "text": "新規", "language": "ja"},
-  {"keyName": "surveysSomeLocked", "text": "一部の調査は必要なタスクが完了するまでロックされています。", "language": "ja"},
-  {"keyName": "taskTypeSurvey", "text": "調査", "language": "ja"},
-  {"keyName": "taskTypeSurveys", "text": "調査", "language": "ja"},
-  {"keyName": "taskTypeConsent", "text": "同意", "language": "ja"},
-  {"keyName": "taskTypeForms", "text": "文書", "language": "ja"},
-  {"keyName": "start", "text": "開始", "language": "ja"},
-  {"keyName": "continue", "text": "続行", "language": "ja"},
-  {"keyName": "save", "text": "保存", "language": "ja"},
-  {"keyName": "outreachLearnMore", "text": "詳細", "language": "ja"},
-  {"keyName": "cancel", "text": "キャンセル", "language": "ja"},
-  {"keyName": "goBack", "text": "戻る", "language": "ja"},
-  {"keyName": "name", "text": "名前", "language": "ja"},
-  {"keyName": "givenName", "text": "名", "language": "ja"},
-  {"keyName": "familyName", "text": "姓", "language": "ja"},
-  {"keyName": "editName", "text": "名前の編集", "language": "ja"},
-  {"keyName": "editBirthDate", "text": "生年月日の編集", "language": "ja"},
-  {"keyName": "birthDate", "text": "生年月日", "language": "ja"},
-  {"keyName": "mailingAddress", "text": "郵送先住所", "language": "ja"},
-  {"keyName": "editMailingAddress", "text": "郵送先住所の編集", "language": "ja"},
-  {"keyName": "primaryAddress", "text": "主な住所", "language": "ja"},
-  {"keyName": "editPrimaryAddress", "text": "主な住所の編集", "language": "ja"},
-  {"keyName": "street1", "text": "町名番地 1", "language": "ja"},
-  {"keyName": "street2", "text": "町名番地 2", "language": "ja"},
-  {"keyName": "city", "text": "市区町村", "language": "ja"},
-  {"keyName": "state", "text": "都道府県", "language": "ja"},
-  {"keyName": "postalCode", "text": "郵便番号", "language": "ja"},
-  {"keyName": "country", "text": "国", "language": "ja"},
-  {"keyName": "communicationPreferences", "text": "希望する連絡方法", "language": "ja"},
-  {"keyName": "editCommunicationPreferences", "text": "希望する連絡方法の編集", "language": "ja"},
-  {"keyName": "contactEmail", "text": "連絡先Eメール", "language": "ja"},
-  {"keyName": "editContactEmail", "text": "連絡先Eメールの編集", "language": "ja"},
-  {"keyName": "phoneNumber", "text": "電話番号", "language": "ja"},
-  {"keyName": "editPhoneNumber", "text": "電話番号の編集", "language": "ja"},
-  {"keyName": "doNotSolicit", "text": "勧誘拒否", "language": "ja"},
-  {"keyName": "doNotContact", "text": "連絡拒否", "language": "ja"},
-  {"keyName": "editDoNotSolicit", "text": "勧誘拒否の編集", "language": "ja"},
-  {"keyName": "editNotifications", "text": "通知の編集", "language": "ja"},
-  {"keyName": "notifications", "text": "通知", "language": "ja"},
-  {"keyName": "on", "text": "オン", "language": "ja"},
-  {"keyName": "off", "text": "オフ", "language": "ja"},
-  {"keyName": "notProvided", "text": "未入力", "language": "ja"},
-  {"keyName": "editProfileContactEmailWarning", "text": "「保存」をクリックして連絡に使用するEメールを更新してください。ただし、ログイン情報は変更されません。", "language": "ja"},
-  {"keyName": "privacyPolicy", "text": "プライバシーポリシー", "language": "ja"},
-  {"keyName": "termsOfUse", "text": "利用規定", "language": "ja"},
-  {"keyName": "addressInvalidPostalCode", "text": "郵便番号を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidCountry", "text": "国を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidState", "text": "都道府県を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidCity", "text": "市区町村を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidHouseNumber", "text": "番地を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidStreetName", "text": "町名番地を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressInvalidStreetType", "text": "町名を確認できませんでした。", "language": "ja"},
-  {"keyName": "addressNeedsSubpremise", "text": "建物名／部屋番号を入力してください。", "language": "ja"},
-  {"keyName": "addressFailedToValidate", "text": "住所を確認できませんでした。", "language": "ja"},
-  {"keyName": "suggestBetterAddressHeader", "text": "これは正しい住所ですか？", "language": "ja"},
-  {"keyName": "suggestBetterAddressBody", "text": "同じような住所を確認することができました。どちらの住所を使用するか選択してください。", "language": "ja"},
-  {"keyName": "newAddress", "text": "新住所", "language": "ja"},
-  {"keyName": "oldAddress", "text": "旧住所", "language": "ja"},
-  {"keyName": "you", "text": "あなた", "language": "ja"},
-  {"keyName": "yourDependent", "text": "あなたの扶養家族", "language": "ja"},
-  {"keyName": "youInParens", "text": "(あなた)", "language": "ja"},
-  {"keyName": "allProfiles", "text": "すべてのプロファイル", "language": "ja"},
-  {"keyName": "manageProfiles", "text": "プロファイルの管理", "language": "ja"},
-  {"keyName": "addNewParticipant", "text": "参加者の新規追加", "language": "ja"},
-  {"keyName": "dashboard", "text": "ダッシュボード", "language": "ja"},
-  {"keyName": "selectParticipant", "text": "参加者の選択", "language": "ja"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "${formName} は完了済み", "language": "ja"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "すべてのアクティビティが完了済み", "language": "ja"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "この治験のすべてのアクティビティが完了しています。新しいアクティビティが有効になり次第通知します。ご参加いただきありがとうございます！", "language": "ja"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "${studyName} へようこそ", "language": "ja"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "続行するには、以下の同意文書をお読みいただき、署名してください。", "language": "ja"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "あなたは ${studyName} に登録済みです。", "language": "ja"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "このユーザーは ${studyName} に登録済みです。", "language": "ja"},
-  {"keyName": "cookieAlertTitle", "text": "Cookies（クッキー）", "language": "ja"},
-  {"keyName": "cookieAlertDetail", "text": "このサイトでは「クッキー」と呼ばれるインターネットのトークンを使用して、ウェブサイトの正常な機能とセキュリティを可能にし、ユーザー体験を向上しています。使用するクッキーはすべて厳密に必要なクッキーです。このタイプのクッキーは、あなたの個人識別情報を収集したり、あなたの閲覧行動を追跡したりしません。詳しくは [当社のプライバシーポリシーをご覧ください](\/privacy)。", "language": "ja"},
-  {"keyName": "joinStudy", "text": "治験に参加", "language": "ja"},
-  {"keyName": "ineligibleThankYou", "text": "${studyName} にご関心をお寄せいただき、ありがとうございます", "language": "ja" },
-  {"keyName": "ineligibleDescription", "text": "申し訳ございませんが、今回は ${studyName} の参加に必要な適格基準を満たしていらっしゃいません。", "language": "ja"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "以下にEメールアドレスを入力してください。治験計画に関する最新情報をお届けします。いつでも登録を解除することができます。", "language":  "ja"},
-  {"keyName": "ineligibleStayInformed", "text": "最新情報の入手", "language": "ja"},
-  {"keyName": "backToPortalHomepage", "text": "${portalName} ホームページに戻る", "language": "ja"},
-  {"keyName": "joinMailingList", "text": "メーリングリストに参加", "language": "ja"},
-  {"keyName": "mailingFormStayUpdated", "text":  "治験に関する最新情報を希望", "language": "ja"},
-  {"keyName": "yourName", "text": "お名前", "language": "ja"},
-  {"keyName": "yourEmail", "text": "Eメール", "language": "ja"},
-  {"keyName": "join", "text":  "参加する", "language": "ja"},
-  {"keyName": "thanksForJoining", "text": "ご登録ありがとうございます！", "language": "ja"},
-  {"keyName": "pageNotFoundTitle", "text": "ページが見つかりません", "language": "ja"},
-  {"keyName": "pageNotFoundMessage", "text": "これがエラーだと思われる場合は、${studyContactEmail} までご連絡ください。", "language": "ja"},
-  {"keyName": "pageNotFoundReturnHome", "text": "ホームページに戻る", "language": "ja"},
-  {"keyName": "authErrorPageTitle", "text": "エラーが発生しました", "language": "ja"},
-  {"keyName": "authErrorPageMessage", "text": "認証サービスに問題が発生しました。もう一度お試しください。問題が解決しない場合は、${studyContactEmail} までご連絡ください。", "language": "ja"},
-  {"keyName": "navbarSampleKits", "text":  "検体キット", "language": "ja"},
-  {"keyName": "kitsPageTitle", "text": "検体採取キット", "language": "ja"},
-  {"keyName": "kitsPageDescription", "text": "検体採取キットは治験の重要な過程であり、研究者に重要な知見を提供するのに役立ちます。以下から、あなたに提供されたキットすべてのステータスを検索できます。", "language": "ja"},
-  {"keyName": "kitsPageInPersonTitle", "text": "検体を対面で提供", "language": "ja"},
-  {"keyName": "kitsPageInPersonDescription", "text": "この治験では現在、検体採取キットを対面で完了する選択肢を提供しています。", "language": "ja"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "キットを対面で完了", "language": "ja"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "あなたのキット", "language": "ja"},
-  {"keyName": "kitsPageStatusPreparing", "text": "準備中", "language": "ja"},
-  {"keyName": "kitsPageStatusShipped", "text": "発送済み", "language": "ja"},
-  {"keyName": "kitsPageStatusReturned", "text": "返却済み", "language": "ja"},
-  {"keyName": "kitsPageStatusCreated", "text": "作成済み", "language": "ja"},
-  {"keyName": "kitsPageStatusCollected", "text": "採取済み", "language": "ja"},
-  {"keyName": "kitsPageNoKits", "text": "現時点ではあなたの検体採取キットはありません。", "language": "ja"},
-  {"keyName": "kitsInPersonTitle", "text": "検体キットに関する指示", "language": "ja"},
-  {"keyName": "kitsInPersonDescription", "text": "検体採取キットを対面で完了する場合は、治験チームメンバーの指示に従ってください。あなた固有の参加者IDなど、必要になる追加情報はすべて以下に提供されます。", "language": "ja"},
-  {"keyName": "kitsInPersonSubDescription", "text": "ご質問がある場合は、治験チームのメンバーにお尋ねください。", "language": "ja"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "検体採取キット", "language": "ja"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "治験チームのメンバーが検体採取キットをあなたに提供しました。この検体キットはあなたのアカウントに関連付けられています。あなた以外の他の方の検体採取キットの使用を補助している場合は、各参加者が各自割り当てられた検体採取キットを完了することを確かめてください。", "language": "ja"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "あなたのキットID", "language": "ja"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "ダッシュボードに戻る", "language": "ja"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "表示の更新", "language": "ja"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "同意が必要", "language": "ja"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "検体採取キットを完了していただく前に、まず治験に登録する必要があります。ご関心をお持ちの場合は、以下のリンクから同意文書を取得して署名していただけます。", "language": "ja"},
-  {"keyName": "kitsInPersonStartConsent", "text": "同意の開始", "language": "ja"},
-  {"keyName": "kitsInPersonError", "text": "キット情報の検索中にエラーが発生しました。ヘルプが必要な場合は治験チームのメンバーに連絡してください。", "language": "ja"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "検体採取キットを完了したら、治験チームのメンバーに返却し、以下の参加コードをスキャンしてもらってください。", "language": "ja"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "検体採取キットを受領する際、治験チームのメンバーが以下のあなた固有の参加コードをスキャンして、検体キットをあなたのアカウントに関連付けます。", "language": "ja"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "キットを受領した後、このページの表示を更新してください。あなたのキット情報が表示され、詳しい指示を確認することができます。", "language": "ja"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "治験チームのメンバーがあなたの検体採取キットを受領しました。あなたの検体が処理されるとEメールで通知が送信されます。また治験ダッシュボードで検体のステータスを確認することができるようになります。", "language": "ja"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "ご参加いただきありがとうございます。", "language": "ja"},
-  {"keyName": "kitTypeSaliva", "text": "唾液キット", "language": "ja"},
-  {"keyName": "kitTypeStool", "text": "便キット", "language": "ja"},
-  {"keyName": "kitTypeBlood", "text": "血液キット", "language": "ja"},
-  {"keyName": "documentDownloadButton", "text": "ダウンロード", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "まだ書類をアップロードしていません", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "作成日", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "文書", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "アップロードされた文書", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "調査に参加する際に、フォームまたはアンケートの一部としてドキュメントをアップロードするよう求められる場合があります。以下で、アップロードしたドキュメントを管理できます。", "language": "ja", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "文書", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "本気ですか？", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "この文書を削除してもよろしいですか? 元に戻すことはできません。研究スタッフのメンバーがすでにこの文書をダウンロードしている場合は、引き続きアクセスできます。すべての記録から文書を完全に削除したい場合は、研究スタッフに連絡してください。", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "この文書は使用中です", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "このドキュメントは現在、少なくとも 1 つのアンケートへの回答として共有されています。削除する前に、アンケートの回答から削除してください。", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "消去", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "オプション", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "への返信として共有", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "選択された文書", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "これらの文書はあなたの回答に含まれています", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "ドキュメントが選択されていません。新しいドキュメントをアップロードするか、以下の既存のドキュメントを選択してください。", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "利用可能な文書", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "これらの文書は回答に含まれていません", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "ここにファイルをドロップするか、クリックしてアップロードしてください", "language": "ja", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "利用可能な文書はありません", "language": "ja", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "セッションの有効期限が切れます", "language": "ja", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "セキュリティを維持し、データを保護するため、${timeRemaining} 後にログアウトされます。", "language": "ja", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "ダッシュボード",
+    "language": "ja"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "パスワードの変更",
+    "language": "ja"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "ログアウト",
+    "language": "ja"
+  },
+  {
+    "keyName": "profile",
+    "text": "プロファイル",
+    "language": "ja"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "ログイン",
+    "language": "ja"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "登録",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "完了",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "進行中",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "未開始",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "拒否",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "ロック済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "この治験にタスクはありません",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "履歴",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "新規",
+    "language": "ja"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "一部の調査は必要なタスクが完了するまでロックされています。",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "調査",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "調査",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "同意",
+    "language": "ja"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "文書",
+    "language": "ja"
+  },
+  {
+    "keyName": "start",
+    "text": "開始",
+    "language": "ja"
+  },
+  {
+    "keyName": "continue",
+    "text": "続行",
+    "language": "ja"
+  },
+  {
+    "keyName": "save",
+    "text": "保存",
+    "language": "ja"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "詳細",
+    "language": "ja"
+  },
+  {
+    "keyName": "cancel",
+    "text": "キャンセル",
+    "language": "ja"
+  },
+  {
+    "keyName": "goBack",
+    "text": "戻る",
+    "language": "ja"
+  },
+  {
+    "keyName": "name",
+    "text": "名前",
+    "language": "ja"
+  },
+  {
+    "keyName": "givenName",
+    "text": "名",
+    "language": "ja"
+  },
+  {
+    "keyName": "familyName",
+    "text": "姓",
+    "language": "ja"
+  },
+  {
+    "keyName": "editName",
+    "text": "名前の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "生年月日の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "生年月日",
+    "language": "ja"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "郵送先住所",
+    "language": "ja"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "郵送先住所の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "主な住所",
+    "language": "ja"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "主な住所の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "street1",
+    "text": "町名番地 1",
+    "language": "ja"
+  },
+  {
+    "keyName": "street2",
+    "text": "町名番地 2",
+    "language": "ja"
+  },
+  {
+    "keyName": "city",
+    "text": "市区町村",
+    "language": "ja"
+  },
+  {
+    "keyName": "state",
+    "text": "都道府県",
+    "language": "ja"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "郵便番号",
+    "language": "ja"
+  },
+  {
+    "keyName": "country",
+    "text": "国",
+    "language": "ja"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "希望する連絡方法",
+    "language": "ja"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "希望する連絡方法の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "連絡先Eメール",
+    "language": "ja"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "連絡先Eメールの編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "電話番号",
+    "language": "ja"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "電話番号の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "勧誘拒否",
+    "language": "ja"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "連絡拒否",
+    "language": "ja"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "勧誘拒否の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "通知の編集",
+    "language": "ja"
+  },
+  {
+    "keyName": "notifications",
+    "text": "通知",
+    "language": "ja"
+  },
+  {
+    "keyName": "on",
+    "text": "オン",
+    "language": "ja"
+  },
+  {
+    "keyName": "off",
+    "text": "オフ",
+    "language": "ja"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "未入力",
+    "language": "ja"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "「保存」をクリックして連絡に使用するEメールを更新してください。ただし、ログイン情報は変更されません。",
+    "language": "ja"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "プライバシーポリシー",
+    "language": "ja"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "利用規定",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "郵便番号を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "国を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "都道府県を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "市区町村を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "番地を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "町名番地を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "町名を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "建物名／部屋番号を入力してください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "住所を確認できませんでした。",
+    "language": "ja"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "これは正しい住所ですか？",
+    "language": "ja"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "同じような住所を確認することができました。どちらの住所を使用するか選択してください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "新住所",
+    "language": "ja"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "旧住所",
+    "language": "ja"
+  },
+  {
+    "keyName": "you",
+    "text": "あなた",
+    "language": "ja"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "あなたの扶養家族",
+    "language": "ja"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(あなた)",
+    "language": "ja"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "すべてのプロファイル",
+    "language": "ja"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "プロファイルの管理",
+    "language": "ja"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "参加者の新規追加",
+    "language": "ja"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "ダッシュボード",
+    "language": "ja"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "参加者の選択",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "${formName} は完了済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "すべてのアクティビティが完了済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "この治験のすべてのアクティビティが完了しています。新しいアクティビティが有効になり次第通知します。ご参加いただきありがとうございます！",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "${studyName} へようこそ",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "続行するには、以下の同意文書をお読みいただき、署名してください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "あなたは ${studyName} に登録済みです。",
+    "language": "ja"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "このユーザーは ${studyName} に登録済みです。",
+    "language": "ja"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "Cookies（クッキー）",
+    "language": "ja"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "このサイトでは「クッキー」と呼ばれるインターネットのトークンを使用して、ウェブサイトの正常な機能とセキュリティを可能にし、ユーザー体験を向上しています。使用するクッキーはすべて厳密に必要なクッキーです。このタイプのクッキーは、あなたの個人識別情報を収集したり、あなたの閲覧行動を追跡したりしません。詳しくは [当社のプライバシーポリシーをご覧ください](/privacy)。",
+    "language": "ja"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "治験に参加",
+    "language": "ja"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "${studyName} にご関心をお寄せいただき、ありがとうございます",
+    "language": "ja"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "申し訳ございませんが、今回は ${studyName} の参加に必要な適格基準を満たしていらっしゃいません。",
+    "language": "ja"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "以下にEメールアドレスを入力してください。治験計画に関する最新情報をお届けします。いつでも登録を解除することができます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "最新情報の入手",
+    "language": "ja"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "${portalName} ホームページに戻る",
+    "language": "ja"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "メーリングリストに参加",
+    "language": "ja"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "治験に関する最新情報を希望",
+    "language": "ja"
+  },
+  {
+    "keyName": "yourName",
+    "text": "お名前",
+    "language": "ja"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "Eメール",
+    "language": "ja"
+  },
+  {
+    "keyName": "join",
+    "text": "参加する",
+    "language": "ja"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "ご登録ありがとうございます！",
+    "language": "ja"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "ページが見つかりません",
+    "language": "ja"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "これがエラーだと思われる場合は、${studyContactEmail} までご連絡ください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "ホームページに戻る",
+    "language": "ja"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "エラーが発生しました",
+    "language": "ja"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "認証サービスに問題が発生しました。もう一度お試しください。問題が解決しない場合は、${studyContactEmail} までご連絡ください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "検体キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "検体採取キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "検体採取キットは治験の重要な過程であり、研究者に重要な知見を提供するのに役立ちます。以下から、あなたに提供されたキットすべてのステータスを検索できます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "検体を対面で提供",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "この治験では現在、検体採取キットを対面で完了する選択肢を提供しています。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "キットを対面で完了",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "あなたのキット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "準備中",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "発送済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "返却済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "作成済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "採取済み",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "現時点ではあなたの検体採取キットはありません。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "検体キットに関する指示",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "検体採取キットを対面で完了する場合は、治験チームメンバーの指示に従ってください。あなた固有の参加者IDなど、必要になる追加情報はすべて以下に提供されます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "ご質問がある場合は、治験チームのメンバーにお尋ねください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "検体採取キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "治験チームのメンバーが検体採取キットをあなたに提供しました。この検体キットはあなたのアカウントに関連付けられています。あなた以外の他の方の検体採取キットの使用を補助している場合は、各参加者が各自割り当てられた検体採取キットを完了することを確かめてください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "あなたのキットID",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "ダッシュボードに戻る",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "表示の更新",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "同意が必要",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "検体採取キットを完了していただく前に、まず治験に登録する必要があります。ご関心をお持ちの場合は、以下のリンクから同意文書を取得して署名していただけます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "同意の開始",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "キット情報の検索中にエラーが発生しました。ヘルプが必要な場合は治験チームのメンバーに連絡してください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "検体採取キットを完了したら、治験チームのメンバーに返却し、以下の参加コードをスキャンしてもらってください。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "検体採取キットを受領する際、治験チームのメンバーが以下のあなた固有の参加コードをスキャンして、検体キットをあなたのアカウントに関連付けます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "キットを受領した後、このページの表示を更新してください。あなたのキット情報が表示され、詳しい指示を確認することができます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "治験チームのメンバーがあなたの検体採取キットを受領しました。あなたの検体が処理されるとEメールで通知が送信されます。また治験ダッシュボードで検体のステータスを確認することができるようになります。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "ご参加いただきありがとうございます。",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "唾液キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "便キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "血液キット",
+    "language": "ja"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "ダウンロード",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "まだ書類をアップロードしていません",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "作成日",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "文書",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "アップロードされた文書",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "調査に参加する際に、フォームまたはアンケートの一部としてドキュメントをアップロードするよう求められる場合があります。以下で、アップロードしたドキュメントを管理できます。",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "文書",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "本気ですか？",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "この文書を削除してもよろしいですか? 元に戻すことはできません。研究スタッフのメンバーがすでにこの文書をダウンロードしている場合は、引き続きアクセスできます。すべての記録から文書を完全に削除したい場合は、研究スタッフに連絡してください。",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "この文書は使用中です",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "このドキュメントは現在、少なくとも 1 つのアンケートへの回答として共有されています。削除する前に、アンケートの回答から削除してください。",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "消去",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "オプション",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "への返信として共有",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "選択された文書",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "これらの文書はあなたの回答に含まれています",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "ドキュメントが選択されていません。新しいドキュメントをアップロードするか、以下の既存のドキュメントを選択してください。",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "利用可能な文書",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "これらの文書は回答に含まれていません",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "ここにファイルをドロップするか、クリックしてアップロードしてください",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "利用可能な文書はありません",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "セッションの有効期限が切れます",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "セキュリティを維持し、データを保護するため、${timeRemaining} 後にログアウトされます。",
+    "language": "ja",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "ja",
+    "text": "登録プロセス中に何かがうまくいかなかった。もう一度フォームに記入してください。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "ja",
+    "text": "このファイルでウイルスが検出されました。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "ja",
+    "text": "このファイルのウイルススキャンは不完全です。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "ja",
+    "text": "このファイルは隔離されており、ダウンロードできません。これが間違いだと思われる場合は、サポートに連絡してください。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "ja",
+    "text": "とにかくダウンロードしてください",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "ja",
+    "text": "このファイルが安全にダウンロードできるかどうかを確認できません。後で戻ってくるか、今すぐ自分の責任でダウンロードしてください。",
+    "machineTranslated": true
+  }
 ]

@@ -1,163 +1,866 @@
 [
-  {"keyName": "navbarDashboard", "text": "Информационная панель", "language": "ru"},
-  {"keyName": "navbarChangePassword", "text": "Изменить пароль", "language": "ru"},
-  {"keyName": "navbarLogout", "text": "Выход из системы", "language": "ru"},
-  {"keyName": "profile", "text": "Профиль", "language": "ru"},
-  {"keyName": "navbarLogin", "text": "Вход в систему", "language": "ru"},
-  {"keyName": "navbarJoin", "text": "Зарегистрироваться", "language": "ru"},
-  {"keyName": "taskComplete", "text": "Завершено", "language": "ru"},
-  {"keyName": "taskInProgress", "text": "Выполняется", "language": "ru"},
-  {"keyName": "taskNotStarted", "text": "Не начато", "language": "ru"},
-  {"keyName": "taskDeclined", "text": "Отклонено", "language": "ru"},
-  {"keyName": "taskLocked", "text": "Заблокировано", "language": "ru"},
-  {"keyName": "tasksNoneForStudy", "text": "Нет задач для этого исследования", "language": "ru"},
-  {"keyName": "taskHistory", "text": "история", "language": "ru"},
-  {"keyName": "taskNew", "text": "НОВОЕ", "language": "ru"},
-  {"keyName": "surveysSomeLocked", "text": "Некоторые опросы заблокированы до тех пор, пока не будут выполнены другие необходимые задачи.", "language": "ru"},
-  {"keyName": "taskTypeSurvey", "text": "Опрос", "language": "ru"},
-  {"keyName": "taskTypeSurveys", "text": "Опросы", "language": "ru"},
-  {"keyName": "taskTypeConsent", "text": "Согласие", "language": "ru"},
-  {"keyName": "taskTypeForms", "text": "Формы", "language": "ru"},
-  {"keyName": "start", "text": "Начать", "language": "ru"},
-  {"keyName": "continue", "text": "Продолжить", "language": "ru"},
-  {"keyName": "save", "text": "Сохранить", "language": "ru"},
-  {"keyName": "outreachLearnMore", "text": "Узнать больше", "language": "ru"},
-  {"keyName": "cancel", "text": "Отменить", "language": "ru"},
-  {"keyName": "goBack", "text": "Вернуться назад", "language": "ru"},
-  {"keyName": "name", "text": "Ф.И.О.", "language": "ru"},
-  {"keyName": "givenName", "text": "Имя", "language": "ru"},
-  {"keyName": "familyName", "text": "Фамилия", "language": "ru"},
-  {"keyName": "editName", "text": "Отредактировать имя", "language": "ru"},
-  {"keyName": "editBirthDate", "text": "Отредактировать день рождения", "language": "ru"},
-  {"keyName": "birthDate", "text": "День рождения", "language": "ru"},
-  {"keyName": "mailingAddress", "text": "Почтовый адрес", "language": "ru"},
-  {"keyName": "editMailingAddress", "text": "Отредактировать почтовый адрес", "language": "ru"},
-  {"keyName": "primaryAddress", "text": "Основной адрес", "language": "ru"},
-  {"keyName": "editPrimaryAddress", "text": "Отредактировать основной адрес", "language": "ru"},
-  {"keyName": "street1", "text": "Улица 1", "language": "ru"},
-  {"keyName": "street2", "text": "Улица 2", "language": "ru"},
-  {"keyName": "city", "text": "Город", "language": "ru"},
-  {"keyName": "state", "text": "Штат\/провинция", "language": "ru"},
-  {"keyName": "postalCode", "text": "Почтовый индекс", "language": "ru"},
-  {"keyName": "country", "text": "Страна", "language": "ru"},
-  {"keyName": "communicationPreferences", "text": "Предпочитаемый способ связи", "language": "ru"},
-  {"keyName": "editCommunicationPreferences", "text": "Отредактировать предпочитаемый способ связи", "language": "ru"},
-  {"keyName": "contactEmail", "text": "Контактный адрес электронной почты", "language": "ru"},
-  {"keyName": "editContactEmail", "text": "Отредактировать контактный адрес электронной почты", "language": "ru"},
-  {"keyName": "phoneNumber", "text": "Номер телефона", "language": "ru"},
-  {"keyName": "editPhoneNumber", "text": "Отредактировать номер телефона", "language": "ru"},
-  {"keyName": "doNotSolicit", "text": "Не обращаться с предложениями", "language": "ru"},
-  {"keyName": "doNotContact", "text": "Не обращаться посредством контактных данных", "language": "ru"},
-  {"keyName": "editDoNotSolicit", "text": "Отредактировать «Не обращаться с предложениями»", "language": "ru"},
-  {"keyName": "editNotifications", "text": "Отредактировать уведомления", "language": "ru"},
-  {"keyName": "notifications", "text": "Уведомления", "language": "ru"},
-  {"keyName": "on", "text": "Включить", "language": "ru"},
-  {"keyName": "off", "text": "Выключить", "language": "ru"},
-  {"keyName": "notProvided", "text": "Не указано", "language": "ru"},
-  {"keyName": "editProfileContactEmailWarning", "text": "Нажмите «Сохранить», чтобы обновить адрес электронной почты, использующийся для связи. Обратите внимание, что ваши данные для входа не изменятся.", "language": "ru"},
-  {"keyName": "privacyPolicy", "text": "Политика конфиденциальности", "language": "ru"},
-  {"keyName": "termsOfUse", "text": "Условия использования", "language": "ru"},
-  {"keyName": "addressInvalidPostalCode", "text": "Не удалось проверить почтовый индекс.", "language": "ru"},
-  {"keyName": "addressInvalidCountry", "text": "Не удалось проверить страну.", "language": "ru"},
-  {"keyName": "addressInvalidState", "text": "Не удалось проверить штат\/провинцию.", "language": "ru"},
-  {"keyName": "addressInvalidCity", "text": "Не удалось проверить город.", "language": "ru"},
-  {"keyName": "addressInvalidHouseNumber", "text": "Не удалось проверить номер дома.", "language": "ru"},
-  {"keyName": "addressInvalidStreetName", "text": "Не удалось проверить название улицы.", "language": "ru"},
-  {"keyName": "addressInvalidStreetType", "text": "Не удалось проверить тип улицы.", "language": "ru"},
-  {"keyName": "addressNeedsSubpremise", "text": "Пожалуйста, укажите номер блока\/корпуса.", "language": "ru"},
-  {"keyName": "addressFailedToValidate", "text": "Не удалось подтвердить адрес.", "language": "ru"},
-  {"keyName": "suggestBetterAddressHeader", "text": "Это правильный адрес?", "language": "ru"},
-  {"keyName": "suggestBetterAddressBody", "text": "Нам удалось подтвердить похожий адрес. Пожалуйста, выберите тот, который вы хотели бы использовать.", "language": "ru"},
-  {"keyName": "newAddress", "text": "Новый адрес", "language": "ru"},
-  {"keyName": "oldAddress", "text": "Старый адрес", "language": "ru"},
-  {"keyName": "you", "text": "Вы", "language": "ru"},
-  {"keyName": "yourDependent", "text": "Лица, находящиеся на вашем иждивении", "language": "ru"},
-  {"keyName": "youInParens", "text": "(вы)", "language": "ru"},
-  {"keyName": "allProfiles", "text": "Все профили", "language": "ru"},
-  {"keyName": "manageProfiles", "text": "Управление профилями", "language": "ru"},
-  {"keyName": "addNewParticipant", "text": "Добавить нового участника", "language": "ru"},
-  {"keyName": "dashboard", "text": "Информационная панель", "language": "ru"},
-  {"keyName": "selectParticipant", "text": "Выбрать участника", "language": "ru"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "${formName} выполнено", "language": "ru"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "Все действия выполнены", "language": "ru"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "Вы выполнили все действия для этого исследования. Мы сообщим вам, когда появятся новые действия. Спасибо за участие!", "language": "ru"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "Добро пожаловать в ${studyName}", "language": "ru"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "Пожалуйста, прочитайте и подпишите форму согласия ниже, чтобы продолжить.", "language": "ru"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "Вы уже включены в ${studyName}.", "language": "ru"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "Пользователь уже включен в ${studyName}.", "language": "ru"},
-  {"keyName": "cookieAlertTitle", "text": "Cookies", "language": "ru"},
-  {"keyName": "cookieAlertDetail", "text": "Для обеспечения правильного и безопасного функционирования нашего сайта, а также для улучшения вашей работы с ним, на сайте используются интернет-токены, которые называются cookies («кукис»). Все cookies, которые мы используем, являются строго необходимыми. Этот тип cookies не собирает никакой личной информации о вас и не отслеживает ваши привычки просмотра. Чтобы узнать больше, [прочитайте нашу Политику конфиденциальности] (\/конфиденциальность).", "language": "ru"},
-  {"keyName": "joinStudy", "text": "Присоединяйтесь к исследованию", "language": "ru"},
-  {"keyName": "ineligibleThankYou", "text": "Благодарим вас за интерес к ${studyName}", "language": "ru" },
-  {"keyName": "ineligibleDescription", "text": "К сожалению, в настоящее время вы не соответствуете критериям участия в ${studyName}.", "language": "ru"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "Укажите ниже свой адрес электронной почты, и мы будем держать вас в курсе событий. Вы можете отписаться в любое время.", "language":  "ru"},
-  {"keyName": "ineligibleStayInformed", "text": "Будьте в курсе событий", "language": "ru"},
-  {"keyName": "backToPortalHomepage", "text": "Вернуться на домашнюю страницу ${portalName}", "language": "ru"},
-  {"keyName": "joinMailingList", "text": "Присоединяйтесь к списку рассылки", "language": "ru"},
-  {"keyName": "mailingFormStayUpdated", "text":  "Будьте в курсе новостей об исследовании", "language": "ru"},
-  {"keyName": "yourName", "text": "Ваше имя", "language": "ru"},
-  {"keyName": "yourEmail", "text": "Ваша электронная почта", "language": "ru"},
-  {"keyName": "join", "text":  "Присоединиться", "language": "ru"},
-  {"keyName": "thanksForJoining", "text": "Спасибо, что присоединились!", "language": "ru"},
-  {"keyName": "pageNotFoundTitle", "text": "Страница не найдена", "language": "ru"},
-  {"keyName": "pageNotFoundMessage", "text": "Если вы считаете, что это может быть ошибка, свяжитесь с ${studyContactEmail}", "language": "ru"},
-  {"keyName": "pageNotFoundReturnHome", "text": "Вернуться на главную страницу", "language": "ru"},
-  {"keyName": "authErrorPageTitle", "text": "Произошла ошибка", "language": "ru"},
-  {"keyName": "authErrorPageMessage", "text": "Возникла проблема с нашей службой проверки подлинности. Пожалуйста, повторите попытку. Если проблема не исчезает, свяжитесь с ${studyContactEmail}.", "language": "ru"},
-  {"keyName": "navbarSampleKits", "text":  "Наборы для образцов", "language": "ru"},
-  {"keyName": "kitsPageTitle", "text": "Наборы для сбора образцов", "language": "ru"},
-  {"keyName": "kitsPageDescription", "text": "Наборы для сбора образцов являются необходимой частью исследовательского процесса, с их помощью исследователи могут получить важную информацию. Ниже вы можете увидеть статус всех предоставленных вам наборов.", "language": "ru"},
-  {"keyName": "kitsPageInPersonTitle", "text": "Предоставьте образец самостоятельно", "language": "ru"},
-  {"keyName": "kitsPageInPersonDescription", "text": "На данный момент для этого исследования есть возможность собрать набор образцов самостоятельно.", "language": "ru"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "Собрать набор образцов самостоятельно", "language": "ru"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "Ваши наборы", "language": "ru"},
-  {"keyName": "kitsPageStatusPreparing", "text": "Подготовка", "language": "ru"},
-  {"keyName": "kitsPageStatusShipped", "text": "Отправлено", "language": "ru"},
-  {"keyName": "kitsPageStatusReturned", "text": "Возвращено", "language": "ru"},
-  {"keyName": "kitsPageStatusCreated", "text": "Создано", "language": "ru"},
-  {"keyName": "kitsPageStatusCollected", "text": "Взято", "language": "ru"},
-  {"keyName": "kitsPageNoKits", "text": "На данный момент у вас нет наборов для сбора образцов.", "language": "ru"},
-  {"keyName": "kitsInPersonTitle", "text": "Инструкция к набору для сбора образцов", "language": "ru"},
-  {"keyName": "kitsInPersonDescription", "text": "Если вы собираете образцы с помощью набора самостоятельно, следуйте инструкциям, предоставленным участником исследовательской группы. Любая дополнительная информация, которая может вам понадобиться, например ваш уникальный идентификатор участника, будет указана ниже.", "language": "ru"},
-  {"keyName": "kitsInPersonSubDescription", "text": "Если у вас есть вопросы, вы можете задать их участнику исследовательской группы.", "language": "ru"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "Ваш набор для сбора образцов", "language": "ru"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "Участник исследовательской группы предоставил вам набор для сбора образцов. Этот набор для сбора образцов привязан к вашей учетной записи. Если вы помогаете другому человеку собрать образцы с помощью набора, убедитесь, что каждый участник исследования использовал набор, который предназначался именно ему.", "language": "ru"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "Идентификатор вашего набора", "language": "ru"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "Вернуться к информационной панели", "language": "ru"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "Обновить", "language": "ru"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "Требуется согласие", "language": "ru"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "Прежде чем использовать набор для сбора образцов, вам нужно сначала зарегистрироваться для участия в исследовании. Если вас это заинтересовало, вы можете найти и подписать форму согласия по ссылке ниже.", "language": "ru"},
-  {"keyName": "kitsInPersonStartConsent", "text": "Начать подписание согласия", "language": "ru"},
-  {"keyName": "kitsInPersonError", "text": "Произошла ошибка при загрузке информации о вашем наборе. Пожалуйста, свяжитесь с участником исследовательской группы для решения вопроса.", "language": "ru"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "После сбора образцов с помощью набора верните его участнику исследовательской группы, он отсканирует ваш код участника, указанный ниже.", "language": "ru"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "Чтобы получить набор для сбора образцов, участник исследовательской группы отсканирует ваш уникальный код участника, указанный ниже, и привяжет набор образцов к вашей учетной записи.", "language": "ru"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "После получения набора обновите эту страницу, чтобы увидеть информацию о наборе и получить дальнейшие инструкции.", "language": "ru"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "Участник исследовательской группы получил ваш набор для сбора образцов. Когда ваш образец поступит в обработку, вы получите уведомление по электронной почте и сможете увидеть статус образца в информационной панели вашего исследования.", "language": "ru"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "Спасибо за участие.", "language": "ru"},
-  {"keyName": "kitTypeSaliva", "text": "Набор для сбора образца слюны", "language": "ru"},
-  {"keyName": "kitTypeStool", "text": "Набор для сбора образца кала", "language": "ru"},
-  {"keyName": "kitTypeBlood", "text": "Набор для сбора образца крови", "language": "ru"},
-  {"keyName": "documentDownloadButton", "text": "Скачать", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "Вы еще не загрузили ни одного документа", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "Создано", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "Документы", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "Загруженные документы", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "При участии в исследовании вас могут попросить загрузить документы как часть формы или опроса. Ниже вы можете управлять загруженными вами документами.", "language": "ru", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "Документы", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "Вы уверены?", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "Вы уверены, что хотите удалить этот документ? Это действие нельзя отменить. Обратите внимание, что если член исследовательского персонала уже загрузил этот документ, он все равно будет ему доступен. Пожалуйста, свяжитесь с исследовательским персоналом, если вы хотите, чтобы документ был полностью удален из всех записей.", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "Этот документ используется", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "Этот документ в настоящее время распространяется в ответе по крайней мере на один опрос. Пожалуйста, удалите его из ответов на опросы перед его удалением.", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "Удалить", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "Параметры", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "поделился в ответ на", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "Избранные документы", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "Эти документы включены в ваш ответ", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "Не выбрано ни одного документа. Загрузите новый документ или выберите существующий документ ниже.", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "Available documents", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "Эти документы не включены в ваш ответ", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "Перетащите файлы сюда или нажмите, чтобы загрузить", "language": "ru", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "Нет доступных документов", "language": "ru", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "Ваш сеанс скоро истечет", "language": "ru", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "Для обеспечения безопасности и защиты ваших данных вы выйдете из системы через ${timeRemaining}.", "language": "ru", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "Информационная панель",
+    "language": "ru"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "Изменить пароль",
+    "language": "ru"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "Выход из системы",
+    "language": "ru"
+  },
+  {
+    "keyName": "profile",
+    "text": "Профиль",
+    "language": "ru"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "Вход в систему",
+    "language": "ru"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "Зарегистрироваться",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "Завершено",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "Выполняется",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "Не начато",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "Отклонено",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "Заблокировано",
+    "language": "ru"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "Нет задач для этого исследования",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "история",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "НОВОЕ",
+    "language": "ru"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "Некоторые опросы заблокированы до тех пор, пока не будут выполнены другие необходимые задачи.",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "Опрос",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "Опросы",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "Согласие",
+    "language": "ru"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "Формы",
+    "language": "ru"
+  },
+  {
+    "keyName": "start",
+    "text": "Начать",
+    "language": "ru"
+  },
+  {
+    "keyName": "continue",
+    "text": "Продолжить",
+    "language": "ru"
+  },
+  {
+    "keyName": "save",
+    "text": "Сохранить",
+    "language": "ru"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "Узнать больше",
+    "language": "ru"
+  },
+  {
+    "keyName": "cancel",
+    "text": "Отменить",
+    "language": "ru"
+  },
+  {
+    "keyName": "goBack",
+    "text": "Вернуться назад",
+    "language": "ru"
+  },
+  {
+    "keyName": "name",
+    "text": "Ф.И.О.",
+    "language": "ru"
+  },
+  {
+    "keyName": "givenName",
+    "text": "Имя",
+    "language": "ru"
+  },
+  {
+    "keyName": "familyName",
+    "text": "Фамилия",
+    "language": "ru"
+  },
+  {
+    "keyName": "editName",
+    "text": "Отредактировать имя",
+    "language": "ru"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "Отредактировать день рождения",
+    "language": "ru"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "День рождения",
+    "language": "ru"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "Почтовый адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "Отредактировать почтовый адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "Основной адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "Отредактировать основной адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "street1",
+    "text": "Улица 1",
+    "language": "ru"
+  },
+  {
+    "keyName": "street2",
+    "text": "Улица 2",
+    "language": "ru"
+  },
+  {
+    "keyName": "city",
+    "text": "Город",
+    "language": "ru"
+  },
+  {
+    "keyName": "state",
+    "text": "Штат/провинция",
+    "language": "ru"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "Почтовый индекс",
+    "language": "ru"
+  },
+  {
+    "keyName": "country",
+    "text": "Страна",
+    "language": "ru"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "Предпочитаемый способ связи",
+    "language": "ru"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "Отредактировать предпочитаемый способ связи",
+    "language": "ru"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "Контактный адрес электронной почты",
+    "language": "ru"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "Отредактировать контактный адрес электронной почты",
+    "language": "ru"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "Номер телефона",
+    "language": "ru"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "Отредактировать номер телефона",
+    "language": "ru"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "Не обращаться с предложениями",
+    "language": "ru"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "Не обращаться посредством контактных данных",
+    "language": "ru"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "Отредактировать «Не обращаться с предложениями»",
+    "language": "ru"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "Отредактировать уведомления",
+    "language": "ru"
+  },
+  {
+    "keyName": "notifications",
+    "text": "Уведомления",
+    "language": "ru"
+  },
+  {
+    "keyName": "on",
+    "text": "Включить",
+    "language": "ru"
+  },
+  {
+    "keyName": "off",
+    "text": "Выключить",
+    "language": "ru"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "Не указано",
+    "language": "ru"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "Нажмите «Сохранить», чтобы обновить адрес электронной почты, использующийся для связи. Обратите внимание, что ваши данные для входа не изменятся.",
+    "language": "ru"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "Политика конфиденциальности",
+    "language": "ru"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "Условия использования",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "Не удалось проверить почтовый индекс.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "Не удалось проверить страну.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "Не удалось проверить штат/провинцию.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "Не удалось проверить город.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "Не удалось проверить номер дома.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "Не удалось проверить название улицы.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "Не удалось проверить тип улицы.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "Пожалуйста, укажите номер блока/корпуса.",
+    "language": "ru"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "Не удалось подтвердить адрес.",
+    "language": "ru"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "Это правильный адрес?",
+    "language": "ru"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "Нам удалось подтвердить похожий адрес. Пожалуйста, выберите тот, который вы хотели бы использовать.",
+    "language": "ru"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "Новый адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "Старый адрес",
+    "language": "ru"
+  },
+  {
+    "keyName": "you",
+    "text": "Вы",
+    "language": "ru"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "Лица, находящиеся на вашем иждивении",
+    "language": "ru"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(вы)",
+    "language": "ru"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "Все профили",
+    "language": "ru"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "Управление профилями",
+    "language": "ru"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "Добавить нового участника",
+    "language": "ru"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "Информационная панель",
+    "language": "ru"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "Выбрать участника",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "${formName} выполнено",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "Все действия выполнены",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "Вы выполнили все действия для этого исследования. Мы сообщим вам, когда появятся новые действия. Спасибо за участие!",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "Добро пожаловать в ${studyName}",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "Пожалуйста, прочитайте и подпишите форму согласия ниже, чтобы продолжить.",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "Вы уже включены в ${studyName}.",
+    "language": "ru"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "Пользователь уже включен в ${studyName}.",
+    "language": "ru"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "Cookies",
+    "language": "ru"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "Для обеспечения правильного и безопасного функционирования нашего сайта, а также для улучшения вашей работы с ним, на сайте используются интернет-токены, которые называются cookies («кукис»). Все cookies, которые мы используем, являются строго необходимыми. Этот тип cookies не собирает никакой личной информации о вас и не отслеживает ваши привычки просмотра. Чтобы узнать больше, [прочитайте нашу Политику конфиденциальности] (/конфиденциальность).",
+    "language": "ru"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "Присоединяйтесь к исследованию",
+    "language": "ru"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "Благодарим вас за интерес к ${studyName}",
+    "language": "ru"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "К сожалению, в настоящее время вы не соответствуете критериям участия в ${studyName}.",
+    "language": "ru"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "Укажите ниже свой адрес электронной почты, и мы будем держать вас в курсе событий. Вы можете отписаться в любое время.",
+    "language": "ru"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "Будьте в курсе событий",
+    "language": "ru"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "Вернуться на домашнюю страницу ${portalName}",
+    "language": "ru"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "Присоединяйтесь к списку рассылки",
+    "language": "ru"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "Будьте в курсе новостей об исследовании",
+    "language": "ru"
+  },
+  {
+    "keyName": "yourName",
+    "text": "Ваше имя",
+    "language": "ru"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "Ваша электронная почта",
+    "language": "ru"
+  },
+  {
+    "keyName": "join",
+    "text": "Присоединиться",
+    "language": "ru"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "Спасибо, что присоединились!",
+    "language": "ru"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "Страница не найдена",
+    "language": "ru"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "Если вы считаете, что это может быть ошибка, свяжитесь с ${studyContactEmail}",
+    "language": "ru"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "Вернуться на главную страницу",
+    "language": "ru"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "Произошла ошибка",
+    "language": "ru"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "Возникла проблема с нашей службой проверки подлинности. Пожалуйста, повторите попытку. Если проблема не исчезает, свяжитесь с ${studyContactEmail}.",
+    "language": "ru"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "Наборы для образцов",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "Наборы для сбора образцов",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "Наборы для сбора образцов являются необходимой частью исследовательского процесса, с их помощью исследователи могут получить важную информацию. Ниже вы можете увидеть статус всех предоставленных вам наборов.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "Предоставьте образец самостоятельно",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "На данный момент для этого исследования есть возможность собрать набор образцов самостоятельно.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "Собрать набор образцов самостоятельно",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "Ваши наборы",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "Подготовка",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "Отправлено",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "Возвращено",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "Создано",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "Взято",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "На данный момент у вас нет наборов для сбора образцов.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "Инструкция к набору для сбора образцов",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "Если вы собираете образцы с помощью набора самостоятельно, следуйте инструкциям, предоставленным участником исследовательской группы. Любая дополнительная информация, которая может вам понадобиться, например ваш уникальный идентификатор участника, будет указана ниже.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "Если у вас есть вопросы, вы можете задать их участнику исследовательской группы.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "Ваш набор для сбора образцов",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "Участник исследовательской группы предоставил вам набор для сбора образцов. Этот набор для сбора образцов привязан к вашей учетной записи. Если вы помогаете другому человеку собрать образцы с помощью набора, убедитесь, что каждый участник исследования использовал набор, который предназначался именно ему.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "Идентификатор вашего набора",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "Вернуться к информационной панели",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "Обновить",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "Требуется согласие",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "Прежде чем использовать набор для сбора образцов, вам нужно сначала зарегистрироваться для участия в исследовании. Если вас это заинтересовало, вы можете найти и подписать форму согласия по ссылке ниже.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "Начать подписание согласия",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "Произошла ошибка при загрузке информации о вашем наборе. Пожалуйста, свяжитесь с участником исследовательской группы для решения вопроса.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "После сбора образцов с помощью набора верните его участнику исследовательской группы, он отсканирует ваш код участника, указанный ниже.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "Чтобы получить набор для сбора образцов, участник исследовательской группы отсканирует ваш уникальный код участника, указанный ниже, и привяжет набор образцов к вашей учетной записи.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "После получения набора обновите эту страницу, чтобы увидеть информацию о наборе и получить дальнейшие инструкции.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "Участник исследовательской группы получил ваш набор для сбора образцов. Когда ваш образец поступит в обработку, вы получите уведомление по электронной почте и сможете увидеть статус образца в информационной панели вашего исследования.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "Спасибо за участие.",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "Набор для сбора образца слюны",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "Набор для сбора образца кала",
+    "language": "ru"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "Набор для сбора образца крови",
+    "language": "ru"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "Скачать",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "Вы еще не загрузили ни одного документа",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "Создано",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "Документы",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "Загруженные документы",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "При участии в исследовании вас могут попросить загрузить документы как часть формы или опроса. Ниже вы можете управлять загруженными вами документами.",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "Документы",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "Вы уверены?",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "Вы уверены, что хотите удалить этот документ? Это действие нельзя отменить. Обратите внимание, что если член исследовательского персонала уже загрузил этот документ, он все равно будет ему доступен. Пожалуйста, свяжитесь с исследовательским персоналом, если вы хотите, чтобы документ был полностью удален из всех записей.",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "Этот документ используется",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "Этот документ в настоящее время распространяется в ответе по крайней мере на один опрос. Пожалуйста, удалите его из ответов на опросы перед его удалением.",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "Удалить",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "Параметры",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "поделился в ответ на",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "Избранные документы",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "Эти документы включены в ваш ответ",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "Не выбрано ни одного документа. Загрузите новый документ или выберите существующий документ ниже.",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "Available documents",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "Эти документы не включены в ваш ответ",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "Перетащите файлы сюда или нажмите, чтобы загрузить",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "Нет доступных документов",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "Ваш сеанс скоро истечет",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "Для обеспечения безопасности и защиты ваших данных вы выйдете из системы через ${timeRemaining}.",
+    "language": "ru",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "ru",
+    "text": "Что -то пошло не так в процессе зачисления. Пожалуйста, заполните форму еще раз.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "ru",
+    "text": "В этом файле был обнаружен вирус.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "ru",
+    "text": "Сканирование вируса является неполным для этого файла.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "ru",
+    "text": "Этот файл был карантин и не может быть загружен. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с поддержкой.",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "ru",
+    "text": "Скачать все равно",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "ru",
+    "text": "Мы не можем проверить, безопасен ли этот файл. Пожалуйста, вернитесь позже или скачайте сейчас на свой риск.",
+    "machineTranslated": true
+  }
 ]

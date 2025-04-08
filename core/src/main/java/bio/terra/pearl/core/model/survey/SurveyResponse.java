@@ -2,7 +2,7 @@ package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
-import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +29,7 @@ public class SurveyResponse extends BaseEntity {
     // a list of files uploaded by the participant that are associated with answers in this response
     // the file references are stored in the associated answers as a stringValue
     @Builder.Default
-    private List<ParticipantFile> participantFiles = new ArrayList<>();
+    private List<ScannedParticipantFileDto> participantFiles = new ArrayList<>();
     @Builder.Default
     private boolean complete = false;
     // a json map of userId -> an object with information about where that particular user left off

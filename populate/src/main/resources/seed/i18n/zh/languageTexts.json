@@ -1,163 +1,866 @@
 [
-  {"keyName": "navbarDashboard", "text": "信息面板", "language": "zh"},
-  {"keyName": "navbarChangePassword", "text": "更改密码", "language": "zh"},
-  {"keyName": "navbarLogout", "text": "退出", "language": "zh"},
-  {"keyName": "profile", "text": "个人资料", "language": "zh"},
-  {"keyName": "navbarLogin", "text": "登录", "language": "zh"},
-  {"keyName": "navbarJoin", "text": "注册", "language": "zh"},
-  {"keyName": "taskComplete", "text": "完成", "language": "zh"},
-  {"keyName": "taskInProgress", "text": "进行中", "language": "zh"},
-  {"keyName": "taskNotStarted", "text": "未开始", "language": "zh"},
-  {"keyName": "taskDeclined", "text": "已拒绝", "language": "zh"},
-  {"keyName": "taskLocked", "text": "已锁定", "language": "zh"},
-  {"keyName": "tasksNoneForStudy", "text": "无本研究的任务", "language": "zh"},
-  {"keyName": "taskHistory", "text": "历史", "language": "zh"},
-  {"keyName": "taskNew", "text": "新的", "language": "zh"},
-  {"keyName": "surveysSomeLocked", "text": "在完成其他必要任务之前某些调查会被锁定。", "language": "zh"},
-  {"keyName": "taskTypeSurvey", "text": "调查", "language": "zh"},
-  {"keyName": "taskTypeSurveys", "text": "调查", "language": "zh"},
-  {"keyName": "taskTypeConsent", "text": "同意", "language": "zh"},
-  {"keyName": "taskTypeForms", "text": "表单", "language": "zh"},
-  {"keyName": "start", "text": "开始", "language": "zh"},
-  {"keyName": "continue", "text": "继续", "language": "zh"},
-  {"keyName": "save", "text": "保存", "language": "zh"},
-  {"keyName": "outreachLearnMore", "text": "了解更多", "language": "zh"},
-  {"keyName": "cancel", "text": "取消", "language": "zh"},
-  {"keyName": "goBack", "text": "返回", "language": "zh"},
-  {"keyName": "name", "text": "姓名", "language": "zh"},
-  {"keyName": "givenName", "text": "名字", "language": "zh"},
-  {"keyName": "familyName", "text": "姓氏", "language": "zh"},
-  {"keyName": "editName", "text": "编辑姓名", "language": "zh"},
-  {"keyName": "editBirthDate", "text": "编辑生日", "language": "zh"},
-  {"keyName": "birthDate", "text": "生日", "language": "zh"},
-  {"keyName": "mailingAddress", "text": "邮寄地址", "language": "zh"},
-  {"keyName": "editMailingAddress", "text": "编辑邮寄地址", "language": "zh"},
-  {"keyName": "primaryAddress", "text": "主要地址", "language": "zh"},
-  {"keyName": "editPrimaryAddress", "text": "编辑主要地址", "language": "zh"},
-  {"keyName": "street1", "text": "街道 1", "language": "zh"},
-  {"keyName": "street2", "text": "街道 2", "language": "zh"},
-  {"keyName": "city", "text": "城市", "language": "zh"},
-  {"keyName": "state", "text": "州\/省", "language": "zh"},
-  {"keyName": "postalCode", "text": "邮政编码", "language": "zh"},
-  {"keyName": "country", "text": "国家", "language": "zh"},
-  {"keyName": "communicationPreferences", "text": "首选联系方式", "language": "zh"},
-  {"keyName": "editCommunicationPreferences", "text": "编辑首选联系方式", "language": "zh"},
-  {"keyName": "contactEmail", "text": "联系人电子邮件地址", "language": "zh"},
-  {"keyName": "editContactEmail", "text": "编辑联系人电子邮件地址", "language": "zh"},
-  {"keyName": "phoneNumber", "text": "电话号码", "language": "zh"},
-  {"keyName": "editPhoneNumber", "text": "编辑电话号码", "language": "zh"},
-  {"keyName": "doNotSolicit", "text": "请勿推销", "language": "zh"},
-  {"keyName": "doNotContact", "text": "请勿联系", "language": "zh"},
-  {"keyName": "editDoNotSolicit", "text": "编辑请勿推销", "language": "zh"},
-  {"keyName": "editNotifications", "text": "编辑通知", "language": "zh"},
-  {"keyName": "notifications", "text": "通知", "language": "zh"},
-  {"keyName": "on", "text": "开启", "language": "zh"},
-  {"keyName": "off", "text": "关闭", "language": "zh"},
-  {"keyName": "notProvided", "text": "未提供", "language": "zh"},
-  {"keyName": "editProfileContactEmailWarning", "text": "按“保存”以更新用于通信的电子邮件地址。请注意，您的登录信息不会改变。", "language": "zh"},
-  {"keyName": "privacyPolicy", "text": "隐私政策", "language": "zh"},
-  {"keyName": "termsOfUse", "text": "使用条款", "language": "zh"},
-  {"keyName": "addressInvalidPostalCode", "text": "无法验证邮政编码。", "language": "zh"},
-  {"keyName": "addressInvalidCountry", "text": "无法验证国家。", "language": "zh"},
-  {"keyName": "addressInvalidState", "text": "无法验证州\/省。", "language": "zh"},
-  {"keyName": "addressInvalidCity", "text": "无法验证城市。", "language": "zh"},
-  {"keyName": "addressInvalidHouseNumber", "text": "无法验证门牌号。", "language": "zh"},
-  {"keyName": "addressInvalidStreetName", "text": "无法验证街道名称。", "language": "zh"},
-  {"keyName": "addressInvalidStreetType", "text": "无法验证街道类型。", "language": "zh"},
-  {"keyName": "addressNeedsSubpremise", "text": "请提供单元\/套房号码。", "language": "zh"},
-  {"keyName": "addressFailedToValidate", "text": "无法验证地址。", "language": "zh"},
-  {"keyName": "suggestBetterAddressHeader", "text": "这是正确的地址吗？", "language": "zh"},
-  {"keyName": "suggestBetterAddressBody", "text": "我们验证了一个类似的地址。请选择您希望使用的选项。", "language": "zh"},
-  {"keyName": "newAddress", "text": "新地址", "language": "zh"},
-  {"keyName": "oldAddress", "text": "旧地址", "language": "zh"},
-  {"keyName": "you", "text": "您", "language": "zh"},
-  {"keyName": "yourDependent", "text": "您的受抚养人", "language": "zh"},
-  {"keyName": "youInParens", "text": "(您)", "language": "zh"},
-  {"keyName": "allProfiles", "text": "所有个人资料", "language": "zh"},
-  {"keyName": "manageProfiles", "text": "管理个人资料", "language": "zh"},
-  {"keyName": "addNewParticipant", "text": "添加新参与者", "language": "zh"},
-  {"keyName": "dashboard", "text": "信息面板", "language": "zh"},
-  {"keyName": "selectParticipant", "text": "选择参与者", "language": "zh"},
-  {"keyName": "hubUpdateFormSubmittedTitle", "text": "${表格名称} 已完成", "language": "zh"},
-  {"keyName": "hubUpdateNoActivitiesTitle", "text": "所有活动已完成", "language": "zh"},
-  {"keyName": "hubUpdateNoActivitiesDetail", "text": "您已完成此研究的所有活动。一旦有新的活动，我们将立即通知您。感谢您的参与！", "language": "zh"},
-  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "欢迎参加 ${研究名称}", "language": "zh"},
-  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "请阅读并签署以下同意书以继续。", "language": "zh"},
-  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "您已注册参加 ${研究名称}。", "language": "zh"},
-  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "该用户已注册参加 ${研究名称}。", "language": "zh"},
-  {"keyName": "cookieAlertTitle", "text": "Cookie", "language": "zh"},
-  {"keyName": "cookieAlertDetail", "text": "本网站使用称为“cookie”的互联网令牌，以确保我们网站的正常运行和安全，并改善您的使用体验。我们使用的所有 cookie 都是严格必要的 cookie。此类 cookie 不会收集任何可识别您个人身份的信息，也不会跟踪您的浏览习惯。要了解更多信息，请[阅读我们的隐私政策](\/隐私)。", "language": "zh"},
-  {"keyName": "joinStudy", "text": "参加研究", "language": "zh"},
-  {"keyName": "ineligibleThankYou", "text": "感谢您对 ${研究名称} 的兴趣。", "language": "zh" },
-  {"keyName": "ineligibleDescription", "text": "遗憾的是，您目前不符合参加 ${研究名称} 的资格标准。", "language": "zh"},
-  {"keyName": "ineligibleProvideYourEmail", "text": "请在下面提供您的电子邮箱，我们会通过它让您了解最新研究进展。您随时可以退订。", "language":  "zh"},
-  {"keyName": "ineligibleStayInformed", "text": "获取最新信息", "language": "zh"},
-  {"keyName": "backToPortalHomepage", "text": "返回 ${门户网站名称} 主页", "language": "zh"},
-  {"keyName": "joinMailingList", "text": "加入邮件名单", "language": "zh"},
-  {"keyName": "mailingFormStayUpdated", "text":  "了解有关研究的最新消息", "language": "zh"},
-  {"keyName": "yourName", "text": "您的姓名", "language": "zh"},
-  {"keyName": "yourEmail", "text": "您的电子邮件地址", "language": "zh"},
-  {"keyName": "join", "text":  "加入", "language": "zh"},
-  {"keyName": "thanksForJoining", "text": "感谢加入！", "language": "zh"},
-  {"keyName": "pageNotFoundTitle", "text": "未找到页面", "language": "zh"},
-  {"keyName": "pageNotFoundMessage", "text": "如果您认为这是一个错误，请联系 ${研究联系人电子邮件地址} 。", "language": "zh"},
-  {"keyName": "pageNotFoundReturnHome", "text": "返回主页", "language": "zh"},
-  {"keyName": "authErrorPageTitle", "text": "出现了错误", "language": "zh"},
-  {"keyName": "authErrorPageMessage", "text": "我们的身份验证服务出现了问题。请重试。如果问题仍然存在，请联系 ${研究联系人电子邮件地址}。", "language": "zh"},
-  {"keyName": "navbarSampleKits", "text":  "样本套件", "language": "zh"},
-  {"keyName": "kitsPageTitle", "text": "样本采集套件", "language": "zh"},
-  {"keyName": "kitsPageDescription", "text": "样本采集套件是研究过程中的重要组成部分，有助于为研究人员提供重要的信息。以下是已提供给您的所有套件的状态。", "language": "zh"},
-  {"keyName": "kitsPageInPersonTitle", "text": "亲自提供样本", "language": "zh"},
-  {"keyName": "kitsPageInPersonDescription", "text": "本研究目前提供亲自完成样本采集套件的选项。", "language": "zh"},
-  {"keyName": "kitsPageInPersonCompleteButton", "text": "亲自完成套件", "language": "zh"},
-  {"keyName": "kitsPageYourKitsTitle", "text": "您的套件", "language": "zh"},
-  {"keyName": "kitsPageStatusPreparing", "text": "制备中", "language": "zh"},
-  {"keyName": "kitsPageStatusShipped", "text": "已发送", "language": "zh"},
-  {"keyName": "kitsPageStatusReturned", "text": "已送回", "language": "zh"},
-  {"keyName": "kitsPageStatusCreated", "text": "已创建", "language": "zh"},
-  {"keyName": "kitsPageStatusCollected", "text": "已采集", "language": "zh"},
-  {"keyName": "kitsPageNoKits", "text": "您目前没有任何样本采集套件。", "language": "zh"},
-  {"keyName": "kitsInPersonTitle", "text": "样本套件说明", "language": "zh"},
-  {"keyName": "kitsInPersonDescription", "text": "如果您亲自完成样本采集套件，请按照研究团队成员提供的说明进行操作。以下将提供您可能需要的任何其他信息，例如您的唯一参与者标识符。", "language": "zh"},
-  {"keyName": "kitsInPersonSubDescription", "text": "如果您有任何疑问，请咨询研究小组成员。", "language": "zh"},
-  {"keyName": "kitsInPersonYourKitTitle", "text": "您的样本采集套件", "language": "zh"},
-  {"keyName": "kitsInPersonYourKitDescription", "text": "小组成员已为您提供了样本采集套件。该样本套件与您的帐户相关联。如果您正在协助其他人使用其样本收集套件，请确保每位参与者均完成分配给他们的样本采集套件。", "language": "zh"},
-  {"keyName": "kitsInPersonYourKitIdentifier", "text": "您的套件标识符", "language": "zh"},
-  {"keyName": "kitsInPersonReturnToDashboard", "text": "返回信息面板", "language": "zh"},
-  {"keyName": "kitsInPersonRefreshPage", "text": "刷新", "language": "zh"},
-  {"keyName": "kitsInPersonConsentRequiredTitle", "text": "需要同意", "language": "zh"},
-  {"keyName": "kitsInPersonConsentRequiredDescription", "text": "在完成样本采集套件之前，您必须首先注册参加这项研究。如果有兴趣，您可以通过以下链接找到并签署同意书。", "language": "zh"},
-  {"keyName": "kitsInPersonStartConsent", "text": "开始同意", "language": "zh"},
-  {"keyName": "kitsInPersonError", "text": "加载您的套件信息时出错。请联系研究小组的成员寻求帮助。", "language": "zh"},
-  {"keyName": "kitsInPersonCreatedInstructions", "text": "完成样本采集套件后，请将其交还给研究小组成员，以让他们扫描以下的参与者代码。", "language": "zh"},
-  {"keyName": "kitsInPersonNoKitInstructions", "text": "为获得样本采集套件，研究小组成员将扫描以下的您的唯一参与者代码，以将样本套件与您的帐户相关联。", "language": "zh"},
-  {"keyName": "kitsInPersonNoKitSubInstructions", "text": "收到套件后，请刷新此页面以查看您的套件信息并接收进一步的说明。", "language": "zh"},
-  {"keyName": "kitsInPersonCollectedDescription", "text": "研究小组的成员已收到您的样本采集套件。样本处理完毕后，您将收到一封电子邮件通知，并且您可以在研究信息面板上查看样本状态。", "language": "zh"},
-  {"keyName": "kitsInPersonCollectedThankYou", "text": "感谢您的参与。", "language": "zh"},
-  {"keyName": "kitTypeSaliva", "text": "唾液套件", "language": "zh"},
-  {"keyName": "kitTypeStool", "text": "粪便套件", "language": "zh"},
-  {"keyName": "kitTypeBlood", "text": "血液套件", "language": "zh"},
-  {"keyName": "documentDownloadButton", "text": "下载", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentsListNone", "text": "您尚未上传任何文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentsListCreatedOn", "text": "创建于", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentsPageTitle", "text": "文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentsPageUploadedDocumentsTitle", "text": "已上传文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentsPageMessage", "text": "在参与研究期间，您可能会被要求上传文件作为表格或调查的一部分。下面，您可以管理已上传的文件。", "language": "zh", "machineTranslated": true},
-  {"keyName": "navbarDocuments", "text": "文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureTitle", "text": "你确定吗？", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentDeleteAreYouSureMessage", "text": "您确定要删除此文档吗？此操作无法撤消。请注意，如果研究人员已经下载了此文档，他们仍然可以访问它。如果您希望将文档从所有记录中完全删除，请联系研究人员。", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseTitle", "text": "此文件正在使用中", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentDeleteDocumentInUseMessage", "text": "此文档目前已分享给至少一项调查。删除之前，请先将其从调查回复中移除。", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentDeleteButton", "text": "删除", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentOptionsButton", "text": "选项", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentSharedInResponseTo", "text": "分享", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderSelectedDocuments", "text": "精选文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderIncludedInResponse", "text": "这些文件包含在您的回复中", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocumentsSelected", "text": "未选择任何文档。请上传新文档或选择下面的现有文档。", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderAvailableDocuments", "text": "可用文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderNotIncludedInResponse", "text": "您的回复中未包含这些文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderClickToUpload", "text": "将文件拖放到此处或单击上传", "language": "zh", "machineTranslated": true},
-  {"keyName": "documentUploaderNoDocuments", "text": "没有可用文件", "language": "zh", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeTitle", "text": "您的会话即将过期", "language": "zh", "machineTranslated": true},
-  {"keyName": "idleStatusNoticeMessage", "text": "为了维护安全并保护您的数据，您将在 ${timeRemaining} 后退出。", "language": "zh", "machineTranslated": true}
+  {
+    "keyName": "navbarDashboard",
+    "text": "信息面板",
+    "language": "zh"
+  },
+  {
+    "keyName": "navbarChangePassword",
+    "text": "更改密码",
+    "language": "zh"
+  },
+  {
+    "keyName": "navbarLogout",
+    "text": "退出",
+    "language": "zh"
+  },
+  {
+    "keyName": "profile",
+    "text": "个人资料",
+    "language": "zh"
+  },
+  {
+    "keyName": "navbarLogin",
+    "text": "登录",
+    "language": "zh"
+  },
+  {
+    "keyName": "navbarJoin",
+    "text": "注册",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskComplete",
+    "text": "完成",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskInProgress",
+    "text": "进行中",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskNotStarted",
+    "text": "未开始",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskDeclined",
+    "text": "已拒绝",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskLocked",
+    "text": "已锁定",
+    "language": "zh"
+  },
+  {
+    "keyName": "tasksNoneForStudy",
+    "text": "无本研究的任务",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskHistory",
+    "text": "历史",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskNew",
+    "text": "新的",
+    "language": "zh"
+  },
+  {
+    "keyName": "surveysSomeLocked",
+    "text": "在完成其他必要任务之前某些调查会被锁定。",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskTypeSurvey",
+    "text": "调查",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskTypeSurveys",
+    "text": "调查",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskTypeConsent",
+    "text": "同意",
+    "language": "zh"
+  },
+  {
+    "keyName": "taskTypeForms",
+    "text": "表单",
+    "language": "zh"
+  },
+  {
+    "keyName": "start",
+    "text": "开始",
+    "language": "zh"
+  },
+  {
+    "keyName": "continue",
+    "text": "继续",
+    "language": "zh"
+  },
+  {
+    "keyName": "save",
+    "text": "保存",
+    "language": "zh"
+  },
+  {
+    "keyName": "outreachLearnMore",
+    "text": "了解更多",
+    "language": "zh"
+  },
+  {
+    "keyName": "cancel",
+    "text": "取消",
+    "language": "zh"
+  },
+  {
+    "keyName": "goBack",
+    "text": "返回",
+    "language": "zh"
+  },
+  {
+    "keyName": "name",
+    "text": "姓名",
+    "language": "zh"
+  },
+  {
+    "keyName": "givenName",
+    "text": "名字",
+    "language": "zh"
+  },
+  {
+    "keyName": "familyName",
+    "text": "姓氏",
+    "language": "zh"
+  },
+  {
+    "keyName": "editName",
+    "text": "编辑姓名",
+    "language": "zh"
+  },
+  {
+    "keyName": "editBirthDate",
+    "text": "编辑生日",
+    "language": "zh"
+  },
+  {
+    "keyName": "birthDate",
+    "text": "生日",
+    "language": "zh"
+  },
+  {
+    "keyName": "mailingAddress",
+    "text": "邮寄地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "editMailingAddress",
+    "text": "编辑邮寄地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "primaryAddress",
+    "text": "主要地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "editPrimaryAddress",
+    "text": "编辑主要地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "street1",
+    "text": "街道 1",
+    "language": "zh"
+  },
+  {
+    "keyName": "street2",
+    "text": "街道 2",
+    "language": "zh"
+  },
+  {
+    "keyName": "city",
+    "text": "城市",
+    "language": "zh"
+  },
+  {
+    "keyName": "state",
+    "text": "州/省",
+    "language": "zh"
+  },
+  {
+    "keyName": "postalCode",
+    "text": "邮政编码",
+    "language": "zh"
+  },
+  {
+    "keyName": "country",
+    "text": "国家",
+    "language": "zh"
+  },
+  {
+    "keyName": "communicationPreferences",
+    "text": "首选联系方式",
+    "language": "zh"
+  },
+  {
+    "keyName": "editCommunicationPreferences",
+    "text": "编辑首选联系方式",
+    "language": "zh"
+  },
+  {
+    "keyName": "contactEmail",
+    "text": "联系人电子邮件地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "editContactEmail",
+    "text": "编辑联系人电子邮件地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "phoneNumber",
+    "text": "电话号码",
+    "language": "zh"
+  },
+  {
+    "keyName": "editPhoneNumber",
+    "text": "编辑电话号码",
+    "language": "zh"
+  },
+  {
+    "keyName": "doNotSolicit",
+    "text": "请勿推销",
+    "language": "zh"
+  },
+  {
+    "keyName": "doNotContact",
+    "text": "请勿联系",
+    "language": "zh"
+  },
+  {
+    "keyName": "editDoNotSolicit",
+    "text": "编辑请勿推销",
+    "language": "zh"
+  },
+  {
+    "keyName": "editNotifications",
+    "text": "编辑通知",
+    "language": "zh"
+  },
+  {
+    "keyName": "notifications",
+    "text": "通知",
+    "language": "zh"
+  },
+  {
+    "keyName": "on",
+    "text": "开启",
+    "language": "zh"
+  },
+  {
+    "keyName": "off",
+    "text": "关闭",
+    "language": "zh"
+  },
+  {
+    "keyName": "notProvided",
+    "text": "未提供",
+    "language": "zh"
+  },
+  {
+    "keyName": "editProfileContactEmailWarning",
+    "text": "按“保存”以更新用于通信的电子邮件地址。请注意，您的登录信息不会改变。",
+    "language": "zh"
+  },
+  {
+    "keyName": "privacyPolicy",
+    "text": "隐私政策",
+    "language": "zh"
+  },
+  {
+    "keyName": "termsOfUse",
+    "text": "使用条款",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidPostalCode",
+    "text": "无法验证邮政编码。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidCountry",
+    "text": "无法验证国家。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidState",
+    "text": "无法验证州/省。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidCity",
+    "text": "无法验证城市。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidHouseNumber",
+    "text": "无法验证门牌号。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidStreetName",
+    "text": "无法验证街道名称。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressInvalidStreetType",
+    "text": "无法验证街道类型。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressNeedsSubpremise",
+    "text": "请提供单元/套房号码。",
+    "language": "zh"
+  },
+  {
+    "keyName": "addressFailedToValidate",
+    "text": "无法验证地址。",
+    "language": "zh"
+  },
+  {
+    "keyName": "suggestBetterAddressHeader",
+    "text": "这是正确的地址吗？",
+    "language": "zh"
+  },
+  {
+    "keyName": "suggestBetterAddressBody",
+    "text": "我们验证了一个类似的地址。请选择您希望使用的选项。",
+    "language": "zh"
+  },
+  {
+    "keyName": "newAddress",
+    "text": "新地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "oldAddress",
+    "text": "旧地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "you",
+    "text": "您",
+    "language": "zh"
+  },
+  {
+    "keyName": "yourDependent",
+    "text": "您的受抚养人",
+    "language": "zh"
+  },
+  {
+    "keyName": "youInParens",
+    "text": "(您)",
+    "language": "zh"
+  },
+  {
+    "keyName": "allProfiles",
+    "text": "所有个人资料",
+    "language": "zh"
+  },
+  {
+    "keyName": "manageProfiles",
+    "text": "管理个人资料",
+    "language": "zh"
+  },
+  {
+    "keyName": "addNewParticipant",
+    "text": "添加新参与者",
+    "language": "zh"
+  },
+  {
+    "keyName": "dashboard",
+    "text": "信息面板",
+    "language": "zh"
+  },
+  {
+    "keyName": "selectParticipant",
+    "text": "选择参与者",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateFormSubmittedTitle",
+    "text": "${表格名称} 已完成",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesTitle",
+    "text": "所有活动已完成",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateNoActivitiesDetail",
+    "text": "您已完成此研究的所有活动。一旦有新的活动，我们将立即通知您。感谢您的参与！",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyTitle",
+    "text": "欢迎参加 ${研究名称}",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateWelcomeToStudyDetail",
+    "text": "请阅读并签署以下同意书以继续。",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateAlreadyEnrolledTitle",
+    "text": "您已注册参加 ${研究名称}。",
+    "language": "zh"
+  },
+  {
+    "keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle",
+    "text": "该用户已注册参加 ${研究名称}。",
+    "language": "zh"
+  },
+  {
+    "keyName": "cookieAlertTitle",
+    "text": "Cookie",
+    "language": "zh"
+  },
+  {
+    "keyName": "cookieAlertDetail",
+    "text": "本网站使用称为“cookie”的互联网令牌，以确保我们网站的正常运行和安全，并改善您的使用体验。我们使用的所有 cookie 都是严格必要的 cookie。此类 cookie 不会收集任何可识别您个人身份的信息，也不会跟踪您的浏览习惯。要了解更多信息，请[阅读我们的隐私政策](/隐私)。",
+    "language": "zh"
+  },
+  {
+    "keyName": "joinStudy",
+    "text": "参加研究",
+    "language": "zh"
+  },
+  {
+    "keyName": "ineligibleThankYou",
+    "text": "感谢您对 ${研究名称} 的兴趣。",
+    "language": "zh"
+  },
+  {
+    "keyName": "ineligibleDescription",
+    "text": "遗憾的是，您目前不符合参加 ${研究名称} 的资格标准。",
+    "language": "zh"
+  },
+  {
+    "keyName": "ineligibleProvideYourEmail",
+    "text": "请在下面提供您的电子邮箱，我们会通过它让您了解最新研究进展。您随时可以退订。",
+    "language": "zh"
+  },
+  {
+    "keyName": "ineligibleStayInformed",
+    "text": "获取最新信息",
+    "language": "zh"
+  },
+  {
+    "keyName": "backToPortalHomepage",
+    "text": "返回 ${门户网站名称} 主页",
+    "language": "zh"
+  },
+  {
+    "keyName": "joinMailingList",
+    "text": "加入邮件名单",
+    "language": "zh"
+  },
+  {
+    "keyName": "mailingFormStayUpdated",
+    "text": "了解有关研究的最新消息",
+    "language": "zh"
+  },
+  {
+    "keyName": "yourName",
+    "text": "您的姓名",
+    "language": "zh"
+  },
+  {
+    "keyName": "yourEmail",
+    "text": "您的电子邮件地址",
+    "language": "zh"
+  },
+  {
+    "keyName": "join",
+    "text": "加入",
+    "language": "zh"
+  },
+  {
+    "keyName": "thanksForJoining",
+    "text": "感谢加入！",
+    "language": "zh"
+  },
+  {
+    "keyName": "pageNotFoundTitle",
+    "text": "未找到页面",
+    "language": "zh"
+  },
+  {
+    "keyName": "pageNotFoundMessage",
+    "text": "如果您认为这是一个错误，请联系 ${研究联系人电子邮件地址} 。",
+    "language": "zh"
+  },
+  {
+    "keyName": "pageNotFoundReturnHome",
+    "text": "返回主页",
+    "language": "zh"
+  },
+  {
+    "keyName": "authErrorPageTitle",
+    "text": "出现了错误",
+    "language": "zh"
+  },
+  {
+    "keyName": "authErrorPageMessage",
+    "text": "我们的身份验证服务出现了问题。请重试。如果问题仍然存在，请联系 ${研究联系人电子邮件地址}。",
+    "language": "zh"
+  },
+  {
+    "keyName": "navbarSampleKits",
+    "text": "样本套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageTitle",
+    "text": "样本采集套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageDescription",
+    "text": "样本采集套件是研究过程中的重要组成部分，有助于为研究人员提供重要的信息。以下是已提供给您的所有套件的状态。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageInPersonTitle",
+    "text": "亲自提供样本",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageInPersonDescription",
+    "text": "本研究目前提供亲自完成样本采集套件的选项。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageInPersonCompleteButton",
+    "text": "亲自完成套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageYourKitsTitle",
+    "text": "您的套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageStatusPreparing",
+    "text": "制备中",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageStatusShipped",
+    "text": "已发送",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageStatusReturned",
+    "text": "已送回",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageStatusCreated",
+    "text": "已创建",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageStatusCollected",
+    "text": "已采集",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsPageNoKits",
+    "text": "您目前没有任何样本采集套件。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonTitle",
+    "text": "样本套件说明",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonDescription",
+    "text": "如果您亲自完成样本采集套件，请按照研究团队成员提供的说明进行操作。以下将提供您可能需要的任何其他信息，例如您的唯一参与者标识符。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonSubDescription",
+    "text": "如果您有任何疑问，请咨询研究小组成员。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonYourKitTitle",
+    "text": "您的样本采集套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonYourKitDescription",
+    "text": "小组成员已为您提供了样本采集套件。该样本套件与您的帐户相关联。如果您正在协助其他人使用其样本收集套件，请确保每位参与者均完成分配给他们的样本采集套件。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonYourKitIdentifier",
+    "text": "您的套件标识符",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonReturnToDashboard",
+    "text": "返回信息面板",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonRefreshPage",
+    "text": "刷新",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredTitle",
+    "text": "需要同意",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonConsentRequiredDescription",
+    "text": "在完成样本采集套件之前，您必须首先注册参加这项研究。如果有兴趣，您可以通过以下链接找到并签署同意书。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonStartConsent",
+    "text": "开始同意",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonError",
+    "text": "加载您的套件信息时出错。请联系研究小组的成员寻求帮助。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonCreatedInstructions",
+    "text": "完成样本采集套件后，请将其交还给研究小组成员，以让他们扫描以下的参与者代码。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonNoKitInstructions",
+    "text": "为获得样本采集套件，研究小组成员将扫描以下的您的唯一参与者代码，以将样本套件与您的帐户相关联。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonNoKitSubInstructions",
+    "text": "收到套件后，请刷新此页面以查看您的套件信息并接收进一步的说明。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonCollectedDescription",
+    "text": "研究小组的成员已收到您的样本采集套件。样本处理完毕后，您将收到一封电子邮件通知，并且您可以在研究信息面板上查看样本状态。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitsInPersonCollectedThankYou",
+    "text": "感谢您的参与。",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitTypeSaliva",
+    "text": "唾液套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitTypeStool",
+    "text": "粪便套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "kitTypeBlood",
+    "text": "血液套件",
+    "language": "zh"
+  },
+  {
+    "keyName": "documentDownloadButton",
+    "text": "下载",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListNone",
+    "text": "您尚未上传任何文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsListCreatedOn",
+    "text": "创建于",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageTitle",
+    "text": "文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageUploadedDocumentsTitle",
+    "text": "已上传文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentsPageMessage",
+    "text": "在参与研究期间，您可能会被要求上传文件作为表格或调查的一部分。下面，您可以管理已上传的文件。",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "navbarDocuments",
+    "text": "文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureTitle",
+    "text": "你确定吗？",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteAreYouSureMessage",
+    "text": "您确定要删除此文档吗？此操作无法撤消。请注意，如果研究人员已经下载了此文档，他们仍然可以访问它。如果您希望将文档从所有记录中完全删除，请联系研究人员。",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseTitle",
+    "text": "此文件正在使用中",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteDocumentInUseMessage",
+    "text": "此文档目前已分享给至少一项调查。删除之前，请先将其从调查回复中移除。",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentDeleteButton",
+    "text": "删除",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentOptionsButton",
+    "text": "选项",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentSharedInResponseTo",
+    "text": "分享",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderSelectedDocuments",
+    "text": "精选文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderIncludedInResponse",
+    "text": "这些文件包含在您的回复中",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocumentsSelected",
+    "text": "未选择任何文档。请上传新文档或选择下面的现有文档。",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderAvailableDocuments",
+    "text": "可用文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNotIncludedInResponse",
+    "text": "您的回复中未包含这些文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderClickToUpload",
+    "text": "将文件拖放到此处或单击上传",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "documentUploaderNoDocuments",
+    "text": "没有可用文件",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeTitle",
+    "text": "您的会话即将过期",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "idleStatusNoticeMessage",
+    "text": "为了维护安全并保护您的数据，您将在 ${timeRemaining} 后退出。",
+    "language": "zh",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "failedToEnroll",
+    "language": "zh",
+    "text": "在入学过程中出现了问题。请再次填写表格。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusDetected",
+    "language": "zh",
+    "text": "该文件中检测到病毒。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncomplete",
+    "language": "zh",
+    "text": "该文件的病毒扫描是不完整的。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "fileQuarantinedCannotDownload",
+    "language": "zh",
+    "text": "该文件已被隔离，无法下载。如果您认为这是一个错误，请联系支持。",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "downloadAnyway",
+    "language": "zh",
+    "text": "无论如何下载",
+    "machineTranslated": true
+  },
+  {
+    "keyName": "virusScanningIncompleteCannotVerify",
+    "language": "zh",
+    "text": "我们无法验证此文件是否安全下载。请稍后再返回或立即下载。",
+    "machineTranslated": true
+  }
 ]

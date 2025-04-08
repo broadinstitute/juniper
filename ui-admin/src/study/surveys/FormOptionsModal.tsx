@@ -180,16 +180,31 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 /> days
               </label>
             </div>
-            {workingForm.recurrenceType === 'LONGITUDINAL' &&  <label className="form-label d-block">
+            {workingForm.recurrenceType === 'LONGITUDINAL' && <><label className="form-label d-block">
               <input type="checkbox" checked={workingForm.prepopulate}
                 onChange={e => updateWorkingForm({
                   ...workingForm, prepopulate: e.target.checked
                 })}
               /> Prepopulate answers <InfoPopup placement="right" content={<div>
-                    For longitudinal surveys, enabling this will automatically
-                    prepopulate answers from the previous survey response
+                  For longitudinal surveys, enabling this will automatically
+                  prepopulate answers from the previous survey response
               </div>}/>
-            </label> }
+            </label>
+            <label className="d-flex align-items-center">
+                      Create a new response after
+              <TextInput value={workingForm.createNewResponseAfterDays} type="number" min={1} max={9999}
+                className="mx-2"
+                style={{ maxWidth: '100px' }}
+                onChange={val => updateWorkingForm({
+                  ...workingForm,
+                  createNewResponseAfterDays: parseInt(val)
+                })}
+              /> days <InfoPopup placement="right" content={<div>
+                      If this value is set, a new task and response will be created for the participant
+                      if they make an edit to their response after this many days
+              </div>}/>
+            </label>
+            </>}
             <h3 className="h6 mt-4">Eligibility Rule</h3>
             <div className="mb-2">
               <LazySearchQueryBuilder

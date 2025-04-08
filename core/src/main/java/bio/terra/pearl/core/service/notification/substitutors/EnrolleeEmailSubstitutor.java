@@ -50,6 +50,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         if (isProxy(ruleData)) {
             valueMap.put("isProxy", "true");
+        } else {
+            valueMap.put("isProxy", "false");
         }
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());

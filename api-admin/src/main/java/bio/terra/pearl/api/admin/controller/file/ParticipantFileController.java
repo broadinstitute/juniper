@@ -1,12 +1,14 @@
 package bio.terra.pearl.api.admin.controller.file;
 
+import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.api.admin.api.ParticipantFileApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.api.admin.service.file.ParticipantFileExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -52,7 +54,13 @@ public class ParticipantFileController implements ParticipantFileApi {
             EnvironmentName.valueOf(envName),
             enrolleeShortcode);
 
-    ParticipantFile participantFile = participantFileExtService.get(authContext, fileName);
+    ScannedParticipantFileDto participantFile =
+        participantFileExtService.get(authContext, fileName);
+
+    if (participantFile.getVirusScanResult() == VirusScanResult.QUARANTINED) {
+      // This will return a 403 Forbidden
+      throw new UnauthorizedException("Virus detected in file");
+    }
 
     InputStream content = participantFileExtService.downloadFile(authContext, fileName);
 
@@ -78,7 +86,7 @@ public class ParticipantFileController implements ParticipantFileApi {
             EnvironmentName.valueOf(envName),
             enrolleeShortcode);
 
-    List<ParticipantFile> participantFiles = participantFileExtService.list(authContext);
+    List<ScannedParticipantFileDto> participantFiles = participantFileExtService.list(authContext);
     return ResponseEntity.ok(participantFiles);
   }
 
@@ -98,7 +106,8 @@ public class ParticipantFileController implements ParticipantFileApi {
             EnvironmentName.valueOf(envName),
             enrolleeShortcode);
 
-    ParticipantFile created = participantFileExtService.uploadFile(authContext, participantFile);
+    ScannedParticipantFileDto created =
+        participantFileExtService.uploadFile(authContext, participantFile);
 
     return ResponseEntity.ok(created);
   }

@@ -3,8 +3,10 @@ package bio.terra.pearl.api.admin.service.file;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import java.io.IOException;
@@ -34,27 +36,33 @@ public class ParticipantFileExtService {
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
-  public ParticipantFile get(PortalEnrolleeAuthContext authContext, String fileName) {
+  public ScannedParticipantFileDto get(PortalEnrolleeAuthContext authContext, String fileName) {
     return participantFileService
         .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
+        .map(participantFileService::attachVirusScanResult)
         .orElseThrow(() -> new NotFoundException("File not found"));
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
-  public List<ParticipantFile> list(PortalEnrolleeAuthContext authContext) {
-    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
+  public List<ScannedParticipantFileDto> list(PortalEnrolleeAuthContext authContext) {
+    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId()).stream()
+        .map(participantFileService::attachVirusScanResult)
+        .toList();
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")
-  public ParticipantFile uploadFile(PortalEnrolleeAuthContext authContext, MultipartFile file) {
+  public ScannedParticipantFileDto uploadFile(
+      PortalEnrolleeAuthContext authContext, MultipartFile file) {
     try {
-      return participantFileService.uploadFileAndCreate(
-          ParticipantFile.builder()
-              .enrolleeId(authContext.getEnrollee().getId())
-              .fileName(getFileName(file.getOriginalFilename()))
-              .fileType(file.getContentType())
-              .build(),
-          file.getInputStream());
+      return new ScannedParticipantFileDto(
+          participantFileService.uploadFileAndCreate(
+              ParticipantFile.builder()
+                  .enrolleeId(authContext.getEnrollee().getId())
+                  .fileName(getFileName(file.getOriginalFilename()))
+                  .fileType(file.getContentType())
+                  .build(),
+              file.getInputStream()),
+          VirusScanResult.UNSCANNED);
     } catch (IOException e) {
       throw new RuntimeException("Error uploading file");
     }

@@ -1,10 +1,11 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.dao.file.ParticipantFileDao;
 import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.service.file.ParticipantFileService;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,12 @@ import java.util.stream.Collectors;
 @Component
 public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
     private final AnswerDao answerDao;
-    private final ParticipantFileDao participantFileDao;
+    private final ParticipantFileService participantFileService;
 
-    public SurveyResponseDao(Jdbi jdbi, AnswerDao answerDao, ParticipantFileDao participantFileDao) {
+    public SurveyResponseDao(Jdbi jdbi, AnswerDao answerDao, ParticipantFileService participantFileService) {
         super(jdbi);
         this.answerDao = answerDao;
-        this.participantFileDao = participantFileDao;
+        this.participantFileService = participantFileService;
     }
 
 
@@ -87,7 +88,11 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
     }
 
     public SurveyResponse attachParticipantFiles(SurveyResponse response) {
-        List<ParticipantFile> participantFiles = participantFileDao.findBySurveyResponseId(response.getId());
+        List<ScannedParticipantFileDto> participantFiles = participantFileService
+                .findBySurveyResponseId(response.getId())
+                .stream()
+                .map(participantFileService::attachVirusScanResult)
+                .toList();
         response.setParticipantFiles(participantFiles);
         return response;
     }
@@ -101,5 +106,14 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                         .mapTo(clazz)
                         .findOne()
         );
+    }
+
+    public List<SurveyResponse> findAllByEnrolleeAndSurveyId(
+            UUID enrolleeId, UUID surveyId) {
+        return findAllByTwoProperties(
+                "enrollee_id", enrolleeId,
+                "survey_id", surveyId
+        );
+
     }
 }

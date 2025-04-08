@@ -1,11 +1,13 @@
 package bio.terra.pearl.api.participant.controller.file;
 
+import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.api.participant.api.ParticipantFileApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.api.participant.service.file.ParticipantFileExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.file.ParticipantFile;
+import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.service.file.VirusScanResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -44,13 +46,18 @@ public class ParticipantFileController implements ParticipantFileApi {
       String fileName) {
     ParticipantUser participantUser = requestUtilService.requireUser(request);
 
-    ParticipantFile participantFile =
+    ScannedParticipantFileDto participantFile =
         participantFileExtService.get(
             portalShortcode,
             EnvironmentName.valueOf(envName),
             participantUser,
             enrolleeShortcode,
             fileName);
+
+    if (participantFile.getVirusScanResult() == VirusScanResult.QUARANTINED) {
+      // This will return a 403 Forbidden
+      throw new UnauthorizedException("Virus detected in file");
+    }
 
     InputStream content =
         participantFileExtService.downloadFile(
@@ -79,7 +86,7 @@ public class ParticipantFileController implements ParticipantFileApi {
       MultipartFile participantFile) {
     ParticipantUser participantUser = requestUtilService.requireUser(request);
 
-    ParticipantFile created =
+    ScannedParticipantFileDto created =
         participantFileExtService.uploadFile(
             portalShortcode,
             EnvironmentName.valueOf(envName),
@@ -95,7 +102,7 @@ public class ParticipantFileController implements ParticipantFileApi {
       String portalShortcode, String envName, String studyShortcode, String enrolleeShortcode) {
     ParticipantUser participantUser = requestUtilService.requireUser(request);
 
-    List<ParticipantFile> participantFiles =
+    List<ScannedParticipantFileDto> participantFiles =
         participantFileExtService.list(
             portalShortcode, EnvironmentName.valueOf(envName), participantUser, enrolleeShortcode);
     return ResponseEntity.ok(participantFiles);

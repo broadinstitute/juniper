@@ -161,14 +161,14 @@ public class AnswerProcessingService {
     }
 
     public static final Map<AnswerMappingMapType, BiFunction<Answer, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
-            AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> StringUtils.trim(answer.getStringValue()),
+            AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> StringUtils.trim(answer.valueAsString()),
             AnswerMappingMapType.STRING_TO_LOCAL_DATE, (Answer answer, AnswerMapping mapping) ->
-                    mapToDate(answer.getStringValue(), mapping),
-            AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> parseBoolean(answer.getStringValue())
+                    mapToDate(answer.valueAsString(), mapping),
+            AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> parseBoolean(answer.valueAsString())
     );
 
     private static Boolean parseBoolean(String value) {
-        return Boolean.parseBoolean(value) || value.equalsIgnoreCase("yes");
+        return Boolean.parseBoolean(value);
     }
 
     public static LocalDate mapToDate(String dateString, AnswerMapping mapping) {

@@ -347,6 +347,7 @@ export function useRoutablePageNumber(): PageNumberControl {
 
 type UseSurveyJsModelOpts = {
   extraCssClasses?: Record<string, string>,
+  readonly?: boolean
 }
 
 /**
@@ -383,7 +384,9 @@ export function useSurveyJSModel(
   const Api = useApiContext()
   const { i18n } = useI18n()
 
-  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
+  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(
+    resumeData, pager.pageNumber, opts.readonly
+  ))
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
   function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
@@ -392,7 +395,10 @@ export function useSurveyJSModel(
   }
 
   /** returns a surveyJS survey model with the given data/pageNumber */
-  function newSurveyJSModel(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
+  function newSurveyJSModel(
+    refreshData: SurveyJsResumeData | null,
+    pagerPageNumber: number | null,
+    readonly?: boolean) {
     const newSurveyModel = surveyJSModelFromForm(form)
 
     Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
@@ -422,6 +428,10 @@ export function useSurveyJSModel(
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
     newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
+
+    if (readonly) {
+      newSurveyModel.mode = 'display'
+    }
     return newSurveyModel
   }
 
