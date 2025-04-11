@@ -4,8 +4,10 @@ import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerType;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 public class SurveyResponseFactory {
@@ -47,12 +48,21 @@ public class SurveyResponseFactory {
         return surveyResponseService.create(builderWithDependencies(testName).build());
     }
 
-    /** to create a response with an objectValued answer, use a JsonNode value in the answerMap */
+    /**
+     * to create a response with an objectValued answer, use a JsonNode value in the answerMap
+     */
     public SurveyResponse buildWithAnswers(Enrollee enrollee, Survey survey, Map<String, Object> answerMap) {
+        return buildWithAnswers(enrollee, survey, answerMap, false);
+    }
+
+
+    /** to create a response with an objectValued answer, use a JsonNode value in the answerMap */
+    public SurveyResponse buildWithAnswers(Enrollee enrollee, Survey survey, Map<String, Object> answerMap, boolean complete) {
         SurveyResponse response = surveyResponseService.create(SurveyResponse.builder()
                 .enrolleeId(enrollee.getId())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .surveyId(survey.getId())
+                .complete(complete)
                 .build());
         List<Answer> answers = answerFactory.createFromMap(answerMap, enrollee, survey, response);
         response.setAnswers(answers);

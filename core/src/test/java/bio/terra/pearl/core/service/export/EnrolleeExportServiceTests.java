@@ -785,7 +785,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 survey,
                 Map.of(
                         "hd_hd_socialHealth_neighborhoodIsWalkable", "agree"
-                )
+                ),
+                true
         );
 
         SurveyResponse e1r2 = surveyResponseFactory.buildWithAnswers(
@@ -836,8 +837,6 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Map<String, String> enrollee1Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee1.getShortcode())).findFirst().get();
         Map<String, String> enrollee2Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
 
-
-        System.out.println(enrollee1Map);
         assertThat(enrollee1Map.get("examplesurvey.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Agree"));
         assertThat(enrollee1Map.containsKey("examplesurvey.hd_hd_socialHealth_neighborhoodIsWalkable[1]"), equalTo(false));
 
