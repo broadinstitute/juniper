@@ -200,6 +200,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         ) {
             ParticipantTask newTask = participantTaskService.cleanForCopying(task);
             newTask.setStatus(TaskStatus.IN_PROGRESS);
+            newTask.setCompletedAt(null);
             priorResponse.getAnswers().forEach(a -> a.setSurveyResponseId(null));
             response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(priorResponse);
             newTask.setSurveyResponseId(response.getId());
