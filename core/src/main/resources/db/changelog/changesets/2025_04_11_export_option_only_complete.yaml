@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "export_options_only_complete"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: export_options
+            columns:
+              - column:
+                  name: only_include_completed
+                  type: boolean
+                  defaultValueBoolean: false
