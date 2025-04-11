@@ -192,15 +192,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         //if the survey is longitudinal and we're past the cutoff point for updating an existing response, we need to create a new response and task
         if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
                 && priorResponse != null
+                && task.getStatus() == TaskStatus.COMPLETE
                 && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), priorResponse.getLastUpdatedAt())
                 // admin saving update should never trigger a new response;
                 // they can re-assign if they want a fresh response
                 && operator.getParticipantUser() != null
         ) {
             ParticipantTask newTask = participantTaskService.cleanForCopying(task);
-            if(newTask.getCompletedAt() != null) {
-                newTask.setCompletedAt(Instant.now());
-            }
+            newTask.setStatus(TaskStatus.IN_PROGRESS);
             priorResponse.getAnswers().forEach(a -> a.setSurveyResponseId(null));
             response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(priorResponse);
             newTask.setSurveyResponseId(response.getId());

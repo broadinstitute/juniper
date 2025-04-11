@@ -381,6 +381,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .portalId(studyEnvBundle.getPortal().getId())
                 .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurrenceIntervalDays(365)
                 .createNewResponseAfterDays(7));
 
         StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
@@ -396,9 +397,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .creatingParticipantUserId(enrollee1.getParticipantUserId())
                 .surveyId(survey.getId())
                 .lastUpdatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .complete(true)
                 .build());
         ParticipantTask task1 = surveyTaskDispatcher.buildTask(enrolleeBundle1.enrollee(), enrolleeBundle1.portalParticipantUser(), new SurveyTaskConfigDto(ses));
         task1.setSurveyResponseId(response1.getId());
+        task1.setStatus(TaskStatus.COMPLETE);
         task1 = participantTaskService.create(task1, getAuditInfo(info));
 
 
@@ -407,9 +410,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .creatingParticipantUserId(enrollee2.getParticipantUserId())
                 .surveyId(survey.getId())
                 .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .complete(true)
                 .build());
         ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle2.enrollee(), enrolleeBundle2.portalParticipantUser(), new SurveyTaskConfigDto(ses));
         task2.setSurveyResponseId(response2.getId());
+        task2.setStatus(TaskStatus.COMPLETE);
         task2 = participantTaskService.create(task2, getAuditInfo(info));
 
         SurveyResponse newResponse1 = SurveyResponse.builder()
@@ -444,6 +449,53 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
         // created a new task
         assertThat(responseTask2.getId(), not(equalTo(task2.getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testLongitudinalDoesNotSaveInProgressEditAsNewTask(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurrenceIntervalDays(365)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee = enrolleeBundle.enrollee();
+
+
+        SurveyResponse response = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(9, ChronoUnit.DAYS))
+                .complete(true)
+                .build());
+        ParticipantTask task = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task.setSurveyResponseId(response.getId());
+        task.setStatus(TaskStatus.IN_PROGRESS);
+        task = participantTaskService.create(task, getAuditInfo(info));
+
+
+        SurveyResponse newResponse = SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+        // update response
+        HubResponse<SurveyResponse> hubResponse = surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task.getId(), survey.getPortalId());
+
+        ParticipantTask responseTask = hubResponse.getTasks().stream().filter(t -> t.getSurveyResponseId().equals(hubResponse.getResponse().getId())).findFirst().get();
+
+        // did not create a new task
+        assertThat(responseTask.getId(), equalTo(task.getId()));
     }
 
     @Test
