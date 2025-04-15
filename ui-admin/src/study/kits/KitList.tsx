@@ -16,8 +16,8 @@ import {
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, renderEmptyMessage } from 'util/table/tableUtils'
-import { instantToDateString, KitRequest } from '@juniper/ui-core'
+import { basicTableLayout, DownloadControl, renderEmptyMessage } from 'util/table/tableUtils'
+import { currentIsoDate, instantToDateString, KitRequest } from '@juniper/ui-core'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
 import KitStatusCell from 'study/participants/KitStatusCell'
@@ -229,6 +229,9 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Created',
     accessorKey: 'createdAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
@@ -262,6 +265,9 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Sent',
     accessorKey: 'sentAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
@@ -271,6 +277,9 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Returned',
     accessorKey: 'receivedAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
@@ -297,9 +306,12 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   })
 
   return <>
-    <div className="d-flex align-items-center justify-content-between">
+    <div className="d-flex align-items-center justify-content-end">
       <ColumnVisibilityControl table={table}/>
+      <div><DownloadControl table={table}
+        fileName={`kits-${currentIsoDate()}`}/></div>
     </div>
+
     { basicTableLayout(table, { filterable: true }) }
     { renderEmptyMessage(kits, `No kits with status ${tab}`) }
   </>
