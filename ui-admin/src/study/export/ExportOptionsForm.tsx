@@ -110,7 +110,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
       </div>
       <div className="py-2">
         <p className="fw-bold mb-1">
-                Include in progress surveys
+                Include in-progress surveys
         </p>
         <label className="me-3">
           <input type="radio" name="onlyIncludeCompleted" value="true"
