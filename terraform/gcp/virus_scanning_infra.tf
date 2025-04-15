@@ -45,43 +45,36 @@ resource "google_project_iam_binding" "gcs_sa_pubsub_publish" {
 
 resource "google_storage_bucket_iam_binding" "unscanned_buckets_sa_binding" {
   bucket   = google_storage_bucket.unscanned_participant_documents.name
-  role     = "roles/storage.admin"
+  role     = "roles/storage.objectUser"
   members = [
     "serviceAccount:${google_service_account.malware_scanner_sa.email}",
+    "serviceAccount:${google_service_account.junper-app-gsa.email}",
   ]
 }
 
 resource "google_storage_bucket_iam_binding" "clean_buckets_sa_binding" {
   bucket   = google_storage_bucket.clean_participant_documents.name
-  role     = "roles/storage.admin"
+  role     = "roles/storage.objectUser"
   members = [
     "serviceAccount:${google_service_account.malware_scanner_sa.email}",
+    "serviceAccount:${google_service_account.junper-app-gsa.email}",
   ]
 }
 
 resource "google_storage_bucket_iam_binding" "quarantined_buckets_sa_binding" {
   bucket   = google_storage_bucket.quarantined_participant_documents.name
-  role     = "roles/storage.admin"
+  role     = "roles/storage.objectUser"
   members = [
     "serviceAccount:${google_service_account.malware_scanner_sa.email}",
+    "serviceAccount:${google_service_account.junper-app-gsa.email}",
   ]
 }
 
 resource "google_storage_bucket_iam_binding" "cvd_buckets_sa_binding" {
   bucket   = google_storage_bucket.cvd_mirror_bucket.name
-  role     = "roles/storage.admin"
+  role     = "roles/storage.objectUser"
   members = [
     "serviceAccount:${google_service_account.malware_scanner_sa.email}",
-  ]
-}
-
-## Create the CVD Mirror bucket and allow service account admin access.
-#
-
-resource "google_storage_bucket_iam_binding" "cvd_mirror_bucket_sa_binding" {
-  bucket = google_storage_bucket.cvd_mirror_bucket.name
-  role   = "roles/storage.admin"
-  members = [
-    "serviceAccount:${google_service_account.malware_scanner_sa.email}",
+    "serviceAccount:${google_service_account.junper-app-gsa.email}",
   ]
 }
