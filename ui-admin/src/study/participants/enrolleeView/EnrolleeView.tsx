@@ -46,6 +46,7 @@ import {
 } from 'util/subNavStyles'
 import { RequireUserPermission } from 'util/RequireUserPermission'
 import EnrolleeDocuments from './EnrolleeDocuments'
+import { KitRequestFullDetails } from '../../kits/KitRequestFullDetails'
 
 
 export type SurveyWithResponsesT = {
@@ -259,12 +260,15 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                 <Route path="kitRequests" element={
                   <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
                 }/>
+                <Route path="kitRequests/:kitRequestId" element={
+                  <KitRequestFullDetails enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
                 <Route path="withdrawal" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
-                <Route path="*" element={<div>unknown enrollee route</div>}/>
+                <Route path="*" element={<div>The page you have navigated to does not exist.</div>}/>
               </Routes>
             </ErrorBoundary>
           </div>
