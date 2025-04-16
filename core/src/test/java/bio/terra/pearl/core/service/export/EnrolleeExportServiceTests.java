@@ -17,8 +17,12 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponseWithTaskDto;
 import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
@@ -744,5 +748,98 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         export = baos.toString();
         assertThat(export, containsString(",enrollee.createdAt"));
         assertThat(export, containsString(",Created At"));
+    }
+
+    @Test
+    @Transactional
+    public void testOnlyCompleteSurveyResponses(TestInfo testInfo) throws Exception {
+
+        ParticipantTask.ParticipantTaskBuilder taskBuilder = ParticipantTask.builder()
+                .status(TaskStatus.NEW)
+                .taskType(TaskType.SURVEY)
+                .targetName("test")
+                .taskOrder(1);
+
+        String testName = getTestName(testInfo);
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(SOCIAL_HEALTH_EXCERPT)
+                        .name("Survey Test")
+                        .stableId("examplesurvey")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .autoAssign(false)
+                        .build());
+
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        EnrolleeBundle enrollee1Bundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, new Profile());
+        Enrollee enrollee1 = enrollee1Bundle.enrollee();
+
+        SurveyResponse e1r1 = surveyResponseFactory.buildWithAnswers(
+                enrollee1,
+                survey,
+                Map.of(
+                        "hd_hd_socialHealth_neighborhoodIsWalkable", "agree"
+                ),
+                true
+        );
+
+        SurveyResponse e1r2 = surveyResponseFactory.buildWithAnswers(
+                enrollee1,
+                survey,
+                Map.of(
+                        "hd_hd_socialHealth_neighborhoodIsWalkable", "disagree"
+                )
+        );
+
+        participantTaskFactory.buildPersisted(enrollee1Bundle,
+                taskBuilder
+                        .surveyResponseId(e1r1.getId())
+                        .status(TaskStatus.COMPLETE));
+        participantTaskFactory.buildPersisted(enrollee1Bundle,
+                taskBuilder
+                        .surveyResponseId(e1r2.getId())
+                        .status(TaskStatus.IN_PROGRESS));
+
+
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        SurveyResponse e2r1 = surveyResponseFactory.buildWithAnswers(
+                enrollee2,
+                survey,
+                Map.of(
+                        "hd_hd_socialHealth_neighborhoodIsWalkable", "agree"
+                )
+        );
+
+        participantTaskFactory.buildPersisted(enrollee1Bundle,
+                taskBuilder
+                        .surveyResponseId(e2r1.getId())
+                        .status(TaskStatus.IN_PROGRESS));
+
+
+        ExportOptionsWithExpression exportOptions = new ExportOptionsWithExpression();
+
+        exportOptions.setOnlyIncludeCompleted(true);
+
+        List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), exportOptions);
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId(), exportData);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(exportData, moduleFormatters);
+
+
+        assertThat(exportMaps, hasSize(2));
+
+        Map<String, String> enrollee1Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee1.getShortcode())).findFirst().get();
+        Map<String, String> enrollee2Map = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
+
+        assertThat(enrollee1Map.get("examplesurvey.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Agree"));
+        assertThat(enrollee1Map.containsKey("examplesurvey.hd_hd_socialHealth_neighborhoodIsWalkable[1]"), equalTo(false));
+
+        assertThat(enrollee2Map.containsKey("examplesurvey.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo(false));
     }
 }

@@ -3,7 +3,10 @@ package bio.terra.pearl.core.model.export;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.ZoneId;
@@ -20,6 +23,8 @@ public class ExportOptions extends BaseEntity {
     private boolean stableIdsForOptions = false;
     @Builder.Default
     private boolean onlyIncludeMostRecent = true;
+    @Builder.Default
+    private boolean onlyIncludeCompleted = false;
     private String filterString;
     @Builder.Default
     private ExportFileFormat fileFormat = ExportFileFormat.TSV;
