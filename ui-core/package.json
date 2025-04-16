@@ -20,7 +20,7 @@
     "@babel/cli": "^7.21.5",
     "@types/bootstrap": "^5.2.10",
     "@types/lodash": "^4.17.13",
-    "@types/react": "^18.3.12"
+    "@types/react": "^19.1.2"
   },
   "peerDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
