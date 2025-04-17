@@ -191,7 +191,7 @@ export function PagedSurveyView({
       const allTasksCompleted = tasks.every(task => task.status === 'COMPLETE')
 
       if (!allTasksCompleted) {
-        return tasks.find(task => task.id === taskId)?.status !== 'IN_PROGRESS'
+        return !['IN_PROGRESS', 'NEW'].includes(tasks.find(task => task.id === taskId)?.status || '')
       }
 
       if (tasks.length > 1) {
