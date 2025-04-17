@@ -48,7 +48,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
-        if (isProxy(ruleData)) {
+        boolean isProxy = isProxy(ruleData);
+        if (isProxy) {
             valueMap.put("isProxy", "true");
         } else {
             valueMap.put("isProxy", "false");
@@ -56,7 +57,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
-        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
+        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), isProxy));
         if (messages != null) {
             valueMap.putAll(messages);
         }
@@ -173,15 +174,27 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     /**
      * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
      */
-    public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser) {
+    public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser, boolean isProxy) {
         try {
+            String username = isProxy
+                    ? removeProxySuffix(participantUser.getUsername())
+                    : participantUser.getUsername();
             return "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
                     routingPaths.getParticipantInvitationPath(),
                     participantUser != null ?
-                            URLEncoder.encode(participantUser.getUsername(), StandardCharsets.UTF_8.toString()) : "");
+                            URLEncoder.encode(
+                                    username,
+                                    StandardCharsets.UTF_8.toString()) : "");
         } catch (UnsupportedEncodingException e) {
             throw new IOInternalException("unable to encode username");
         }
+    }
+
+    private String removeProxySuffix(String email) {
+        // if the email ends with -prox-XXXX, remove it
+        Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
+
+        return proxySuffix.matcher(email).replaceAll("");
     }
 }

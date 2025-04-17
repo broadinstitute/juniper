@@ -205,4 +205,46 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 equalTo("test name"));
 
     }
+
+    @Test
+    public void testProxyInvitationLink(TestInfo info) {
+        UUID enrolleeId = UUID.randomUUID();
+        EnrolleeContext proxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com-prox-TEST").build(),
+                List.of(
+                        // enrollee has a proxy
+                        EnrolleeRelation
+                                .builder()
+                                .targetEnrolleeId(enrolleeId)
+                                .relationshipType(RelationshipType.PROXY)
+                                .build()
+                ));
+
+        EnrolleeContext nonProxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                null);
+
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+
+        StringSubstitutor proxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(proxyData, contextInfo, routingPaths);
+        StringSubstitutor nonProxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(nonProxyData, contextInfo, routingPaths);
+
+        assertThat(proxyReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com"));
+        assertThat(nonProxyReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com"));
+    }
 }
