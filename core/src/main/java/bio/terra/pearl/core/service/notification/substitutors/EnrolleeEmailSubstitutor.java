@@ -65,8 +65,6 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     private boolean isProxy(EnrolleeContext context) {
-        System.out.println("Relations: " + context.getRelations());
-
         if (context.getRelations() == null) {
             return false;
         }
@@ -184,7 +182,6 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                                     Profile profile,
                                     boolean isProxy) {
         try {
-            System.out.println("are we da proxy " + isProxy);
             String username = isProxy
                     ? removeProxySuffix(participantUser.getUsername())
                     : participantUser.getUsername();
@@ -207,7 +204,6 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     private String removeProxySuffix(String email) {
-        System.out.println("YEAH WE REMOVE THAT SHIT");
         // if the email ends with -prox-XXXX, remove it
         Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
 
