@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  useNavigate,
+  useSearchParams
+} from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useUser } from 'providers/UserProvider'
 import Api, { getEnvSpec } from 'api/api'
 import { useInvitationType } from 'browserPersistentState'
 import envVars from 'util/envVars'
+import { getB2CLocale } from '@juniper/ui-core'
 
 /** Page for participants who already have enrollee data in Juniper (from a migration or admin action), and need
  * to join to link their account */
@@ -13,6 +17,7 @@ export default function InvitationPage() {
   const auth = useAuth()
   const [searchParams] = useSearchParams()
   const accountName = searchParams.get('accountName') || ''
+  const preferredLanguage = searchParams.get('preferredLanguage') || ''
   const navigate = useNavigate()
   const { loginUser } = useUser()
   const [, setInvitationType] = useInvitationType()
@@ -36,7 +41,9 @@ export default function InvitationPage() {
         portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
-        login_hint: accountName
+        login_hint: accountName,
+        // eslint-disable-next-line camelcase
+        ui_locales: getB2CLocale(preferredLanguage)
       }
     })
   }

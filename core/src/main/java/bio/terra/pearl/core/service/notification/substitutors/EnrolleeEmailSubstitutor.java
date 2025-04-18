@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -57,13 +58,15 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
-        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), isProxy));
+        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), enrolleeContext.getProfile(), isProxy));
         if (messages != null) {
             valueMap.putAll(messages);
         }
     }
 
     private boolean isProxy(EnrolleeContext context) {
+        System.out.println("Relations: " + context.getRelations());
+
         if (context.getRelations() == null) {
             return false;
         }
@@ -174,24 +177,37 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     /**
      * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
      */
-    public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser, boolean isProxy) {
+    public String getInvitationLink(PortalEnvironment portalEnv,
+                                    PortalEnvironmentConfig config,
+                                    String portalShortcode,
+                                    ParticipantUser participantUser,
+                                    Profile profile,
+                                    boolean isProxy) {
         try {
+            System.out.println("are we da proxy " + isProxy);
             String username = isProxy
                     ? removeProxySuffix(participantUser.getUsername())
                     : participantUser.getUsername();
-            return "%s%s?accountName=%s".formatted(
+
+            String url = "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
                     routingPaths.getParticipantInvitationPath(),
                     participantUser != null ?
                             URLEncoder.encode(
                                     username,
                                     StandardCharsets.UTF_8.toString()) : "");
+
+            if (profile != null && StringUtils.isNotEmpty(profile.getPreferredLanguage())) {
+                url += "&preferredLanguage=" + profile.getPreferredLanguage();
+            }
+            return url;
         } catch (UnsupportedEncodingException e) {
             throw new IOInternalException("unable to encode username");
         }
     }
 
     private String removeProxySuffix(String email) {
+        System.out.println("YEAH WE REMOVE THAT SHIT");
         // if the email ends with -prox-XXXX, remove it
         Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
 
