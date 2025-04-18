@@ -182,17 +182,18 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                                     Profile profile,
                                     boolean isProxy) {
         try {
-            String username = isProxy
-                    ? removeProxySuffix(participantUser.getUsername())
-                    : participantUser.getUsername();
+            String username = participantUser != null ? participantUser.getUsername() : "";
+
+            if (isProxy) {
+                username = removeProxySuffix(username);
+            }
 
             String url = "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
                     routingPaths.getParticipantInvitationPath(),
-                    participantUser != null ?
                             URLEncoder.encode(
                                     username,
-                                    StandardCharsets.UTF_8.toString()) : "");
+                                    StandardCharsets.UTF_8.toString()));
 
             if (profile != null && StringUtils.isNotEmpty(profile.getPreferredLanguage())) {
                 url += "&preferredLanguage=" + profile.getPreferredLanguage();
