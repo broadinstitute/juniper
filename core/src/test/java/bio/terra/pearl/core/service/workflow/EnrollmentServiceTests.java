@@ -149,12 +149,18 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
 
+        // subject / governed user enrollment should fail with null pre-enroll
         assertThrows(
                 IllegalArgumentException.class,
                 () -> {
                     enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
-                            userBundle.user(), userBundle.ppUser(), null, false);
+                            userBundle.user(), userBundle.ppUser(), null, true);
                 });
+
+        // proxy enrollment should work; pre-enrolls don't matter for proxies
+        enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, false);
+
 
     }
 
