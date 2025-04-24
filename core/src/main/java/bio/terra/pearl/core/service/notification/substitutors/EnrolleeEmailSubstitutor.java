@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -185,7 +186,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             String username = participantUser != null ? participantUser.getUsername() : "";
 
             if (isProxy) {
-                username = removeProxySuffix(username);
+                username = RegistrationService.removeProxySuffix(username);
             }
 
             String url = "%s%s?accountName=%s".formatted(
@@ -204,10 +205,4 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         }
     }
 
-    private String removeProxySuffix(String email) {
-        // if the email ends with -prox-XXXX, remove it
-        Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
-
-        return proxySuffix.matcher(email).replaceAll("");
-    }
 }
