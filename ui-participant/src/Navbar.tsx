@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Api, { getEnvSpec } from 'api/api'
 import {
+  getB2CLocale,
   ParticipantNavbar,
-  useI18n,
-  getB2CLocale
+  useI18n
 } from '@juniper/ui-core'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -20,7 +20,7 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 export default function Navbar(props: NavbarProps) {
   const { user, logoutUser, proxyRelations } = useUser()
   const { profile, ppUser } = useActiveUser()
-  const { selectedLanguage } = useI18n()
+  const { selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
   const envSpec = getEnvSpec()
 
@@ -30,6 +30,13 @@ export default function Navbar(props: NavbarProps) {
     reloadPortal,
     localContent
   } = usePortalEnv()
+
+  useEffect(() => {
+    if (profile && profile.preferredLanguage && selectedLanguage !== profile.preferredLanguage) {
+      changeLanguage(profile.preferredLanguage)
+      reloadPortal()
+    }
+  }, [profile?.preferredLanguage, selectedLanguage, changeLanguage])
 
 
   async function updatePreferredLanguage(selectedLanguage: string) {

@@ -155,7 +155,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's an invite: ${invitationLink}"),
-                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=test123%40test.com"));
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=test123%40test.com&preferredLanguage=en"));
     }
 
     @Test
@@ -204,5 +204,82 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         assertThat(nonProxyReplacer.replace("${isProxy ? \"Proxy is true\" : profile.givenName}"),
                 equalTo("test name"));
 
+    }
+
+    @Test
+    public void testProxyInvitationLink(TestInfo info) {
+        UUID enrolleeId = UUID.randomUUID();
+        EnrolleeContext proxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com-prox-TEST").build(),
+                List.of(
+                        // enrollee has a proxy
+                        EnrolleeRelation
+                                .builder()
+                                .targetEnrolleeId(enrolleeId)
+                                .relationshipType(RelationshipType.PROXY)
+                                .build()
+                ));
+
+        EnrolleeContext nonProxyData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                null);
+
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+
+        StringSubstitutor proxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(proxyData, contextInfo, routingPaths);
+        StringSubstitutor nonProxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(nonProxyData, contextInfo, routingPaths);
+
+        assertThat(proxyReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com&preferredLanguage=en"));
+        assertThat(nonProxyReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com&preferredLanguage=en"));
+    }
+
+    @Test
+    public void testInvitationLinkSpecifiesLanguage(TestInfo info) {
+        UUID enrolleeId = UUID.randomUUID();
+        EnrolleeContext esData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().preferredLanguage("es").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                null);
+
+        EnrolleeContext zhData = new EnrolleeContext(
+                Enrollee.builder().id(enrolleeId).build(),
+                Profile.builder().givenName("test name").preferredLanguage("zh").build(),
+                ParticipantUser.builder().username("asdf@asdf.com").build(),
+                null);
+
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+
+        StringSubstitutor esReplacer = EnrolleeEmailSubstitutor.newSubstitutor(esData, contextInfo, routingPaths);
+        StringSubstitutor zhReplacer = EnrolleeEmailSubstitutor.newSubstitutor(zhData, contextInfo, routingPaths);
+
+        assertThat(esReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com&preferredLanguage=es"));
+        assertThat(zhReplacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=asdf%40asdf.com&preferredLanguage=zh"));
     }
 }

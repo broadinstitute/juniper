@@ -286,8 +286,13 @@ public class EnrolleeImportService {
                         portalShortcode,
                         studyEnv,
                         ParticipantUser.builder().username(accountData.getEmail()).build());
-
-                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, auditInfo);
+                String preferredLanguage = accountData.proxyData
+                        .stream()
+                        .map(proxyData -> proxyData.get("profile.preferredLanguage"))
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null);
+                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, preferredLanguage, auditInfo);
                 importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
             }
         } catch (Exception e) {
@@ -455,9 +460,12 @@ public class EnrolleeImportService {
         });
     }
 
-    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, DataAuditInfo auditInfo) {
+    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, DataAuditInfo auditInfo) {
 
         registration.profile().setDoNotEmail(true);
+        if (preferredLanguage != null) {
+            registration.profile().setPreferredLanguage(preferredLanguage);
+        }
         profileService.update(registration.profile(), auditInfo);
 
         Optional<Enrollee> enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
