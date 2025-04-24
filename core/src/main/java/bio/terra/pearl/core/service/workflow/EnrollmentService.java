@@ -148,7 +148,7 @@ public class EnrollmentService {
         if (!studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
-        if (preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
+        if (isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
             throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
 
