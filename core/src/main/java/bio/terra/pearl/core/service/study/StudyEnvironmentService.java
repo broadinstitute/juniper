@@ -55,8 +55,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final EnrolleeService enrolleeService;
     private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final TriggerService triggerService;
-    private final DatasetService datasetService;
-    private final DataRepoJobService dataRepoJobService;
     private final WithdrawnEnrolleeDao withdrawnEnrolleeDao;
     private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     private final ImportService importService;
@@ -70,8 +68,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    EnrolleeService enrolleeService,
                                    PreEnrollmentResponseDao preEnrollmentResponseDao,
                                    TriggerService triggerService,
-                                   DatasetService datasetService,
-                                   DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
                                    ImportService importService, FamilyService familyService,
@@ -85,8 +81,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.enrolleeService = enrolleeService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.triggerService = triggerService;
-        this.datasetService = datasetService;
-        this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeDao = withdrawnEnrolleeDao;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.importService = importService;
@@ -149,8 +143,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
         preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
-        datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         importService.deleteByStudyEnvId(studyEnvironmentId);

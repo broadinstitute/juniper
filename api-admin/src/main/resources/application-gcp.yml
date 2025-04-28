@@ -10,9 +10,6 @@ env:
     sendgridApiKey: ${sm://${SENDGRID_API_KEY_SECRET_ID}}
   dsm:
     secret: ${sm://${DSM_JWT_SIGNING_SECRET_SECRET_ID}}
-  tdr:
-    serviceAccountCreds: ${sm://${TDR_SA_CREDS_SECRET_ID}}
-    storageAccountKey: ${sm://${TDR_EXPORT_STORAGE_ACCOUNT_KEY_SECRET_ID}}
   addrValidation:
     smartyAuthId: ${sm://${SMARTY_AUTH_ID_SECRET_ID}}
     smartyAuthToken: ${sm://${SMARTY_AUTH_TOKEN_SECRET_ID}}
