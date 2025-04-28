@@ -44,7 +44,7 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.5.0'
     implementation group: "bio.terra", name: "datarepo-jakarta-client", version: "1.565.0-SNAPSHOT"
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.33.1'
-    implementation 'org.apache.poi:poi:5.4.0'
+    implementation 'org.apache.poi:poi:5.4.1'
     implementation 'org.apache.poi:poi-ooxml:5.4.1'
     implementation 'com.azure:azure-storage-blob:12.30.0'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.16.1'
