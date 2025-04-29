@@ -418,6 +418,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .stableId("preEnroll")
                 .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"name\",\"title\":\"What is your name?\"}]}]}")
                 .surveyType(SurveyType.PRE_ENROLL)
+                .autoAssign(false)
                 .portalId(bundle.getPortal().getId()));
 
         surveyFactory.attachToEnv(preEnroll, bundle.getStudyEnv().getId(), true);
@@ -473,6 +474,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         assertThat(questionNode.get("questionStableId").asText(), equalTo("name"));
         assertThat(questionNode.get("stringValue").asText(), equalTo("Alex"));
+
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(tasks, hasSize(0)); // does not create a task for pre-enrollment survey responses
 
     }
 

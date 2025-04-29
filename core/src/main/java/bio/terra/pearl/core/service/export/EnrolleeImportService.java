@@ -15,7 +15,6 @@ import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.export.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.export.dataimport.ImportService;
@@ -445,9 +444,11 @@ public class EnrolleeImportService {
             regResult.profile().setDoNotEmail(true);
             profileService.update(regResult.profile(), auditInfo);
 
+            PreEnrollmentResponse preEnrollmentResponse = createPreEnrollResponseIfNeeded(exportOptions, studyEnv, enrolleeMap);
+
             HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(),
                     studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(),
-                    null, enrolleeInfo.isSubject(), EnrolleeSourceType.IMPORT);
+                    preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null, enrolleeInfo.isSubject(), EnrolleeSourceType.IMPORT);
             Enrollee newEnrollee = response.getEnrollee();
             //update createdAt
             if (enrolleeInfo.getCreatedAt() != null) {
@@ -510,6 +511,38 @@ public class EnrolleeImportService {
         return responses;
     }
 
+    protected SurveyFormatter getPreEnrollSurveyFormatter(ExportOptions exportOptions, StudyEnvironment studyEnv) {
+        // there's definitely room to optimize this
+        List<SurveyFormatter> surveyModules = enrolleeExportService.generateSurveyModules(exportOptions, studyEnv.getId(), List.of());
+        for (SurveyFormatter formatter : surveyModules) {
+            Survey survey = surveyService.findLatestActiveByStudyEnvironmentIdAndStableIdNoContent(studyEnv.getId(), formatter.getModuleName())
+                    .orElse(null);
+
+            if (survey != null && survey.getSurveyType() == SurveyType.PRE_ENROLL) {
+                return formatter;
+            }
+        }
+        return null;
+    }
+
+    protected PreEnrollmentResponse createPreEnrollResponseIfNeeded(ExportOptions exportOptions, StudyEnvironment studyEnvironment, Map<String, String> enrolleeMap) {
+        SurveyFormatter preEnrollFormatter = getPreEnrollSurveyFormatter(exportOptions, studyEnvironment);
+        if (preEnrollFormatter == null) {
+            return null; // no pre-enrollment survey found
+        }
+
+        List<SurveyResponseWithTaskDto> responses = preEnrollFormatter.listFromStringMap(studyEnvironment.getId(), enrolleeMap);
+        if (responses == null || responses.isEmpty()) {
+            return null; // no pre-enrollment response found
+        }
+
+        SurveyResponseWithTaskDto responseDto = responses.get(0); // assuming only one response for pre-enrollment
+        Survey preEnrollSurvey = surveyService.findLatestActiveByStudyEnvironmentIdAndStableIdNoContent(studyEnvironment.getId(), preEnrollFormatter.getModuleName())
+                .orElseThrow(() -> new IllegalStateException("Pre-enrollment survey not found"));
+
+        return createPreEnrollResponse(preEnrollSurvey, studyEnvironment, responseDto.getAnswers());
+    }
+
 
     protected List<SurveyResponse> importSurveyResponses(UUID portalId, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
                                                   StudyEnvironment studyEnv, PortalParticipantUser ppUser, Enrollee enrollee, DataAuditInfo auditInfo) {
@@ -528,19 +561,20 @@ public class EnrolleeImportService {
     }
 
     private SurveyResponse importSurveyResponse(PortalParticipantUser ppUser, Enrollee enrollee, StudyEnvironment studyEnv, SurveyFormatter formatter, SurveyResponseWithTaskDto response, UUID portalId, DataAuditInfo auditInfo, Map<String, String> enrolleeMap, Integer repeatNum, ExportOptions options) {
+        Survey survey = surveyService.findLatestActiveByStudyEnvironmentIdAndStableIdNoContent(studyEnv.getId(), formatter.getModuleName())
+                .orElseThrow(() -> new IllegalStateException("Survey not found for stable ID: " + formatter.getModuleName()));
+
+        if (survey.getSurveyType() == SurveyType.PRE_ENROLL) {
+            return null; // pre-enroll will be imported on initial enrollee creation via enroll()
+        }
+
         ParticipantTask relatedTask = findOrCreateTask(ppUser, enrollee, studyEnv, formatter, response, portalId, auditInfo, enrolleeMap, repeatNum, options.getZoneId());
 
-        Survey survey = surveyService.findByStableId(relatedTask.getTargetStableId(), relatedTask.getTargetAssignedVersion(), portalId).orElseThrow(() -> new NotFoundException("Survey %s not found".formatted(relatedTask.getTargetStableId())));
-
         SurveyResponse updatedResponse = surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
-                "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
-
+                "Imported", ppUser, enrollee, relatedTask != null ? relatedTask.getId() : null, portalId).getResponse();
 
         shiftTime(updatedResponse, relatedTask, formatter, enrolleeMap, repeatNum, options.getZoneId());
 
-        if (survey.getSurveyType().equals(SurveyType.PRE_ENROLL)) {
-            attachPreEnrollResponse(enrollee, survey, updatedResponse);
-        }
         return updatedResponse;
     }
 
@@ -620,24 +654,22 @@ public class EnrolleeImportService {
         }
     }
 
-    private void attachPreEnrollResponse(Enrollee enrollee, Survey preEnroll, SurveyResponse response) {
-        PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+    private PreEnrollmentResponse createPreEnrollResponse(Survey preEnroll, StudyEnvironment studyEnv, List<Answer> answers) {
 
         try {
             PreEnrollmentResponse preEnrollmentResponse = PreEnrollmentResponse.builder()
-                    .portalParticipantUserId(ppUser.getId())
                     .surveyId(preEnroll.getId())
                     .qualified(true)
-                    .fullData(objectMapper.writeValueAsString(response.getAnswers()))
-                    .studyEnvironmentId(enrollee.getStudyEnvironmentId())
+                    .fullData(objectMapper.writeValueAsString(answers))
+                    .studyEnvironmentId(studyEnv.getId())
                     .build();
 
             preEnrollmentResponse = preEnrollmentResponseService.create(preEnrollmentResponse);
 
-            enrollee.setPreEnrollmentResponseId(preEnrollmentResponse.getId());
-            enrolleeService.update(enrollee);
+            return preEnrollmentResponse;
         } catch (IOException e) {
             log.warn("Failed to created pre-enrollment response: {}", e.getMessage());
+            return null;
         }
     }
 
