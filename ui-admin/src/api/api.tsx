@@ -192,23 +192,29 @@ export type MailingListContact = {
   createdAt?: number
 }
 
+export type DataImportStatus = 'PROCESSING' | 'DONE' | 'DELETED'
+
+
 export type DataImport = {
   id: string,
   importType: string,
   responsibleUserId: string,
   studyEnvironmentId: string,
-  status?: string,
+  status: DataImportStatus,
   createdAt: number,
   lastUpdatedAt?: number,
-  importItems?: DataImportItem[]
+  importItems: DataImportItem[]
 }
 
+export type DataImportItemStatus = 'SUCCESS' | 'FAILED' | 'DELETED'
+
 export type DataImportItem = {
-  id?: string,
+  id: string,
   importId: string,
   createdParticipantUserId?: string,
   createdEnrolleeId?: string,
-  status?: string,
+  createdEnrollee?: Enrollee,
+  status: DataImportItemStatus,
   message?: string,
   detail?: string,
   createdAt: number,

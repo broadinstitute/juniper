@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import Api, { DataImport } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
 import {
   basicTableLayout,
   DownloadControl,
@@ -10,18 +16,30 @@ import {
   RowVisibilityCount
 } from '../util/table/tableUtils'
 import { Button } from 'components/forms/Button'
-import { failureNotification, successNotification } from '../util/notifications'
+import {
+  failureNotification,
+  successNotification
+} from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faAdd,
+  faTrash
+} from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
-import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
+import {
+  StudyEnvContextT,
+  useStudyEnvParamsFromPath
+} from '../study/StudyEnvironmentRouter'
 import AddDataImportModal from './AddDataImportModal'
 import { Link } from 'react-router-dom'
 import { useAdminUserContext } from '../providers/AdminUserProvider'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import {
+  currentIsoDate,
+  instantToDefaultString
+} from '@juniper/ui-core'
 
 
 /** show the dataImport list in table */

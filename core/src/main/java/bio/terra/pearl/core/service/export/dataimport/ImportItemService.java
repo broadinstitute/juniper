@@ -4,15 +4,16 @@ import bio.terra.pearl.core.dao.dataimport.ImportItemDao;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,15 +21,39 @@ import java.util.UUID;
 @Slf4j
 public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
 
-    @Autowired
-    EnrolleeService enrolleeService;
+    private final EnrolleeService enrolleeService;
 
-    public ImportItemService(ImportItemDao dao) {
+    public ImportItemService(ImportItemDao dao, EnrolleeService enrolleeService) {
         super(dao);
+        this.enrolleeService = enrolleeService;
     }
 
     public void attachImportItems(Import dataImport) {
-        dataImport.setImportItems(dao.findAllByImport(dataImport.getId()));
+        List<ImportItem> items = dao.findAllByImport(dataImport.getId());
+        attachEnrollees(items);
+        dataImport.setImportItems(items);
+    }
+
+    private void attachEnrollees(List<ImportItem> items) {
+        List<UUID> enrolleeIds = items.stream()
+                .filter(item -> item.getStatus().equals(ImportItemStatus.SUCCESS))
+                .map(ImportItem::getCreatedEnrolleeId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (!enrolleeIds.isEmpty()) {
+            List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
+
+            for (ImportItem item : items) {
+                if (item.getCreatedEnrolleeId() != null) {
+                    Enrollee enrollee = enrollees.stream()
+                            .filter(e -> e.getId().equals(item.getCreatedEnrolleeId()))
+                            .findFirst()
+                            .orElse(null);
+                    item.setCreatedEnrollee(enrollee);
+                }
+            }
+        }
     }
 
     @Transactional

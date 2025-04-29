@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.dataimport;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ImportItem extends BaseEntity {
     private UUID createdEnrolleeId;
+    private Enrollee createdEnrollee;
     private UUID createdParticipantUserId;
     private UUID importId;
     private ImportItemStatus status;
