@@ -284,6 +284,8 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
       return cellValue ? escapeCsvValue(cellValue as string) : ''
     case 'instant':
       return escapeCsvValue(instantToDefaultString(cellValue as number))
+    case 'number':
+      return cellValue !== undefined ? (cellValue as number).toString() : ''
     case 'boolean':
       return cellValue as boolean ? 'true' : 'false'
     default:

@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -34,7 +33,7 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
     }
 
     /** excludes responses that are associated with removed tasks */
-    public Map<UUID, List<SurveyResponse>> findByEnrolleeIdsNotRemoved(List<UUID> enrolleeIds) {
+    public Map<UUID, List<SurveyResponse>> findByEnrolleeIdsNotRemoved(List<UUID> enrolleeIds, boolean onlyComplete) {
         if (enrolleeIds.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -45,8 +44,9 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                                 select sr.* from %s sr
                                 left join participant_task task on task.survey_response_id = sr.id
                                 where sr.enrollee_id in (<enrolleeIds>)
+                                %s
                                 and task.status is distinct from 'REMOVED'
-                                """.formatted(tableName))
+                                """.formatted(tableName, onlyComplete ? "and task.status = 'COMPLETE' and sr.complete = true" : ""))
                         .bindList("enrolleeIds", enrolleeIds)
                         .mapTo(clazz)
                         .stream().collect(Collectors.groupingBy(SurveyResponse::getEnrolleeId, Collectors.toList()))

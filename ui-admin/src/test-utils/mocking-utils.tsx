@@ -299,7 +299,8 @@ export const mockKitRequest: (args?: {
   trackingNumber: 'ABC123',
   details: '{"shippingId": "1234"}',
   enrolleeShortcode: enrolleeShortcode || 'JOSALK',
-  skipAddressValidation: false
+  skipAddressValidation: false,
+  creatingAdminUserId: 'adminId'
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */

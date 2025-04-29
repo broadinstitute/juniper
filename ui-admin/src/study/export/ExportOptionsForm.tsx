@@ -95,20 +95,39 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
     { showAdvancedOptions && <div className="px-3">
       <div className="py-2">
         <p className="fw-bold mb-1">
-          Include subheaders for columns
+            Include subheaders for columns
         </p>
         <label className="me-3">
           <input type="radio" name="includeSubheaders" value="true" checked={exportOptions.includeSubHeaders}
-            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: true })} className="me-1"/> Yes
+            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: true })}
+            className="me-1"/> Yes
         </label>
         <label>
           <input type="radio" name="includeSubheaders" value="false" checked={!exportOptions.includeSubHeaders}
-            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: false })} className="me-1"/> No
+            onChange={() => setExportOptions({ ...exportOptions, includeSubHeaders: false })}
+            className="me-1"/> No
         </label>
       </div>
       <div className="py-2">
         <p className="fw-bold mb-1">
-          Filter Options
+                Include in-progress surveys
+        </p>
+        <label className="me-3">
+          <input type="radio" name="onlyIncludeCompleted" value="true"
+            checked={!exportOptions.onlyIncludeCompleted}
+            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeCompleted: false })}
+            className="me-1"/> Yes
+        </label>
+        <label>
+          <input type="radio" name="onlyIncludeCompleted" value="false"
+            checked={exportOptions.onlyIncludeCompleted}
+            onChange={() => setExportOptions({ ...exportOptions, onlyIncludeCompleted: true })}
+            className="me-1"/> No
+        </label>
+      </div>
+      <div className="py-2">
+        <p className="fw-bold mb-1">
+            Filter Options
         </p>
         <label className="form-control border-0">
           <input type="checkbox" name="includeUnconsented" checked={filterOpts.includeUnconsented}
@@ -117,7 +136,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
               filterString: buildFilter({ ...filterOpts, includeUnconsented: e.target.checked })
             })}
             className="me-1"/>
-          Include enrollees who have not consented
+            Include enrollees who have not consented
         </label>
         <label className="form-control border-0">
           <input type="checkbox" name="includeProxiesAsRows" checked={filterOpts.includeProxiesAsRows}
@@ -126,11 +145,11 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
               filterString: buildFilter({ ...filterOpts, includeProxiesAsRows: e.target.checked })
             })}
             className="me-1"/>
-          Include proxies as rows
+            Include proxies as rows
         </label>
         <div className="d-flex pt-2 my-2">
           <label className="form-control border-0">
-            Enrolled on/after <input type="date" name="enrolledBeforeDate"
+              Enrolled on/after <input type="date" name="enrolledBeforeDate"
               value={enrolledAfter || ''}
               onChange={e => setExportOptions({
                 ...exportOptions,
@@ -142,7 +161,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
               className="me-1"/>
           </label>
           <label className="form-control border-0">
-            Enrolled before <input type="date" name="enrolledAfterDate"
+              Enrolled before <input type="date" name="enrolledAfterDate"
               value={enrolledBefore || ''}
               onChange={e => setExportOptions({
                 ...exportOptions,
@@ -155,7 +174,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
           </label>
         </div>
         <label className="form-control border-0">
-          Limit number of enrollees to <input type="number" name="rowLimit"
+            Limit number of enrollees to <input type="number" name="rowLimit"
             onChange={e => setExportOptions({
               ...exportOptions,
               rowLimit: e.target.value ? parseInt(e.target.value) : undefined
@@ -166,7 +185,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
           </span>}/>
         </label>
         <label className="form-control border-0" htmlFor={selectInputId}>
-          Exclude data from the following modules:
+            Exclude data from the following modules:
         </label>
         <Select options={options}
           isMulti={true} value={selectedOptions}
@@ -174,7 +193,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
           onChange={onChange}/>
         <div className="d-flex pt-3 ps-2">
           <label className="" htmlFor="exportFields">
-            Only include fields:
+              Only include fields:
           </label>
           <InfoPopup content={<span>
                 Space-or-comma delimited list of field names. e.g. <pre>enrollee.shortcode</pre>
@@ -191,7 +210,7 @@ function ExportOptionsForm({ exportOptions, setExportOptions }:
           })}
           className="me-1"/>
       </div>
-    </div> }
+    </div>}
     <hr/>
 
     <div>

@@ -188,11 +188,17 @@ export function PagedSurveyView({
         .participantTasks
         .filter(task => task.targetStableId === form.stableId)
 
-      if (tasks.length > 0) {
+      const allTasksCompleted = tasks.every(task => task.status === 'COMPLETE')
+
+      if (!allTasksCompleted) {
+        return !['IN_PROGRESS', 'NEW'].includes(tasks.find(task => task.id === taskId)?.status || '')
+      }
+
+      if (tasks.length > 1) {
         const latestTask = tasks.reduce(
           (
             a, b
-          ) => a.completedAt && b.completedAt && a.completedAt > b.completedAt ? a : b)
+          ) => a.createdAt && b.createdAt && a.createdAt > b.createdAt ? a : b)
 
         // if the task is not the latest task, then it should be readonly
         if (taskId != latestTask.id) {

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -9,6 +10,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -48,7 +50,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
-        if (isProxy(ruleData)) {
+        boolean isProxy = isProxy(ruleData);
+        if (isProxy) {
             valueMap.put("isProxy", "true");
         } else {
             valueMap.put("isProxy", "false");
@@ -56,7 +59,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
-        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
+        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), enrolleeContext.getProfile(), isProxy));
         if (messages != null) {
             valueMap.putAll(messages);
         }
@@ -173,15 +176,33 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     /**
      * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
      */
-    public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser) {
+    public String getInvitationLink(PortalEnvironment portalEnv,
+                                    PortalEnvironmentConfig config,
+                                    String portalShortcode,
+                                    ParticipantUser participantUser,
+                                    Profile profile,
+                                    boolean isProxy) {
         try {
-            return "%s%s?accountName=%s".formatted(
+            String username = participantUser != null ? participantUser.getUsername() : "";
+
+            if (isProxy) {
+                username = RegistrationService.removeProxySuffix(username);
+            }
+
+            String url = "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
                     routingPaths.getParticipantInvitationPath(),
-                    participantUser != null ?
-                            URLEncoder.encode(participantUser.getUsername(), StandardCharsets.UTF_8.toString()) : "");
+                            URLEncoder.encode(
+                                    username,
+                                    StandardCharsets.UTF_8.toString()));
+
+            if (profile != null && StringUtils.isNotEmpty(profile.getPreferredLanguage())) {
+                url += "&preferredLanguage=" + profile.getPreferredLanguage();
+            }
+            return url;
         } catch (UnsupportedEncodingException e) {
             throw new IOInternalException("unable to encode username");
         }
     }
+
 }

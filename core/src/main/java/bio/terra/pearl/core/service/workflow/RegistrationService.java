@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -206,6 +207,15 @@ public class RegistrationService {
         return GOVERNED_USERNAME_INDICATOR.formatted(proxyUserName, governedUsernameSuffix);//a@b.com-prox-guid
 
     }
+
+    public static String removeProxySuffix(String email) {
+        // if the email ends with -prox-XXXX, remove it
+        Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
+
+        return proxySuffix.matcher(email).replaceAll("");
+    }
+
+
     public record RegistrationResult(ParticipantUser participantUser,
                                      PortalParticipantUser portalParticipantUser,
                                      Profile profile) {

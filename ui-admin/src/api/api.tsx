@@ -289,6 +289,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
+  onlyIncludeCompleted?: boolean,
   includeSubHeaders?: boolean,
   excludeModules?: string[],
   filterString?: string,

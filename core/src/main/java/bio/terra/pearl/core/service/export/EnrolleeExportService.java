@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.Study;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -92,7 +91,7 @@ public class EnrolleeExportService {
     /**
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
-     * */
+     */
     public void export(ExportOptionsWithExpression exportOptions, UUID studyEnvironmentId, OutputStream os) {
 
         List<EnrolleeExportData> enrolleeExportData = loadEnrolleeExportData(studyEnvironmentId, exportOptions);
@@ -217,7 +216,7 @@ public class EnrolleeExportService {
         Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses =
                 attachTasksToSurveyResponses(
                         tasks,
-                        surveyResponseService.findByEnrolleeIdsNotRemoved(enrolleeIds));
+                        surveyResponseService.findByEnrolleeIdsNotRemoved(enrolleeIds, exportOptions.isOnlyIncludeCompleted()));
         Map<UUID, List<KitRequestDto>> kitRequests = kitRequestService.findByEnrollees(enrollees);
 
         return enrollees.stream()

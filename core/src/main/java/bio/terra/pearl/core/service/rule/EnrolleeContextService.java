@@ -67,7 +67,7 @@ public class EnrolleeContextService {
         for (Enrollee enrollee : enrollees) {
             List<EnrolleeRelation> enrolleeRelations = new ArrayList<>();
             for (EnrolleeRelation relation : allRelations) {
-                if (relation.getEnrolleeId().equals(enrollee.getId())) {
+                if (relation.getEnrolleeId().equals(enrollee.getId()) || relation.getTargetEnrolleeId().equals(enrollee.getId())) {
                     enrolleeRelations.add(relation);
                 }
             }
