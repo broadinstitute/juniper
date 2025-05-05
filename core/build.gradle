@@ -25,7 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:3.4.4'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
     implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
-    implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.34.0'
+    implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.49.3'
     implementation group: 'org.jdbi', name: 'jdbi3-postgres', version: '3.34.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.5'
     implementation 'org.springframework.boot:spring-boot-starter-webflux:3.4.4'
