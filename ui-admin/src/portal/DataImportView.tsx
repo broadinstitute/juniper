@@ -1,13 +1,37 @@
 import React, { useState } from 'react'
 import Api, { DataImportItem } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout, DownloadControl, renderEmptyMessage, RowVisibilityCount } from '../util/table/tableUtils'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
+import {
+  basicTableLayout,
+  DownloadControl,
+  renderEmptyMessage,
+  RowVisibilityCount
+} from '../util/table/tableUtils'
+import {
+  currentIsoDate,
+  instantToDefaultString
+} from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
-import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
-import { Link, useParams } from 'react-router-dom'
+import {
+  StudyEnvContextT,
+  useStudyEnvParamsFromPath
+} from '../study/StudyEnvironmentRouter'
+import {
+  Link,
+  useParams
+} from 'react-router-dom'
+import AdHocEmailModal from 'study/participants/AdHocEmailModal'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 
 /** show the dataImportItem list in table */
@@ -15,21 +39,40 @@ export default function DataImportView({ studyEnvContext }:
                                          { studyEnvContext: StudyEnvContextT }) {
   const [dataImportItems, setDataImportItems] = useState<DataImportItem[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+  const [showSendEmailModal, setShowSendEmailModal] = useState(false)
+
+  const shortcodes: string[] = dataImportItems
+    .filter(item => item.createdEnrollee && item.createdEnrollee.shortcode && item.createdEnrollee.subject)
+    .map(item => item.createdEnrollee?.shortcode || '')
+    .filter(shortcode => shortcode != '') // I would have done an isNil check but typescript was being annoying
+
   const importedDate = instantToDefaultString(dataImportItems[0]?.createdAt)
   const columns: ColumnDef<DataImportItem>[] = [
     {
-      header: 'EnrolleeId',
-      accessorKey: 'createdEnrolleeId',
+      header: 'Shortcode',
+      accessorKey: 'createdEnrollee.shortcode',
       cell: ({ row }) => {
-        const enrolleIdLast8 = row.original?.createdEnrolleeId?.slice(-8)
+        const enrolleeIdLast8 = row.original?.createdEnrolleeId?.slice(-8)
         if (row.original.status == 'DELETED') {
-          return <p>detail-{enrolleIdLast8}</p>
+          return <p>detail-{enrolleeIdLast8}</p>
         } else if (row.original.status == 'FAILED') {
           return <p></p>
         } else {
           return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
-            className="me-1">view detail-{enrolleIdLast8}</Link>
+            className="me-1">{row.original.createdEnrollee?.shortcode || enrolleeIdLast8}</Link>
         }
+      }
+    },
+    {
+      header: 'Type',
+      accessorKey: 'createdEnrollee.subject',
+      cell: ({ row }) => {
+        const enrollee = row.original.createdEnrollee
+        if (!enrollee) {
+          return <p></p>
+        }
+
+        return enrollee.subject ? 'participant' : 'proxy'
       }
     },
     {
@@ -38,7 +81,20 @@ export default function DataImportView({ studyEnvContext }:
     },
     {
       header: 'Message',
-      accessorKey: 'message'
+      accessorKey: 'message',
+      cell: ({ row }) => {
+        const message = row.original.message
+        if (message) {
+          return <p className="text-break" style={{ width: '500px' }}>{message}</p>
+        } else {
+          return <p></p>
+        }
+      }
+    },
+    {
+      header: 'Created At',
+      accessorKey: 'createdAt',
+      cell: ({ row }) => instantToDefaultString(row.original.createdAt)
     }
   ]
 
@@ -66,7 +122,6 @@ export default function DataImportView({ studyEnvContext }:
   const { isLoading } = useLoadingEffect(async () => {
     const result = await Api.fetchDataImport(studyEnvContext.portal.shortcode, studyShortCode,
       studyEnvContext.currentEnv.environmentName, dataImportId)
-    // @ts-ignore
     setDataImportItems(result.importItems)
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName])
 
@@ -83,11 +138,26 @@ export default function DataImportView({ studyEnvContext }:
             table={table}
             fileName={`${studyEnvContext.portal.shortcode}-DataImportItem-${currentIsoDate()}`}
           />
+
+          <Button className={'border m-1'} variant={'light'}
+            onClick={() => setShowSendEmailModal(true)}>
+            <FontAwesomeIcon icon={faEnvelope} className={'me-2'}/>
+            Send Email to Participants
+          </Button>
         </div>
       </div>
 
       {basicTableLayout(table)}
       {renderEmptyMessage(dataImportItems, 'No data import items')}
     </LoadingSpinner>
+
+    {showSendEmailModal &&
+        <AdHocEmailModal
+          studyEnvContext={studyEnvContext}
+          onDismiss={() => setShowSendEmailModal(false)}
+          recipient={{
+            type: 'shortcodes',
+            enrolleeShortcodes: shortcodes
+          }}/>}
   </div>
 }
