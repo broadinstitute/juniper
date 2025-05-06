@@ -25,11 +25,6 @@
     "description": "Create and edit admin users (study staff)"
   },
   {
-    "name": "tdr_export",
-    "displayName": "TDR snapshot management",
-    "description": "Allows user to export study data to Terra Data Repo"
-  },
-  {
     "name": "participant_data_edit",
     "displayName": "Participant data management",
     "description": "Allows user to edit participant data (e.g., survey responses)"

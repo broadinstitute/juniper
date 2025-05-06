@@ -39,6 +39,6 @@
     "name": "power_user",
     "displayName": "Power user",
     "description": "Use advanced Juniper features",
-    "permissionNames": ["tdr_export"]
+    "permissionNames": []
   }
 ]

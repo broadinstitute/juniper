@@ -12,7 +12,6 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath,
-  studyEnvDatasetListViewPath,
   studyEnvExportIntegrationsPath,
   studyEnvFormsPath,
   studyEnvImportPath,
@@ -171,14 +170,6 @@ const buildStudySidebarSections = (
         studyShortcode,
         envName: 'live'
       })
-    })
-  }
-
-  if (userHasPermissionInPortal('tdr_export')) {
-    analyticsDataSection.items.push({
-      key: 'terraDataRepo',
-      label: 'Terra Data Repo',
-      link: studyEnvDatasetListViewPath(portalShortcode, studyShortcode, 'live')
     })
   }
 

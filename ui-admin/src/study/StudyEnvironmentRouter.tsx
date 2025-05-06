@@ -29,8 +29,6 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
-import DatasetDashboard from './export/datarepo/DatasetDashboard'
-import DatasetList from './export/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import TriggerList from './notifications/TriggerList'
@@ -156,9 +154,6 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
             element={<ExportIntegrationJobList studyEnvContext={studyEnvContext}/>}/>
 
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
-          <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
-          <Route path="export/dataRepo/datasets/:datasetName"
-            element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
           <Route path="forms/*" element={<StudyFormsRouter studyEnvContext={studyEnvContext}
             portalEnvContext={portalEnvContext}/>}/>
 
@@ -336,19 +331,9 @@ export const studyEnvSiteSettingsPath = (portalShortcode: string, studyShortcode
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/settings`
 }
 
-/** helper for dataset list path */
-export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
-  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/export/dataRepo/datasets`
-}
-
 /** helper for pre registration survey path */
 export const studyEnvPreRegPath = (studyEnvParams: StudyEnvParams) => {
   return `${baseStudyEnvPath(studyEnvParams)}/forms/preReg`
-}
-
-/** helper for path for particular dataset route */
-export const datasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
-  return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }
 
 /** helper for path to admin task list page */
