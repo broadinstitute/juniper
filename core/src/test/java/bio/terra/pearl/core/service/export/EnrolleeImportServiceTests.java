@@ -864,11 +864,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "importTest1.complete", "true",
                 "importTest1.importFirstName", "Jeff",
                 "importTest1.importFavColors", "[\"red\", \"blue\"]",
-                "importTest1.completedAt", "2023-08-21 05:17AM",
+                "importTest1.createdAt", "2023-08-21 05:17AM",
                 "importTest1[2].complete", "true",
                 "importTest1[2].importFirstName", "Jeffrey",
                 "importTest1[2].importFavColors", "[\"green\"]",
-                "importTest1[2].completedAt", "2023-08-20 05:17AM");
+                "importTest1[2].createdAt", "2023-08-20 05:17AM");
 
         Enrollee enrollee = enrolleeImportService.importEnrollee(
                 bundle.getPortal().getShortcode(),
@@ -931,11 +931,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "importTest1.complete", "true",
                 "importTest1.importFirstName", "Jeff",
                 "importTest1.importFavColors", "[\"red\", \"blue\"]",
-                "importTest1.completedAt", latestCompletionDateStr,
+                "importTest1.createdAt", latestCompletionDateStr,
                 "importTest1[2].complete", "true",
                 "importTest1[2].importFirstName", "Jeffrey",
                 "importTest1[2].importFavColors", "[\"green\"]",
-                "importTest1[2].completedAt", oldCompletionDateStr);
+                "importTest1[2].createdAt", oldCompletionDateStr);
 
         Enrollee enrollee = enrolleeImportService.importEnrollee(
                 studyEnvBundle.getPortal().getShortcode(),
@@ -974,11 +974,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "importTest1.complete", "true",
                 "importTest1.importFirstName", "Alex",
                 "importTest1.importFavColors", "[\"aquamarine\", \"purple\"]",
-                "importTest1.completedAt", latestCompletionDateStr,
+                "importTest1.createdAt", latestCompletionDateStr,
                 "importTest1[2].complete", "true",
                 "importTest1[2].importFirstName", "Alexander",
                 "importTest1[2].importFavColors", "[\"orange\"]",
-                "importTest1[2].completedAt", oldCompletionDateStr);
+                "importTest1[2].createdAt", oldCompletionDateStr);
 
         enrollee = enrolleeImportService.importEnrollee(
                 studyEnvBundle.getPortal().getShortcode(),
