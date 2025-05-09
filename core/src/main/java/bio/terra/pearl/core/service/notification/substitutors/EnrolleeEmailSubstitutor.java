@@ -50,15 +50,18 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
+        valueMap.put("participantUser", ruleData.getParticipantUser());
+
         boolean isProxy = isProxy(ruleData);
         if (isProxy) {
             valueMap.put("isProxy", "true");
         } else {
             valueMap.put("isProxy", "false");
         }
+
+        valueMap.put("accountUsername", getUsername(ruleData.getParticipantUser(), isProxy));
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
-        valueMap.put("participantUser", ruleData.getParticipantUser());
         valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), enrolleeContext.getProfile(), isProxy));
         if (messages != null) {
             valueMap.putAll(messages);
@@ -183,11 +186,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                                     Profile profile,
                                     boolean isProxy) {
         try {
-            String username = participantUser != null ? participantUser.getUsername() : "";
-
-            if (isProxy) {
-                username = RegistrationService.removeProxySuffix(username);
-            }
+            String username = getUsername(participantUser, isProxy);
 
             String url = "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
@@ -203,6 +202,20 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         } catch (UnsupportedEncodingException e) {
             throw new IOInternalException("unable to encode username");
         }
+    }
+
+    private String getUsername(ParticipantUser participantUser, boolean isProxy) {
+        if (participantUser == null) {
+            return "";
+        }
+        String username = participantUser.getUsername();
+        if (StringUtils.isBlank(username)) {
+            return "";
+        }
+        if (isProxy) {
+            username = RegistrationService.removeProxySuffix(username);
+        }
+        return username;
     }
 
 }

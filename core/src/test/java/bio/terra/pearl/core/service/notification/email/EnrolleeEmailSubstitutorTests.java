@@ -143,6 +143,35 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void testProxyParticipantUsernameReplaced(TestInfo info) {
+        UUID enrolleeId = UUID.randomUUID();
+
+        ParticipantUser user = ParticipantUser.builder().username("test123@test.com-prox-ABCD").build();
+
+        EnrolleeContext nonProxyRuleData = new EnrolleeContext(new Enrollee(), new Profile(), user, null);
+        PortalEnvironment portalEnv = PortalEnvironment.builder().environmentName(EnvironmentName.irb).build();
+        NotificationContextInfo contextInfo = new NotificationContextInfo(new Portal(), portalEnv, new PortalEnvironmentConfig(), null, null);
+        StringSubstitutor nonProxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(nonProxyRuleData, contextInfo, routingPaths);
+
+        assertThat(nonProxyReplacer.replace("your username is ${participantUser.username}"), equalTo("your username is test123@test.com-prox-ABCD"));
+        assertThat(nonProxyReplacer.replace("your username is ${accountUsername}"), equalTo("your username is test123@test.com-prox-ABCD"));
+
+
+        EnrolleeContext proxyRuleData = new EnrolleeContext(Enrollee.builder().id(enrolleeId).build(), new Profile(), user, List.of(
+                EnrolleeRelation.builder()
+                        .relationshipType(RelationshipType.PROXY)
+                        .targetEnrolleeId(enrolleeId)
+                        .build()
+        ));
+        StringSubstitutor proxyReplacer = EnrolleeEmailSubstitutor.newSubstitutor(proxyRuleData, contextInfo, routingPaths);
+
+        assertThat(proxyReplacer.replace("your username is ${participantUser.username}"), equalTo("your username is test123@test.com-prox-ABCD"));
+        assertThat(proxyReplacer.replace("your username is ${accountUsername}"), equalTo("your username is test123@test.com"));
+
+
+    }
+
+    @Test
     public void testInvitationLinkReplaced(TestInfo info) {
         EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), ParticipantUser.builder().username("test123@test.com").build(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
