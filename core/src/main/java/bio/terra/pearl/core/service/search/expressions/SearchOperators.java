@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum SearchOperators {
     EQUALS("="),
-    NOT_EQUALS("!="),
+    NOT_EQUALS("IS DISTINCT FROM"),
     GREATER_THAN(">"),
     LESS_THAN("<"),
     GREATER_THAN_EQ(">="),

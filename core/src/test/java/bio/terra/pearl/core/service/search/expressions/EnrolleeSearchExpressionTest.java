@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.search.expressions;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
@@ -732,6 +731,39 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
         assertFalse(wrongQuestion.evaluate(enrollee1Context));
         assertFalse(wrongQuestion.evaluate(enrollee2Context));
+    }
+
+    @Test
+    @Transactional
+    public void testNotEqualsNullable(TestInfo info) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response and answer
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response and answer, but not 'answer1'
+        Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response but no answer
+        Enrollee enrollee4 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // no survey response
+
+        surveyResponseFactory.buildWithAnswers(enrollee1, survey, Map.of(
+                "testquestion", "answer1"
+        ));
+
+        surveyResponseFactory.buildWithAnswers(enrollee2, survey, Map.of(
+                "testquestion", "answer2"
+        ));
+
+        surveyResponseFactory.buildWithAnswers(enrollee3, survey, Map.of());
+
+
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(
+                "{answer.%s.testquestion} != 'answer1'".formatted(survey.getStableId())
+        );
+
+        assertFalse(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee1).build()));
+        assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee2).build()));
+        assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee3).build()));
+        assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee4).build()));
     }
 
 }
