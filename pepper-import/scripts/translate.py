@@ -570,6 +570,41 @@ def apply_repeatable_translation(dsm_data: dict[str, Any], juniper_data: dict[st
         apply_translation(dsm_data, juniper_data, repeat_translation)
         module_repeat += 1
 
+    if is_created_at_question(translation.juniper_question_definition):
+        warn_if_created_at_values_not_unique(juniper_data, dsm_data, translation)
+
+
+def is_created_at_question(juniper_question: DataDefinition) -> bool:
+    return juniper_question.stable_id.endswith(".createdAt")
+
+def warn_if_created_at_values_not_unique(juniper_data: dict[str, Any], dsm_data: dict[str,Any], translation: Translation):
+
+    if translation.juniper_question_definition.stable_id.startswith("AT_GROUP_REGISTRATION"):
+        return # no need to check for duplicates in registration form; latest is always taken there
+    all_values = []
+    repeat = 1
+    while True:
+        stable_id = get_juniper_response_stable_id(translation.juniper_question_definition, repeat)
+        if stable_id not in juniper_data:
+            break
+
+        value = juniper_data[stable_id]
+        all_values.append({
+            "stable_id": stable_id, "value": value
+        })
+        repeat += 1
+
+
+    for i in range(len(all_values)):
+        for j in range(i + 1, len(all_values)):
+            stable_id1 = all_values[i]["stable_id"]
+            stable_id2 = all_values[j]["stable_id"]
+
+            val1 = all_values[i]["value"]
+            val2 = all_values[j]["value"]
+            if stable_id1 != stable_id2 and val1 == val2 and val1 != '' and val2 != '':
+                print(f'Warning: duplicate timestamp value {stable_id1} and {stable_id2} with value {val1} for pepper user {dsm_data["PROFILE.HRUID"]}')
+
 
 def make_repeat_translation(translation: Translation, repeat: int) -> Translation:
     return Translation(
