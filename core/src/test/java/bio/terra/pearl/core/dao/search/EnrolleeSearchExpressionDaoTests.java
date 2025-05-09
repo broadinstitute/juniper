@@ -27,7 +27,6 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
-import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -892,6 +891,41 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle3.enrollee().getId()) &&
                 r.getKitRequests().size() == 1 &&
                 r.getKitRequests().stream().allMatch(t -> t.getId().equals(kitRequest3.getId()))));
+    }
+
+    @Test
+    @Transactional
+    public void testNotEqualsNullable(TestInfo info) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response and answer
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response and answer, but not 'answer1'
+        Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response but no answer
+        Enrollee enrollee4 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // no survey response
+        
+        surveyResponseFactory.buildWithAnswers(enrollee1, survey, Map.of(
+                "testquestion", "answer1"
+        ));
+
+        surveyResponseFactory.buildWithAnswers(enrollee2, survey, Map.of(
+                "testquestion", "answer2"
+        ));
+
+        surveyResponseFactory.buildWithAnswers(enrollee3, survey, Map.of());
+
+
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(
+                "{answer.%s.testquestion} != 'answer1'".formatted(survey.getStableId())
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(searchExp, studyEnv.getId());
+
+        Assertions.assertEquals(3, results.size());
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrollee2.getId())));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrollee3.getId())));
+        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrollee4.getId())));
     }
 
 }
