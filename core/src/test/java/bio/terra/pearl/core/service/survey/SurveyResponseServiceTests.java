@@ -602,4 +602,82 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
     }
 
+    @Test
+    @Transactional
+    public void testCanUpdateLatestEvenIfRemovedTask(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrollee = enrolleeBundle.enrollee();
+
+        SurveyResponse response1 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task1 = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task1.setSurveyResponseId(response1.getId());
+        task1 = participantTaskService.create(task1, getAuditInfo(info));
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(8, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        SurveyResponse response3 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(9, ChronoUnit.DAYS))
+                .build());
+        ParticipantTask task3 = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        task3.setSurveyResponseId(response3.getId());
+        task3.setStatus(TaskStatus.REMOVED);
+        task3 = participantTaskService.create(task3, getAuditInfo(info));
+
+        SurveyResponse newResponse = SurveyResponse.builder()
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // throws updating old response
+        ParticipantTask finalTask1 = task1;
+        assertThrows(IllegalArgumentException.class, () -> {
+            surveyResponseService.updateResponse(
+                    newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                    enrolleeBundle.portalParticipantUser(), enrollee, finalTask1.getId(), survey.getPortalId());
+        });
+        // throws updating removed response
+        ParticipantTask finalTask3 = task3;
+        assertThrows(IllegalArgumentException.class, () -> {
+            surveyResponseService.updateResponse(
+                    newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                    enrolleeBundle.portalParticipantUser(), enrollee, finalTask3.getId(), survey.getPortalId());
+        });
+        // doesn't throw updating newest
+        surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(enrolleeBundle.participantUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task2.getId(), survey.getPortalId());
+
+        // doesn't throw if admin updates old response
+        surveyResponseService.updateResponse(
+                newResponse, new ResponsibleEntity(new AdminUser()), null,
+                enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
+    }
+
 }

@@ -185,12 +185,6 @@ export function PagedSurveyView({
 
   const shouldBeReadonly = () => {
     if (form.recurrenceType === 'LONGITUDINAL' && isNil(adminUserId)) {
-      // if task is new/in-progress, it's always editable
-      const currentTask = enrollee.participantTasks.find(task => task.id === taskId)
-      if (currentTask?.status === 'NEW' || currentTask?.status === 'IN_PROGRESS') {
-        return false
-      }
-
       // if it's not new/in-progress, it has to be the latest task
       const tasks = enrollee
         .participantTasks

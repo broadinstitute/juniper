@@ -156,26 +156,21 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
      */
     private boolean isLongitudinalTaskEditable(PortalParticipantUser ppUser, UUID studyEnvId, SurveyResponse surveyResponse, String surveyStableId) {
 
-        List<ParticipantTask> surveyResponses = participantTaskService.findAllTasksForActivity(ppUser.getId(), studyEnvId, surveyStableId);
+        List<ParticipantTask> tasks = participantTaskService.findAllTasksForActivity(ppUser.getId(), studyEnvId, surveyStableId);
 
-        Optional<ParticipantTask> taskOpt = surveyResponses.stream().filter(t -> surveyResponse.getId().equals(t.getSurveyResponseId())).findFirst();
+        Optional<ParticipantTask> taskOpt = tasks.stream().filter(t -> surveyResponse.getId().equals(t.getSurveyResponseId())).findFirst();
         if (taskOpt.isEmpty()) {
-            return false;
+            return false; // task not found - shouldn't happen
         }
         ParticipantTask task = taskOpt.get();
 
         if (task.getStatus() == TaskStatus.REJECTED || task.getStatus() == TaskStatus.REMOVED) {
-            return false;
-        }
-
-        // if the task is new or in progress, we can edit it
-        if (task.getStatus() != TaskStatus.COMPLETE) {
-            return true;
+            return false; // cannot edit removed/rejected tasks
         }
 
         // with a completed task, we can only edit if it's the
         // latest task for the survey
-        List<ParticipantTask> nonRemovedTasks = surveyResponses
+        List<ParticipantTask> nonRemovedTasks = tasks
                 .stream()
                 .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
                 .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
@@ -185,8 +180,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
             return false;
         }
 
-        return nonRemovedTasks.get(0).getStatus() == TaskStatus.COMPLETE &&
-                nonRemovedTasks.get(0).getSurveyResponseId().equals(surveyResponse.getId());
+        // can only edit latest longitudinal - regardless if task status is new, inprogress, completed,
+        // if it's old it's baked into the "history".
+        return nonRemovedTasks.get(0).getSurveyResponseId().equals(surveyResponse.getId());
     }
 
     /**

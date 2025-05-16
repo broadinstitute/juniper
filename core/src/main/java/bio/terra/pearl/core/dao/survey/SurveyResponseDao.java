@@ -107,24 +107,4 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                         .findOne()
         );
     }
-
-    public List<SurveyResponse> findAllSurveyResponsesNotRejectedOrRemoved(
-            UUID enrolleeId, UUID surveyId) {
-        return jdbi.withHandle(
-                handle ->
-                        handle.createQuery("""
-                                        SELECT sr.* FROM survey_response sr
-                                        INNER JOIN participant_task pt ON pt.survey_response_id = sr.id
-                                        WHERE sr.enrollee_id = :enrolleeId
-                                        AND sr.survey_id = :surveyId
-                                        AND pt.status NOT IN ('REJECTED', 'REMOVED')
-                                        
-                                        """)
-                                .bind("enrolleeId", enrolleeId)
-                                .bind("surveyId", surveyId)
-                                .mapTo(clazz)
-                                .list()
-        );
-
-    }
 }

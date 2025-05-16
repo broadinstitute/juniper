@@ -33,11 +33,6 @@ public class ParticipantTask extends BaseEntity implements StudyEnvAttached {
     private UUID surveyResponseId;
     private UUID kitRequestId;
     private UUID participantNoteId;
-
-
-    public boolean isVisible() {
-        return status != TaskStatus.REJECTED && status != TaskStatus.REMOVED;
-    }
 }
 
 
