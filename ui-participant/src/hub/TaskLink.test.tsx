@@ -1,8 +1,15 @@
 import { ParticipantTask } from 'api/api'
 
-import { Enrollee, MockI18nProvider, renderWithRouter } from '@juniper/ui-core'
-import { isTaskAccessible } from './task/taskUtils'
-import { mockEnrollee, mockParticipantTask } from '../test-utils/test-participant-factory'
+import {
+  Enrollee,
+  isTaskAccessible,
+  MockI18nProvider,
+  renderWithRouter
+} from '@juniper/ui-core'
+import {
+  mockEnrollee,
+  mockParticipantTask
+} from '../test-utils/test-participant-factory'
 import React from 'react'
 import TaskLink from './TaskLink'
 import { screen } from '@testing-library/react'

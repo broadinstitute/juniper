@@ -1,15 +1,16 @@
 import {
+  defaultSurvey,
+  Enrollee,
+  KitRequest,
+  KitRequestStatus,
   KitType,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
-  PortalParticipantUser,
-  Survey,
-  defaultSurvey,
-  Enrollee,
-  HubResponse, KitRequest, KitRequestStatus,
   ParticipantUser,
-  Profile
+  PortalParticipantUser,
+  Profile,
+  Survey
 } from '@juniper/ui-core'
 
 
@@ -74,25 +75,6 @@ export const mockProfile = (): Profile => {
   }
 }
 
-/** mock research survey task */
-export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
-  return {
-    id: randomId('task'),
-    enrolleeId: randomId('enrollee'),
-    portalParticipantUserId: randomId('ppUser'),
-    targetName: 'Survey 1',
-    targetStableId: 'researchSurvey1',
-    targetAssignedVersion: 1,
-    studyEnvironmentId: randomId('studyEnv'),
-    createdAt: 0,
-    lastUpdatedAt: 0,
-    status,
-    taskType,
-    taskOrder: 0,
-    blocksHub: true
-  }
-}
-
 /**
  * mock survey form
  */
@@ -148,19 +130,21 @@ export const mockKitType = (kitType: string): KitType => {
   }
 }
 
-/** mock hub response including no tasks and a mock enrollee */
-export const mockHubResponse = (): HubResponse => {
+export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
   return {
-    enrollee: mockEnrollee(),
-    tasks: [],
-    response: {
-      resumeData: '',
-      enrolleeId: 'enrollee1',
-      surveyId: 'survey1',
-      complete: true,
-      answers: []
-    },
-    profile: mockProfile()
+    id: randomId('task'),
+    enrolleeId: randomId('enrollee'),
+    portalParticipantUserId: randomId('ppUser'),
+    targetName: 'Survey 1',
+    targetStableId: 'researchSurvey1',
+    targetAssignedVersion: 1,
+    studyEnvironmentId: randomId('studyEnv'),
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    status,
+    taskType,
+    taskOrder: 0,
+    blocksHub: true
   }
 }
 
@@ -168,3 +152,4 @@ export const mockHubResponse = (): HubResponse => {
 export const randomId = (prefix: string): string => {
   return `${prefix}${Math.floor(Math.random() * 1000)}`
 }
+

@@ -27,6 +27,7 @@ import {
 } from 'src/types/user'
 import classNames from 'classnames'
 import { isNil } from 'lodash'
+import { isTaskVisible } from '../../util/taskUtils'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
@@ -184,15 +185,17 @@ export function PagedSurveyView({
 
   const shouldBeReadonly = () => {
     if (form.recurrenceType === 'LONGITUDINAL' && isNil(adminUserId)) {
+      // if task is new/in-progress, it's always editable
+      const currentTask = enrollee.participantTasks.find(task => task.id === taskId)
+      if (currentTask?.status === 'NEW' || currentTask?.status === 'IN_PROGRESS') {
+        return false
+      }
+
+      // if it's not new/in-progress, it has to be the latest task
       const tasks = enrollee
         .participantTasks
         .filter(task => task.targetStableId === form.stableId)
-
-      const allTasksCompleted = tasks.every(task => task.status === 'COMPLETE')
-
-      if (!allTasksCompleted) {
-        return !['IN_PROGRESS', 'NEW'].includes(tasks.find(task => task.id === taskId)?.status || '')
-      }
+        .filter(task => isTaskVisible(task)) // filter out removed tasks, etc.
 
       if (tasks.length > 1) {
         const latestTask = tasks.reduce(

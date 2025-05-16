@@ -1,8 +1,8 @@
 import {
   Enrollee,
-  HubResponse,
-  ParticipantTask
-} from '@juniper/ui-core'
+  HubResponse
+} from '../types/user'
+import { ParticipantTask } from '../types/task'
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
 export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
@@ -43,22 +43,55 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   if (task.taskType === 'CONSENT' || task.status === 'COMPLETE') {
     return true
   }
-  const openConsents = enrollee.participantTasks
+
+  // do not consider removed surveys in this logic
+  const tasks = enrollee.participantTasks.filter(t => isTaskVisible(t))
+
+  const openConsents = tasks
     .filter(task => task.taskType === 'CONSENT' && task.status !== 'COMPLETE')
   if (openConsents.length) {
     return false
   }
-  const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
-    .sort((a, b) => a.taskOrder - b.taskOrder)
-  if (openRequiredTasks.length) {
-    return task.targetStableId === openRequiredTasks[0].targetStableId
+
+  const openRequiredTasks = tasks
+    .filter(task => task.blocksHub)
+    .sort((a, b) => a.taskOrder !== b.taskOrder
+      ? a.taskOrder - b.taskOrder
+      : (a.targetStableId || '').localeCompare(b.targetStableId || ''))
+  if (openRequiredTasks.length === 0) {
+    return true
   }
-  return true
+
+  // make sure the task before this task has at least one completed survey -
+  // even if the previous survey has something new/in-progress/removed, if it has
+  // a single completed response it should be considered done.
+  let lastTaskStableId = ''
+  let lastTaskIsComplete = true // first required task always accessible
+  for (let i = 0; i < openRequiredTasks.length; i++) {
+    if (task.targetStableId === openRequiredTasks[i].targetStableId) {
+      return lastTaskIsComplete
+    }
+
+    if (openRequiredTasks[i].targetStableId === lastTaskStableId) {
+      if (!lastTaskIsComplete) {
+        lastTaskIsComplete = openRequiredTasks[i].status === 'COMPLETE'
+      }
+    } else {
+      lastTaskStableId = openRequiredTasks[i].targetStableId || ''
+      lastTaskIsComplete = openRequiredTasks[i].status === 'COMPLETE'
+    }
+  }
+
+  return lastTaskIsComplete
 }
 
 /** is the task ready to be worked on (not done or rejected) */
 export function isTaskActive(task: ParticipantTask) {
   return ['NEW', 'VIEWED', 'IN_PROGRESS'].includes(task.status)
+}
+
+export function isTaskVisible(task: ParticipantTask) {
+  return ['NEW', 'VIEWED', 'IN_PROGRESS', 'COMPLETE'].includes(task.status)
 }
 
 export function getSortedActiveTasks(tasks: ParticipantTask[], taskType: string): ParticipantTask[] {

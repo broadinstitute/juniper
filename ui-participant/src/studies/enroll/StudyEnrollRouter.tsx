@@ -28,6 +28,8 @@ import {
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import {
+  getNextConsentTask,
+  getTaskPath,
   getTranslatedStudyName,
   HubResponse,
   I18nFn,
@@ -39,10 +41,6 @@ import {
   enrollProxyUserInStudy
 } from 'util/enrolleeUtils'
 import { logError } from 'util/loggingUtils'
-import {
-  getNextConsentTask,
-  getTaskPath
-} from 'hub/task/taskUtils'
 import { useEnrollmentParams } from './useEnrollmentParams'
 
 export type StudyEnrollContext = {

@@ -149,16 +149,44 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return surveyResponseLastUpdatedAt.isBefore(cutoffTime);
     }
 
-    private boolean isMostRecentResponse(SurveyResponse surveyResponse) {
-        List<SurveyResponse> surveyResponses = dao.findAllByEnrolleeAndSurveyId(
-                surveyResponse.getEnrolleeId(), surveyResponse.getSurveyId());
+    /**
+     * Longitudinal tasks are editable if:
+     * - the task is new or in progress
+     * - task is the most recent task for the survey
+     */
+    private boolean isLongitudinalTaskEditable(PortalParticipantUser ppUser, UUID studyEnvId, SurveyResponse surveyResponse, String surveyStableId) {
 
-        SurveyResponse latest = surveyResponses
+        List<ParticipantTask> surveyResponses = participantTaskService.findAllTasksForActivity(ppUser.getId(), studyEnvId, surveyStableId);
+
+        Optional<ParticipantTask> taskOpt = surveyResponses.stream().filter(t -> surveyResponse.getId().equals(t.getSurveyResponseId())).findFirst();
+        if (taskOpt.isEmpty()) {
+            return false;
+        }
+        ParticipantTask task = taskOpt.get();
+
+        if (task.getStatus() == TaskStatus.REJECTED || task.getStatus() == TaskStatus.REMOVED) {
+            return false;
+        }
+
+        // if the task is new or in progress, we can edit it
+        if (task.getStatus() != TaskStatus.COMPLETE) {
+            return true;
+        }
+
+        // with a completed task, we can only edit if it's the
+        // latest task for the survey
+        List<ParticipantTask> nonRemovedTasks = surveyResponses
                 .stream()
-                .max(Comparator.comparing(SurveyResponse::getCreatedAt))
-                .orElseThrow();
+                .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .toList();
 
-        return surveyResponse.getId().equals(latest.getId());
+        if (nonRemovedTasks.isEmpty()) {
+            return false;
+        }
+
+        return nonRemovedTasks.get(0).getStatus() == TaskStatus.COMPLETE &&
+                nonRemovedTasks.get(0).getSurveyResponseId().equals(surveyResponse.getId());
     }
 
     /**
@@ -183,7 +211,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
                 && priorResponse != null
-                && !isMostRecentResponse(priorResponse)
+                && !isLongitudinalTaskEditable(ppUser, enrollee.getStudyEnvironmentId(), priorResponse, survey.getStableId())
                 // admins should be able to update old responses
                 && operator.getParticipantUser() != null) {
             throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");

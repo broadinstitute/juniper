@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { ParticipantTask } from 'api/api'
-import { Enrollee, useI18n } from '@juniper/ui-core'
-import { getNextTask, getTaskPath, isTaskAccessible, isTaskActive, taskComparator } from './task/taskUtils'
+import {
+  Enrollee,
+  getNextTask,
+  getTaskPath,
+  isTaskAccessible,
+  isTaskActive,
+  taskComparator,
+  useI18n
+} from '@juniper/ui-core'
 import TaskLink from './TaskLink'
 import _groupBy from 'lodash/groupBy'
 import _flatten from 'lodash/flatten'

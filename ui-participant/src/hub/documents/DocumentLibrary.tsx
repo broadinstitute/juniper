@@ -1,6 +1,7 @@
 import {
   Enrollee,
   EnvironmentName,
+  getTaskPath,
   getTranslatedStudyName,
   I18nOptions,
   instantToDateString,
@@ -26,7 +27,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { Link } from 'react-router-dom'
-import { getTaskPath } from '../task/taskUtils'
 import Modal from 'react-bootstrap/Modal'
 import ThemedModal from 'components/ThemedModal'
 import { LoadingSpinner } from 'util/LoadingSpinner'

@@ -1,14 +1,14 @@
 package bio.terra.pearl.core.model.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.time.Instant;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.study.StudyEnvAttached;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  * represents a thing that a participant can do, or has already done.
@@ -33,6 +33,11 @@ public class ParticipantTask extends BaseEntity implements StudyEnvAttached {
     private UUID surveyResponseId;
     private UUID kitRequestId;
     private UUID participantNoteId;
+
+
+    public boolean isVisible() {
+        return status != TaskStatus.REJECTED && status != TaskStatus.REMOVED;
+    }
 }
 
 
