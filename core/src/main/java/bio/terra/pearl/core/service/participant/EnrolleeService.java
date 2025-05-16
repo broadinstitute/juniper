@@ -6,17 +6,14 @@ import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
-import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -24,14 +21,14 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
@@ -234,8 +231,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
     }
 
-    public List<Enrollee> findWithTaskInPast(UUID studyEnvId, String taskTargetStableId, Duration minTimeSinceMostRecent ) {
-        return dao.findWithTaskInPast(studyEnvId, taskTargetStableId, minTimeSinceMostRecent);
+    public List<Enrollee> findAssignedToTask(UUID studyEnvironmentId,
+                                             String targetStableId) {
+        return dao.findAssignedToTask(studyEnvironmentId, targetStableId);
     }
 
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
