@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import Api, {
-  VersionedForm
-} from 'api/api'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import Api, { VersionedForm } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
-import { Button, IconButton } from 'components/forms/Button'
+import {
+  Button,
+  IconButton
+} from 'components/forms/Button'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { TextInput } from 'components/forms/TextInput'
 import { faClipboard } from '@fortawesome/free-solid-svg-icons'
@@ -12,33 +16,35 @@ import queryString from 'query-string'
 import { useConfig } from 'providers/ConfigProvider'
 
 type ReferralSource = {
-    referringSite: string
+  referringSite: string
 }
 
 type PreEnrollQueryParams = {
-    skipPreEnroll?: boolean
-    referralSource?: ReferralSource
-    preFilledAnswers?: string
+  skipPreEnroll?: boolean
+  referralSource?: ReferralSource
+  preFilledAnswers?: string
+  clearOnLoad?: boolean
 }
 
 /** component for selecting versions of a form */
 export default function PreEnrollShortcutModal({
   studyEnvContext, workingForm, onDismiss
 }: {
-    studyEnvContext: StudyEnvContextT,
-    workingForm: VersionedForm,
-    onDismiss: () => void
+  studyEnvContext: StudyEnvContextT,
+  workingForm: VersionedForm,
+  onDismiss: () => void
 }) {
   const zoneConfig = useConfig()
 
   const currentPortalEnv = studyEnvContext.portal.portalEnvironments.find(env =>
     env.environmentName === studyEnvContext.currentEnv.environmentName)
-  const portalUrl= Api.getParticipantLink(currentPortalEnv!.portalEnvironmentConfig, zoneConfig.participantUiHostname,
+  const portalUrl = Api.getParticipantLink(currentPortalEnv!.portalEnvironmentConfig, zoneConfig.participantUiHostname,
     studyEnvContext.portal.shortcode, currentPortalEnv!.environmentName)
 
   const [shortcutUrl, setShortcutUrl] = useState<string | undefined>(portalUrl)
   const [queryParams, setQueryParams] = useState<PreEnrollQueryParams>({})
   const [skipPreEnroll, setSkipPreEnroll] = useState<boolean>(false)
+  const [clearOnLoad, setClearOnLoad] = useState<boolean>(false)
   const [referralSource, setReferralSource] = useState<ReferralSource>()
   const [preFilledAnswers, setPrefilledAnswers] = useState<string>()
 
@@ -69,8 +75,8 @@ export default function PreEnrollShortcutModal({
             type="text"
             infoContent={
               'If set, any participant signing up with this link will have this ' +
-                  'site recorded as the referring site in their profile. Use this option if you want to track ' +
-                  'participant enrollments from a partner website or other source such as a newsletter.'
+              'site recorded as the referring site in their profile. Use this option if you want to track ' +
+              'participant enrollments from a partner website or other source such as a newsletter.'
             }
             label={'Referring Site'}
             value={referralSource?.referringSite} onChange={e => {
@@ -87,7 +93,7 @@ export default function PreEnrollShortcutModal({
           <TextInput
             type="text"
             infoContent={
-                `If set, any participant signing up with this link will have these answers 
+              `If set, any participant signing up with this link will have these answers 
                pre-filled in the pre-enroll survey. Go to the "Preview" tab in the survey
                 builder and fill out the answers you want to pre-fill. Then, click the
                 "Copy answers" button to copy the answers to the clipboard. 
@@ -115,6 +121,20 @@ export default function PreEnrollShortcutModal({
               skipPreEnroll: !skipPreEnroll ? true : undefined
             }))
           }}/>
+
+        <Checkbox
+          label={'Clear Parameters on Load'} checked={clearOnLoad}
+          infoContent={
+            'If checked, the parameters will be removed from the URL when the page loads.'
+          }
+          onClick={() => {
+            setClearOnLoad(!clearOnLoad)
+            setQueryParams(prev => ({
+              ...prev,
+              clearOnLoad: !clearOnLoad ? true : undefined
+            }))
+          }}/>
+
 
         <div className={'bg-light mt-3 px-2 py-2 border rounded'}>
           <div>
