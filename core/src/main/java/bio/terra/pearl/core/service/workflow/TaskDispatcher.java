@@ -195,13 +195,15 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         // not the most efficient, but lets us reuse "isRecurrenceWindowOpen"
         List<Enrollee> enrolleesWithTask = enrolleeService.findAssignedToTask(taskConfig.getStudyEnvironmentId(), taskConfig.getStableId());
         Map<UUID, ParticipantTask> latestTasks = participantTaskService.findLatestNotRemovedByEnrolleeIds(
-                enrolleesWithTask.stream().map(Enrollee::getId).toList());
-
+                enrolleesWithTask.stream().map(Enrollee::getId).toList(),
+                taskConfig.getStableId());
+        
         List<Enrollee> eligibleEnrollees = new ArrayList<>();
 
         for (Enrollee enrollee : enrolleesWithTask) {
             ParticipantTask latestTask = latestTasks.get(enrollee.getId());
-            if (latestTask != null && isRecurrenceWindowOpen(taskConfig, latestTask)) {
+            if (latestTask != null
+                    && isRecurrenceWindowOpen(taskConfig, latestTask)) {
                 eligibleEnrollees.add(enrollee);
             }
         }
@@ -282,6 +284,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         if (taskDispatchConfig.getRecurrenceType().equals(RecurrenceType.UPDATE)) {
             Optional<ParticipantTask> existingTask = existingTasks.stream()
                     .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
@@ -289,6 +292,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             Optional<ParticipantTask> existingTask = existingTasks.stream()
                     .filter(t -> t.getTargetStableId() != null)
                     .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }

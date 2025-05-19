@@ -50,18 +50,24 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                 .stream().collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toList()));
     }
 
-    public Map<UUID, ParticipantTask> findLatestNotRemovedByEnrolleeIds(Collection<UUID> enrolleeIds) {
+    public Map<UUID, ParticipantTask> findLatestNotRemovedByEnrolleeIds(Collection<UUID> enrolleeIds, String stableId) {
+        if (enrolleeIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 select * from %s
                                 where enrollee_id in (<enrolleeIds>)
                                 and status not in ('REMOVED', 'REJECTED')
+                                and target_stable_id = :stableId
                                 order by created_at desc
                                 """.formatted(tableName))
                         .bindList("enrolleeIds", enrolleeIds)
+                        .bind("stableId", stableId)
                         .mapTo(clazz)
                         .stream()
-                        .collect(Collectors.toMap(ParticipantTask::getEnrolleeId, task -> task, (task1, task2) -> task1.getCreatedAt().isAfter(task2.getCreatedAt()) ? task1 : task2))
+                        .collect(Collectors.toMap(ParticipantTask::getEnrolleeId, task -> task, (task1, task2) -> task1))
         );
     }
 

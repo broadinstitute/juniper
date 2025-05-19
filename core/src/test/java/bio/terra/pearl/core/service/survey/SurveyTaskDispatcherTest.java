@@ -22,6 +22,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.RecurrenceType;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +62,8 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     private TimeShiftDao timeShiftDao;
     @Autowired
     private SurveyResponseDao surveyResponseDao;
+    @Autowired
+    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
 
 
     @Test
@@ -344,6 +348,8 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .recurrenceIntervalDays(7));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
+        surveyTaskDispatcher.assignScheduledTasks(); // should be no-op
+
         EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo) + "1", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
         EnrolleeBundle sandbox2 = enrolleeFactory.enroll(getTestName(testInfo) + "2", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
         EnrolleeBundle sandbox3 = enrolleeFactory.enroll(getTestName(testInfo) + "3", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
@@ -460,7 +466,10 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox.enrollee().getId()), true, true, "reason"),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
 
-        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        tasks = participantTaskService
+                .findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId())
+                .stream().sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .toList();
 
         assertThat(tasks, hasSize(3));
 
@@ -493,12 +502,12 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         assertThat(tasks, hasSize(3));
 
-        // make task3 old complete
+        // make task1 (latest task) old & complete
 
-        task3.setCompletedAt(Instant.now().minus(8, ChronoUnit.DAYS));
-        task3.setStatus(TaskStatus.COMPLETE);
+        task1.setCompletedAt(Instant.now().minus(8, ChronoUnit.DAYS));
+        task1.setStatus(TaskStatus.COMPLETE);
 
-        participantTaskService.update(task3, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
+        participantTaskService.update(task1, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
 
         // this should assign a new task to the enrollee, since the latest task is now complete
         surveyTaskDispatcher.assignScheduledTasks();
@@ -574,6 +583,90 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
 
         assertThat(tasks, hasSize(3));
+    }
+
+    @Test
+    @Transactional
+    public void testMultipleVersionMultipleSurveyRecurringAssign(TestInfo testInfo) {
+        // make sure re-assign is smart enough to not get confused if multiple recurring surveys
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        Survey survey1V1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .portalId(sandboxBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .version(1)
+                .autoAssign(true)
+                .stableId("survey1")
+                .recurrenceIntervalDays(7));
+
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .portalId(sandboxBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .version(1)
+                .autoAssign(true)
+                .stableId("survey2")
+                .recurrenceIntervalDays(7));
+
+
+        StudyEnvironmentSurvey survey1V1ses = surveyFactory.attachToEnv(survey1V1, sandboxBundle.getStudyEnv().getId(), true);
+        surveyFactory.attachToEnv(survey2, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle enrollee1 = enrolleeFactory.enroll(getTestName(testInfo) + "1", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle enrollee2 = enrolleeFactory.enroll(getTestName(testInfo) + "2", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+
+        Survey survey1V2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .portalId(sandboxBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .version(2)
+                .autoAssign(true)
+                .stableId("survey1")
+                .recurrenceIntervalDays(7));
+
+        // make v1 outdated as v2 is the latest
+        survey1V1ses.setActive(false);
+        studyEnvironmentSurveyService.update(survey1V1ses); // deactivate old version
+
+        // activate new version
+        surveyFactory.attachToEnv(survey1V2, sandboxBundle.getStudyEnv().getId(), true);
+
+        // assign new version of survey1
+        surveyTaskDispatcher.assign(
+                new ParticipantTaskAssignDto(TaskType.SURVEY, survey1V2.getStableId(), survey1V2.getVersion(), List.of(enrollee1.enrollee().getId()), true, true, "reason"),
+                sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
+
+        List<ParticipantTask> tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        for (ParticipantTask task : tasks) {
+            task.setStatus(TaskStatus.COMPLETE);
+            task.setCompletedAt(Instant.now().minus(8, ChronoUnit.DAYS));
+            participantTaskService.update(task, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
+            // make them all eligible for recurrence
+        }
+
+        // at this point:
+        // enrollee 1 has 2 tasks, one for survey1 V1, one for survey1 V2, one for survey2
+        // enrollee 2 has 2 tasks, one for survey1 V1 and survey2
+        // on recurrence: enrollee1 should only recur on V2, enrollee2 should recur on V2 and survey2
+
+        surveyTaskDispatcher.assignScheduledTasks();
+
+        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+
+        List<ParticipantTask> enrollee1Tasks = tasks.stream().filter(task -> task.getEnrolleeId().equals(enrollee1.enrollee().getId())).toList();
+        List<ParticipantTask> enrollee2Tasks = tasks.stream().filter(task -> task.getEnrolleeId().equals(enrollee2.enrollee().getId())).toList();
+
+        assertThat(enrollee1Tasks, hasSize(5));
+        assertThat(enrollee2Tasks, hasSize(4));
+
+        // enrollee 1 should have 3 tasks, one for survey1 V1, two for survey1 V2
+
+        assertThat(enrollee1Tasks.stream().filter(task -> task.getTargetStableId().equals(survey1V1.getStableId()) && task.getTargetAssignedVersion() == 1).toList(), hasSize(1));
+        assertThat(enrollee1Tasks.stream().filter(task -> task.getTargetStableId().equals(survey1V2.getStableId()) && task.getTargetAssignedVersion() == 2).toList(), hasSize(2));
+        assertThat(enrollee1Tasks.stream().filter(task -> task.getTargetStableId().equals(survey2.getStableId())).toList(), hasSize(2));
+
+        // enrollee 2 should have 4 tasks, one for survey1 V1, one for survey1 V2, two for survey2
+        assertThat(enrollee2Tasks.stream().filter(task -> task.getTargetStableId().equals(survey1V2.getStableId()) && task.getTargetAssignedVersion() == 1).toList(), hasSize(1));
+        assertThat(enrollee2Tasks.stream().filter(task -> task.getTargetStableId().equals(survey1V2.getStableId()) && task.getTargetAssignedVersion() == 2).toList(), hasSize(1));
+        assertThat(enrollee2Tasks.stream().filter(task -> task.getTargetStableId().equals(survey2.getStableId())).toList(), hasSize(2));
+
 
     }
 
@@ -625,7 +718,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         ParticipantTask finalInitialTask = initialTask;
         ParticipantTask reassignedTask = latestParticipantTasks.stream().filter(task -> !task.getId().equals(finalInitialTask.getId())).findFirst().get();
-        
+
         SurveyResponse reassignedResponse = surveyResponseDao.findOneWithAnswers(reassignedTask.getSurveyResponseId()).get();
 
         //confirm diagnosis answer was prepopulated in the new response

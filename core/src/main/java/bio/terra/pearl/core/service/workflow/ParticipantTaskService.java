@@ -153,8 +153,8 @@ public class ParticipantTaskService extends ParticipantDataAuditedService<Partic
         return null;
     }
 
-    public Map<UUID, ParticipantTask> findLatestNotRemovedByEnrolleeIds(Collection<UUID> enrolleeIds) {
-        return dao.findLatestNotRemovedByEnrolleeIds(enrolleeIds);
+    public Map<UUID, ParticipantTask> findLatestNotRemovedByEnrolleeIds(Collection<UUID> enrolleeIds, String stableId) {
+        return dao.findLatestNotRemovedByEnrolleeIds(enrolleeIds, stableId);
     }
 
     public ParticipantTaskTaskListDto findAdminTasksByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {

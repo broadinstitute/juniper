@@ -177,11 +177,14 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
     public List<Enrollee> findAssignedToTask(UUID studyEnvironmentId,
                                              String targetStableId) {
         return jdbi.withHandle(handle -> handle.createQuery("""
-                            select enrollee.* from enrollee
-                            inner join participant_task
-                            on (enrollee.id = participant_task.enrollee_id
-                                 and participant_task.target_stable_id = :targetStableId)
-                             where enrollee.study_environment_id = :studyEnvironmentId
+                            select distinct on (e.id) e.* from enrollee e
+                            inner join participant_task pt
+                            on (e.id = pt.enrollee_id
+                                 and pt.target_stable_id = :targetStableId
+                                 and pt.status not in ('REMOVED', 'REJECTED')
+                            )
+                             where e.study_environment_id = :studyEnvironmentId
+                             order by e.id
                         """)
                 .bind("targetStableId", targetStableId)
                 .bind("studyEnvironmentId", studyEnvironmentId)
