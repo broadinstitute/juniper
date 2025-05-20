@@ -5,10 +5,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.RecurrenceType;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
@@ -362,13 +359,18 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         if (taskDispatchConfig.getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
-        if (latestTask.getCompletedAt() == null) {
+
+        Instant date = taskDispatchConfig.getRecurOn() == RecurOn.COMPLETION
+                ? latestTask.getCompletedAt()
+                : latestTask.getCreatedAt();
+
+        if (date == null) {
             return false; // never recur on incomplete tasks
         }
 
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
                 .minusDays(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
-        return latestTask.getCompletedAt().isBefore(pastCutoffTime);
+        return date.isBefore(pastCutoffTime);
     }
 
     protected void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {

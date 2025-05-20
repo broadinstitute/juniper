@@ -18,10 +18,7 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.RecurrenceType;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -380,12 +377,13 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testRecurringAssignDoesNotRecurIfTaskInProgress(TestInfo testInfo) {
+    public void testRecurringAssignDoesNotRecurIfTaskInProgressAndRecurOnCompletion(TestInfo testInfo) {
         // create a 7-day recurring survey, confirm it gets reassigned
         StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
                 .portalId(sandboxBundle.getPortal().getId())
                 .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurOn(RecurOn.COMPLETION)
                 .recurrenceIntervalDays(7));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
@@ -438,6 +436,60 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId()), hasSize(1));
         assertThat(participantTaskService.findByEnrolleeId(sandbox2.enrollee().getId()), hasSize(2));
         assertThat(participantTaskService.findByEnrolleeId(sandbox3.enrollee().getId()), hasSize(1));
+    }
+
+    @Test
+    @Transactional
+    public void testRecurOnCreation(TestInfo testInfo) {
+        // create a 7-day recurring survey, confirm it gets reassigned
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+                .portalId(sandboxBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurOn(RecurOn.CREATION)
+                .recurrenceIntervalDays(7));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle sandbox1 = enrolleeFactory.enroll(getTestName(testInfo) + "1", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        EnrolleeBundle sandbox2 = enrolleeFactory.enroll(getTestName(testInfo) + "2", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+        // this enrollee has a task that should not recur
+        EnrolleeBundle sandbox3 = enrolleeFactory.enroll(getTestName(testInfo) + "3", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox);
+
+        List<ParticipantTask> tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        // task should be assigned to all enrollees on creation
+        assertThat(tasks, hasSize(3));
+
+        ParticipantTask sandbox1Task = tasks.stream().filter(task ->
+                task.getEnrolleeId().equals(sandbox1.enrollee().getId())).findFirst().get();
+
+        // make first task old but not completed
+        sandbox1Task.setCreatedAt(Instant.now().minus(8, ChronoUnit.DAYS));
+        sandbox1Task.setStatus(TaskStatus.IN_PROGRESS);
+
+        participantTaskService.update(sandbox1Task, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
+        timeShiftDao.changeTasksCreationTime(List.of(sandbox1Task.getId()), Instant.now().minus(8, ChronoUnit.DAYS));
+
+        // make second task old but completed recently
+        ParticipantTask sandbox2Task = tasks.stream().filter(task ->
+                task.getEnrolleeId().equals(sandbox2.enrollee().getId())).findFirst().get();
+        sandbox2Task.setCompletedAt(Instant.now().minus(1, ChronoUnit.DAYS));
+        sandbox2Task.setStatus(TaskStatus.COMPLETE);
+
+        participantTaskService.update(sandbox2Task, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
+        timeShiftDao.changeTasksCreationTime(List.of(sandbox2Task.getId()), Instant.now().minus(8, ChronoUnit.DAYS));
+
+        surveyTaskDispatcher.assignScheduledTasks();
+
+        tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
+        assertThat(tasks, hasSize(5));
+
+        // should have assigned a new task to the first and second enrollee
+
+        assertThat(participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId()), hasSize(2));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox2.enrollee().getId()), hasSize(2));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox3.enrollee().getId()), hasSize(1));
+
+
     }
 
     @Test

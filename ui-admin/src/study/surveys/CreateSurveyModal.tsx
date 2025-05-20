@@ -65,7 +65,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     createdAt: new Date().getDate(),
     lastUpdatedAt: new Date().getDate(),
     eligibilityRule: '',
-    recurrenceType: 'NONE'
+    recurrenceType: 'NONE',
+    recurOn: 'COMPLETION'
   })
 
   const { clearFields, NameInput, StableIdInput } = useFormCreationNameFields(form, setForm)
@@ -164,7 +165,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
               version: importForm.version ?? 1,
               name: importForm.name,
               content: JSON.stringify(importForm.jsonContent),
-              recurrenceType: importForm.recurrenceType ?? 'NONE'
+              recurrenceType: importForm.recurrenceType ?? 'NONE',
+              recurOn: importForm.recurOn ?? 'COMPLETION'
             })
           }}/>
         </div>}
