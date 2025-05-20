@@ -4,10 +4,11 @@ import bio.terra.pearl.core.dao.notification.NotificationDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ParticipantTaskQueryService {
@@ -25,9 +26,10 @@ public class ParticipantTaskQueryService {
                                                                           Duration maxTimeSinceCreation,
                                                                           Duration timeSinceLastNotification,
                                                                           List<TaskStatus> statuses,
-                                                                          List<String> targetStableIds) {
+                                                                          List<String> targetStableIds,
+                                                                          UUID triggerScopeId) {
         return participantTaskDao.findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation,
-                timeSinceLastNotification, statuses, targetStableIds);
+                timeSinceLastNotification, statuses, targetStableIds, triggerScopeId);
     }
 
     public List<ParticipantTaskDao.EnrolleeWithTasks> findIncompleteByTime(UUID studyEnvironmentId,
@@ -35,8 +37,9 @@ public class ParticipantTaskQueryService {
                                                                            Duration timeSinceCreation,
                                                                            Duration maxTimeSinceCreation,
                                                                            Duration timeSinceLastNotification,
-                                                                           List<String> targetStableIds) {
+                                                                           List<String> targetStableIds,
+                                                                           UUID triggerScopeId) {
         return findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation, timeSinceLastNotification,
-                List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS), targetStableIds);
+                List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS), targetStableIds, triggerScopeId);
     }
 }

@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.notification.NotificationDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
@@ -9,6 +11,8 @@ import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Notification;
@@ -18,6 +22,7 @@ import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.participant.EnrolleeSourceType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -28,6 +33,8 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -182,6 +189,110 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
     assertThat(notificationList, hasSize(0));
   }
 
+  @Test
+  @Transactional
+  public void testSendFilteredReminderEvenIfOtherReminderSent(TestInfo info) {
+    // create 2 surveys
+    StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    Survey survey1 = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle.getPortal().getId());
+    Survey survey2 = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle.getPortal().getId());
+
+    surveyFactory.attachToEnv(survey1, studyEnvBundle.getStudyEnv().getId(), true);
+    surveyFactory.attachToEnv(survey2, studyEnvBundle.getStudyEnv().getId(), true);
+    // create reminder config for all surveys
+
+    Trigger configAllSurveys = Trigger.builder()
+            .triggerType(TriggerType.TASK_REMINDER)
+            .taskType(TaskType.SURVEY)
+            .afterMinutesIncomplete(0)
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+            .portalEnvironmentId(studyEnvBundle.getPortalEnv().getId())
+            .build();
+
+    triggerService.create(configAllSurveys);
+
+    Trigger configOnlySurvey1 = Trigger.builder()
+            .triggerType(TriggerType.TASK_REMINDER)
+            .taskType(TaskType.SURVEY)
+            .filterTargetStableIds(List.of(survey1.getStableId()))
+            .afterMinutesIncomplete(0)
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+            .portalEnvironmentId(studyEnvBundle.getPortalEnv().getId())
+            .build();
+
+    triggerService.create(configOnlySurvey1);
+
+    // create enrollee with both surveys
+
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv(), true);
+
+    participantTaskFactory.buildPersisted(enrolleeBundle, survey1.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+    participantTaskFactory.buildPersisted(enrolleeBundle, survey2.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+
+    // ensure both get sent
+    enrolleeReminderService.sendTaskReminders(studyEnvBundle.getStudyEnv());
+
+    List<Notification> notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    assertThat(notificationList, hasSize(2));
+  }
+
+  @Test
+  @Transactional
+  public void testSendLongitudinalReminders(TestInfo info) {
+
+    String testName = getTestName(info);
+    StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+    PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+    StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, true);
+    Survey survey1 = surveyFactory.buildPersisted(testName, studyEnvBundle.getPortal().getId());
+    surveyFactory.attachToEnv(survey1, studyEnv.getId(), true);
+
+    ParticipantTask firstTask = participantTaskFactory.buildPersisted(enrolleeBundle, survey1.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+
+    Trigger config = Trigger.builder()
+            .triggerType(TriggerType.TASK_REMINDER)
+            .taskType(TaskType.SURVEY)
+            .afterMinutesIncomplete(0)
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .studyEnvironmentId(studyEnv.getId())
+            .portalEnvironmentId(portalEnv.getId())
+            .maxNumReminders(1)
+            .build();
+    triggerService.create(config);
+    enrolleeReminderService.sendTaskReminders(studyEnv);
+
+    List<Notification> notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    assertThat(notificationList, hasSize(1));
+
+    Notification firstNotification = notificationList.get(0);
+
+    firstNotification.setCreatedAt(Instant.now().minus(365, ChronoUnit.DAYS));
+    notificationDao.update(firstNotification);
+
+    firstTask = participantTaskDao.find(firstTask.getId()).orElseThrow();
+    firstTask.setStatus(TaskStatus.IN_PROGRESS);
+    firstTask.setCreatedAt(Instant.now().minus(365, ChronoUnit.DAYS));
+    participantTaskDao.update(firstTask);
+
+    enrolleeReminderService.sendTaskReminders(studyEnv);
+
+    notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    assertThat(notificationList, hasSize(1));
+
+    // create new task
+
+    ParticipantTask newTask = participantTaskFactory.buildPersisted(enrolleeBundle, survey1.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+
+    enrolleeReminderService.sendTaskReminders(studyEnv);
+
+    notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    assertThat(notificationList, hasSize(2));
+  }
+
   @Autowired
   private ParticipantTaskFactory participantTaskFactory;
   @Autowired
@@ -202,4 +313,8 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
   private KitTypeFactory kitTypeFactory;
   @Autowired
   private KitRequestFactory kitRequestFactory;
+  @Autowired
+  private SurveyFactory surveyFactory;
+  @Autowired
+  private ParticipantTaskDao participantTaskDao;
 }
