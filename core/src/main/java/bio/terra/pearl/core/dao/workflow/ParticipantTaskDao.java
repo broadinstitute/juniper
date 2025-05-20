@@ -225,9 +225,9 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                     if (targetStableIds != null) {
                         query.bindList("targetStableIds", targetStableIds);
                     }
-            if (triggerScopeId != null) {
-                query.bind("triggerScopeId", triggerScopeId);
-            }
+                    if (triggerScopeId != null) {
+                        query.bind("triggerScopeId", triggerScopeId);
+                    }
                     return query.map(enrolleeWithTasksMapper).list();
                 }
         );
