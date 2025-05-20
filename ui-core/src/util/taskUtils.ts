@@ -3,6 +3,7 @@ import {
   HubResponse
 } from '../types/user'
 import { ParticipantTask } from '../types/task'
+import { uniq } from 'lodash'
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
 export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
@@ -62,27 +63,28 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
     return true
   }
 
-  // make sure the task before this task has at least one completed survey -
-  // even if the previous survey has something new/in-progress/removed, if it has
-  // a single completed response it should be considered done.
-  let lastTaskStableId = ''
-  let lastTaskIsComplete = true // first required task always accessible
-  for (let i = 0; i < openRequiredTasks.length; i++) {
-    if (task.targetStableId === openRequiredTasks[i].targetStableId) {
-      return lastTaskIsComplete
-    }
+  const openRequiredStableIds = uniq(openRequiredTasks.map(task => task.targetStableId))
 
-    if (openRequiredTasks[i].targetStableId === lastTaskStableId) {
-      if (!lastTaskIsComplete) {
-        lastTaskIsComplete = openRequiredTasks[i].status === 'COMPLETE'
-      }
-    } else {
-      lastTaskStableId = openRequiredTasks[i].targetStableId || ''
-      lastTaskIsComplete = openRequiredTasks[i].status === 'COMPLETE'
-    }
+  const notCompletedOpenRequiredStableIds = openRequiredStableIds
+    .filter(stableId => {
+      const tasksForStableId = tasks.filter(task => task.targetStableId === stableId)
+      return tasksForStableId.every(task => task.status !== 'COMPLETE')
+    })
+  const completedOpenRequiredStableIds = openRequiredStableIds
+    .filter(stableId => {
+      const tasksForStableId = tasks.filter(task => task.targetStableId === stableId)
+      return tasksForStableId.some(task => task.status === 'COMPLETE')
+    })
+
+  if (notCompletedOpenRequiredStableIds.length === 0) {
+    return true
+  }
+  if (completedOpenRequiredStableIds.includes(task.targetStableId)) {
+    return true
   }
 
-  return lastTaskIsComplete
+  // if there's any open (but not complete) required tasks, the 0th stableId is the one that must be completed next
+  return notCompletedOpenRequiredStableIds[0] === task.targetStableId
 }
 
 /** is the task ready to be worked on (not done or rejected) */

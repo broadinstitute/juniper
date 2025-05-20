@@ -150,9 +150,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
-     * Longitudinal tasks are editable if:
-     * - the task is new or in progress
-     * - task is the most recent task for the survey
+     * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey
      */
     private boolean isLongitudinalTaskEditable(PortalParticipantUser ppUser, UUID studyEnvId, SurveyResponse surveyResponse, String surveyStableId) {
 
@@ -182,7 +180,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         // can only edit latest longitudinal - regardless if task status is new, inprogress, completed,
         // if it's old it's baked into the "history".
-        return nonRemovedTasks.get(0).getSurveyResponseId().equals(surveyResponse.getId());
+        return nonRemovedTasks.getFirst().getSurveyResponseId().equals(surveyResponse.getId());
     }
 
     /**
