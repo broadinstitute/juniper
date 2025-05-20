@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState
+} from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Answer } from '@juniper/ui-core'
 
@@ -60,12 +63,16 @@ export function useEnrollmentParams() {
     captureEnrollmentParams()
   }, [searchParams])
 
-  // Removes referral parameters from the URL for a cleaner participant experience
-  const newUrl = new URL(window.location.href)
-  newUrl.searchParams.delete('skipPreEnroll')
-  newUrl.searchParams.delete('referralSource')
-  newUrl.searchParams.delete('preFilledAnswers')
-  window.history.replaceState({}, '', newUrl.toString())
+
+  if (searchParams.get('clearOnLoad') === 'true') {
+    // Removes referral parameters from the URL for a cleaner participant experience
+    const newUrl = new URL(window.location.href)
+    newUrl.searchParams.delete('skipPreEnroll')
+    newUrl.searchParams.delete('referralSource')
+    newUrl.searchParams.delete('preFilledAnswers')
+    newUrl.searchParams.delete('clearOnLoad')
+    window.history.replaceState({}, '', newUrl.toString())
+  }
 
   return {
     skipPreEnroll, referralSource, isProxyEnrollment, ppUserId, preFilledAnswers,
