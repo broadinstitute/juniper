@@ -241,6 +241,56 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
+  public void testSendMultipleFilteredReminders(TestInfo info) {
+    // create 2 surveys
+    StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    Survey survey1 = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle.getPortal().getId());
+    Survey survey2 = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle.getPortal().getId());
+
+    surveyFactory.attachToEnv(survey1, studyEnvBundle.getStudyEnv().getId(), true);
+    surveyFactory.attachToEnv(survey2, studyEnvBundle.getStudyEnv().getId(), true);
+    // create reminder config for all surveys
+
+    Trigger configOnlySurvey1 = Trigger.builder()
+            .triggerType(TriggerType.TASK_REMINDER)
+            .taskType(TaskType.SURVEY)
+            .afterMinutesIncomplete(0)
+            .filterTargetStableIds(List.of(survey1.getStableId()))
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+            .portalEnvironmentId(studyEnvBundle.getPortalEnv().getId())
+            .build();
+
+    triggerService.create(configOnlySurvey1);
+
+    Trigger configOnlySurvey2 = Trigger.builder()
+            .triggerType(TriggerType.TASK_REMINDER)
+            .taskType(TaskType.SURVEY)
+            .filterTargetStableIds(List.of(survey2.getStableId()))
+            .afterMinutesIncomplete(0)
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+            .portalEnvironmentId(studyEnvBundle.getPortalEnv().getId())
+            .build();
+
+    triggerService.create(configOnlySurvey2);
+
+    // create enrollee with both surveys
+
+    EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv(), true);
+
+    participantTaskFactory.buildPersisted(enrolleeBundle, survey1.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+    participantTaskFactory.buildPersisted(enrolleeBundle, survey2.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+
+    // ensure both get sent
+    enrolleeReminderService.sendTaskReminders(studyEnvBundle.getStudyEnv());
+
+    List<Notification> notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    assertThat(notificationList, hasSize(2));
+  }
+
+  @Test
+  @Transactional
   public void testSendLongitudinalReminders(TestInfo info) {
 
     String testName = getTestName(info);
