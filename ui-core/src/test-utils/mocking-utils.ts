@@ -3,14 +3,20 @@ import {
   Question,
   Survey,
   SurveyResponse
-} from 'src/types/forms'
+} from '../types/forms'
 import {
   Enrollee,
   HubResponse,
   Profile
-} from 'src/types/user'
-import { StudyEnvironmentSurvey } from 'src/types/study'
-import { ParticipantFile } from 'src/types/participantFile'
+} from '../types/user'
+import { StudyEnvironmentSurvey } from '../types/study'
+import { ParticipantFile } from '../types/participantFile'
+import {
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType
+} from '../types/task'
+
 
 /** simplest survey.  one page, no interactive elements */
 export function generateSurvey(overrideObj?: any): Survey { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -218,3 +224,27 @@ export const mockParticipantFile = (fileName: string, associatedAnswers?: Answer
     externalFileId: 'externalId'
   }
 }
+
+export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
+  return {
+    id: randomId('task'),
+    enrolleeId: randomId('enrollee'),
+    portalParticipantUserId: randomId('ppUser'),
+    targetName: 'Survey 1',
+    targetStableId: 'researchSurvey1',
+    targetAssignedVersion: 1,
+    studyEnvironmentId: randomId('studyEnv'),
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    status,
+    taskType,
+    taskOrder: 0,
+    blocksHub: true
+  }
+}
+
+export const randomId = (prefix: string): string => {
+  return `${prefix}${Math.floor(Math.random() * 1000)}`
+}
+
+

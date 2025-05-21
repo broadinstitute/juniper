@@ -9,6 +9,7 @@ import {
   Study,
   StudyEnvironment
 } from '@juniper/ui-core'
+import { PortalEnvContextT } from 'providers/PortalProvider'
 
 /** mock portal object with one environment */
 export const mockPortal = (): Portal => {
@@ -134,3 +135,11 @@ export const mockUsePortalEnv = () => {
     localContent: mockLocalSiteContent()
   }
 }
+
+
+export const mockPortalEnvContextT = (): PortalEnvContextT => ({
+  portal: mockPortal(),
+  portalEnv: mockPortalEnvironment('sandbox'),
+  reloadPortal: jest.fn(),
+  localContent: mockLocalSiteContent()
+})

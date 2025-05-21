@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ParticipantTask, ParticipantTaskStatus } from 'api/api'
+import {
+  ParticipantTask,
+  ParticipantTaskStatus
+} from 'api/api'
 import {
   faCaretDown,
   faCaretUp,
@@ -10,11 +13,19 @@ import {
   faMinus,
   faPrint
 } from '@fortawesome/free-solid-svg-icons'
-import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
+import {
+  faCircle,
+  faCircleXmark
+} from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
-import { Enrollee, instantToDateString, useI18n } from '@juniper/ui-core'
-import { getTaskPath, isTaskAccessible } from './task/taskUtils'
+import {
+  Enrollee,
+  getTaskPath,
+  instantToDateString,
+  isTaskAccessible,
+  useI18n
+} from '@juniper/ui-core'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,

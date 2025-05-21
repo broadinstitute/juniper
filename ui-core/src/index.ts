@@ -40,6 +40,7 @@ export * from './useTaskIdParam'
 export * from './util/mixpanelUtils'
 export * from './util/supportUtils'
 export * from './util/downloadUtils'
+export * from './util/taskUtils'
 
 export * from './test-utils/asMockedFn'
 export * from './test-utils/mocking-utils'

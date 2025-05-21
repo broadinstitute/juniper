@@ -107,13 +107,4 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                         .findOne()
         );
     }
-
-    public List<SurveyResponse> findAllByEnrolleeAndSurveyId(
-            UUID enrolleeId, UUID surveyId) {
-        return findAllByTwoProperties(
-                "enrollee_id", enrolleeId,
-                "survey_id", surveyId
-        );
-
-    }
 }

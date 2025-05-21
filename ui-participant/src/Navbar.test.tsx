@@ -25,13 +25,13 @@ import {
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
 import {
+  mockPortalEnvContextT,
   mockPortalEnvironmentConfig,
   mockUsePortalEnv
 } from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
 import Navbar from 'Navbar'
 import { UserManager } from 'oidc-client-ts'
-import { mockPortalEnvContextT } from '@juniper/ui-admin/src/test-utils/mocking-utils'
 
 jest.mock('oidc-client-ts')
 jest.mock('providers/UserProvider')

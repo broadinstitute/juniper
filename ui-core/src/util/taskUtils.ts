@@ -1,8 +1,9 @@
 import {
   Enrollee,
-  HubResponse,
-  ParticipantTask
-} from '@juniper/ui-core'
+  HubResponse
+} from '../types/user'
+import { ParticipantTask } from '../types/task'
+import { uniq } from 'lodash'
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
 export function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
@@ -43,22 +44,56 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   if (task.taskType === 'CONSENT' || task.status === 'COMPLETE') {
     return true
   }
-  const openConsents = enrollee.participantTasks
+
+  // do not consider removed surveys in this logic
+  const tasks = enrollee.participantTasks.filter(t => isTaskVisible(t))
+
+  const openConsents = tasks
     .filter(task => task.taskType === 'CONSENT' && task.status !== 'COMPLETE')
   if (openConsents.length) {
     return false
   }
-  const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
-    .sort((a, b) => a.taskOrder - b.taskOrder)
-  if (openRequiredTasks.length) {
-    return task.targetStableId === openRequiredTasks[0].targetStableId
+
+  const openRequiredTasks = tasks
+    .filter(task => task.blocksHub)
+    .sort((a, b) => a.taskOrder !== b.taskOrder
+      ? a.taskOrder - b.taskOrder
+      : (a.targetStableId || '').localeCompare(b.targetStableId || ''))
+  if (openRequiredTasks.length === 0) {
+    return true
   }
-  return true
+
+  const openRequiredStableIds = uniq(openRequiredTasks.map(task => task.targetStableId))
+
+  const notCompletedOpenRequiredStableIds = openRequiredStableIds
+    .filter(stableId => {
+      const tasksForStableId = tasks.filter(task => task.targetStableId === stableId)
+      return tasksForStableId.every(task => task.status !== 'COMPLETE')
+    })
+  const completedOpenRequiredStableIds = openRequiredStableIds
+    .filter(stableId => {
+      const tasksForStableId = tasks.filter(task => task.targetStableId === stableId)
+      return tasksForStableId.some(task => task.status === 'COMPLETE')
+    })
+
+  if (notCompletedOpenRequiredStableIds.length === 0) {
+    return true
+  }
+  if (completedOpenRequiredStableIds.includes(task.targetStableId)) {
+    return true
+  }
+
+  // if there's any open (but not complete) required tasks, the 0th stableId is the one that must be completed next
+  return notCompletedOpenRequiredStableIds[0] === task.targetStableId
 }
 
 /** is the task ready to be worked on (not done or rejected) */
 export function isTaskActive(task: ParticipantTask) {
   return ['NEW', 'VIEWED', 'IN_PROGRESS'].includes(task.status)
+}
+
+export function isTaskVisible(task: ParticipantTask) {
+  return ['NEW', 'VIEWED', 'IN_PROGRESS', 'COMPLETE'].includes(task.status)
 }
 
 export function getSortedActiveTasks(tasks: ParticipantTask[], taskType: string): ParticipantTask[] {

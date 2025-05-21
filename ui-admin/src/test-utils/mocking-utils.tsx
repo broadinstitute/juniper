@@ -30,11 +30,11 @@ import {
   ParticipantTaskType,
   PortalEnvironment,
   renderWithRouter,
+  setupRouterTest,
   StudyEnvironmentSurvey,
   StudyEnvParams,
   Survey,
   SurveyType
-  , setupRouterTest
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
@@ -50,13 +50,14 @@ import { AdminUserContext } from '../providers/AdminUserProvider'
 import { AdminUser } from '../api/adminUser'
 import { mockAdminUser } from './user-mocking-utils'
 import { UserContext } from '../user/UserProvider'
-import { PortalEnvContextT } from '@juniper/ui-participant/src/providers/PortalProvider'
-import { mockLocalSiteContent } from 'test-utils/mock-site-content'
 import { ReactNotifications } from 'react-notifications-component'
 
 // add all jest-extended matchers
 import * as matchers from 'jest-extended'
-import { render, RenderResult } from '@testing-library/react'
+import {
+  render,
+  RenderResult
+} from '@testing-library/react'
 
 expect.extend(matchers)
 
@@ -101,13 +102,6 @@ export const mockPortalEnvContext = (envName: string): PortalEnvContext => ({
   reloadPortal: () => Promise.resolve(mockPortal()),
   updatePortalEnv: jest.fn(),
   portalEnv: mockPortalEnvironment(envName)
-})
-
-export const mockPortalEnvContextT = (): PortalEnvContextT => ({
-  portal: mockPortal(),
-  portalEnv: mockPortalEnvironment('sandbox'),
-  reloadPortal: jest.fn(),
-  localContent: mockLocalSiteContent()
 })
 
 /** returns simple mock portal environment */
