@@ -145,4 +145,13 @@ public class TimeShiftDao {
         );
     }
 
+    public void changeNotificationCreationTime(UUID notificationId, Instant creationTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update notification set created_at = :creationTime where id = :notificationId;")
+                        .bind("notificationId", notificationId)
+                        .bind("creationTime", creationTime)
+                        .execute()
+        );
+    }
+
 }

@@ -213,7 +213,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                                     and created_at > :maxTimeSinceCreationInstant 
                                     and status in (<statuses>)
                                     %s
-                                    and (:lastNotificationCutoff > last_notification_time OR last_notification_time < created_at OR last_notification_time IS NULL)
+                                    and (:lastNotificationCutoff > last_notification_time OR last_notification_time IS NULL)
                                     group by enrollee_id order by enrollee_id;
                                     """.formatted(triggerScopeString, stableIdString))
                             .bind("studyEnvironmentId", studyEnvironmentId)

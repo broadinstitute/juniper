@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.dao.notification.NotificationDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
@@ -270,23 +271,23 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
 
     Notification firstNotification = notificationList.get(0);
 
-    firstNotification.setCreatedAt(Instant.now().minus(365, ChronoUnit.DAYS));
-    notificationDao.update(firstNotification);
+    timeShiftDao.changeNotificationCreationTime(firstNotification.getId(), Instant.now().minus(365, ChronoUnit.DAYS));
 
     firstTask = participantTaskDao.find(firstTask.getId()).orElseThrow();
     firstTask.setStatus(TaskStatus.IN_PROGRESS);
-    firstTask.setCreatedAt(Instant.now().minus(365, ChronoUnit.DAYS));
     participantTaskDao.update(firstTask);
+    timeShiftDao.changeTasksCreationTime(List.of(firstTask.getId()), Instant.now().minus(365, ChronoUnit.DAYS));
 
+    // shouldn't send when it's old
     enrolleeReminderService.sendTaskReminders(studyEnv);
 
     notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
     assertThat(notificationList, hasSize(1));
 
     // create new task
-
     ParticipantTask newTask = participantTaskFactory.buildPersisted(enrolleeBundle, survey1.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
 
+    // should send again now since there's a new task
     enrolleeReminderService.sendTaskReminders(studyEnv);
 
     notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
@@ -317,4 +318,6 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
   private SurveyFactory surveyFactory;
   @Autowired
   private ParticipantTaskDao participantTaskDao;
+  @Autowired
+  private TimeShiftDao timeShiftDao;
 }
