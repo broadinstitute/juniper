@@ -162,7 +162,6 @@ export default function DataImportView({ studyEnvContext }:
 
 const removeProxyEmailSuffix = (email: string) => {
   // remove -prox-ABCD from the end of the email
-
   const regex = /-prox-[A-Z0-9]{4}$/
 
   const match = email.match(regex)
@@ -177,18 +176,16 @@ const removeProxyEmailSuffix = (email: string) => {
 // invitation email doesn't go to the same email multiple times
 const getSingleEnrolleePerAccount = (dataImportItems: DataImportItem[]): Enrollee[] => {
   return dataImportItems
+    // only successfully imported subjects
     .filter(item => item.createdEnrollee && item.createdEnrollee.shortcode && item.createdEnrollee.subject)
-    .map(item => {
-      return {
-        enrollee: item.createdEnrollee,
-        email: removeProxyEmailSuffix(item.createdParticipantUser?.username || '')
-      }
-    })
     .reduce((acc, data) => {
       // remove any duplicate emails
-      if (!acc.some(item => item.email === data.email)) {
-        acc.push(data)
+      const email = removeProxyEmailSuffix(data.createdParticipantUser?.username || '')
+
+      if (!acc.some(item => item.email === email)) {
+        acc.push({ enrollee: data.createdEnrollee, email })
       }
+
       return acc
     }, [] as { enrollee: Enrollee | undefined, email: string }[])
     .map(data => data.enrollee)
