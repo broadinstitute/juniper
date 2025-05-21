@@ -214,6 +214,7 @@ export type DataImportItem = {
   createdParticipantUserId?: string,
   createdEnrolleeId?: string,
   createdEnrollee?: Enrollee,
+  createdParticipantUser?: ParticipantUser,
   status: DataImportItemStatus,
   message?: string,
   detail?: string,

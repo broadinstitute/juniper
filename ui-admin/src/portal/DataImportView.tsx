@@ -16,6 +16,7 @@ import {
 } from '../util/table/tableUtils'
 import {
   currentIsoDate,
+  Enrollee,
   instantToDefaultString
 } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
@@ -41,10 +42,7 @@ export default function DataImportView({ studyEnvContext }:
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [showSendEmailModal, setShowSendEmailModal] = useState(false)
 
-  const shortcodes: string[] = dataImportItems
-    .filter(item => item.createdEnrollee && item.createdEnrollee.shortcode && item.createdEnrollee.subject)
-    .map(item => item.createdEnrollee?.shortcode || '')
-    .filter(shortcode => shortcode != '') // I would have done an isNil check but typescript was being annoying
+  const enrolleesToInvite: Enrollee[] = getSingleEnrolleePerAccount(dataImportItems)
 
   const importedDate = instantToDefaultString(dataImportItems[0]?.createdAt)
   const columns: ColumnDef<DataImportItem>[] = [
@@ -157,7 +155,42 @@ export default function DataImportView({ studyEnvContext }:
           onDismiss={() => setShowSendEmailModal(false)}
           recipient={{
             type: 'shortcodes',
-            enrolleeShortcodes: shortcodes
+            enrolleeShortcodes: enrolleesToInvite.map(enrollee => enrollee.shortcode)
           }}/>}
   </div>
+}
+
+const removeProxyEmailSuffix = (email: string) => {
+  // remove -prox-ABCD from the end of the email
+
+  const regex = /-prox-[A-Z0-9]{4}$/
+
+  const match = email.match(regex)
+  if (match) {
+    return email.slice(0, match.index)
+  }
+  return email
+}
+
+// if there are multiple enrollee for the same email, e.g. with proxies,
+// make sure we only return one enrollee per email. that way the
+// invitation email doesn't go to the same email multiple times
+const getSingleEnrolleePerAccount = (dataImportItems: DataImportItem[]): Enrollee[] => {
+  return dataImportItems
+    .filter(item => item.createdEnrollee && item.createdEnrollee.shortcode && item.createdEnrollee.subject)
+    .map(item => {
+      return {
+        enrollee: item.createdEnrollee,
+        email: removeProxyEmailSuffix(item.createdParticipantUser?.username || '')
+      }
+    })
+    .reduce((acc, data) => {
+      // remove any duplicate emails
+      if (!acc.some(item => item.email === data.email)) {
+        acc.push(data)
+      }
+      return acc
+    }, [] as { enrollee: Enrollee | undefined, email: string }[])
+    .map(data => data.enrollee)
+    .filter(enrollee => enrollee !== undefined) as Enrollee[]
 }
