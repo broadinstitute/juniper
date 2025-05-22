@@ -864,7 +864,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "importTest1.complete", "true",
                 "importTest1.importFirstName", "Jeff",
                 "importTest1.importFavColors", "[\"red\", \"blue\"]",
-                "importTest1.createdAt", "2023-08-21 05:17AM",
+                "importTest1.createdAt", "2023-08-21 05:16AM",
                 "importTest1[2].complete", "true",
                 "importTest1[2].importFirstName", "Jeffrey",
                 "importTest1[2].importFavColors", "[\"green\"]",
@@ -894,11 +894,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         assertThat(latestResponse.getSurveyId(), equalTo(survey.getId()));
         assertThat(latestResponse.isComplete(), equalTo(true));
-        assertThat(latestResponse.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(latestResponse.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:16AM")));
         assertThat(latestResponse.getAnswers().stream().filter(answer -> answer.getQuestionStableId().equals("importFirstName"))
                 .findFirst().get().getStringValue(), equalTo("Jeff"));
-
-
     }
 
     @Test
@@ -915,9 +913,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
         String username = "asdf@asdf.com";
 
-        String oldCompletionDateStr = "2023-08-20 05:17AM";
+        String oldCompletionDateStr = "2023-08-24 05:16AM";
         String latestCompletionDateStr = "2023-08-24 05:17AM";
-        Instant oldCompletionDate = instantFromZone("2023-08-20 05:17AM");
+        Instant oldCompletionDate = instantFromZone("2023-08-24 05:16AM");
         Instant latestCompletionDate = instantFromZone("2023-08-24 05:17AM");
 
         EnrolleeBundle enrolleeBundle = enrolleeFactory.enroll(
@@ -1010,7 +1008,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(importedLatestTask.getSurveyResponseId(), equalTo(importedLatestResponse.getId()));
         assertThat(importedLatestResponse.getAnswers().size(), equalTo(2));
         assertThat(importedLatestResponse.getAnswers().stream().map(Answer::valueAsString).collect(Collectors.toSet()), equalTo(Set.of("Alex", "[\"aquamarine\", \"purple\"]")));
-
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
