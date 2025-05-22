@@ -52,7 +52,7 @@ export default function PreEnrollShortcutModal({
     const params = {
       ...queryParams,
       referralSource: queryParams.referralSource ? JSON.stringify(queryParams.referralSource) : undefined,
-      preFilledAnswers: queryParams.preFilledAnswers ? JSON.stringify(queryParams.preFilledAnswers) : undefined
+      preFilledAnswers: queryParams.preFilledAnswers ? queryParams.preFilledAnswers : undefined
     }
 
     const allParamsEmpty = Object.values(params).every(v => v === undefined)

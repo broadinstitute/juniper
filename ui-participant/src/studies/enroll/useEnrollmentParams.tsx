@@ -86,7 +86,16 @@ const parsePreFilledAnswers = (preFilledAnswers: string | null): Answer[] => {
   }
 
   try {
-    return JSON.parse(preFilledAnswers) as Answer[]
+    let parsedAnswers = JSON.parse(preFilledAnswers)
+    if (typeof parsedAnswers === 'string') {
+      parsedAnswers = JSON.parse(parsedAnswers)
+    }
+
+    if (!Array.isArray(parsedAnswers)) {
+      console.error('Invalid preFilledAnswers format:', parsedAnswers)
+      return []
+    }
+    return parsedAnswers as Answer[]
   } catch (error) {
     console.error('Failed to parse preFilledAnswers:', error)
     return []
