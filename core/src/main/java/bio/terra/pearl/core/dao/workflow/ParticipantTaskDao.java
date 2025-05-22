@@ -54,7 +54,9 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         return findAllByProperty("portal_participant_user_id", ppUserId);
     }
 
-    /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the most recently created */
+    /**
+     * Attempts to find a task for the given activity and study.  If there are multiple, it will return the most recently created
+     */
     public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
@@ -111,7 +113,9 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         );
     }
 
-    /** Attempts to find a task for the given activity and study, but before the given timestamp.  If there are multiple, it will return the most recently created */
+    /**
+     * Attempts to find a task for the given activity and study, but before the given timestamp.  If there are multiple, it will return the most recently created
+     */
     public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId, Instant createdBefore) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
@@ -129,7 +133,9 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         );
     }
 
-    /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the most recently created */
+    /**
+     * Attempts to find a task for the given activity and study.  If there are multiple, it will return the most recently created
+     */
     public Optional<ParticipantTask> findTaskForActivity(Enrollee enrollee, UUID studyEnvironmentId, String activityStableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
@@ -162,16 +168,16 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                                                        Duration maxTimeSinceCreation,
                                                        Duration minTimeSinceLastNotification,
                                                        List<TaskStatus> statuses) {
-        return findByStatusAndTime(studyEnvironmentId, taskType, minTimeSinceCreation, maxTimeSinceCreation, minTimeSinceLastNotification, statuses, null);
+        return findByStatusAndTime(studyEnvironmentId, taskType, minTimeSinceCreation, maxTimeSinceCreation, minTimeSinceLastNotification, statuses, null, null);
     }
 
     /**
      * minTimeSinceLastNotification covers *any* notification, not just ones for the given activity, and any status.
      * Our main goal is to reduce the likelihood of spam/exceeding quotas.
-     *
+     * <p>
      * We assume that a notification that was skipped/failed is just as likely to skip/fail again, so we don't retry
      * until the next time we would ordinarily send a notification.
-     *
+     * <p>
      * if targetStableIds is not null, it will filter to only tasks with those targetStableIds.  If null, all targets will be included
      */
     public List<EnrolleeWithTasks> findByStatusAndTime(UUID studyEnvironmentId,
@@ -179,8 +185,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                                                        Duration minTimeSinceCreation,
                                                        Duration maxTimeSinceCreation,
                                                        Duration minTimeSinceLastNotification,
-                                                       List<TaskStatus> statuses,
-                                                       List<String> targetStableIds) {
+                                                       List<TaskStatus> statuses, List<String> targetStableIds, UUID triggerScopeId) {
         Instant minTimeSinceCreationInstant = Instant.now().minus(minTimeSinceCreation);
         Instant maxTimeSinceCreationInstant = Instant.now().minus(maxTimeSinceCreation);
         Instant lastNotificationCutoff = Instant.now().minus(minTimeSinceLastNotification);
@@ -190,11 +195,12 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
             return new ArrayList<>();
         }
         String stableIdString = targetStableIds == null ? "" : "and target_stable_id IN (<targetStableIds>)";
+        String triggerScopeString = triggerScopeId == null ? "" : "and trigger_id = :triggerScopeId";
 
         return jdbi.withHandle(handle -> {
                     Query query = handle.createQuery("""
                                     with enrollee_times as (select enrollee_id as notification_enrollee_id, MAX(created_at) as last_notification_time
-                                      from notification where study_environment_id = :studyEnvironmentId group by enrollee_id)
+                                      from notification where study_environment_id = :studyEnvironmentId %s group by enrollee_id)
                                     select enrollee_id as enrolleeId,
                                           array_agg(target_name) as taskTargetNames, 
                                           array_agg(id) as taskIds,
@@ -209,7 +215,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                                     %s
                                     and (:lastNotificationCutoff > last_notification_time OR last_notification_time IS NULL)
                                     group by enrollee_id order by enrollee_id;
-                                    """.formatted(stableIdString))
+                                    """.formatted(triggerScopeString, stableIdString))
                             .bind("studyEnvironmentId", studyEnvironmentId)
                             .bindList("statuses", statuses)
                             .bind("lastNotificationCutoff", lastNotificationCutoff)
@@ -219,11 +225,13 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
                     if (targetStableIds != null) {
                         query.bindList("targetStableIds", targetStableIds);
                     }
+                    if (triggerScopeId != null) {
+                        query.bind("triggerScopeId", triggerScopeId);
+                    }
                     return query.map(enrolleeWithTasksMapper).list();
                 }
         );
     }
-
 
 
     /**
@@ -250,7 +258,8 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
     }
 
     @Getter
-    @Setter @NoArgsConstructor
+    @Setter
+    @NoArgsConstructor
     public static class EnrolleeWithTasks {
         private UUID enrolleeId;
         private List<String> taskTargetNames;
@@ -261,7 +270,8 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
     public final RowMapper<EnrolleeWithTasks> enrolleeWithTasksMapper = BeanMapper.of(EnrolleeWithTasks.class);
 
     @Getter
-    @Setter @NoArgsConstructor
+    @Setter
+    @NoArgsConstructor
     @SuperBuilder
     public static class EnrolleeTasks {
         private String targetName;

@@ -1,9 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.participant.EnrolleeSourceType;
@@ -17,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -79,7 +75,10 @@ public class EnrolleeReminderService {
                         maxTimeSinceCreation,
                         timeSinceLastNotification,
                         // if the list is empty, it applies to all targets, so pass null
-                        trigger.getFilterTargetStableIds().isEmpty() ? null : trigger.getFilterTargetStableIds());
+                        trigger.getFilterTargetStableIds().isEmpty() ? null : trigger.getFilterTargetStableIds(),
+                        // in the case that there's a filter, we need to send this reminder out
+                        // regardless of other reminders being sent out about other things
+                        trigger.getFilterTargetStableIds().isEmpty() ? null : trigger.getId());
 
         log.info("Found {} enrollees with tasks needing reminder from config {}: taskType {}",
                 enrolleesWithTasks.size(), trigger.getId(), trigger.getTaskType());
