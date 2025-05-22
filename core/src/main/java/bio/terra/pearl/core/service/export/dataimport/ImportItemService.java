@@ -5,9 +5,12 @@ import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +25,14 @@ import java.util.UUID;
 public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
 
     private final EnrolleeService enrolleeService;
+    private final EnrolleeContextService enrolleeContextService;
+    private final ParticipantUserService participantUserService;
 
-    public ImportItemService(ImportItemDao dao, EnrolleeService enrolleeService) {
+    public ImportItemService(ImportItemDao dao, EnrolleeService enrolleeService, EnrolleeContextService enrolleeContextService, ParticipantUserService participantUserService) {
         super(dao);
         this.enrolleeService = enrolleeService;
+        this.enrolleeContextService = enrolleeContextService;
+        this.participantUserService = participantUserService;
     }
 
     public void attachImportItems(Import dataImport) {
@@ -43,6 +50,10 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
 
         if (!enrolleeIds.isEmpty()) {
             List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
+            List<ParticipantUser> participantUsers = participantUserService.findAll(enrollees.stream()
+                    .map(Enrollee::getParticipantUserId)
+                    .filter(Objects::nonNull)
+                    .toList());
 
             for (ImportItem item : items) {
                 if (item.getCreatedEnrolleeId() != null) {
@@ -50,7 +61,17 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
                             .filter(e -> e.getId().equals(item.getCreatedEnrolleeId()))
                             .findFirst()
                             .orElse(null);
+                    if (enrollee == null) {
+                        continue;
+                    }
+
+                    ParticipantUser participantUser = participantUsers.stream()
+                            .filter(pu -> pu.getId().equals(enrollee.getParticipantUserId()))
+                            .findFirst()
+                            .orElse(null);
+                    
                     item.setCreatedEnrollee(enrollee);
+                    item.setCreatedParticipantUser(participantUser);
                 }
             }
         }
