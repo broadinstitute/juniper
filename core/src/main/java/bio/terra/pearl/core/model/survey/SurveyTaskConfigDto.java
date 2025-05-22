@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.model.survey;
 
+import bio.terra.pearl.core.model.workflow.RecurOn;
 import bio.terra.pearl.core.model.workflow.RecurrenceType;
 import bio.terra.pearl.core.service.workflow.TaskConfig;
 import lombok.Getter;
@@ -50,6 +51,11 @@ public class SurveyTaskConfigDto implements TaskConfig {
     @Override
     public RecurrenceType getRecurrenceType() {
         return survey.getRecurrenceType();
+    }
+
+    @Override
+    public RecurOn getRecurOn() {
+        return survey.getRecurOn();
     }
 
     @Override

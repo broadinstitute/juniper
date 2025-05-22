@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: "export_options_only_complete"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column:
+                  name: recur_on
+                  type: text
+        - sql:
+            sql: |
+              UPDATE survey
+              SET recur_on = 'COMPLETION'
+              WHERE recur_on IS NULL;
+  

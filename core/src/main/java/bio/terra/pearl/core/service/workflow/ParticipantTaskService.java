@@ -153,6 +153,10 @@ public class ParticipantTaskService extends ParticipantDataAuditedService<Partic
         return null;
     }
 
+    public Map<UUID, ParticipantTask> findLatestNotRemovedByEnrolleeIds(Collection<UUID> enrolleeIds, String stableId) {
+        return dao.findLatestNotRemovedByEnrolleeIds(enrolleeIds, stableId);
+    }
+
     public ParticipantTaskTaskListDto findAdminTasksByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
         List<ParticipantTask> tasks = dao.findByStudyEnvironmentIdAndTaskType(studyEnvId, List.of(TaskType.ADMIN_NOTE, TaskType.ADMIN_FORM)).stream().toList();
         List<Enrollee> enrollees = List.of();

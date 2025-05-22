@@ -5,10 +5,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.RecurrenceType;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
@@ -20,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -193,11 +189,23 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
      * will assign a recurring task to enrollees who have already taken it at least once, but are due to take it again
      */
     private void assignRecurring(T taskConfig) {
-        List<Enrollee> enrollees = enrolleeService.findWithTaskInPast(
-                taskConfig.getStudyEnvironmentId(),
-                taskConfig.getStableId(),
-                Duration.of(taskConfig.getRecurrenceIntervalDays(), ChronoUnit.DAYS));
-        assign(enrollees, taskConfig, false, "scheduled",
+        // not the most efficient, but lets us reuse "isRecurrenceWindowOpen"
+        List<Enrollee> enrolleesWithTask = enrolleeService.findAssignedToTask(taskConfig.getStudyEnvironmentId(), taskConfig.getStableId());
+        Map<UUID, ParticipantTask> latestTasks = participantTaskService.findLatestNotRemovedByEnrolleeIds(
+                enrolleesWithTask.stream().map(Enrollee::getId).toList(),
+                taskConfig.getStableId());
+        
+        List<Enrollee> eligibleEnrollees = new ArrayList<>();
+
+        for (Enrollee enrollee : enrolleesWithTask) {
+            ParticipantTask latestTask = latestTasks.get(enrollee.getId());
+            if (latestTask != null
+                    && isRecurrenceWindowOpen(taskConfig, latestTask)) {
+                eligibleEnrollees.add(enrollee);
+            }
+        }
+
+        assign(eligibleEnrollees, taskConfig, false, "scheduled",
                 new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "assignRecurringSurvey")));
     }
 
@@ -273,6 +281,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         if (taskDispatchConfig.getRecurrenceType().equals(RecurrenceType.UPDATE)) {
             Optional<ParticipantTask> existingTask = existingTasks.stream()
                     .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
@@ -280,6 +289,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             Optional<ParticipantTask> existingTask = existingTasks.stream()
                     .filter(t -> t.getTargetStableId() != null)
                     .filter(t -> t.getTargetStableId().equals(task.getTargetStableId()))
+                    .filter(t -> t.getStatus() != TaskStatus.REMOVED && t.getStatus() != TaskStatus.REJECTED)
                     .max(Comparator.comparing(ParticipantTask::getCreatedAt));
             existingTask.ifPresent(participantTask -> copyTaskData(task, participantTask, taskDispatchConfig));
         }
@@ -318,25 +328,49 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
      */
     public boolean isDuplicateTask(T taskDispatchConfig, ParticipantTask task,
                                    List<ParticipantTask> allTasks) {
-        return !allTasks.stream()
-                .filter(existingTask ->
-                        existingTask.getTaskType().equals(task.getTaskType()) &&
-                        existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
-                                !isRecurrenceWindowOpen(taskDispatchConfig, existingTask))
-                .toList().isEmpty();
+        // get all non-removed tasks matching this current task config
+        List<ParticipantTask> matchingTasks = allTasks.stream()
+                .filter(existingTask -> existingTask.getStatus() != TaskStatus.REMOVED && existingTask.getStatus() != TaskStatus.REJECTED)
+                .filter(existingTask -> existingTask.getTargetStableId() != null && existingTask.getTargetStableId().equals(task.getTargetStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .toList();
+
+        if (matchingTasks.isEmpty()) {
+            return false; // first task for this stableId, so it can't be a duplicate
+        }
+
+
+        // if there's an existing task and it's not recurring, it's a duplicate
+        if (taskDispatchConfig.getRecurrenceType() == RecurrenceType.NONE) {
+            return true; // no recurrence, so it's a duplicate
+        }
+
+        // if it's recurring, check against the latest task to see if recurrence window is open.
+        // if not, then it's a duplicate, we already have the needed task.
+        ParticipantTask latestTask = matchingTasks.get(0);
+        return !isRecurrenceWindowOpen(taskDispatchConfig, latestTask);
     }
 
     /**
      * whether or not sufficient time has passed since a previous instance of a task being assigned to assign
-     * a new one
+     * a new one. must be used with the latest non-removed task
      */
-    private boolean isRecurrenceWindowOpen(T taskDispatchConfig, ParticipantTask pastTask) {
+    private boolean isRecurrenceWindowOpen(T taskDispatchConfig, ParticipantTask latestTask) {
         if (taskDispatchConfig.getRecurrenceType() == RecurrenceType.NONE) {
             return false;
         }
+
+        Instant date = taskDispatchConfig.getRecurOn() == RecurOn.COMPLETION
+                ? latestTask.getCompletedAt()
+                : latestTask.getCreatedAt();
+
+        if (date == null) {
+            return false; // never recur on incomplete tasks
+        }
+
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
                 .minusDays(taskDispatchConfig.getRecurrenceIntervalDays()).toInstant();
-        return pastTask.getCreatedAt().isBefore(pastCutoffTime);
+        return date.isBefore(pastCutoffTime);
     }
 
     protected void copyTaskData(ParticipantTask newTask, ParticipantTask oldTask, T taskDispatchConfig) {

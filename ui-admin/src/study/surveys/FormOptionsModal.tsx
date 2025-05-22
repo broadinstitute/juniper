@@ -18,7 +18,10 @@ import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { TextInput } from '../../components/forms/TextInput'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import Select from 'react-select'
-import { RecurrenceType } from '@juniper/ui-core'
+import {
+  RecurOn,
+  RecurrenceType
+} from '@juniper/ui-core'
 
 
 /** component for selecting versions of a form */
@@ -31,7 +34,7 @@ export default function FormOptionsModal({
                                              updateWorkingForm: (props: SaveableFormProps) => void,
                                              onDismiss: () => void
                                            }) {
-  return <Modal show={true} onHide={onDismiss} size="lg">
+  return <Modal show={true} onHide={onDismiss} size="xl">
     <Modal.Header closeButton>
       <Modal.Title>{workingForm.name} - configuration</Modal.Title>
     </Modal.Header>
@@ -64,6 +67,16 @@ const RECURRENCE_OPTS: {label: string, value: RecurrenceType}[] = [{
   value: 'UPDATE',
   label: 'Update in-place'
 }]
+
+const RECUR_ON_OPTS: { label: string, value: RecurOn }[] = [
+  {
+    value: 'COMPLETION',
+    label: 'Survey Completion'
+  }, {
+    value: 'CREATION',
+    label: 'Survey Assignment'
+  }
+]
 
 /**
  * Renders the 'options' for a form, e.g. who is allowed to take it, if it's required, how it's assigned, etc...
@@ -164,12 +177,12 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 styles={{
                   control: baseStyles => ({
                     ...baseStyles,
-                    minWidth: '13em'
+                    minWidth: '10em'
                   })
                 }}
                 options={recurrenceOpts} onChange={onRecurrenceTypeChange}
                 value={selectedRecurrenceType}/>
-              <label className="d-flex align-items-center ms-3">
+              <label className="d-flex align-items-center ms-2">
                 every <TextInput value={workingForm.recurrenceIntervalDays} type="number" min={1} max={9999}
                   className="mx-2"
                   onChange={val => updateWorkingForm({
@@ -177,8 +190,22 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                     recurrenceIntervalDays: parseInt(val),
                     recurrenceType: workingForm.recurrenceType === 'NONE' ? 'LONGITUDINAL' : workingForm.recurrenceType
                   })}
-                /> days
+                />
               </label>
+              <span className="me-2">
+                days after
+              </span>
+              <Select
+                options={RECUR_ON_OPTS}
+                value={RECUR_ON_OPTS.find(opt => opt.value === workingForm.recurOn)}
+                onChange={val => {
+                  updateWorkingForm({
+                    ...workingForm,
+                    recurOn: val?.value ?? 'COMPLETION'
+                  })
+                }
+                }
+              />
             </div>
             {workingForm.recurrenceType === 'LONGITUDINAL' && <><label className="form-label d-block">
               <input type="checkbox" checked={workingForm.prepopulate}

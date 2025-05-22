@@ -404,7 +404,9 @@ databaseChangeLog:
   - include:
       file: changesets/2025_04_11_export_option_only_complete.yaml
       relativeToChangelogFile: true
-
+  - include:
+      file: changesets/2025_05_20_recur_on.yaml
+      relativeToChangelogFile: true
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be
 # rolled back or rerun making recovery more difficult

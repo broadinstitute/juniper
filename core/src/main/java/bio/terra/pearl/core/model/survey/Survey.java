@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.survey;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.Versioned;
+import bio.terra.pearl.core.model.workflow.RecurOn;
 import bio.terra.pearl.core.model.workflow.RecurrenceType;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,8 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
 
     @Builder.Default
     private RecurrenceType recurrenceType = RecurrenceType.NONE;
+    @Builder.Default
+    private RecurOn recurOn = RecurOn.COMPLETION; // date used for recurrence calculations
     @Builder.Default
     private boolean required = false; // whether this is required before other non-required surveys can be taken
     // how many days between offerings of this survey (e.g. 365 for one year)

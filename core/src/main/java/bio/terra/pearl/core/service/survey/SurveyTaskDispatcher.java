@@ -141,6 +141,8 @@ public class SurveyTaskDispatcher extends TaskDispatcher<SurveyTaskConfigDto> {
 
         newTask.setSurveyResponseId(null);
         newTask.setCompletedAt(null);
+        newTask.setLastUpdatedAt(Instant.now());
+        newTask.setCreatedAt(Instant.now());
 
         // if the survey is set to prepopulate, copy the answers from the old task to the new task
         // we need to also create a new survey response for the new task and attach it to that task
