@@ -364,7 +364,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
                 ? latestTask.getCompletedAt()
                 : latestTask.getCreatedAt();
 
-        if (date == null) {
+        if (date == null || (taskDispatchConfig.getRecurOn() == RecurOn.COMPLETION && latestTask.getStatus() != TaskStatus.COMPLETE)) {
             return false; // never recur on incomplete tasks
         }
 
@@ -377,7 +377,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         BeanUtils.copyProperties(
                 oldTask,
                 newTask,
-                "id", "createdAt", "updatedAt",
+                "id", "createdAt", "lastUpdatedAt", "completedAt",
                 "version", "status", "taskType",
                 "targetName", "targetStableId", "targetAssignedVersion",
                 "taskOrder", "blocksHub", "studyEnvironmentId",
