@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -1010,6 +1011,97 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(importedLatestTask.getSurveyResponseId(), equalTo(importedLatestResponse.getId()));
         assertThat(importedLatestResponse.getAnswers().size(), equalTo(2));
         assertThat(importedLatestResponse.getAnswers().stream().map(Answer::valueAsString).collect(Collectors.toSet()), equalTo(Set.of("Alex", "[\"aquamarine\", \"purple\"]")));
+    }
+
+    @Test
+    @Transactional
+    public void testCompletedAtOnlyInferredIfCompleted(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(studyEnvBundle.getPortal().getId())
+                .autoAssign(true)
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey1, studyEnvBundle.getStudyEnv().getId(), true);
+
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest2")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(studyEnvBundle.getPortal().getId())
+                .autoAssign(true)
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey2, studyEnvBundle.getStudyEnv().getId(), true);
+
+        Survey survey3 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest3")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(studyEnvBundle.getPortal().getId())
+                .autoAssign(true)
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey3, studyEnvBundle.getStudyEnv().getId(), true);
+
+        Survey survey4 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest4")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(studyEnvBundle.getPortal().getId())
+                .autoAssign(true)
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey4, studyEnvBundle.getStudyEnv().getId(), true);
+
+
+        Map<String, String> enrolleeMap = Map.ofEntries(
+                Map.entry("enrollee.subject", "true"),
+                Map.entry("account.username", "test@test.com"),
+                Map.entry("importTest1.complete", "true"), // 1: completed, no completedat but has createdat
+                Map.entry("importTest1.importFirstName", "Jeff"),
+                Map.entry("importTest1.importFavColors", "[\"red\", \"blue\"]"),
+                Map.entry("importTest1.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest2.complete", "false"), // 2: incomplete, no completedat
+                Map.entry("importTest2.importFirstName", "Jeffrey"),
+                Map.entry("importTest2.importFavColors", "[\"green\"]"),
+                Map.entry("importTest2.createdAt", "2023-08-20 05:17AM"),
+                Map.entry("importTest3.complete", "true"), // 3: completed, has completedat
+                Map.entry("importTest3.importFirstName", "Alex"),
+                Map.entry("importTest3.importFavColors", "[\"aquamarine\", \"purple\"]"),
+                Map.entry("importTest3.createdAt", "2023-08-23 05:17AM"),
+                Map.entry("importTest3.completedAt", "2023-08-22 05:17AM"),
+                Map.entry("importTest4.complete", "true"), // 4: completed, no completedat no createdat
+                Map.entry("importTest4.importFirstName", "Alex"),
+                Map.entry("importTest4.importFavColors", "[\"orange\"]")
+        );
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                studyEnvBundle.getPortal().getShortcode(),
+                studyEnvBundle.getStudy().getShortcode(),
+                studyEnvBundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(tasks, hasSize(4));
+
+        ParticipantTask task1 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey1.getStableId())).findFirst().orElseThrow();
+        assertThat(task1.getCompletedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(task1.getStatus(), equalTo(TaskStatus.COMPLETE));
+
+        ParticipantTask task2 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey2.getStableId())).findFirst().orElseThrow();
+        assertThat(task2.getCompletedAt(), nullValue());
+        assertThat(task2.getStatus(), equalTo(TaskStatus.IN_PROGRESS));
+
+        ParticipantTask task3 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey3.getStableId())).findFirst().orElseThrow();
+        assertThat(task3.getCompletedAt(), equalTo(instantFromZone("2023-08-22 05:17AM")));
+        assertThat(task3.getStatus(), equalTo(TaskStatus.COMPLETE));
+
+        ParticipantTask task4 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey4.getStableId())).findFirst().orElseThrow();
+        assertTrue(Duration.between(Instant.now(), task4.getCompletedAt()).toSeconds() < 60); // task4 should be completed recently
+        assertThat(task4.getStatus(), equalTo(TaskStatus.COMPLETE));
 
     }
 

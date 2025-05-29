@@ -377,7 +377,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
         BeanUtils.copyProperties(
                 oldTask,
                 newTask,
-                "id", "createdAt", "updatedAt", "completedAt", "lastUpdatedAt",
+                "id", "createdAt", "lastUpdatedAt", "completedAt",
                 "version", "status", "taskType",
                 "targetName", "targetStableId", "targetAssignedVersion",
                 "taskOrder", "blocksHub", "studyEnvironmentId",
