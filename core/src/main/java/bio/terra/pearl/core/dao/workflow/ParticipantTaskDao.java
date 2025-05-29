@@ -113,6 +113,21 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         );
     }
 
+    public List<ParticipantTask> findAllTasksForActivityByEnrolleeId(UUID enrolleeId, String activityStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select * from %s 
+                                where enrollee_id = :enrolleeId
+                                and target_stable_id = :activityStableId 
+                                order by created_at desc""".formatted(tableName)
+                        )
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("activityStableId", activityStableId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     public Optional<ParticipantTask> findTaskForActivityWithCreationTime(UUID ppUserId, UUID studyEnvironmentId, String activityStableId, Instant createdAt) {
         return jdbi.withHandle(handle ->
                 // Note: 43200 seconds is 12 hours. Any task that was completed within 12 hours of the given time is considered a match

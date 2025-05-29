@@ -5,6 +5,7 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.fileupload.ParticipantFileFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
 import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
@@ -27,6 +28,7 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -78,6 +80,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     private ParticipantFileFactory participantFileFactory;
     @Autowired
     private ParticipantFileService participantFileService;
+    @Autowired
+    private PortalParticipantUserService portalParticipantUserService;
 
     @Test
     @Transactional
@@ -600,6 +604,78 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         surveyResponseService.updateResponse(
                 newResponse, new ResponsibleEntity(new AdminUser()), null,
                 enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
+    }
+    
+    @Test
+    @Transactional
+    public void testCannotUpdateLongitudinalProxies(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .recurrenceType(RecurrenceType.LONGITUDINAL)
+                .recurrenceIntervalDays(7)
+                .createNewResponseAfterDays(7));
+
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        Enrollee governedEnrollee = enrolleeAndProxy.governedEnrollee();
+        Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
+        ParticipantUser proxyUser = participantUserService.find(proxyEnrollee.getParticipantUserId()).orElseThrow();
+        PortalParticipantUser governedPpUser = portalParticipantUserService.findForEnrollee(governedEnrollee);
+        PortalParticipantUser proxyPpUser = enrolleeAndProxy.proxyPpUser();
+
+        SurveyResponse response1 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(governedEnrollee.getId())
+                .creatingParticipantUserId(governedEnrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(10, ChronoUnit.DAYS))
+                .complete(true)
+                .build());
+        ParticipantTask task1 = surveyTaskDispatcher.buildTask(governedEnrollee, governedPpUser, new SurveyTaskConfigDto(ses));
+        task1.setStatus(TaskStatus.COMPLETE);
+        task1.setSurveyResponseId(response1.getId());
+        task1.setCompletedAt(Instant.now().minus(10, ChronoUnit.DAYS));
+        task1 = participantTaskService.create(task1, getAuditInfo(info));
+
+
+        SurveyResponse response2 = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(governedEnrollee.getId())
+                .creatingParticipantUserId(governedEnrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .complete(true)
+                .build());
+
+        ParticipantTask task2 = surveyTaskDispatcher.buildTask(governedEnrollee, governedPpUser, new SurveyTaskConfigDto(ses));
+        task2.setStatus(TaskStatus.COMPLETE);
+        task2.setCompletedAt(Instant.now().minus(1, ChronoUnit.DAYS));
+        task2.setSurveyResponseId(response2.getId());
+        task2 = participantTaskService.create(task2, getAuditInfo(info));
+
+        // task2 should be editable by proxy
+        SurveyResponse newResponse2 = SurveyResponse.builder()
+                .enrolleeId(governedEnrollee.getId())
+                .creatingParticipantUserId(governedEnrollee.getParticipantUserId())
+                .surveyId(survey.getId())
+                .lastUpdatedAt(Instant.now())
+                .build();
+
+        // throws updating old response
+        ParticipantTask finalTask1 = task1;
+        assertThrows(IllegalArgumentException.class, () -> {
+            surveyResponseService.updateResponse(
+                    newResponse2, new ResponsibleEntity(proxyUser), "test",
+                    proxyPpUser, governedEnrollee, finalTask1.getId(), survey.getPortalId());
+        });
+
+        // doesn't throw updating newest
+        surveyResponseService.updateResponse(
+                newResponse2, new ResponsibleEntity(proxyUser), "test",
+                proxyPpUser, governedEnrollee, task2.getId(), survey.getPortalId());
+
     }
 
     @Test

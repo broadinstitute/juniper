@@ -152,9 +152,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     /**
      * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey
      */
-    private boolean isLongitudinalTaskEditable(PortalParticipantUser ppUser, UUID studyEnvId, SurveyResponse surveyResponse, String surveyStableId) {
+    private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId) {
 
-        List<ParticipantTask> tasks = participantTaskService.findAllTasksForActivity(ppUser.getId(), studyEnvId, surveyStableId);
+        List<ParticipantTask> tasks = participantTaskService.findAllTasksForActivityByEnrollee(enrollee.getId(), surveyStableId);
 
         Optional<ParticipantTask> taskOpt = tasks.stream().filter(t -> surveyResponse.getId().equals(t.getSurveyResponseId())).findFirst();
         if (taskOpt.isEmpty()) {
@@ -205,7 +205,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
                 && priorResponse != null
-                && !isLongitudinalTaskEditable(ppUser, enrollee.getStudyEnvironmentId(), priorResponse, survey.getStableId())
+                && !isLongitudinalTaskEditable(enrollee, priorResponse, survey.getStableId())
                 // admins should be able to update old responses
                 && operator.getParticipantUser() != null) {
             throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");
