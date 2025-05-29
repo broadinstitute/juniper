@@ -642,7 +642,7 @@ public class EnrolleeImportService {
         Instant createdAt = createdAtOpt.orElseGet(() -> completedAtOpt.orElseGet(() -> lastUpdatedAtOpt.orElse(null)));
         Instant lastUpdatedAt = lastUpdatedAtOpt.orElseGet(() -> completedAtOpt.orElseGet(() -> createdAtOpt.orElse(null)));
 
-        if (completedAt != null) {
+        if (completedAt != null && surveyResponse.isComplete()) {
             timeShiftDao.changeTaskCompleteTime(relatedTask.getId(), completedAt);
         }
         if (createdAt != null) {

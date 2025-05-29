@@ -401,6 +401,8 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         // make first task old but not completed
         sandbox1Task.setCreatedAt(Instant.now().minus(8, ChronoUnit.DAYS));
+        // also set completedAt (should never be the case, but make sure it's not a problem)
+        sandbox1Task.setCompletedAt(Instant.now().minus(8, ChronoUnit.DAYS));
         sandbox1Task.setStatus(TaskStatus.IN_PROGRESS);
 
         participantTaskService.update(sandbox1Task, DataAuditInfo.builder().systemProcess(getTestName(testInfo)).build());
