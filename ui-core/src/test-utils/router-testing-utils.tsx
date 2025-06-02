@@ -1,7 +1,15 @@
 import React, { ReactElement } from 'react'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import {
+  createMemoryRouter,
+  RouterProvider
+} from 'react-router-dom'
 import { Router as RemixRouter } from '@remix-run/router/dist/router'
-import { render, RenderResult, waitFor } from '@testing-library/react'
+import {
+  render,
+  RenderResult,
+  waitFor
+} from '@testing-library/react'
+import { GlobalSearchParamsProvider } from '../util/GlobalSearchParamsProvider'
 
 /**
  * return both the component wrapped in a router, and the router object itself,
@@ -54,7 +62,10 @@ export async function expectNever(callable: () => unknown): Promise<void> {
  * */
 export function renderWithRouter(ComponentToRender: ReactElement,
   initialEntries = ['/'], componentPath = '*'): RenderResult {
-  const { RoutedComponent } = setupRouterTest(ComponentToRender, initialEntries, componentPath)
+  const { RoutedComponent } = setupRouterTest(
+    <GlobalSearchParamsProvider>{ComponentToRender}</GlobalSearchParamsProvider>,
+    initialEntries,
+    componentPath)
   return render(RoutedComponent)
 }
 

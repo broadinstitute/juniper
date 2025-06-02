@@ -21,7 +21,6 @@ import {
   Survey,
   VersionedForm
 } from './types/forms'
-import { useSearchParams } from 'react-router-dom'
 import React, {
   useEffect,
   useState
@@ -39,6 +38,7 @@ import { useApiContext } from './participant/ApiProvider'
 import { OptionalStudyEnvParams } from './types/study'
 import { Profile } from 'src/types/user'
 import { DefaultLight } from 'survey-core/themes'
+import { useGlobalSearchParams } from './util/GlobalSearchParamsProvider'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -326,7 +326,7 @@ export type PageNumberControl = {
  * hook for reading/writing pageNumbers to url search params as 'page'
  * */
 export function useRoutablePageNumber(): PageNumberControl {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { searchParams, setSearchParams } = useGlobalSearchParams()
   const pageParam = searchParams.get(PAGE_NUMBER_PARAM_NAME)
   let urlPageNumber = null
   if (pageParam) {
@@ -336,6 +336,7 @@ export function useRoutablePageNumber(): PageNumberControl {
   /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
     searchParams.set('page', (newPageNumber).toString())
+
     setSearchParams(searchParams)
   }
 

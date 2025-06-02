@@ -7,6 +7,7 @@ import {
 import React from 'react'
 import HubPage from './HubPage'
 import {
+  GlobalSearchParamsProvider,
   MockI18nProvider,
   setupRouterTest
 } from '@juniper/ui-core'
@@ -41,7 +42,9 @@ describe('HubPage with proxies', () => {
         portal={mockPortal}
       >
         <MockI18nProvider useDefaultTexts={true}>
-          <HubPage/>
+          <GlobalSearchParamsProvider>
+            <HubPage/>
+          </GlobalSearchParamsProvider>
         </MockI18nProvider>
       </ProvideFullTestUserContext>
     )
@@ -63,7 +66,9 @@ describe('HubPage with proxies', () => {
         portal={mockPortal}
       >
         <MockI18nProvider>
-          <HubPage/>
+          <GlobalSearchParamsProvider>
+            <HubPage/>
+          </GlobalSearchParamsProvider>
         </MockI18nProvider>
       </ProvideFullTestUserContext>
     )

@@ -1,10 +1,25 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-participant-factory'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import {
+  mockEnrollee,
+  mockParticipantTask,
+  mockSurvey
+} from 'test-utils/test-participant-factory'
 import OutreachTasks from './OutreachTasks'
-import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
+import {
+  mockStudy,
+  mockStudyEnv
+} from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
-import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import {
+  GlobalSearchParamsProvider,
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -43,9 +58,11 @@ describe('OutreachTasks', () => {
     ]
     jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider>
-        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
-      </MockI18nProvider>
+      <GlobalSearchParamsProvider>
+        <MockI18nProvider>
+          <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+        </MockI18nProvider>
+      </GlobalSearchParamsProvider>
     )
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
@@ -87,9 +104,11 @@ describe('OutreachTasks', () => {
     ]
     jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider>
-        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
-      </MockI18nProvider>
+      <GlobalSearchParamsProvider>
+        <MockI18nProvider>
+          <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+        </MockI18nProvider>
+      </GlobalSearchParamsProvider>
     )
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())

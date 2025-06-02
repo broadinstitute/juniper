@@ -20,6 +20,7 @@ import {
   EnvironmentName,
   getSurveyJsAnswerList,
   getUpdatedAnswers,
+  GlobalSearchParamsProvider,
   MockI18nProvider,
   Profile,
   setupRouterTest,
@@ -67,9 +68,11 @@ test('it starts on the first page', () => {
   asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider>
-      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
-    </MockI18nProvider>)
+    <GlobalSearchParamsProvider>
+      <MockI18nProvider>
+        <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+      </MockI18nProvider>
+    </GlobalSearchParamsProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
 })
@@ -79,9 +82,11 @@ test('handles page numbers in initial url', () => {
   asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider>
-      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
-    </MockI18nProvider>,
+    <GlobalSearchParamsProvider>
+      <MockI18nProvider>
+        <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+      </MockI18nProvider>
+    </GlobalSearchParamsProvider>,
     ['/foo?page=2'])
   render(RoutedComponent)
   expect(screen.getByText('You are on page2')).toBeInTheDocument()
@@ -93,9 +98,11 @@ test('updates urls on page navigation', async () => {
 
   const user = userEvent.setup()
   const { RoutedComponent, router } = setupRouterTest(
-    <MockI18nProvider>
-      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
-    </MockI18nProvider>)
+    <GlobalSearchParamsProvider>
+      <MockI18nProvider>
+        <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+      </MockI18nProvider>
+    </GlobalSearchParamsProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   await act(() => user.click(screen.getByText('Next')))
@@ -142,9 +149,11 @@ test('enables hide on profile attributes', () => {
   })
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey} profile={maleProfile}/>
-    </MockI18nProvider>)
+    <GlobalSearchParamsProvider>
+      <MockI18nProvider>
+        <PlainSurveyComponent formModel={dynamicSurvey} profile={maleProfile}/>
+      </MockI18nProvider>
+    </GlobalSearchParamsProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   const dynamicText = screen.queryByText('You have a sex of female')
@@ -160,9 +169,11 @@ test('enables show on profile attributes', () => {
   })
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey} profile={femaleProfile}/>
-    </MockI18nProvider>)
+    <GlobalSearchParamsProvider>
+      <MockI18nProvider>
+        <PlainSurveyComponent formModel={dynamicSurvey} profile={femaleProfile}/>
+      </MockI18nProvider>
+    </GlobalSearchParamsProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   expect(screen.getByText('You have a sex of female')).toBeInTheDocument()

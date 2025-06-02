@@ -5,6 +5,7 @@ import {
 import React from 'react'
 import HubPage from './HubPage'
 import {
+  GlobalSearchParamsProvider,
   MockI18nProvider,
   mockTextsDefault,
   setupRouterTest
@@ -84,9 +85,11 @@ jest.mock('../providers/ActiveUserProvider', () => {
 describe('HubPage', () => {
   it('is rendered with the study name', () => {
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider useDefaultTexts={true}>
-        <HubPage/>
-      </MockI18nProvider>)
+      <GlobalSearchParamsProvider>
+        <MockI18nProvider useDefaultTexts={true}>
+          <HubPage/>
+        </MockI18nProvider>
+      </GlobalSearchParamsProvider>)
     render(RoutedComponent)
 
     expect(screen.getByText('Test Study')).toBeInTheDocument()
@@ -94,9 +97,11 @@ describe('HubPage', () => {
 
   it('is rendered with a Start button for the next new task', () => {
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider mockTexts={mockTextsDefault}>
-        <HubPage />
-      </MockI18nProvider>)
+      <GlobalSearchParamsProvider>
+        <MockI18nProvider mockTexts={mockTextsDefault}>
+          <HubPage />
+        </MockI18nProvider>
+      </GlobalSearchParamsProvider>)
     render(RoutedComponent)
 
     expect(screen.getByText('Start Consent')).toBeInTheDocument()
