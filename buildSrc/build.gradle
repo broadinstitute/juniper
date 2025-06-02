@@ -5,6 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     maven {
+        // todo: plugins-snapshot not provisioned yet in GAR
         url 'https://broadinstitute.jfrog.io/artifactory/plugins-snapshot'
     }
     gradlePluginPortal()
