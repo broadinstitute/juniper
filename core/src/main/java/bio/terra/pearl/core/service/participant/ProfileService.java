@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +42,15 @@ public class ProfileService extends ParticipantDataAuditedService<Profile, Profi
     public Map<UUID, Profile> loadAllWithMailingAddress(List<UUID> profileIds) {
         return dao.loadAllWithMailingAddress(profileIds).stream()
                 .collect(Collectors.toMap(Profile::getId, Function.identity()));
+    }
+
+    public List<Profile> loadAllByEnrolleeIdsWithMailingList(List<UUID> enrolleeIds) {
+        List<Profile> profiles = dao.findAllByEnrolleeIds(enrolleeIds);
+        List<MailingAddress> addresses = mailingAddressDao.findAllPreserveOrder(profiles.stream().map(Profile::getMailingAddressId).toList());
+        for (int i = 0; i < profiles.size(); i++) {
+            profiles.get(i).setMailingAddress(addresses.get(i));
+        }
+        return profiles;
     }
 
     @Transactional

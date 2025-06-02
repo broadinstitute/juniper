@@ -690,9 +690,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         List<Map<String, String>> proxies = List.of(
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy1"),
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy2"),
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy3"));
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy1", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy2", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy3", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"));
 
         String username = "proxy@test.com";
 
@@ -707,6 +707,12 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         List<Enrollee> nonSubject = enrollees.stream().filter(enrollee -> !enrollee.isSubject()).toList();
         assertThat(nonSubject, hasSize(1));
+
+        Profile nonSubjectProfile = profileService.loadWithMailingAddress(nonSubject.get(0).getProfileId()).orElseThrow();
+
+        assertThat(nonSubjectProfile.getGivenName(), equalTo("Proxy"));
+        assertThat(nonSubjectProfile.getFamilyName(), equalTo("User"));
+        assertThat(nonSubjectProfile.getContactEmail(), equalTo(username));
 
         Enrollee proxy = nonSubject.get(0);
 
@@ -1102,7 +1108,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ParticipantTask task4 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey4.getStableId())).findFirst().orElseThrow();
         assertTrue(Duration.between(Instant.now(), task4.getCompletedAt()).toSeconds() < 60); // task4 should be completed recently
         assertThat(task4.getStatus(), equalTo(TaskStatus.COMPLETE));
-
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
@@ -1191,7 +1196,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                         bundle.getStudy().getShortcode(),
                         bundle.getStudyEnv(),
                         new ExportOptions(),
-                        null,
+                        adminUser.getId(),
                         dataImport.getId())
                 .stream()
                 .map(item -> {

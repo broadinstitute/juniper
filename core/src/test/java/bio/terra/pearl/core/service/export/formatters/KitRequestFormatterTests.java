@@ -39,7 +39,7 @@ public class KitRequestFormatterTests {
                 .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))
                 .build()
         );
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, null, kitRequests, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, null, null, null, kitRequests, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);
 
         // the older kit should be first

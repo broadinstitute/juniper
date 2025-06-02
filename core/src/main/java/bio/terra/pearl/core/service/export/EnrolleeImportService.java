@@ -291,7 +291,7 @@ public class EnrolleeImportService {
                         .filter(Objects::nonNull)
                         .findFirst()
                         .orElse(null);
-                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, preferredLanguage, auditInfo);
+                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, preferredLanguage, exportOptions, accountData.proxyData.getFirst(), auditInfo);
                 importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
             }
         } catch (Exception e) {
@@ -461,13 +461,21 @@ public class EnrolleeImportService {
         });
     }
 
-    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, DataAuditInfo auditInfo) {
+    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, ExportOptions exportOptions, Map<String, String> data, DataAuditInfo auditInfo) {
 
-        registration.profile().setDoNotEmail(true);
+        ProxyProfileFormatter proxyProfileFormatter = new ProxyProfileFormatter(exportOptions);
+
+        Profile importedProfileData = proxyProfileFormatter.fromStringMap(studyEnv.getId(), data, 1);
+
+        Profile profile = profileService.loadWithMailingAddress(registration.profile().getId()).get();
+
+        copyNonNullProperties(importedProfileData, profile, List.of("id", "createdAt", "lastUpdatedAt", "doNotEmail"));
+
+        profile.setDoNotEmail(true);
         if (preferredLanguage != null) {
-            registration.profile().setPreferredLanguage(preferredLanguage);
+            profile.setPreferredLanguage(preferredLanguage);
         }
-        profileService.update(registration.profile(), auditInfo);
+        profileService.update(profile, auditInfo);
 
         Optional<Enrollee> enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
 
