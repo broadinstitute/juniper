@@ -5,7 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     maven {
-        url 'https://broadinstitute.jfrog.io/artifactory/plugins-snapshot'
+        url 'https://us-central1-maven.pkg.dev/dsp-artifact-registry/libs-snapshot/'
     }
     gradlePluginPortal()
 }
