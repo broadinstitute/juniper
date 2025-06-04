@@ -293,6 +293,21 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> impl
         return findByProperty("kit_request_id", kitRequestId);
     }
 
+    public List<ParticipantTask> findTasksByEnrolleeAndSurveyResponse(UUID enrolleeId, List<UUID> surveyResponseId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select * from %s
+                                where enrollee_id = :enrolleeId
+                                and survey_response_id in (<surveyResponseId>)
+                                order by created_at desc
+                                """.formatted(tableName))
+                        .bind("enrolleeId", enrolleeId)
+                        .bindList("surveyResponseId", surveyResponseId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor
