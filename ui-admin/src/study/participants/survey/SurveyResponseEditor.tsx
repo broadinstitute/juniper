@@ -1,13 +1,26 @@
 import React, { useEffect } from 'react'
-import { Survey, SurveyResponse } from 'api/api'
+import {
+  Survey,
+  SurveyResponse
+} from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 
 import _cloneDeep from 'lodash/cloneDeep'
-import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam, makeSurveyJsData } from '@juniper/ui-core'
+import {
+  AutosaveStatus,
+  Enrollee,
+  makeSurveyJsData,
+  PagedSurveyView,
+  useTaskIdParam
+} from '@juniper/ui-core'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from 'util/notifications'
+import {
+  failureNotification,
+  successNotification
+} from 'util/notifications'
 import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
+import { useSearchParams } from 'react-router-dom'
 
 /** allows editing of a survey response */
 export default function SurveyResponseEditor({
@@ -19,7 +32,8 @@ export default function SurveyResponseEditor({
   updateResponseMap: (stableId: string, response: SurveyResponse) => void, justification?: string
 }) {
   const { defaultLanguage } = usePortalLanguage()
-  const { taskId, setTaskId } = useTaskIdParam()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { taskId, setTaskId } = useTaskIdParam(searchParams, setSearchParams)
   if (!taskId) {
     return <span>Task Id must be specified</span>
   }
@@ -59,7 +73,10 @@ export default function SurveyResponseEditor({
         taskId={taskId}
         setTaskId={setTaskId}
         justification={justification}
-        showHeaders={false}/>
+        showHeaders={false}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
     </div>
   </div>
 }
