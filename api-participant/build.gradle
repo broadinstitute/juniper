@@ -50,7 +50,7 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
     testImplementation 'org.mockito:mockito-inline:5.2.0'
-    testImplementation 'commons-io:commons-io:2.18.0'
+    testImplementation 'commons-io:commons-io:2.19.0'
     // See https://stackoverflow.com/questions/5644011/multi-project-test-dependencies-with-gradle/60138176#60138176
     testImplementation(testFixtures(project(":core")))
     testImplementation 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.48.0'
