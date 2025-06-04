@@ -1,9 +1,9 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 
@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 
 public class ProfileFormatter extends BeanModuleFormatter<Profile> {
-    private static final List<String> PROFILE_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
+    public static final List<String> PROFILE_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
             "lastUpdatedAt", "mailingAddress", "mailingAddressId", "class");
-    private static final List<String> MAILING_ADDRESS_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
+    public static final List<String> MAILING_ADDRESS_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
             "lastUpdatedAt", "class");
 
     @Override

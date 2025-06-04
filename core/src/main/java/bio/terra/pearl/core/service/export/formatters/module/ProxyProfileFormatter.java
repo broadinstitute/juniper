@@ -13,11 +13,6 @@ import java.util.stream.Collectors;
 
 
 public class ProxyProfileFormatter extends BeanListModuleFormatter<Profile> {
-    private static final List<String> PROFILE_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
-            "lastUpdatedAt", "mailingAddress", "mailingAddressId", "class");
-    private static final List<String> MAILING_ADDRESS_EXCLUDED_PROPERTIES = List.of("id", "createdAt",
-            "lastUpdatedAt", "class");
-
     @Override
     public List<Profile> getBeans(EnrolleeExportData enrolleeExportData) {
         return enrolleeExportData.getProxyProfiles();
@@ -29,10 +24,10 @@ public class ProxyProfileFormatter extends BeanListModuleFormatter<Profile> {
 
     @Override
     protected List<PropertyItemFormatter<Profile>> generateItemFormatters(ExportOptions options) {
-        List<PropertyItemFormatter<Profile>> formatters = ExportFormatUtils.getIncludedProperties(Profile.class, PROFILE_EXCLUDED_PROPERTIES)
+        List<PropertyItemFormatter<Profile>> formatters = ExportFormatUtils.getIncludedProperties(Profile.class, ProfileFormatter.PROFILE_EXCLUDED_PROPERTIES)
                 .stream().map(propName -> new PropertyItemFormatter<Profile>(propName, Profile.class, options.getZoneId()))
                 .collect(Collectors.toList());
-        formatters.addAll(ExportFormatUtils.getIncludedProperties(MailingAddress.class, MAILING_ADDRESS_EXCLUDED_PROPERTIES)
+        formatters.addAll(ExportFormatUtils.getIncludedProperties(MailingAddress.class, ProfileFormatter.MAILING_ADDRESS_EXCLUDED_PROPERTIES)
                 .stream().map(propName -> new PropertyItemFormatter<Profile>("mailingAddress." + propName, Profile.class, options.getZoneId()))
                 .toList());
         return formatters;
