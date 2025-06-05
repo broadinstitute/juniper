@@ -12,7 +12,8 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams
+  useParams,
+  useSearchParams
 } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import {
@@ -34,7 +35,8 @@ type OutreachParams = {
 /** gets the outreach params from the URL */
 const useOutreachParams = () => {
   const params = useParams<OutreachParams>()
-  const { taskId } = useTaskIdParam()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { taskId } = useTaskIdParam(searchParams, setSearchParams)
   return {
     ...params,
     taskId,

@@ -6,11 +6,9 @@ import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 /** ModuleFormatter for just listing properties of a thing -- e.g. fields from a profile */
@@ -45,6 +43,22 @@ public abstract class BeanListModuleFormatter<T> extends ModuleFormatter<T, Prop
         }
         maxNumRepeats = Math.max(maxNumRepeats, beanList.size());
         return valueMap;
+    }
+
+    @Override
+    public T fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap, int moduleRepeatNum) {
+        T bean = newBean();
+        for (PropertyItemFormatter<T> itemInfo : getItemFormatters()) {
+            String columnName = getColumnKey(itemInfo, false, null, moduleRepeatNum);
+
+            String stringVal = enrolleeMap.get(columnName);
+            itemInfo.importValueToBean(bean, stringVal);
+        }
+        return bean;
+    }
+
+    protected T newBean() {
+        throw new NotImplementedException("newBean() not implemented");
     }
 
 }

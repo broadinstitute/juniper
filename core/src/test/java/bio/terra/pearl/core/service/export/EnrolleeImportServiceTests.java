@@ -690,9 +690,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         List<Map<String, String>> proxies = List.of(
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy1"),
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy2"),
-                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy3"));
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy1", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy2", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"),
+                Map.of("proxy.username", "proxy@test.com", "profile.givenName", "Proxy3", "proxyProfile.givenName", "Proxy", "proxyProfile.familyName", "User"));
 
         String username = "proxy@test.com";
 
@@ -707,6 +707,12 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         List<Enrollee> nonSubject = enrollees.stream().filter(enrollee -> !enrollee.isSubject()).toList();
         assertThat(nonSubject, hasSize(1));
+
+        Profile nonSubjectProfile = profileService.loadWithMailingAddress(nonSubject.get(0).getProfileId()).orElseThrow();
+
+        assertThat(nonSubjectProfile.getGivenName(), equalTo("Proxy"));
+        assertThat(nonSubjectProfile.getFamilyName(), equalTo("User"));
+        assertThat(nonSubjectProfile.getContactEmail(), equalTo(username));
 
         Enrollee proxy = nonSubject.get(0);
 
@@ -898,8 +904,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(latestResponse.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
         assertThat(latestResponse.getAnswers().stream().filter(answer -> answer.getQuestionStableId().equals("importFirstName"))
                 .findFirst().get().getStringValue(), equalTo("Jeff"));
-
-
     }
 
     @Test
@@ -1015,6 +1019,100 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testImportRemovesOldInProgressResponses(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest2")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey2, bundle.getStudyEnv().getId(), true);
+        String username = "test@test.com";
+
+        Map<String, String> enrolleeMap = Map.ofEntries(
+                Map.entry("enrollee.subject", "true"),
+                Map.entry("account.username", username),
+
+                // survey1: 4 responses with latest complete, 2 in-progress
+                Map.entry("importTest1.complete", "true"),
+                Map.entry("importTest1.importFirstName", "Jeff"),
+                Map.entry("importTest1.importFavColors", "[\"red\", \"blue\"]"),
+                Map.entry("importTest1.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest1[2].complete", "true"),
+                Map.entry("importTest1[2].importFirstName", "Jeffrey"),
+                Map.entry("importTest1[2].importFavColors", "[\"green\"]"),
+                Map.entry("importTest1[2].createdAt", "2023-08-20 05:17AM"),
+                Map.entry("importTest1[3].complete", "false"),
+                Map.entry("importTest1[3].importFirstName", "Jeffrey"),
+                Map.entry("importTest1[3].importFavColors", "[\"green\"]"),
+                Map.entry("importTest1[3].createdAt", "2023-08-19 05:17AM"),
+                Map.entry("importTest1[4].complete", "false"),
+                Map.entry("importTest1[4].importFirstName", "Jeffrey"),
+                Map.entry("importTest1[4].importFavColors", "[\"green\"]"),
+                Map.entry("importTest1[4].createdAt", "2023-08-17 05:17AM"),
+
+                // survey 2: 2 responses with latest in-progress, 1 old in-progress
+                Map.entry("importTest2.complete", "false"),
+                Map.entry("importTest2.importFirstName", "Alex"),
+                Map.entry("importTest2.importFavColors", "[\"orange\"]"),
+                Map.entry("importTest2.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest2[2].complete", "true"),
+                Map.entry("importTest2[2].importFirstName", "Alex"),
+                Map.entry("importTest2[2].importFavColors", "[\"orange\"]"),
+                Map.entry("importTest2[2].createdAt", "2023-08-20 05:17AM"),
+                Map.entry("importTest2[3].complete", "false"),
+                Map.entry("importTest2[3].importFirstName", "Alex"),
+                Map.entry("importTest2[3].importFavColors", "[\"orange\"]"),
+                Map.entry("importTest2[3].createdAt", "2023-08-19 05:17AM")
+        );
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(7));
+
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(7));
+
+        List<ParticipantTask> survey1Tasks = tasks.stream()
+                .filter(task -> task.getTargetStableId().equals(survey.getStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(survey1Tasks, hasSize(4));
+
+        List<ParticipantTask> survey2Tasks = tasks.stream()
+                .filter(task -> task.getTargetStableId().equals(survey2.getStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(survey2Tasks, hasSize(3));
+
+        assertEquals(TaskStatus.COMPLETE, survey1Tasks.get(0).getStatus());
+        assertEquals(TaskStatus.COMPLETE, survey1Tasks.get(1).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey1Tasks.get(2).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey1Tasks.get(3).getStatus());
+
+        assertEquals(TaskStatus.IN_PROGRESS, survey2Tasks.get(0).getStatus());
+        assertEquals(TaskStatus.COMPLETE, survey2Tasks.get(1).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey2Tasks.get(2).getStatus());
+    }
+
+    @Test
+    @Transactional
     public void testCompletedAtOnlyInferredIfCompleted(TestInfo info) {
         StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
@@ -1102,7 +1200,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ParticipantTask task4 = tasks.stream().filter(task -> task.getTargetStableId().equals(survey4.getStableId())).findFirst().orElseThrow();
         assertTrue(Duration.between(Instant.now(), task4.getCompletedAt()).toSeconds() < 60); // task4 should be completed recently
         assertThat(task4.getStatus(), equalTo(TaskStatus.COMPLETE));
-
     }
 
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
@@ -1191,7 +1288,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                         bundle.getStudy().getShortcode(),
                         bundle.getStudyEnv(),
                         new ExportOptions(),
-                        null,
+                        adminUser.getId(),
                         dataImport.getId())
                 .stream()
                 .map(item -> {

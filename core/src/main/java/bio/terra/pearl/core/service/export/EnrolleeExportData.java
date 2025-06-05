@@ -19,6 +19,7 @@ public class EnrolleeExportData {
     private Enrollee enrollee;
     private ParticipantUser participantUser;
     private Profile profile;
+    private List<Profile> proxyProfiles;
     private List<Answer> answers;
     private List<ParticipantTask> tasks;
     private List<SurveyResponseWithTaskDto> responses;

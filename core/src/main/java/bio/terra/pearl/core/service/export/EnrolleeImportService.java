@@ -14,6 +14,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.export.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.export.dataimport.ImportItemService;
@@ -291,7 +292,7 @@ public class EnrolleeImportService {
                         .filter(Objects::nonNull)
                         .findFirst()
                         .orElse(null);
-                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, preferredLanguage, auditInfo);
+                accountEnrollee = createProxyEnrolleeIfNeeded(studyShortcode, studyEnv, regResult, preferredLanguage, exportOptions, accountData.proxyData.getFirst(), auditInfo);
                 importItems.add(createImportItemFromEnrollee(accountEnrollee, importId));
             }
         } catch (Exception e) {
@@ -461,13 +462,21 @@ public class EnrolleeImportService {
         });
     }
 
-    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, DataAuditInfo auditInfo) {
+    private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, ExportOptions exportOptions, Map<String, String> data, DataAuditInfo auditInfo) {
 
-        registration.profile().setDoNotEmail(true);
+        ProxyProfileFormatter proxyProfileFormatter = new ProxyProfileFormatter(exportOptions);
+
+        Profile importedProfileData = proxyProfileFormatter.fromStringMap(studyEnv.getId(), data, 1);
+
+        Profile profile = profileService.loadWithMailingAddress(registration.profile().getId()).get();
+
+        copyNonNullProperties(importedProfileData, profile, List.of("id", "createdAt", "lastUpdatedAt", "doNotEmail"));
+
+        profile.setDoNotEmail(true);
         if (preferredLanguage != null) {
-            registration.profile().setPreferredLanguage(preferredLanguage);
+            profile.setPreferredLanguage(preferredLanguage);
         }
-        profileService.update(registration.profile(), auditInfo);
+        profileService.update(profile, auditInfo);
 
         Optional<Enrollee> enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
 
@@ -554,11 +563,48 @@ public class EnrolleeImportService {
         List<SurveyResponse> imported = new ArrayList<>();
         for (int i = 0; i < responses.size(); i++) {
             SurveyResponseWithTaskDto response = responses.get(i);
-            imported.add(importSurveyResponse(ppUser, enrollee, studyEnv, formatter, response, portalId, auditInfo, enrolleeMap, i + 1, exportOptions));
+            SurveyResponse importedResponse = importSurveyResponse(ppUser, enrollee, studyEnv, formatter, response, portalId, auditInfo, enrolleeMap, i + 1, exportOptions);
+
+            // is null if the survey is pre-enrollment, which is already imported
+            if (importedResponse != null) {
+                imported.add(importedResponse);
+            }
         }
+
+        removeOldInProgressSurveys(enrollee, imported, auditInfo);
 
         return imported;
     }
+
+    /**
+     * For longitudinal surveys, DSM will often give us response histories like:
+     * complete 05/01, complete 04/20, in-progress 04/20, complete 04/01, in-progress 03/20, etc.
+     * Those in-progress surveys will cause edge cases that never happen with normal Juniper data,
+     * so we remove them.
+     */
+    private void removeOldInProgressSurveys(Enrollee enrollee, List<SurveyResponse> importedResponses, DataAuditInfo auditInfo) {
+        List<ParticipantTask> tasks = participantTaskService.findTasksByEnrolleeAndSurveyResponse(enrollee.getId(), importedResponses.stream()
+                .map(SurveyResponse::getId)
+                .toList());
+
+        // only applies to tasks that are non-latest
+        if (tasks.isEmpty() || tasks.size() == 1) {
+            return;
+        }
+
+        tasks.sort(Comparator.comparing(ParticipantTask::getCreatedAt).reversed());
+
+        // remove any task that isn't the latest and isn't complete
+        for (int i = 1; i < tasks.size(); i++) {
+            ParticipantTask task = tasks.get(i);
+            if (!task.getStatus().isTerminalStatus()) {
+                task.setStatus(TaskStatus.REMOVED);
+
+                participantTaskService.update(task, auditInfo);
+            }
+        }
+    }
+
 
     private SurveyResponse importSurveyResponse(PortalParticipantUser ppUser, Enrollee enrollee, StudyEnvironment studyEnv, SurveyFormatter formatter, SurveyResponseWithTaskDto response, UUID portalId, DataAuditInfo auditInfo, Map<String, String> enrolleeMap, Integer repeatNum, ExportOptions options) {
         Survey survey = surveyService.findLatestActiveByStudyEnvironmentIdAndStableIdNoContent(studyEnv.getId(), formatter.getModuleName())

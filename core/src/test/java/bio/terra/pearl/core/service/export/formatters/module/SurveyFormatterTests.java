@@ -43,7 +43,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .surveyResponseId(testResponse.getId())
                 .stringValue("easyValue")
                 .build();
-        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null,
+        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null, null,
                 List.of(answer), null, List.of(testResponse), null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
@@ -80,7 +80,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .stringValue("value2")
                 .build();
 
-        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null,
+        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null, null,
                 List.of(answer1, answer2), null, List.of(testResponse1, testResponse2), null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 

@@ -41,4 +41,16 @@ public class ProfileDao extends BaseMutableJdbiDao<Profile> {
         });
         return profiles;
     }
+
+    public List<Profile> findAllByEnrolleeIds(List<UUID> enrolleeIds) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                SELECT p.* FROM profile p INNER JOIN enrollee e ON p.id = e.profile_id
+                                WHERE e.id IN (<enrolleeIds>)
+                                """)
+                        .bindList("enrolleeIds", enrolleeIds)
+                        .mapToBean(Profile.class)
+                        .list()
+        );
+    }
 }

@@ -4,7 +4,8 @@ import React, {
 } from 'react'
 import {
   useNavigate,
-  useParams
+  useParams,
+  useSearchParams
 } from 'react-router-dom'
 import 'survey-core/survey.i18n'
 
@@ -47,6 +48,7 @@ ReactQuestionFactory.Instance.registerQuestion('documentrequest', props => {
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees, ppUser } = useActiveUser()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user, updateEnrollee, updateProfile, enrollees: allEnrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
@@ -59,7 +61,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
     ?.profile : undefined
 
   const { i18n, selectedLanguage } = useI18n()
-  const { taskId, setTaskId } = useTaskIdParam()
+  const { taskId, setTaskId } = useTaskIdParam(searchParams, setSearchParams)
   const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
@@ -133,6 +135,8 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         taskId={taskId || ''}
         setTaskId={setTaskId}
         showHeaders={showHeaders}
+        setSearchParams={setSearchParams}
+        searchParams={searchParams}
       />
     </ApiProvider>
   )
