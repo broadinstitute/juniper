@@ -85,6 +85,13 @@ public class ParticipantTaskService extends ParticipantDataAuditedService<Partic
         return dao.findByKitRequestId(kitRequestId);
     }
 
+    public List<ParticipantTask> findTasksByEnrolleeAndSurveyResponse(UUID enrolleeId, List<UUID> surveyResponseId) {
+        if (surveyResponseId.isEmpty()) {
+            return List.of();
+        }
+        return dao.findTasksByEnrolleeAndSurveyResponse(enrolleeId, surveyResponseId);
+    }
+
     @Transactional
     @Override
     public ParticipantTask update(ParticipantTask task, DataAuditInfo dataAuditInfo) {

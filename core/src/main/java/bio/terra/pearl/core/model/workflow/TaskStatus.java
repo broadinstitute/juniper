@@ -19,6 +19,6 @@ public enum TaskStatus {
 
 
     public boolean isTerminalStatus() {
-        return Arrays.asList(COMPLETE, REJECTED).contains(this);
+        return Arrays.asList(COMPLETE, REMOVED, REJECTED).contains(this);
     }
 }
