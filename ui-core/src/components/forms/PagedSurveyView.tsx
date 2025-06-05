@@ -62,6 +62,13 @@ export function PagedSurveyView({
     adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
+  // it's not entirely clear, but we cannot rely on the response object passed into
+  // the component to have the most up-to-date complete status despite calling
+  // updateResponseMap. this is because, on the participant side, updateResponseMap
+  // is a no-op, presumably because of surveyjs re-render issues.
+  // TODO: JN-1707 refactor this component to clarify state management
+  const [complete, setComplete] = React.useState(response?.complete ?? false)
+
   const pager = useRoutablePageNumber()
 
   const Api = useApiContext()
@@ -89,7 +96,7 @@ export function PagedSurveyView({
       creatingAdminUserId: adminUserId,
       surveyId: form.id,
       justification,
-      complete: response?.complete ?? false,
+      complete,
       participantFiles: response?.participantFiles || []
     } as SurveyResponse
     // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
@@ -110,6 +117,7 @@ export function PagedSurveyView({
       }
       // update the taskId in case this is an update to a longitudinal survey which will create a new task & response
       updateTaskId(response)
+      setComplete(response.response.complete)
       /**
        * CAREFUL -- we're updating the enrollee object so that if they navigate back to the dashboard, they'll
        * see this survey as 'in progress' and capture any profile changes.
@@ -150,6 +158,7 @@ export function PagedSurveyView({
     if (!surveyModel || !refreshSurvey) {
       return
     }
+    setComplete(true)
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const responseDto = {
       resumeData: getResumeData(surveyModel, adminUserId || enrollee.participantUserId, true),
