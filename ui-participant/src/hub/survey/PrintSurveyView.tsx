@@ -4,7 +4,8 @@ import React, {
 } from 'react'
 import {
   useNavigate,
-  useParams
+  useParams,
+  useSearchParams
 } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
@@ -51,11 +52,13 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
 
   const { ppUser } = useActiveUser()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
 
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
   const navigate = useNavigate()
-  const { taskId } = useTaskIdParam()
+  const { taskId } = useTaskIdParam(searchParams, setSearchParams)
 
   useEffect(() => {
     const loadForm = async () => {
