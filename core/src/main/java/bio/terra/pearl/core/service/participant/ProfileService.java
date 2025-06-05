@@ -44,7 +44,7 @@ public class ProfileService extends ParticipantDataAuditedService<Profile, Profi
                 .collect(Collectors.toMap(Profile::getId, Function.identity()));
     }
 
-    public List<Profile> loadAllByEnrolleeIdsWithMailingList(List<UUID> enrolleeIds) {
+    public List<Profile> loadAllByEnrolleeIdsWithMailingAddress(List<UUID> enrolleeIds) {
         List<Profile> profiles = dao.findAllByEnrolleeIds(enrolleeIds);
         List<MailingAddress> addresses = mailingAddressDao.findAllPreserveOrder(profiles.stream().map(Profile::getMailingAddressId).toList());
         for (int i = 0; i < profiles.size(); i++) {

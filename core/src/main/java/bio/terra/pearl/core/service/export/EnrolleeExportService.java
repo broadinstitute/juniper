@@ -280,7 +280,7 @@ public class EnrolleeExportService {
         if (proxyIds.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return profileService.loadAllByEnrolleeIdsWithMailingList(proxyIds);
+            return profileService.loadAllByEnrolleeIdsWithMailingAddress(proxyIds);
         }
     }
 
