@@ -151,7 +151,8 @@ public class EnrolleeExportService {
                 new KitRequestFormatter(exportOptions),
                 new EnrolleeRelationFormatter(exportOptions),
                 new FamilyFormatter(exportOptions),
-                new ProxyFormatter(exportOptions));
+                new ProxyFormatter(exportOptions),
+                new ProxyProfileFormatter(exportOptions));
 
         List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
                 moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())
@@ -231,12 +232,16 @@ public class EnrolleeExportService {
 
         List<EnrolleeRelation> enrolleeRelations = loadRelations(config, enrollee);
         List<ParticipantUser> proxies = loadProxyUsers(config, enrolleeRelations, enrollee);
+        // technically, there could be more than one proxy, but in practice this does not happen.
+        // if it does, there's no way to tell which profile belongs to which proxy.
+        List<Profile> proxyProfiles = loadProxyProfiles(config, enrolleeRelations, enrollee);
 
         return new EnrolleeExportData(
                 study,
                 enrollee,
                 participantUsers.get(enrollee.getParticipantUserId()),
                 profiles.get(enrollee.getProfileId()),
+                proxyProfiles,
                 answers.getOrDefault(enrollee.getId(), Collections.emptyList()),
                 tasks.getOrDefault(enrollee.getId(), Collections.emptyList()),
                 surveyResponses
@@ -259,6 +264,24 @@ public class EnrolleeExportService {
         }
 
         return Collections.emptyList();
+    }
+
+    private List<Profile> loadProxyProfiles(StudyEnvironmentConfig config, List<EnrolleeRelation> enrolleeRelations, Enrollee enrollee) {
+        if (!config.isAcceptingProxyEnrollment()) {
+            return Collections.emptyList();
+        }
+
+        List<UUID> proxyIds = enrolleeRelations.stream()
+                .filter(relation -> relation.getRelationshipType().equals(RelationshipType.PROXY))
+                .filter(relation -> relation.getTargetEnrolleeId().equals(enrollee.getId()))
+                .map(EnrolleeRelation::getEnrolleeId)
+                .toList();
+
+        if (proxyIds.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return profileService.loadAllByEnrolleeIdsWithMailingAddress(proxyIds);
+        }
     }
 
     private List<EnrolleeRelation> loadRelations(StudyEnvironmentConfig config, Enrollee enrollee) {

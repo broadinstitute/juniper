@@ -29,10 +29,7 @@ import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
-import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
-import bio.terra.pearl.core.service.participant.FamilyService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -88,6 +85,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyResponseFactory surveyResponseFactory;
     @Autowired
     private ParticipantTaskFactory participantTaskFactory;
+    @Autowired
+    private ProfileService profileService;
 
     @Test
     @Transactional
@@ -208,6 +207,16 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
 
+        Profile proxyProfile = profileService.loadWithMailingAddress(enrolleeWithProxy.proxy().getProfileId()).get();
+
+        proxyProfile.setGivenName("Proxy Given Name");
+        proxyProfile.setFamilyName("Proxy Family Name");
+
+        proxyProfile.getMailingAddress().setStreet1("123 Proxy St");
+        proxyProfile.getMailingAddress().setCity("Proxy City");
+
+        profileService.updateWithMailingAddress(proxyProfile, getAuditInfo(testInfo));
+
         ParticipantUser proxyUser = participantUserService.findByEnrolleeId(enrolleeWithProxy.proxy().getId()).get();
 
         List<EnrolleeExportData> exportData = enrolleeExportService.loadEnrolleeExportData(studyEnv.getId(), new ExportOptionsWithExpression());
@@ -226,15 +235,21 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         assertThat(exportMapsWithProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
         assertThat(exportMapsWithProxies.get(0).get("enrollee.subject"), equalTo("true"));
-        assertThat(exportMapsWithProxies.get(1).get("proxy.username"), equalTo(proxyUser.getUsername()));
+        assertThat(exportMapsWithProxies.get(0).get("proxyProfile.givenName"), equalTo(null));
 
+        assertThat(exportMapsWithProxies.get(1).get("proxy.username"), equalTo(proxyUser.getUsername()));
         assertThat(exportMapsWithProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
         assertThat(exportMapsWithProxies.get(1).get("enrollee.subject"), equalTo("true"));
         assertThat(exportMapsWithProxies.get(1).get("proxy.username"), equalTo(proxyUser.getUsername()));
+        assertThat(exportMapsWithProxies.get(1).get("proxyProfile.givenName"), equalTo(proxyProfile.getGivenName()));
+        assertThat(exportMapsWithProxies.get(1).get("proxyProfile.familyName"), equalTo(proxyProfile.getFamilyName()));
+        assertThat(exportMapsWithProxies.get(1).get("proxyProfile.mailingAddress.street1"), equalTo(proxyProfile.getMailingAddress().getStreet1()));
+        assertThat(exportMapsWithProxies.get(1).get("proxyProfile.mailingAddress.city"), equalTo(proxyProfile.getMailingAddress().getCity()));
 
         assertThat(exportMapsWithProxies.get(2).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.proxy().getShortcode()));
         assertThat(exportMapsWithProxies.get(2).get("enrollee.subject"), equalTo("false"));
         assertThat(exportMapsWithProxies.get(2).get("proxy.username"), equalTo(null));
+        assertThat(exportMapsWithProxies.get(2).get("proxyProfile.givenName"), equalTo(null));
 
         List<EnrolleeExportData> exportDataNoProxies = enrolleeExportService.loadEnrolleeExportData(
                 studyEnv.getId(),
