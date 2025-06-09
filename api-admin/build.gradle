@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:3.4.4'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.4.5'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.4.1'
-    implementation 'org.springframework.boot:spring-boot-starter-cache:3.4.4'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.5.0'
     implementation 'org.yaml:snakeyaml:2.4'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
