@@ -28,9 +28,11 @@ import {
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
+  ParticipantUser,
   PortalEnvironment,
   renderWithRouter,
   setupRouterTest,
+  Study,
   StudyEnvironmentSurvey,
   StudyEnvParams,
   Survey,
@@ -196,16 +198,40 @@ export const mockStudyEnvironmentConfig = (): StudyEnvironmentConfig => {
   }
 }
 
+export const mockStudy = (): Study => {
+  return {
+    shortcode: 'study1',
+    name: 'Study 1',
+    studyEnvironments: []
+  }
+}
+
+export const mockParticipantUser: () => ParticipantUser = () => {
+  return {
+    id: 'user1',
+    username: 'mockUser1@mock.com',
+    shortcode: 'ACC_fakeShortcode',
+    token: 'fakeToken',
+    lastLogin: 0,
+    createdAt: 0
+  }
+}
+
+export const mockStudyEnv = (): StudyEnvironment => {
+  return {
+    id: 'studyEnvId',
+    environmentName: 'sandbox',
+    kitTypes: [],
+    studyEnvironmentConfig: mockStudyEnvironmentConfig(),
+    configuredSurveys: [],
+    triggers: []
+  }
+}
+
 /** returns a simple studyEnvContext object for use/extension in tests */
 export const mockStudyEnvContext: () => StudyEnvContextT = () => {
-  const sandboxEnv: StudyEnvironment = {
-    environmentName: 'sandbox',
-    id: 'studyEnvId',
-    configuredSurveys: [mockConfiguredSurvey()],
-    triggers: [],
-    studyEnvironmentConfig: mockStudyEnvironmentConfig(),
-    kitTypes: []
-  }
+  const sandboxEnv: StudyEnvironment = mockStudyEnv()
+
   return {
     study: {
       name: 'Fake study',
