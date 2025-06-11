@@ -21,6 +21,7 @@ import {
   Survey,
   VersionedForm
 } from './types/forms'
+import { useSearchParams } from 'react-router-dom'
 import React, {
   useEffect,
   useState
@@ -324,10 +325,8 @@ export type PageNumberControl = {
 /**
  * hook for reading/writing pageNumbers to url search params as 'page'
  * */
-export function useRoutablePageNumber(
-  searchParams: URLSearchParams,
-  setSearchParams: (params: URLSearchParams) => void
-): PageNumberControl {
+export function useRoutablePageNumber(): PageNumberControl {
+  const [searchParams, setSearchParams] = useSearchParams()
   const pageParam = searchParams.get(PAGE_NUMBER_PARAM_NAME)
   let urlPageNumber = null
   if (pageParam) {
