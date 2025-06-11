@@ -223,7 +223,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
     environmentName: 'sandbox',
     kitTypes: [],
     studyEnvironmentConfig: mockStudyEnvironmentConfig(),
-    configuredSurveys: [],
+    configuredSurveys: [mockConfiguredSurvey()],
     triggers: []
   }
 }
