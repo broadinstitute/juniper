@@ -335,8 +335,12 @@ export function useRoutablePageNumber(): PageNumberControl {
 
   /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
-    searchParams.set('page', (newPageNumber).toString())
-    setSearchParams(searchParams)
+    setSearchParams(() => {
+      const currParams = new URLSearchParams(window.location.search)
+      currParams.set(PAGE_NUMBER_PARAM_NAME, (newPageNumber).toString())
+
+      return currParams
+    })
   }
 
   return {

@@ -7,8 +7,12 @@ export const useTaskIdParam = (): {taskId: string | null, setTaskId: (taskId: st
   return {
     taskId: searchParams.get(TASK_ID_PARAM),
     setTaskId: (taskId: string) => {
-      searchParams.set(TASK_ID_PARAM, taskId)
-      setSearchParams(searchParams)
+      setSearchParams(() => {
+        const currParams = new URLSearchParams(window.location.search)
+        currParams.set(TASK_ID_PARAM, taskId)
+
+        return currParams
+      })
     }
   }
 }
