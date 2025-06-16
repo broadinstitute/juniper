@@ -8,24 +8,26 @@ import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.CrudService;
-
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.migration.AuthMigrationConfigService;
 import bio.terra.pearl.core.service.publishing.StudyEnvPublishable;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class StudyEnvironmentConfigService extends CrudService<StudyEnvironmentConfig, StudyEnvironmentConfigDao> implements StudyEnvPublishable {
     private final StudyEnvironmentService studyEnvironmentService;
+    private final AuthMigrationConfigService authMigrationConfigService;
 
-    public StudyEnvironmentConfigService(StudyEnvironmentConfigDao dao, @Lazy StudyEnvironmentService studyEnvironmentService) {
+    public StudyEnvironmentConfigService(StudyEnvironmentConfigDao dao, @Lazy StudyEnvironmentService studyEnvironmentService, AuthMigrationConfigService authMigrationConfigService) {
         super(dao);
         this.studyEnvironmentService = studyEnvironmentService;
+        this.authMigrationConfigService = authMigrationConfigService;
     }
 
     /** assumes the shortcode has already been confirmed to be valid -- throws an error if the config/study isn't found */
@@ -49,10 +51,18 @@ public class StudyEnvironmentConfigService extends CrudService<StudyEnvironmentC
         dao.delete(configId);
     }
 
+    @Transactional
+    public void attachAuthMigrationConfig(StudyEnvironmentConfig studyEnvironmentConfig) {
+        authMigrationConfigService
+                .findByStudyEnvConfigId(studyEnvironmentConfig.getId())
+                .ifPresent(studyEnvironmentConfig::setAuthMigrationConfig);
+    }
+
 
     @Override
     public void loadForPublishing(StudyEnvironment studyEnv) {
         StudyEnvironmentConfig config = findByStudyEnvironmentId(studyEnv.getId());
+        attachAuthMigrationConfig(config);
         studyEnv.setStudyEnvironmentConfig(config);
     }
 

@@ -8,13 +8,12 @@ import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
@@ -112,5 +111,20 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
 
     public void deleteByStudyId(UUID studyId) {
         deleteByProperty("study_id", studyId);
+    }
+
+    public Optional<StudyEnvironment> findOne(String portalShortcode, String studyShortcode, EnvironmentName envName) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
+                                + " a join study on study_id = study.id"
+                                + " join portal_study on study.id = portal_study.study_id"
+                                + " join portal on portal_study.portal_id = portal.id"
+                                + " where portal.shortcode = :portalShortcode and study.shortcode = :studyShortcode and environment_name = :environmentName")
+                        .bind("portalShortcode", portalShortcode)
+                        .bind("studyShortcode", studyShortcode)
+                        .bind("environmentName", envName)
+                        .mapTo(clazz)
+                        .findOne()
+        );
     }
 }

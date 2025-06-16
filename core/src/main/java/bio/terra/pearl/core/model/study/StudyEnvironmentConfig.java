@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.migration.AuthMigrationConfig;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,5 +58,8 @@ public class StudyEnvironmentConfig extends BaseEntity {
      */
     @Builder.Default
     private String timeZone = ZoneId.of("America/New_York").toString();
+
+
+    private AuthMigrationConfig authMigrationConfig;
 
 }

@@ -42,6 +42,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3'
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
     implementation 'com.auth0:java-jwt:4.5.0'
+    implementation 'com.auth0:auth0:2.21.0'
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.33.1'
     implementation 'org.apache.poi:poi:5.4.1'
     implementation 'org.apache.poi:poi-ooxml:5.4.1'

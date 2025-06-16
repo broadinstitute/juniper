@@ -98,6 +98,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         return dao.findByStudy(studyShortcode, environmentName);
     }
 
+    public Optional<StudyEnvironment> findOne(String portalShortcode, String studyShortcode, EnvironmentName envName) {
+        return dao.findOne(portalShortcode, studyShortcode, envName);
+    }
+
     public List<StudyEnvironment> findAllByPortalAndEnvironment(UUID portalId, EnvironmentName environmentName) {
         return dao.findAllByPortalAndEnvironment(portalId, environmentName);
     }
