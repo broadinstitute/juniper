@@ -873,6 +873,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updateParticipantUser(
+    portalShortcode: string, envName: string, id: string, update: Partial<ParticipantUser>
+  ): Promise<ParticipantUser> {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/${id}`,
+      {
+        method: 'PATCH',
+        headers: this.getInitHeaders(),
+        body: JSON.stringify(update)
+      })
+    return await this.processJsonResponse(response)
+  },
+
+
   async fetchMergePlan(portalShortcode: string, envName: string, sourceEmail: string, targetEmail: string):
     Promise<ParticipantUserMerge> {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/env/${envName}/participantUsers/merge/plan`, {
