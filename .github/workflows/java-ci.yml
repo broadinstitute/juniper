@@ -49,10 +49,10 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
           cache: 'gradle'
-      - name: Build with Gradle
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
+      - name: Build gradle
+        run: ./gradlew build --info --build-cache
       - name: Upload test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
