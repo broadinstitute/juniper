@@ -49,10 +49,8 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
           cache: 'gradle'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@f9c9c575b8b21b6485636a91ffecd10e558c62f6
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
+        uses: gradle/actions/setup-gradle@v4
         with:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: Upload test artifacts
