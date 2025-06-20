@@ -1,0 +1,16 @@
+#set( $text = {
+  "subject": "Información sobre el kit de Count Me In",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Le agradecemos nuevamente por darnos su consentimiento para nuestro estudio de investigación. Hace poco, le enviamos por correo postal un kit con instrucciones para obtener una muestra de sangre y, ahora, nos ponemos en contacto para asegurarnos de que lo ha recibido.",
+  "contact": "Si aún no ha recibido el kit, o si tiene alguna pregunta sobre el proceso,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("blood_reminder.tmpl.html")

@@ -1,0 +1,17 @@
+#set( $text = {
+"subject": "Count Me In: Reminder to complete brief survey",
+"salutation_self": "Dear {{participant_firstName}},",
+"salutation_parent": "Dear {{proxy_firstName}},",
+"invitation": "We recently sent you an email with a link to a follow-up survey focused on family history of cancer (information about which of {{\#if proxy_guid}}your child's{{else}}your{{/if}} biological family members may have also been diagnosed with cancer). Information collected as part of this survey can help researchers discover new genetic risk factors that may lead to some types of cancer.",
+"survey_timing": "This survey is expected to take approximately 15 minutes to complete, and all questions are optional.",
+"login": "As we have not received your completed survey, we are re-sending you the link to your dashboard so that you can access the survey:",
+"login_button": "LOGIN TO DASHBOARD",
+"feedback": "If you have any feedback or questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+or <a href='tel:651-403-5315'
+           style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team"
+})
+
+#parse("family_history_reminder.tmpl.html")

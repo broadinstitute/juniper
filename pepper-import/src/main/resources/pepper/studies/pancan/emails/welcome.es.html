@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Gracias por enviar su información a Count Me In",
+  "salutation_self": "Estimado participante:",
+  "salutation_parent": "Estimado(a) padre/madre:",
+  "thank_you": "Gracias por unirse a Count Me In. Su participación no solo es importante para nuestro trabajo, sino que es lo que hace posible este proyecto.",
+  "goal": "El objetivo de esta iniciativa es generar un gran conjunto de datos que incluya una variedad de información genómica, clínica y molecular proporcionada por los pacientes que pueda compartirse con la comunidad biomédica con el fin de agilizar los descubrimientos y mejorar los tratamientos para todos los tipos de cáncer. El cáncer no es una única enfermedad y la combinación de la historia de cada paciente, cada respuesta a una encuesta, cada historia clínica y cada muestra de tumor es una pieza del rompecabezas. Nuestra meta es ayudar a la comunidad de investigación a entender más a fondo el panorama del cáncer en su totalidad y agilizar los descubrimientos al facilitar la disponibilidad de datos.",
+  "stay_in_touch": "Nos mantendremos en contacto con usted por correo electrónico para informarle sobre los próximos pasos en su participación, además de brindarle actualizaciones generales de manera ocasional.",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."})
+
+#parse("welcome.tmpl.html")

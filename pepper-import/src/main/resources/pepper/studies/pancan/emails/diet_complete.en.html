@@ -1,0 +1,18 @@
+#set( $text = {
+"subject": "Thank you for completing the Diet and Lifestyle Survey",
+"salutation_self": "Dear {{participant_firstName}},",
+"salutation_parent": "Dear {{proxy_firstName}},",
+"thank_you1": "Thank you for filling out the Count Me In diet and lifestyle survey. We are writing to let you know that the information you submitted was received.",
+"thank_you2": "Thank you for joining this movement. If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+or <a href='tel:${contact.phone}'
+           style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team",
+"footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("diet_complete.tmpl.html")

@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Gracias, hemos recibido {{\#if proxy_guid}}el kit de su hijo(a){{else}}su kit{{/if}}",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Gracias por enviarnos una muestra de {{\#if proxy_guid}}la sangre de su hijo(a){{else}}su sangre{{/if}}. Le escribimos para informarle que nuestro laboratorio la ha recibido.",
+  "contact": "A medida que obtengamos más información sobre el cáncer, le proporcionaremos actualizaciones por correo electrónico y a través de las redes sociales.
+    Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("blood_received.tmpl.html")

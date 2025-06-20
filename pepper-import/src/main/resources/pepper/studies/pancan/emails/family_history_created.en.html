@@ -1,0 +1,19 @@
+#set( $text = {
+"subject": "Count Me In: Survey available",
+"salutation_self": "Dear {{participant_firstName}},",
+"salutation_parent": "Dear {{proxy_firstName}},",
+"invitation": "Thank you for being part of Count Me In. We are reaching out to invite you to take a survey, which is focused on the history of cancer in {{\#if proxy_guid}}your child's{{else}}your{{/if}} family, to contribute additional data to this project. This survey should take approximately 15 minutes to complete, and all questions are optional.",
+"login": "Please login to visit the dashboard at the link below, where you can find the new survey:",
+"login_button": "LOGIN TO DASHBOARD",
+"learn_more": "Completing this survey will help us learn more about {{\#if proxy_guid}}your child's{{else}}your{{/if}} family history of cancer (for example, information about which of {{\#if proxy_guid}}your child's{{else}}your{{/if}} biological family members may have also been diagnosed with cancer). Understanding details of cancer in family members can help researchers discover new genetic risk factors that may lead to some types of cancer.",
+"responding": "Responding to this survey is open to all participants as part of our research process, and is not based on any specific data or other results associated with {{\#if proxy_guid}}your child's{{else}}your{{/if}} study participation.",
+"thank_you": "Thank you for taking the time to answer these questions. Any insights that we generate will be a direct result of your partnership.",
+"feedback": "If you have any feedback or questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+or <a href='tel:651-403-5315'
+           style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team"
+})
+
+#parse("family_history_created.tmpl.html")

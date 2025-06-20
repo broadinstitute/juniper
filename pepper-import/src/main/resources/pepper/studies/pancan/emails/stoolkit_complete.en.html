@@ -1,0 +1,17 @@
+#set( $text = {
+"subject": "Thank you for completing the Count Me In Stool Kit Survey",
+"salutation_self": "Dear {{\#if proxy_guid}}Parent{{else}}Participant{{/if}},",
+"thank_you1": "Thank you for filling out the Count Me In stool kit survey. We are writing to let you know that the information you submitted was received.",
+"thank_you2": "Thank you for joining this movement. If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+or <a href='tel:651-403-5315'
+           style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team",
+"footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("stoolkit_complete.tmpl.html")

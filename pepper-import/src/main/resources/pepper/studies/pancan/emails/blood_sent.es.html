@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Comunicación del estudio de investigación Count Me In",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Gracias por darnos su consentimiento para nuestro estudio de investigación. En este momento, le solicitamos que proporcione una muestra de {{\#if proxy_guid}}la sangre de su hijo(a){{else}}su sangre{{/if}} para analizarla. Le enviaremos por correo postal un kit con instrucciones sobre cómo extraerse una muestra de sangre en el consultorio de su médico, clínica local, o un laboratorio cercano.",
+  "instructions": "Cuando reciba este kit, por favor, ábralo y lea las instrucciones. Si tiene alguna pregunta, póngase en contacto con nosotros. Luego, lleve este kit a la próxima cita de extracción de sangre que tenga {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}}. Hay instrucciones para la persona que le tomará su muestra de sangre e información sobre cómo puede enviarnos la muestra en un paquete prepagado incluido en el kit.",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("blood_sent.tmpl.html")

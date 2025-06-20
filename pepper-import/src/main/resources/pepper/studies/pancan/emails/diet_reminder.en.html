@@ -1,0 +1,20 @@
+#set( $text = {
+"subject": "Reminder- Count Me In: Diet/Lifestyle Survey",
+"salutation_self": "Dear {{participant_firstName}},",
+"salutation_parent": "Dear {{proxy_firstName}},",
+"invitation": "Thank you for {{\#if proxy_guid}}your child’s{{else}}your{{/if}} participation in Count Me In. We recently asked if you would be willing to take a survey about {{\#if proxy_guid}}your child’s{{else}}your{{/if}} diet and lifestyle habits.",
+"login": "If you would like to complete the survey, this link will take you to the dashboard so you can pick up where you left off.",
+"login_button": "Diet and Lifestyle Survey",
+"learn_more": "Again, the survey is long and contains many sections, so we expect it will take most people approximately 30-45 minutes to complete. All questions are optional.",
+"feedback": "Thank you for joining this movement. If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+or <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team",
+"footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("diet_reminder.tmpl.html")

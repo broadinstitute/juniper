@@ -1,0 +1,22 @@
+#set( $text = {
+"subject": "Count Me In: Encuesta sobre dieta y estilo de vida",
+"salutation_self": "Estimado(a) {{participant_firstName}},",
+"salutation_parent": "Estimado(a) {{proxy_firstName}},",
+"invitation": "Gracias por {{\#if proxy_guid}}la participación de su hijo(a){{else}}su participación{{/if}} en Count Me In. Se le está invitando a tomar una encuesta sobre {{\#if proxy_guid}}la dieta y estilo de vida de su hijo(a){{else}}su dieta y estilo de vida{{/if}}.",
+"login": "Podrá usar el enlace a continuación para ir a su tablero y encontrar la encuesta.",
+"login_button": "Dieta y Estilo de Vida",
+"learn_more": "La encuesta es larga y tiene varias secciones diferentes, aproximamos que a la mayoría de las personas les tomara entre 30-45 minutos para completarla. Todas las preguntas son opcionales. Puede tomar un descanso y regresar en cualquier momento a la encuesta si es necesario. Sus respuestas serán salvadas automáticamente.",
+"feedback": "Gracias por unirse a este movimiento. Las respuestas que comparta serán invaluables para la comunidad de investigación de cáncer. Si tiene alguna pregunta o comentarios y quisiera hablar con un miembro de nuestro equipo, por favor contáctenos a través de
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+o por teléfono al <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sinceramente,",
+"study_team": "El Equipo de Count Me In",
+"footnote": "Para estar conectados y mantenerse informado, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a> o
+<a href='${i18n.es.social.instagram}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a>."
+})
+
+#parse("diet_created.tmpl.html")

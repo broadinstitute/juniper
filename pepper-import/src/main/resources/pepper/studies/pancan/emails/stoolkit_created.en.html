@@ -1,0 +1,16 @@
+#set( $text = {
+"subject": "Stool Kit Survey",
+"salutation_self": "Dear {{\#if proxy_guid}}Parent{{else}}Participant{{/if}},",
+"invitation": "We are writing to let you know that you will see a link in your dashboard for a survey about {{\#if proxy_guid}}your child's{{else}}your{{/if}} stool collection. The survey will ask you some brief questions about {{\#if proxy_guid}}your child's{{else}}your{{/if}} stool sample and {{\#if proxy_guid}}your child's{{else}}your{{/if}} recent diet habits, so it’s a good idea to complete the survey right after completing your collection. It will remain available in your project dashboard at the link below:",
+"login_button": "Project Dashboard",
+"feedback": " If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+or <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sincerely,",
+"study_team": "The Count Me In Team",
+"footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+#parse("stoolkit_created.tmpl.html")

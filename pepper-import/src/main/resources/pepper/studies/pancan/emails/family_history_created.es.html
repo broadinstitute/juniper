@@ -1,0 +1,18 @@
+#set( $text = {
+"subject": "Count Me In: Nueva encuesta disponible",
+"salutation_self": "Estimado(a) {{participant_firstName}},",
+"salutation_parent": "Estimado(a) {{proxy_firstName}},",
+"invitation": "Gracias por ser parte del Count Me In Se le está invitando a tomar una encuesta que está enfocada en el historial de cáncer en {{\#if proxy_guid}}la familia de su hijo(a){{else}}su familia{{/if}} el cual nos proporcionará información adicional para este proyecto. Esta encuesta tomará aproximadamente 15 minutos para completar y todas las preguntas son opcionales.",
+"login": "Por favor inicie su sesión en su tablero usando el enlace a continuación donde podrá encontrar la nueva encuesta:",
+"login_button": "Entrar a su Tablero",
+"learn_more": "Completando esta encuesta nos ayudará a saber más sobre {{\#if proxy_guid}}el cáncer de su hijo(a){{else}}su cáncer{{/if}} en su historia familiar (por ejemplo, información sobre los miembros de {{\#if proxy_guid}}la familia de su hijo(a){{else}}su familia{{/if}} que también hayan sido diagnosticado con cáncer). Saber los detalles sobre los cánceres en los miembros de su familia pueden ayudar a los investigadores a encontrar nuevos factores de riesgo genéticos que pueden llegar a causar ciertos tipos de cáncer.",
+"responding": "Esta encuesta está siendo enviado a todos los participantes como parte de nuestro proceso de investigación. No le estamos pidiendo que tome esta encuesta basados en datos o resultados asociados con {{\#if proxy_guid}}la participación de su hijo(a){{else}}su participación{{/if}} en el proyecto.",
+"thank_you": "Gracias por tomarse el tiempo para responder estas preguntas. Cualquier descubrimiento científico que se genere será un resultado directo de haber trabajado junto con usted.",
+"feedback": "Si tiene alguna pregunta y quisiera hablar con un miembro de nuestro equipo en cualquier momento, por favor contáctenos a través de
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+o por teléfono al <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sinceramente,",
+"study_team": "El Equipo de Count Me In"
+})
+
+#parse("family_history_created.tmpl.html")

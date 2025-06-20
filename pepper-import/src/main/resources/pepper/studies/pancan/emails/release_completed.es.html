@@ -1,0 +1,18 @@
+#set( $text = {
+  "subject": "Gracias por enviar su información",
+  "title": "Gracias",
+  "thank_you": "Gracias por proporcionar la información sobre dónde ha recibido {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}} atención para su cáncer.",
+  "saliva_sample": "Le recordamos que le enviaremos por correo postal un kit con instrucciones sobre cómo proporcionarnos una muestra de {{\#if proxy_guid}}la saliva de su hijo(a){{else}}su saliva{{/if}}.",
+  "blood_sample": "Si ha optado por compartir una/unas muestra(s) de sangre, es posible que también nos comuniquemos con usted y le enviemos un kit con instrucciones sobre cómo hacerlo.",
+  "medical_records": "Asimismo, podríamos ponernos en contacto con los hospitales o centros donde indicó que {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}} ha recibido tratamiento con el fin de solicitar copias de {{\#if proxy_guid}}la historia clínica de su hijo(a){{else}}su historia clínica{{/if}}. Si ha optado por compartir muestras de tumores almacenadas, es posible que solicitemos una pequeña porción de {{\#if proxy_guid}}las muestras de su hijo(a){{else}}sus muestras{{/if}} a los hospitales o centros donde se encuentran. Después de analizarlas, devolveremos las muestras del tumor que no se hayan utilizado al departamento de anatomía patológica que nos las haya enviado.",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("release_completed.tmpl.html")

@@ -39,7 +39,7 @@ public class ActivityImporter {
     private final Gson gson = GsonUtil.standardGson();
     private final ObjectMapper objectMapper;
     private final I18nContentRenderer i18nContentRenderer = new I18nContentRenderer();
-    private final String[] languages = {"en", "es", "de", "fr", "hi", "it", "ja", "pl", "pt", "ru", "tr", "zh"};
+    private final String[] languages = {"en", "es"};
 
 
     public ActivityImporter(ObjectMapper objectMapper) {
@@ -133,6 +133,9 @@ public class ActivityImporter {
                 break;
             case CONTENT:
                 elements.addAll(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
+                break;
+            case COMPONENT:
+                elements.addAll(getJsonNodeForComponentBlock(allLangMap, (ComponentBlockDef) blockDef));
                 break;
             case GROUP:
                 elements.addAll(convertGroupBlock(allLangMap, blockDef));
@@ -460,13 +463,16 @@ public class ActivityImporter {
     }
 
     private Map<String, String> getQuestionTxt(QuestionDef pepperQuestionDef) {
+
         Map<String, String> txtMap = getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getTemplateText(),
                 pepperQuestionDef.getPromptTemplate().getVariables());
         if (txtMap.isEmpty() && pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("TEXT")) {
             TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
             //try placeholder template
-            txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getTemplateText(),
-                    textQuestionDef.getPlaceholderTemplate().getVariables());
+            if (textQuestionDef.getPlaceholderTemplate() != null) {
+                txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getTemplateText(),
+                        textQuestionDef.getPlaceholderTemplate().getVariables());
+            }
         }
 
         return txtMap;
@@ -555,6 +561,11 @@ public class ActivityImporter {
         return out;
     }
 
+    private List<JsonNode> getJsonNodeForComponentBlock(Map<String, Map<String, Object>> allLangMap, ComponentBlockDef blockDef) {
+        ComponentType componentType = blockDef.getComponentType();
+        return List.of(); // todo implement this
+    }
+
 
     public String convertVisibilityExpressions(String pepperExpr) {
         if (StringUtils.isEmpty(pepperExpr)) {
@@ -571,16 +582,31 @@ public class ActivityImporter {
             String pepperOperation = matchResult.group(4);
             String value = matchResult.group(5);
             String stableId = "{" + question + "}";
-            switch (pepperOperation.toLowerCase().trim()) {
-                case "answers.hasoption":
-                    pepperOperation = "contains";
-                    break;
-                case "answers.hastrue":
-                    return "(" + stableId + " = true or " + stableId + " = 'Yes')";
-                case "isanswered":
-                    return stableId + " notempty";
-                default:
+            String loweredOperation = pepperOperation.toLowerCase().trim();
+
+            if (loweredOperation.equals("answers.hasoption")) {
+                pepperOperation = "contains";
+            } else if (loweredOperation.equals("answers.hastrue")) {
+                return "(" + stableId + " = true or " + stableId + " = 'Yes')";
+            } else if (loweredOperation.equals("isanswered")) {
+                return stableId + " notempty";
+            } else if (loweredOperation.equals("numchildanswers")) {
+                return ""; // todo make custom fn
+            } else if (loweredOperation.startsWith("children[")) {
+                if (loweredOperation.endsWith("].answers.hasoptionstartswith")) {
+                    return ""; // todo make custom fn
+                } else if (loweredOperation.endsWith("].answers.hasoption")) {
+                    return ""; // todo make custom fn
+                } else if (loweredOperation.endsWith("].answers.hasanyoption")) {
+                    return ""; // todo make custom fn
+                } else {
                     throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+                }
+            } else if (loweredOperation.equals("answers.hasanyoption")) {
+                System.out.println(value);
+                return ""; // todo make custom fn
+            } else {
+                throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
             }
             if (value.startsWith("\"") && value.endsWith("\"")) {
                 value = value.substring(1, value.length() - 1);

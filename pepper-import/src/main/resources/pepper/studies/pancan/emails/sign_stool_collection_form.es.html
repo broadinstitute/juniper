@@ -1,0 +1,29 @@
+#set( $text = {
+  "subject": "Gracias por proporcionar su consentimiento",
+  "logo_alt": "Logo de Pancan Proyecto",
+  "salutation_self": "Estimado participante:",
+  "salutation_parent": "Estimado(a) padre/madre:",
+  "thank_you": "Gracias por unirse a Count Me In y por proporcionar su consentimiento a nuestra investigación.",
+  "instructions": "A continuación, le enviaremos por correo postal un kit con instrucciones sobre cómo proporcionar una muestra de saliva.",
+  "provide_samples": "En algunos casos, también podríamos ponernos en contacto con usted para proporcionar una muestra de sangre
+    (un tubo o dos cucharaditas por muestra), que puede extraerse en el consultorio de su médico, su clínica local o un laboratorio cercano.
+    Si esto es necesario, le daremos instrucciones detalladas sobre cómo hacerlo. Es posible que obtengamos copias
+    de {{\#if proxy_guid}}los registros médicos de su hijo(a){{else}}sus registros médicos{{/if}} y,
+    después de revisarlos, es posible que también solicitemos una porción de la muestra del tumor almacenada al hospital donde se
+    encuentra. Una vez que hayamos analizado {{\#if proxy_guid}}las muestras obtenidas de su hijo(a){{else}}las muestras obtenidas{{/if}},
+    devolveremos las muestras del tumor que no se hayan utilizado al departamento de patológica que nos las haya enviado.",
+  "complete_process": "Si aún no ha proporcionado información sobre dónde ha recibido atención
+    {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}} para su cáncer, puede completar el proceso aquí:",
+  "button": "Formulario de información de contacto",
+  "copy_of_consent": "Para su comodidad, hemos adjuntado una copia de su formulario de consentimiento firmado.",
+  "contact": " Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("sign_stool_collection_form.tmpl.html")

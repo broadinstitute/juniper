@@ -1,0 +1,16 @@
+#set( $text = {
+    "subject": "Thank you for providing your consent",
+    "logo_alt": "Count Me In Project logo",
+    "salutation_self": "Dear {{participant_firstName}},",
+    "salutation_parent": "Dear {{proxy_firstName}},",
+    "thank_you": "Thank you for joining Count Me In and for giving us your consent for research.",
+    "what_to_expect": "We will next mail you a kit with instructions on how to provide a saliva sample.",
+    "what_to_expect_sample_request": "In some cases, we may also contact you about providing a blood sample (1 tube or 2 teaspoons per sample), which can be drawn at your physician's office, local clinic, or nearby lab facility. If applicable, we will provide detailed instructions on how to do this. We may obtain copies of {{\#if proxy_guid}}your child's{{else}}your{{/if}} medical records and, after reviewing them, may also request a small portion of stored tumor sample from the hospital where it is kept. Once we have analyzed {{\#if proxy_guid}}your child's{{else}}your{{/if}} requested samples, we will return any unused tumor samples to the pathology department that sent them to us.",
+    "next_steps": "If you have not yet provided information about where {{\#if proxy_guid}}your child has{{else}}you have{{/if}} received care for your cancer(s), you can complete the process here:",
+    "button_title": "Contact Information Form",
+    "contact": "For your convenience, we have attached a copy of your signed consent form. If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a> or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+    "closing": "Sincerely,",
+    "study_team": "The Count Me In Team",
+    "footnote": "For additional updates, follow us on <a href='${i18n.en.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>, <a href='${i18n.en.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+#parse("consent_completed.tmpl.html")

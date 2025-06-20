@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Recordatorio: Solicitud de la información de contacto de su hijo(a)",
+  "salutation": "Estimado(a) {{proxy_firstName}},",
+  "thank_you": "Gracias por unirse a Count Me In y por contarnos sobre la experiencia que ha tenido su hijo(a).",
+  "reminder": "${reminder_week}, le enviamos un enlace para que nos proporcione el correo electrónico de su hijo(a), para poder comunicarnos con él o ella con respecto al siguiente proceso para renovar el consentimiento. Le reenviamos el enlace en caso de que no lo haya visto. Una vez que nos proporcione el correo electrónico de su hijo(a), le informaremos qué esperar en el proceso de renovación del consentimiento.",
+  "button": "Proporcione la información de contacto",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+    <a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+    <a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("reconsent_child_contact_reminder.tmpl.html")

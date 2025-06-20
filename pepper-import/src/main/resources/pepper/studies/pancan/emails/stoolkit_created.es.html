@@ -1,0 +1,18 @@
+#set( $text = {
+"subject": "Encuesta sobre el kit de recolección de heces",
+"salutation_self": "Estimado(a) {{\#if proxy_guid}}Padre/Madre{{else}}Participante{{/if}},",
+"invitation": "Le estamos invitando para informarles que podrá ver en su tablero un enlace sobre {{\#if proxy_guid}}la recolección de heces de su hijo(a){{else}}su recolección de heces{{/if}}. La encuesta le preguntara unas preguntas breves sobre la muestra de heces {{\#if proxy_guid}}de su hijo(a){{else}}suya{{/if}} y sus hábitos de dieta recientes. Es una buena idea en llenar y completar esta encuesta enseguida de terminar su recolección de heces. La encuesta esta disponible en su tablero a través del enlace a continuación:",
+"login_button": "Tablero de Proyecto",
+"feedback": "Si tiene preguntas en cualquier momento y quisiera hablar con un mimbro de nuestro estudio, no dude en mandar un correo a
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+o llamar por teléfono al <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sinceramente,",
+"study_team": "El Equipo de Count Me In",
+"footnote": "Para estar conectados y mantenerse informado, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a> o
+<a href='${i18n.es.social.instagram}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a>."
+})
+
+#parse("stoolkit_created.tmpl.html")

@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Recordatorio: Encuesta de Count Me In",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Gracias por inscribirse en Count Me In. Si aún no ha completado las encuestas sobre {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}}, los detalles adicionales sobre su cáncer u otros temas, este enlace lo/la llevará de regreso al formulario del panel para que pueda reanudarlas donde las dejó.",
+  "button": "Regresar al cuestionario",
+  "trouble": "Si tiene alguna dificultad mientras completa estos formularios, quizás le resulte útil mostrárselos a un miembro de su familia o médico; para eso, puede imprimirlos o enseñárselos en un teléfono inteligente (smartphone) o tableta.",
+  "optional": "Todas las preguntas son opcionales. Cuanta más información comparta con nosotros, más podemos aprender sobre el cáncer y cómo mejorar los tratamientos en el futuro.",
+  "answers": "Gracias por unirse a este movimiento. Las respuestas que proporcione son un recurso inestimable para la comunidad de investigación del cáncer.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("survey_reminder.tmpl.html")

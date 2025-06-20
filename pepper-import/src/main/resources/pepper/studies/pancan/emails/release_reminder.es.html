@@ -1,0 +1,18 @@
+#set( $text = {
+  "subject": "Recordatorio: Proporcione información adicional para Count Me In",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Gracias por inscribirse en Count Me In y por proporcionar su consentimiento a nuestra investigación.",
+  "need_info": "Para poder continuar, necesitamos que nos proporcione cierta información sobre dónde ha recibido {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}} atención para su cáncer. Por favor, haga clic en el enlace a continuación para proporcionar esta información:",
+  "button": "Formulario de información de contacto",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("release_reminder.tmpl.html")

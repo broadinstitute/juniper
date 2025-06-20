@@ -1,0 +1,20 @@
+#set( $text = {
+  "subject": "Count Me In -- Email Verification & Consent",
+  "salutation": "Dear {{participant_firstName}},",
+  "thank_you": "Thank you for participating in Count Me In. Your parent provided us with your email so we could let you know about the next steps of the process.",
+  "reminder": "As a reminder, the goal of Count Me In is to generate a large dataset that includes a variety of patient-reported, genomic, clinical, and molecular information that can be shared with the biomedical community in order to accelerate discoveries and better therapies for all types of cancers. We greatly appreciate your participation so far.",
+  "few_months": "In a few months you will reach the age legally known as age of majority. At that point, we will ask you to sign a new consent form to continue your participation in Count Me In.",
+  "please_verify": "For now, please click below to verify your email address. We will be sending you an email with more information on re-consent shortly after your birthday.",
+  "button": "Verify Email Address",
+  "contact": "If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("reconsent_email_verification.tmpl.html")

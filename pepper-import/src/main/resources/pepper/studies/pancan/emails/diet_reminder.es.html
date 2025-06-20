@@ -1,0 +1,22 @@
+#set( $text = {
+"subject": "Recordatorio – Count Me In: Encuesta de Dieta y Estilo de Vida",
+"salutation_self": "Estimado(a) {{participant_firstName}},",
+"salutation_parent": "Estimado(a) {{proxy_firstName}},",
+"invitation": "Gracias por {{\#if proxy_guid}}la participación de su hijo(a){{else}}su participación{{/if}} en Count Me In. Recientemente se le invito a tomar una encuesta sobre {{\#if proxy_guid}}la dieta y estilo de vida de su hijo(a){{else}}su dieta y estilo de vida{{/if}}.",
+"login": "Si quisiera completar la encuesta, puede usar el siguiente enlace para entrar a su tablero, en donde podrá tener acceso a la encuesta y terminar de responder las preguntas.",
+"login_button": "Dieta y Estilo de Vida",
+"learn_more": "Nuevamente, esta encuesta es larga y tiene varias secciones diferentes, aproximamos que a la mayoría de las personas les tomara entre 30-45 minutos para completarla. Todas las preguntas son opcionales.",
+"feedback": "Gracias por unirse a este movimiento. Si tiene alguna pregunta o comentarios y quisiera hablar con un miembro de nuestro equipo, por favor contáctenos a través de
+<a href='mailto:info@joincountmein.org' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>info@joincountmein.org</a>
+o por teléfono al <a href='tel:651-403-5315' style='color: #7154ff; text-decoration: none; cursor: pointer;'>651-403-5315</a>.",
+"closing": "Sinceramente,",
+"study_team": "El Equipo de Count Me In",
+"footnote": "Para estar conectados y mantenerse informado, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a> o
+<a href='${i18n.es.social.instagram}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a>."
+})
+
+#parse("diet_reminder.tmpl.html")

@@ -1,0 +1,20 @@
+#set( $text = {
+  "subject": "Recordatorio: Firma el formulario de consentimiento",
+  "salutation": "Estimado(a) {{participant_firstName}},",
+  "thank_you": "Gracias por formar parte de Count Me In. ${reminder_week}, te enviamos un enlace para firmar un formulario de consentimiento para que puedas continuar con tu participación. Te reenviamos el enlace en caso de que no lo hayas visto.",
+  "click_below": "Haz clic en el enlace a continuación para seguir un proceso breve en el que podrás:",
+  "make_account": "Crear una cuenta para tener acceso a tu información",
+  "new_consent": "Aceptar un nuevo formulario de consentimiento para continuar tu participación en Count Me In",
+  "provide_updates": "Proporcionar actualizaciones sobre tus antecedentes médicos, lo que incluye hospitales o médicos nuevos que hayas visitado",
+  "take": "Este proceso te llevará alrededor de 15 a 20 minutos.",
+  "button": "Completa el formulario de consentimiento",
+  "contact": "Si, en algún momento, tienes alguna pregunta y deseas hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+#parse("reconsent_next_steps_reminder.tmpl.html")

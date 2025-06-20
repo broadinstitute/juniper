@@ -1,0 +1,13 @@
+#set( $text = {
+  "subject": "Thank you, {{\#if proxy_guid}}your child's{{else}}your{{/if}} stool kit was received",
+  "salutation_self": "Dear {{participant_firstName}},",
+  "salutation_parent": "Dear {{proxy_firstName}},",
+  "thank_you": "Thank you for sending us a sample of {{\#if proxy_guid}}your child's{{else}}your{{/if}} stool. We're writing to let you know that it has been received by our laboratory.",
+  "medical_records": "As we learn more about cancer, we will keep you updated through emails and social media.",
+  "contact": "If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a> or call <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on <a href='${i18n.en.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>, <a href='${i18n.en.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a> or <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a>."
+})
+
+#parse("stool_received.tmpl.html")

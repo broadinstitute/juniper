@@ -1,0 +1,115 @@
+<html>
+<meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
+
+<head>
+  <title>${text["subject"]}</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700" rel="stylesheet">
+  <style type="text/css">
+    .ExternalClass,
+    .ExternalClass div,
+    .ExternalClass font,
+    .ExternalClass p,
+    .ExternalClass span,
+    .ExternalClass td,
+    img {
+      line-height: 100%;
+    }
+
+    #outlook a {
+      padding: 0;
+    }
+
+    .ExternalClass,
+    .ReadMsgBody {
+      width: 100%;
+    }
+
+    a,
+    blockquote,
+    body,
+    li,
+    p,
+    table,
+    td {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    table,
+    td {
+      mso-table-lspace: 0;
+      mso-table-rspace: 0;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      height: auto;
+      outline: 0;
+      text-decoration: none;
+    }
+
+    table {
+      border-collapse: collapse !important;
+    }
+
+    body {
+      height: 100% !important;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Roboto', sans-serif;
+      src: url(https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700);
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding-left: 10px!important;
+      }
+
+      .table {
+        width: 90% !important;
+      }
+    }
+  </style>
+</head>
+
+<body style="background: #ffffff; width: 100%; height: 100%; padding-top: 60px; padding-left: 60px;">
+  <table style="width: 540px; padding: 0; -webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-family: Roboto, sans-serif; border-collapse: collapse !important;"
+         border="0" cellpadding="0" cellspacing="0" width="100%"
+         class="table">
+    <tr style="width: 540px;">
+      <td align="left" style="margin: 0; padding: 0; font-family: Roboto, sans-serif; width: 278px; height: 33px">
+        <a href="{{baseWebUrl}}" target="_blank" style="cursor: pointer; text-decoration: none;">
+          <img src="https://storage.googleapis.com/${assetsBucketName}/pancan/project-logo.png"
+               alt="Count Me In Project logo" style="-ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none;"
+               width="230px" height="111px" border="0">
+        </a>
+      </td>
+    </tr>
+
+    <tr style="width: 540px;">
+      <td style="padding: 50px 0 0 0;">
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">
+          {{\#if proxy_guid}}${text["salutation_parent"]}{{else}}${text["salutation_self"]}{{/if}}
+        </p>
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">${text["thank_you"]}</p>
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">${text["contact"]}</p>
+      </td>
+    </tr>
+    <tr style="width: 540px;">
+      <td style="padding: 20px 0 80px 0;">
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">${text["closing"]}</p>
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">${text["study_team"]}</p>
+        <p style="font-family: Roboto, sans-serif; text-align: left; font-weight: 400; font-size: 16px; line-height: 24px;">${text["footnote"]}</p>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

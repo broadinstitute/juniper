@@ -1,0 +1,22 @@
+#set( $text = {
+  "subject": "Reminder: Sign the consent form",
+  "salutation": "Dear {{participant_firstName}},",
+  "thank_you": "Thank you for being part of Count Me In. ${reminder_week}, we sent you a link to sign a consent form in order to continue participation. We are resending the link in case it was missed.",
+  "click_below": "Click on the link below in order to follow a short process where you may:",
+  "make_account": "Make an account to access your information",
+  "new_consent": "Opt-in to a new consent form for ongoing participation in Count Me In",
+  "provide_updates": "Provide any updates to your medical history, including new institutions or physicians you've seen",
+  "take": "This process should take about 15-20 minutes.",
+  "button": "Complete Consent Form",
+  "contact": "If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("reconsent_next_steps_reminder.tmpl.html")

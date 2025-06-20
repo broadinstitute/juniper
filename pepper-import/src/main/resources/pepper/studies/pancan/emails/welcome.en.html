@@ -1,0 +1,19 @@
+#set( $text = {
+  "subject": "Thank you for submitting your information to Count Me In",
+  "salutation_self": "Dear Participant,",
+  "salutation_parent": "Dear Parent,",
+  "thank_you": "Thank you for registering to join Count Me In. Your participation isn't just important to our work - it drives everything that we do.",
+  "goal": "The goal of this initiative is to generate a large dataset that includes a variety of patient-reported, genomic, clinical, and molecular information that can be shared with the biomedical community in order to accelerate discoveries and better therapies for all types of cancers. Cancer is not a single disease, and each patient story, survey response, medical record, and tumor sample holds part of the puzzle. Our goal is to help the research community better understand the landscape of cancer as a whole and accelerate discoveries by making data more readily available.",
+  "stay_in_touch": "We will stay in touch with you via email to let you know about any next steps in your participation, as well as general updates from time to time.",
+  "contact": "If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("welcome.tmpl.html")

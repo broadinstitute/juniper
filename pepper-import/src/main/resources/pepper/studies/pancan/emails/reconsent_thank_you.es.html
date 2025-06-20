@@ -1,0 +1,18 @@
+#set( $text = {
+  "subject": "Gracias por proporcionar su consentimiento",
+  "salutation": "Estimado(a) {{participant_firstName}},",
+  "thank_you": "Gracias por firmar el formulario de consentimiento para continuar participando en Count Me In.",
+  "update": "Si necesita actualizar algún otro dato relacionado con el estudio, puede completar el proceso aquí:",
+  "button": "Panel del proyecto",
+  "contact": "Para su comodidad, hemos adjuntado una copia de su formulario de consentimiento firmado.
+    En caso de tener alguna pregunta o inquietud, comuníquese con nosotros por correo electrónico a
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("reconsent_thank_you.tmpl.html")

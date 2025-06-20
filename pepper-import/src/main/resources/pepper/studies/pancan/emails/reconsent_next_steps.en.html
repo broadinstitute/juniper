@@ -1,0 +1,22 @@
+#set( $text = {
+  "subject": "Count Me In - Consent for Research",
+  "salutation": "Dear {{participant_firstName}},",
+  "thank_you": "Thank you for participating in Count Me In. The goal of this initiative is to generate a large dataset that includes a variety of patient-reported, genomic, clinical, and molecular information that can be shared with the biomedical community in order to accelerate discoveries and better therapies for all types of cancers. Cancer is not a single disease, and each patient story, survey response, medical record, and tumor sample holds part of the puzzle.",
+  "click_below": "Since you've recently reached the age where you can provide your own consent for this study, we are asking you to complete the process below. This will ensure that we have your permission to continue including you in the initiative. Click on the link below in order to follow a short process where you may:",
+  "make_account": "Make an account to access your information",
+  "new_consent": "Opt-in to a new consent form for ongoing participation in Count Me In",
+  "provide_updates": "Provide any updates to your medical history, including new institutions or physicians you've seen",
+  "take": "This process should take about 15-20 minutes.",
+  "button": "Complete Consent Form",
+  "contact": "If you have questions about this process or anything else, and would like to talk to a member of our study staff, please reach out to us at
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("reconsent_next_steps.tmpl.html")

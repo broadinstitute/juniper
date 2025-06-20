@@ -1,0 +1,18 @@
+#set( $text = {
+  "subject": "Count Me In request for your child's contact information",
+  "salutation": "Dear {{proxy_firstName}},",
+  "thank_you": "Thank you for joining Count Me In and telling us about your child's experience with cancer. We greatly appreciate you signing up your child for the study. As they get older, our requirements to keep them in the study will change and we will need to connect directly with them in order to provide continued consent. In a few months, your child will reach the age when they will need to sign a consent form to continue participation in the study.",
+  "click_below": "Please click the link below to provide us with your child's email so we can contact them about the upcoming re-consent process.",
+  "button": "Provide Contact Information",
+  "contact": "If you have questions about this process and would like to talk to a member of our study staff, please reach out to us at
+    <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Sincerely,",
+  "study_team": "The Count Me In Team",
+  "footnote": "For additional updates, follow us on
+    <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+    <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+    <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("reconsent_child_contact.tmpl.html")

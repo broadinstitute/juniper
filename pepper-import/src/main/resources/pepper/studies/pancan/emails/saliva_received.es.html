@@ -1,0 +1,17 @@
+#set( $text = {
+  "subject": "Gracias, hemos recibido {{\#if proxy_guid}}el kit con la muestra saliva de su hijo(a){{else}}su kit con su muestra de saliva{{/if}}",
+  "salutation_self": "Estimado(a) {{participant_firstName}}:",
+  "salutation_parent": "Estimado(a) {{proxy_firstName}}:",
+  "thank_you": "Gracias por enviarnos una muestra de {{\#if proxy_guid}}la saliva de su hijo(a){{else}}su saliva{{/if}}. Le escribimos para informarle que la hemos recibido.",
+  "medical_records": "En algunos casos, es posible que solicitemos una copia de {{\#if proxy_guid}}la historia clínica de su hijo(a){{else}}su historia clínica{{/if}} a los hospitales y las clínicas donde nos indicó que {{\#if proxy_guid}}su hijo(a){{else}}usted{{/if}} ha recibido atención. Si ha optado por compartir tejidos, es posible que solicitemos una porción de una muestra del tumor almacenada {{\#if proxy_guid}}de su hijo(a){{else}}suya{{/if}} para analizarla. Nuestro equipo se ocupará de todas estas solicitudes. En caso de ser necesario, podríamos ponernos en contacto para ver si estaría dispuesto(a) a firmar documentos adicionales que {{\#if proxy_guid}}los hospitales de su hijo(a){{else}}sus hospitales{{/if}} podrían requerir en este proceso.",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("saliva_received.tmpl.html")

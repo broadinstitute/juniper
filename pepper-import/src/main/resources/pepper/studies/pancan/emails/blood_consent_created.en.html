@@ -1,0 +1,22 @@
+#set( $text = {
+    "subject": "The Count Me In: Additional Blood Sample Consent",
+    "logo_alt": "Count Me In Project logo",
+    "salutation_self": "Dear {{participant_firstName}},",
+    "salutation_parent": "Dear {{proxy_firstName}},",
+    "thank_you": "Thank you for being part of the The Count Me In Team and for already sharing a sample of your blood.",
+    "additional": "We are writing to you to see if you would be willing to provide an additional blood sample for the project. A key part of the study is to understand how cancer changes over time and in response to treatments, and an additional blood sample will allow researchers to further understand this. If you would prefer not to provide another blood sample, we completely understand, and this will not affect your participation in the study at all.",
+    "login": "Please login to visit your project dashboard at the link below, where you can find the consent form to allow us to send you an additional blood collection kit:",
+    "login_button": "LOGIN TO DASHBOARD",
+    "receive_consent": "Once we receive your consent, we will review all of the information you have shared and send you instructions on how to provide the blood sample (using a simple kit we will mail you).",
+    "feedback": "If you have any feedback or questions at any point and would like to talk to a member of our study staff, please reach out to us at
+        <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+        or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+    "closing": "Sincerely,",
+    "study_team": "The Count Me In Team",
+    "footnote": "For additional updates, follow us on
+        <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+        <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+        <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+
+#parse("blood_consent_created.tmpl.html")

@@ -29,7 +29,7 @@ public class PepperImportCliApp implements CommandLineRunner {
         SpringApplication.run(PepperImportCliApp.class, args);
     }
 
-    public static String SUBSTITUTIONS_FILE = "substitutions.conf";
+    public static String SUBSTITUTIONS_FILE = "subs.conf";
 
     @Autowired
     private ActivityImporter activityImporter;
@@ -40,9 +40,26 @@ public class PepperImportCliApp implements CommandLineRunner {
     public void run(String... args) {
         log.info("EXECUTING : command line importer");
         // these vars should be read from command line or a conf file eventually
-        String studyDir = "atcp";
-        String[] formFiles = {"prequal.conf", "registration.conf", "self-consent.conf", "self-consent-edit.conf", "assent.conf",
-                "medical-history.conf", "contacting-physician.conf", "review-and-submission.conf", "genome-study.conf", "blood-type.conf", "stay-informed.conf"};
+        String studyDir = "pancan";
+        String[] formFiles = {
+                "about-cancer.conf",
+                "about-you.conf",
+                "add-child.conf",
+                "blood-consent.conf",
+                "child-contact.conf",
+                "colorectal-consent-assent.conf",
+                "colorectal-consent-parental.conf",
+                "colorectal-consent-self.conf",
+                "consent-assent.conf",
+                "consent-parental.conf",
+                "consent-self.conf",
+                "diet-lifestyle.conf",
+//                "patch-log.conf", there's a lot of patches - plan?
+                "prequal.conf",
+                "release-minor.conf",
+                "release-self.conf",
+                "stool-kit.conf",
+        };
 
         Config varsCfg = ConfigFactory.parseFile(getFilePath("studies/%s/%s".formatted(studyDir, SUBSTITUTIONS_FILE), ABSOLUTE_SEED_ROOT).toFile());
 

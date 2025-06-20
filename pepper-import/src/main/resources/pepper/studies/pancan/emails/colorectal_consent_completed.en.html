@@ -1,0 +1,19 @@
+#set( $text = {
+    "subject": "Thank you for providing your consent form addendum : stool collection",
+    "logo_alt": "Count Me In Project logo",
+    "salutation_self": "Dear {{participant_firstName}},",
+    "salutation_parent": "Dear {{proxy_firstName}},",
+    "thank_you": "Thank you for joining Count Me In and for giving us your consent form addendum for research.",
+    "what_to_expect": "We will next mail you a stool kit with instructions on how to provide a stool sample.",
+    "what_to_expect_sample_request": "",
+    "next_steps": "If you have not yet provided information about where {{\#if proxy_guid}}your child has{{else}}you have{{/if}} received care for your cancer(s), you can complete the process here:",
+    "button_title": "Contact Information Form",
+    "contact": "For your convenience, we have attached a copy of your signed consent form addendum stool collection (Colorectal Cancer): . If you have questions at any point and would like to talk to a member of our study staff, please reach out to us at <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a> or <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+    "closing": "Sincerely,",
+    "study_team": "The Count Me In Team",
+    "footnote": "For additional updates, follow us on
+        <a href='${i18n.en.social.facebook}'  target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>,
+        <a href='${i18n.en.social.instagram}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a> or
+        <a href='${i18n.en.social.twitter}'   target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>."
+})
+#parse("consent_completed.tmpl.html")

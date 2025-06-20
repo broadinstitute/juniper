@@ -1,0 +1,19 @@
+#set( $text = {
+  "subject": "Recordatorio: Firme el formulario de consentimiento de Count Me In",
+  "logo_alt": "Logo de Count Me In Proyecto",
+  "salutation_self": "Estimado participante:",
+  "salutation_parent": "Estimado(a) padre/madre:",
+  "thank_you": "Gracias por registrarse en Count Me In. En este momento, le preguntamos si estaría dispuesto(a) a firmar nuestro formulario de consentimiento de investigación
+    para completar {{\#if proxy_guid}}la inscripción de su hijo(a){{else}}su inscripción{{/if}} y optar por diversos aspectos de este estudio.",
+  "sign_consent": "Firme el formulario de consentimiento",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("consent_reminder.tmpl.html")

@@ -1,0 +1,21 @@
+#set( $text = {
+  "subject": "Count Me In - Consentimiento a la investigación",
+  "salutation": "Estimado(a) {{participant_firstName}},",
+  "thank_you": "Gracias por participar en Count Me In. El objetivo de esta iniciativa es generar un gran conjunto de datos que incluya una variedad de datos reportados por pacientes, información genómica, clínica y molecular que pueda compartirse con la comunidad biomédica con el fin de acelerar los descubrimientos y mejorar los tratamientos para todos los tipos de cáncer. El cáncer no es una sola enfermedad y la historia de cada paciente, cada respuesta a un cuestionario, cada historia clínica y cada muestra de tumor es una pieza del rompecabezas.",
+  "click_below": "Dado que, hace poco, alcanzaste la edad en la que puedes dar tu propio consentimiento para este estudio, te pedimos que completes el proceso a continuación. De esta manera, nos aseguraremos de contar con tu permiso para continuar incluyéndote en la iniciativa. Haz clic en el enlace a continuación para seguir un proceso breve en el que podrás:",
+  "make_account": "Crear una cuenta para tener acceso a tu información",
+  "new_consent": "Aceptar un nuevo formulario de consentimiento para continuar tu participación en Count Me In",
+  "provide_updates": "Proporcionar actualizaciones sobre tus antecedentes médicos, lo que incluye hospitales o médicos nuevos que hayas visitado",
+  "take": "Este proceso te llevará alrededor de 15 a 20 minutos.",
+  "button": "Completa el formulario de consentimiento",
+  "contact": "Si tienes alguna pregunta sobre este proceso o cualquier otro asunto y deseas hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+    <a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+    <a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("reconsent_next_steps.tmpl.html")

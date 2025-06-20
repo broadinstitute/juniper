@@ -1,0 +1,19 @@
+#set( $text = {
+  "subject": "Count Me In -- Verificación del correo electrónico y consentimiento",
+  "salutation": "Estimado(a) {{participant_firstName}},",
+  "thank_you": "Gracias por participar en Count Me In. Tu padre o madre nos proporcionó tu correo electrónico para poder informarte los próximos pasos del proceso.",
+  "reminder": "Te recordamos que el objetivo de Count Me In es generar una gran base de datos que incluya una variedad de información proporcionada por los pacientes, incluyendo información genómica, clínica y molecular que pueda compartirse con la comunidad biomédica con el fin de acelerar los descubrimientos y mejorar los tratamientos para todos los tipos de cáncer. Estamos sumamente agradecidos por tu participación hasta el momento.",
+  "few_months": "En unos pocos meses, alcanzarás la edad conocida, en términos legales, como la mayoría de edad. En ese momento, te pediremos que firmes un nuevo formulario de consentimiento para seguir participando en Count Me In.",
+  "please_verify": "Por ahora, haz clic a continuación para verificar tu dirección de correo electrónico. Te enviaremos un correo electrónico con más información sobre la renovación del consentimiento poco después de tu cumpleaños.",
+  "button": "Verifica la dirección de correo electrónico",
+  "contact": "Si, en algún momento, tiene alguna pregunta y desea hablar con un miembro de nuestro equipo,
+    comuníquese con nosotros por correo electrónico a <a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+    o al número de teléfono <a href='tel:${contact.phone}' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+  "closing": "Atentamente,",
+  "study_team": "El Equipo de Count Me In",
+  "footnote": "Para obtener actualizaciones adicionales, síganos en
+    <a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+    <a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a>."
+})
+
+#parse("reconsent_email_verification.tmpl.html")

@@ -1,0 +1,19 @@
+#set( $text = {
+"subject": "Gracias por completar la encuesta de Dieta y Estilo de Vida",
+"salutation_self": "Estimado(a) {{participant_firstName}},",
+"salutation_parent": "Estimado(a) {{proxy_firstName}},",
+"thank_you1": "Gracias por haberse tomado el tiempo para completar la encuesta de dieta y estilo de vida. Le queremos notificar que sus respuestas han sido recibidas.",
+"thank_you2": "Nuevamente le queremos agradecer por su participación, estamos agradecidos por su contribución. Si tiene alguna pregunta o comentarios y quisiera hablar con un miembro de nuestro equipo, por favor contáctenos a través de
+<a href='mailto:${contact.email}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.email}</a>
+o por teléfono al <a href='tel:${contact.phone}'
+           style='color: #7154ff; text-decoration: none; cursor: pointer;'>${contact.phone}</a>.",
+"closing": "Sinceramente,",
+"study_team": "El Equipo de Count Me In",
+"footnote": "Para estar conectados y mantenerse informado, síganos en
+<a href='${i18n.es.social.twitter}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Twitter</a>,
+<a href='${i18n.es.social.facebook}' target='_blank' style='color: #7154ff; text-decoration: none; cursor: pointer;'>Facebook</a> o
+<a href='${i18n.es.social.instagram}' target='_blank'
+   style='color: #7154ff; text-decoration: none; cursor: pointer;'>Instagram</a>."
+})
+
+#parse("diet_complete.tmpl.html")
