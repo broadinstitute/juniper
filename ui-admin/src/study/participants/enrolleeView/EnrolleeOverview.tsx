@@ -26,6 +26,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import Families from 'study/participants/Families'
 import { studyEnvParticipantPath } from '../ParticipantsRouter'
 import { Link } from 'react-router-dom'
+import { useUser } from 'user/UserProvider'
+import { UsernameEditor } from 'study/participants/enrolleeView/UsernameEditor'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
@@ -45,6 +47,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     setRelations(relations)
     setParticipantUser(participantUser)
   }, [enrollee.shortcode])
+  const { user } = useUser()
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
   const proxyForRelations = relations.filter(relation =>
@@ -67,11 +70,13 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
           condensed={true}
           values={[dateToDefaultString(enrollee.profile.birthDate) || '']}
         />
-        <InfoCardValue
-          title={'Username'}
-          condensed={true}
-          values={[participantUser?.username || '']}
-        />
+        {user?.superuser && participantUser
+          ? <UsernameEditor participantUser={participantUser} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
+          : <InfoCardValue
+            title={'Username'}
+            condensed={true}
+            values={[participantUser?.username || '']}
+          />}
         <InfoCardValue
           title={'Last login'}
           condensed={true}
