@@ -1,0 +1,44 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "About This Initiative",
+  "htmlPageId" : "4f7b8b9d-d8cd-4e60-85ec-020b834a4410",
+  "htmlPageDto" : {
+    "title" : "About This Initiative",
+    "sections" : [ ],
+    "path" : "aboutInitiative",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "About this initiative",
+        "blurb" : "**Ataxia-telangiectasia (A-T)** is an inherited, neurodegenerative disease. A child with A-T begins to suffer from progressive loss of muscle control around the age of two years. By the age of nine or ten, children with A-T usually become dependent on wheelchairs and their speech becomes slurred. Reading and swallowing also become difficult. About 30 percent of A-T children develop cancer, and most of them have some degree of immune system problems. Although progress has been made in extending the lives of people with A-T through managing their symptoms, the disease remains relentless.",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "A-T affects everyone in a different way",
+        "blurb" : "Siblings with A-T seem to share more similar clinical features than A-T children who carry the same mutations but belong to different families. Scientists therefore believe that a family’s genes – other than the one the causes A-T – may change how A-T affects patients. In addition, it is possible that living in different environments, engaging in different lifestyles and eating a different diet may impact the health of people with A-T.\n\nWe recently identified several people who have typical, disease-causing mutations in their A-T genes, and make no A-T protein (just as other people with A-T), and yet their A-T symptoms are astonishingly mild. We are now optimistic that we might be able to find changes in other genes that correct or compensate for the A-T mutations in these 'super-mild' patients. If so, researchers could possibly find new drug treatments to help all people with A-T. But first, we need to gather the clinical and genetic data from as many people with A-T as possible.\n\nSimilarly, by comparing the medical histories and lifestyles of different A-T patients, researchers may learn which symptom management strategies produce better health outcomes. But first, we need to obtain and combine data from many A-T patients in one place.",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "The Global A-T Family Data Platform",
+        "blurb" : "The Global A-T Family Data Platform is a patient-driven effort overseen by A-T families and experts worldwide through which health information, genetic and potentially other types of data about people with A-T can be shared with researchers. This platform will enable researchers to access important patient data from around the world quickly, securely and efficiently, hopefully leading to new discoveries.\n\nHere’s how the platform works:\n\n- **Enroll in the Data Platform**\n\n    Click on \"Join Us\" and create an account with your name and email address. Once you have created your account, you will be able to register yourself (if you have A-T) or your child(ren) with A-T as Participants in our Data Platform by completing a brief form.\n\n\n- **Give us permission**\n\n  During the enrollment process, we will ask you to complete a consent form giving permission to share the data you provide us with researchers in a de-identified manner. If you choose, you may also give us permission to:\n\n  - share a saliva sample that each person with A-T can send us for genome sequencing\n   - obtain the A-T patient’s medical records from their physicians and share them with researchers\n    - share medical records you have uploaded yourself with researchers\n     - contact you in the future about follow-up research studies\n\n- **Tell us about yourself or your child**\n\n    To join this initiative, you will need to answer some questions about the person with A-T’s health, the doctors they have seen, and their medical and family history. Periodically, we will invite you to complete additional (optional) questionnaires about the person with A-T’s medical condition (surveys created by researchers who will study your data to improve their understanding A-T).\n\n\n- **Send us a saliva kit**\n\n    If you choose to participate in the genome sequencing study, you will send a saliva sample to us in a pre-stamped package that we will provide.\n\n\n- **We will analyze the DNA and health information**\n\n    We will analyze the DNA in the cells obtained from the saliva sample. No additional procedures will be required. We will link the results of the genetic analysis on your saliva and the medical information you provide in our online questionnaires.\n\n\n- **We will share the data with researchers**\n\n    Once potentially identifying information has been removed, the database of health information and genomic data will be made available to researchers around the world through a secure, access-controlled data repository. Your data will only be accessed by qualified investigators who have been granted permission by a data access committee comprised of A-T family members as well as scientific and medical advisors. We will keep track of every study that has used your information.\n\n\n- **Your continuous feedback can accelerate research**\n\n    Periodically, we will invite you to answer questionnaires developed by researchers who are studying the data to understand A-T better. Using this platform, we will have an unprecedented opportunity to quickly obtain answers to important follow-up research questions directly from families. Our ability to follow up with participants can significantly impact research and shorten the path toward making new discoveries.\n\n\n- **Learn with us along the way**\n\n    This unique combination of health and genetic information may hold the key for developing therapies, which would not be possible without your help. We will be sure to provide you with updates about the status of our efforts and tell you about the latest discoveries made possible by your participation.\n\n",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    } ]
+  }
+}

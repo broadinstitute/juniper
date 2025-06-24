@@ -44,7 +44,7 @@ public class PepperImportCliApp implements CommandLineRunner {
         String[] formFiles = {
                 "about-cancer.conf",
                 "about-you.conf",
-                "add-child.conf",
+                "add-child-edited-no-redirect.conf",
                 "blood-consent.conf",
                 "child-contact.conf",
                 "colorectal-consent-assent.conf",
@@ -55,7 +55,7 @@ public class PepperImportCliApp implements CommandLineRunner {
                 "consent-self.conf",
                 "diet-lifestyle.conf",
 //                "patch-log.conf", there's a lot of patches - plan?
-                "prequal.conf",
+                "prequal-edited-no-redirect.conf",
                 "release-minor.conf",
                 "release-self.conf",
                 "stool-kit.conf",

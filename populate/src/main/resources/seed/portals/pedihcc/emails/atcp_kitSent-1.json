@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707345723.386315000,
+  "lastUpdatedAt" : 1718050903.928913000,
+  "stableId" : "atcp_kitSent",
+  "name" : "Kit Sent",
+  "version" : 3,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1707345723.386315000,
+    "lastUpdatedAt" : 1707345723.386315000,
+    "language" : "en",
+    "subject" : "Your ${study.name} sample kit is on its way!",
+    "bodyPopulateFile" : "en/atcp_kitSent-1.html"
+  } ]
+}

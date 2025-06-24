@@ -584,29 +584,18 @@ public class ActivityImporter {
             String stableId = "{" + question + "}";
             String loweredOperation = pepperOperation.toLowerCase().trim();
 
-            if (loweredOperation.equals("answers.hasoption")) {
-                pepperOperation = "contains";
-            } else if (loweredOperation.equals("answers.hastrue")) {
-                return "(" + stableId + " = true or " + stableId + " = 'Yes')";
-            } else if (loweredOperation.equals("isanswered")) {
-                return stableId + " notempty";
-            } else if (loweredOperation.equals("numchildanswers")) {
-                return ""; // todo make custom fn
-            } else if (loweredOperation.startsWith("children[")) {
-                if (loweredOperation.endsWith("].answers.hasoptionstartswith")) {
-                    return ""; // todo make custom fn
-                } else if (loweredOperation.endsWith("].answers.hasoption")) {
-                    return ""; // todo make custom fn
-                } else if (loweredOperation.endsWith("].answers.hasanyoption")) {
-                    return ""; // todo make custom fn
-                } else {
-                    throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+            switch (loweredOperation) {
+                case "answers.hasoption" -> pepperOperation = "contains";
+                case "answers.hastrue" -> {
+                    return "(" + stableId + " = true or " + stableId + " = 'Yes')";
                 }
-            } else if (loweredOperation.equals("answers.hasanyoption")) {
-                System.out.println(value);
-                return ""; // todo make custom fn
-            } else {
-                throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+                case "isanswered" -> {
+                    return stableId + " notempty";
+                }
+                case "answers.hasanyoption" -> {
+                    return convertVisibilityExpressionHasAnyOption(question, value);
+                }
+                default -> throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
             }
             if (value.startsWith("\"") && value.endsWith("\"")) {
                 value = value.substring(1, value.length() - 1);
@@ -627,6 +616,30 @@ public class ActivityImporter {
 
         return out.replace("&&", "and").replace("\n", "").trim();
 
+    }
+
+    private String convertVisibilityExpressionHasAnyOption(String questionStableId, String value) {
+        // the value is a comma-separated list of options with quotes around each
+        // e.g.  "option1","option2","option3"
+        // with brackets, becomes valid json array
+        List<String> options;
+        try {
+            JsonNode node = objectMapper.readTree("[" + value + "]");
+            if (node.isArray()) {
+                options = new ArrayList<>();
+                for (JsonNode optionNode : node) {
+                    options.add(optionNode.asText());
+                }
+            } else {
+                throw new RuntimeException("Expected an array for hasAnyOption value: " + value);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing hasAnyOption value: " + value, e);
+        }
+        if (options.isEmpty()) {
+            return "1=0"; // always false
+        }
+        return "(" + options.stream().map(opt -> "{" + questionStableId + "} contains '" + opt + "'").collect(Collectors.joining(" or ")) + ")";
     }
 
     SurveyType getSurveyType(FormActivityDef activityDef) {

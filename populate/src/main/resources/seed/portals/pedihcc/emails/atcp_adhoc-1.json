@@ -1,0 +1,15 @@
+{
+  "createdAt" : 1689616610.885988000,
+  "lastUpdatedAt" : 1718050904.347776000,
+  "stableId" : "atcp_adhoc",
+  "name" : "Ad-hoc email template",
+  "version" : 2,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1689616610.885988000,
+    "lastUpdatedAt" : 1694627674.469305000,
+    "language" : "en",
+    "subject" : "Hey Do This Thing",
+    "bodyPopulateFile" : "en/atcp_adhoc-1.html"
+  } ]
+}

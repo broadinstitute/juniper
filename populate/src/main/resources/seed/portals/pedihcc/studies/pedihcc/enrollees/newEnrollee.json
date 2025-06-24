@@ -1,0 +1,28 @@
+{
+  "linkedUsername": "newbie@test.com",
+  "shortcode": "ATNEWB",
+  "submittedHoursAgo": 152,
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "PREQUAL",
+    "surveyVersion": 1,
+    "answers": [
+      {"questionStableId": "PREQUAL_FIRST_NAME", "stringValue": "New"},
+      {"questionStableId": "PREQUAL_LAST_NAME", "stringValue": "Enrollee"},
+      {"questionStableId": "REGISTRATION_FIRST_NAME", "stringValue": "New"},
+      {"questionStableId": "REGISTRATION_LAST_NAME", "stringValue": "Enrollee"},
+      {"questionStableId": "REGISTRATION_GENDER", "stringValue": "M"},
+      {"questionStableId": "REGISTRATION_DOB", "dateValue": "1980-01-01"},
+      {"questionStableId": "REGISTRATION_STREET_ADDRESS", "stringValue": "32 Walnut Street"},
+      {"questionStableId": "REGISTRATION_CITY", "stringValue": "Belmont (OurHealth)"},
+      {"questionStableId": "REGISTRATION_STATE_PROVINCE", "stringValue": "MA"},
+      {"questionStableId": "REGISTRATION_COUNTRY", "stringValue": "US"},
+      {"questionStableId": "REGISTRATION_POSTAL_CODE", "stringValue": "02478"},
+      {"questionStableId": "REGISTRATION_PHONE", "stringValue": "617-555-1212"},
+      {"questionStableId": "isProxy", "booleanValue": false},
+      {"questionStableId": "assignAssent", "booleanValue": false},
+      {"questionStableId":"qualified", "booleanValue": true}
+    ]
+  },
+  "simulateSubmissions": true
+}

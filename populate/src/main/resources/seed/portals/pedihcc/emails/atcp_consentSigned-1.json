@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707343635.411393000,
+  "lastUpdatedAt" : 1718052166.778011000,
+  "stableId" : "atcp_consentSigned",
+  "name" : "Consent Signed",
+  "version" : 2,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1714762194.616999000,
+    "lastUpdatedAt" : 1714762194.617000000,
+    "language" : "en",
+    "subject" : "Thank you for your ${study.name} consent!",
+    "bodyPopulateFile" : "en/atcp_consentSigned-1.html"
+  } ]
+}

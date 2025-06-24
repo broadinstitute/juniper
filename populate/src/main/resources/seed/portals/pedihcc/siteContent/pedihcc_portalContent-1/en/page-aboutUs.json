@@ -1,0 +1,68 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "About Us",
+  "htmlPageId" : "6f1749d7-2fec-4341-9cc8-8ba9ec36745c",
+  "htmlPageDto" : {
+    "title" : "About Us",
+    "sections" : [ ],
+    "path" : "aboutUs",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "About Us",
+        "blurb" : "**The Global A-T Family Data Platform** is a patient-driven effort overseen by A-T families and experts worldwide through which health, genetic and potentially other types of information about people with A-T can be shared with researchers.\n\nWe are selecting strategic partners for various components of this initiative, one of which is the Broad Institute of MIT and Harvard, who will be providing the genome sequencing service for us. We are also partnering with staff working at the A-T Children’s Project who have been trained to answer questions about this platform and to send DNA testing kits to families who request them.\n\nWe expect that in the future, the Global A-T Family Data Platform will partner with additional organizations to collect other types of biological and lifestyle data, such as using wearable technologies to capture information about how a person with A-T moves.",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Family Oversight Board",
+        "blurb" : "Our platform’s mission is to enable researchers to access important patient data from around the world quickly, securely and efficiently, hopefully leading to new discoveries. To ensure that our mission and activities are always aligned with what is best for people with A-T around the world, we have established an international Family Oversight Board. Currently, the following family members of A-T patients (listed in alphabetical order) have kindly agreed to serve on this board:\n\n- Cedric Anchisi _(France)_\n- Orly Dror-Azuriel _(Israel)_\n- Natalie Elkheir _(Australia)_\n- Rianne Kranendonk _(Netherlands)_\n- Maria Angelica Lodovici _(Brazil)_\n- Brad Margus _(United States)_\n- Emily Read _(England)_\n- Manoj Kumar Srivastwa _(India)_\n- Conrad Van Hierden _(Canada)_\n- Paxti Villen _(Spain)_\n- Lian Yarlett _(England)_\n",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Scientific and Medical Advisory Board",
+        "blurb" : "In addition to ensuring that the platform’s activities promote and enable data sharing while protecting people with A-T, the Family Advisory Board has selected and invited respected scientists and clinicians to join a Scientific and Medical Advisory Board which will provide expert advice to the Family Advisory Board. It is hoped that the members of this advisory board will not only include experts in the clinical presentation and underlying biology of ataxia-telangiectasia but also experts in the analysis of large datasets such as genome sequence data, biostatistics, application programming interfaces, data security, regulatory issues, medical ethics, legal matters, and surveying methodologies. Currently, the following experts (listed alphabetically) have generously offered to serve on this advisory board:\n\n- Martin Bobrow, MD - _Emeritus Professor of Medical Genetics – University of Cambridge, Cambridge, United Kingdom and Honorary Faculty, Wellcome Trust Sanger Institute, Hinxton, UK_\n- Luciana Chessa, MD, PhD - _Professor of Medical Genetics, Sapienza University, Roma, Italy_\n- David Coman, MD - _Medical Director of Paediatrics, Wesley Hospital, Queensland, Australia_\n- Thomas Crawford, MD - _Associate Professor of Pediatrics and Neurology, Johns Hopkins Children’s Center, Baltimore, MD, USA_\n- David Glazer, - _Director, Google Genomics, Mountain View, CA, USA_\n- Setsuko Hasegawa, MD - _Pediatrics and Developmental Biology, Tokyo Medical and Dental University, Japan_\nLutz Krause, PhD - _Associate Professor, The University of Queensland, Queensland, Australia_\n- Martin Lavin, PhD - _Foundation Professor of Molecular Oncology, University of Queensland, Brisbane, Australia_\n- Howard Lederman, MD, PhD - _Professor of Pediatrics, Johns Hopkins Children’s Center, Baltimore, MD, USA_\n- Nizar Mahlaoui, MD, MSc, MPH - _Pediatric Immuno-Hematology, Co-coordinator of The French Reference Center for Primary Immunodeficiencies, Necker Hospital, Paris, France_\n- Andreea Nissenkorn, MD - _Pediatric Neurologist, Sheba Medical Center, Ramat Gan, Israel_\n- Anthony Philippakis, MD, PhD - _Chief Data Officer, Broad Institute, Cambridge, MA, USA_\n- Agata Polizzi, MD, PhD - _National Centre for Rare Diseases, Rome, Italy_\n- Yosef Shiloh, PhD - _Professor of Human Genetics, Tel Aviv University, Ramat Aviv, Israel_\n- Grant Stewart, PhD - _Professor of Cancer Genetics, University of Birmingham Medical School, Birmingham, UK_\n- Dominique Stoppa-Lyonnet, MD, PhD - _Professor of Genetics, Paris Descartes University and Head of the Genetics Department, Institut Curie, Paris, France_\n- Masatoshi Takagi, MD, PhD - _Associate Professor, Tokyo Medical and Dental University, Tokyo, Japan_\n- Anne-Marie Tassé, PhD - _Executive Director, Public Population Project in Genomics and Society, Montreal, Canada_\n- A. Malcolm Taylor, PhD - _Professor of Cancer Genetics, University of Birmingham Medical School, Birmingham, UK_\n- William Whitehouse, MD - _Clinical Associate Professor, University of Nottingham, Nottingham, UK_\n- Stefan Zielen, MD, PhD - _Children’s Hospital of Johann Wolfgang Goethe University, Frankfurt, Germany_\n",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Data Access Committee",
+        "blurb" : "The information on the Global A-T Family Data Platform can only be accessed by qualified investigators who have been granted permission by the Data Access Committee. This committee is comprised of A-T family representatives recruited for our Family Oversight Board who in turn recruit experts for our Scientific and Medical Advisory Board – ensuring that each researcher’s project is consistent with the goals of this initiative. The Family Oversight Board will oversee the Scientific and Medical Advisory Board.",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    }, {
+      "sectionType" : "RAW_HTML",
+      "rawContent" : "<div class=\"d-flex justify-content-center\">\n   <div class=\"w-50 border\"/>\n</div>"
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Financial Support of the Global A-T Family Data Platform",
+        "blurb" : "Currently, the development and operation of the Global A-T Family Data Platform is being financially supported only by the Ataxia-Telangiectasia Children’s Project, Inc., better known as the A-­T Children’s Project, which is a non­profit organization based in Coconut Creek, Florida, USA, that raises funds to support and coordinate biomedical research projects, scientific conferences and clinical centers aimed at finding life improving therapies for A-T.\n\nAlthough the A-T Children’s Project initiated this project, it is hoped that A-T organizations, clinicians, and families from around the world will support this endeavor by encouraging family participation, helping to oversee access to the data, and when possible, contributing financial support.",
+        "blurbAlign" : "left",
+        "buttons" : [ ],
+        "blurbSize" : "fs-5"
+      }
+    } ]
+  }
+}

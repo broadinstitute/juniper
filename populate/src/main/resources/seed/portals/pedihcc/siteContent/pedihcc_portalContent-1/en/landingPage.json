@@ -1,0 +1,129 @@
+{
+  "title" : "",
+  "sections" : [ ],
+  "sectionDtos" : [ {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "Help transform our understanding of ataxia-telangiectasia (A-T).",
+      "blurb" : "If you or your child has A-T, you may be able to help researchers make new discoveries and accelerate the development of therapies.\n\nEach patient's genetic information and medical condition are unique and may be the key for the development of treatments. Share this information, send us a saliva sample for genome sequencing and join us on a journey to learn more about A-T.",
+      "fullWidth" : true,
+      "image" : {
+        "cleanFileName" : "home_lg.jpg",
+        "version" : 1,
+        "alt" : "alt text"
+      },
+      "imagePosition" : "right",
+      "background" : "linear-gradient(180deg, rgb(40, 90, 133) 0%, #B9CCDD 100%)",
+      "buttons" : [ {
+        "text" : "Join Us",
+        "type" : "join",
+        "studyShortcode" : "atcp"
+      } ],
+      "imageAsBackground" : true,
+      "aspectRatio" : "16/9",
+      "color" : "white",
+      "blurbSize" : "fs-5"
+    }
+  }, {
+    "sectionType" : "HERO_CENTERED",
+    "sectionConfigJson" : {
+      "title" : "",
+      "blurb" : "Join us on this quest and stay informed about the latest findings.",
+      "blurbAlign" : "center",
+      "buttons" : [ {
+        "type" : "join",
+        "text" : "Join Us",
+        "href" : "",
+        "studyShortcode" : "atcp"
+      } ],
+      "blurbSize" : "fs-2"
+    }
+  }, {
+    "sectionType" : "PARTICIPATION_DETAIL",
+    "sectionConfigJson" : {
+      "blurb" : "Click on \"Join Us\" and complete a brief form to enroll yourself or your child with A-T in our data platform.\n",
+      "image" : {
+        "cleanFileName" : "how-to-participate-step01.svg",
+        "version" : 1
+      },
+      "imagePosition" : "left",
+      "stepNumberText" : "",
+      "timeIndication" : "",
+      "title" : "Create an account",
+      "background" : "rgb(40, 90, 133)",
+      "color" : "white",
+      "fullWidth" : false,
+      "imageAsBackground" : false,
+      "blurbSize" : "fs-5"
+    }
+  }, {
+    "sectionType" : "PARTICIPATION_DETAIL",
+    "sectionConfigJson" : {
+      "blurb" : "During the enrollment process, we will ask you to complete a consent form giving permission to share the data you provide us with researchers in a de-identified manner. If you choose, you may also give us permission to:\n- share a saliva sample that each A-T patient can send us for genome sequencing\n- obtain the A-T patient’s medical records from their physicians and share them with researchers\n- share medical records you have uploaded yourself with researchers\n- contact you in the future about follow-up research studies",
+      "image" : {
+        "cleanFileName" : "how-to-participate-step2.svg",
+        "version" : 1
+      },
+      "imagePosition" : "left",
+      "stepNumberText" : "",
+      "timeIndication" : "",
+      "title" : "Give us permission",
+      "background" : "rgb(40, 90, 133)",
+      "color" : "white",
+      "fullWidth" : false,
+      "imageAsBackground" : false,
+      "blurbSize" : "fs-5"
+    }
+  }, {
+    "sectionType" : "PARTICIPATION_DETAIL",
+    "sectionConfigJson" : {
+      "blurb" : "Complete an online questionnaire about how A-T affects you or your child. We will also send you a saliva sample collection kit for genome sequencing. You will also be able to periodically update the records of medical history and experiences you shared with the platform.\n",
+      "image" : {
+        "cleanFileName" : "how-to-participate-step03.svg",
+        "version" : 1
+      },
+      "imagePosition" : "left",
+      "stepNumberText" : "",
+      "timeIndication" : "",
+      "title" : "Share your insight and saliva sample",
+      "background" : "rgb(40, 90, 133)",
+      "color" : "white",
+      "fullWidth" : false,
+      "imageAsBackground" : false,
+      "blurbSize" : "fs-5"
+    }
+  }, {
+    "sectionType" : "PARTICIPATION_DETAIL",
+    "sectionConfigJson" : {
+      "blurb" : "We will provide you with updates about the latest discoveries made possible by your participation.  \nAnd if you agree, we may contact you in the future to ask more questions about your or your child’s experiences and invite you to participate in additional future studies.\n",
+      "image" : {
+        "cleanFileName" : "how-to-participate-step04.svg",
+        "version" : 1
+      },
+      "imagePosition" : "left",
+      "stepNumberText" : "",
+      "timeIndication" : "",
+      "title" : "Let’s learn together",
+      "background" : "rgb(40, 90, 133)",
+      "color" : "white",
+      "fullWidth" : false,
+      "imageAsBackground" : false,
+      "blurbSize" : "fs-5"
+    }
+  }, {
+    "sectionType" : "HERO_CENTERED",
+    "sectionConfigJson" : {
+      "title" : "",
+      "blurb" : "Together, we have the power to improve the health of children and young adults with A-T. \n\nGet started now!\n",
+      "blurbAlign" : "center",
+      "buttons" : [ {
+        "type" : "join",
+        "text" : "Join Us",
+        "href" : "",
+        "studyShortcode" : "atcp"
+      } ],
+      "color" : "",
+      "blurbSize" : "fs-2"
+    }
+  } ]
+}

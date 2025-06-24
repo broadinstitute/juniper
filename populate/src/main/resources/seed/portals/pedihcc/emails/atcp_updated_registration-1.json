@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707344980.512164000,
+  "lastUpdatedAt" : 1718052166.768273000,
+  "stableId" : "atcp_updated_registration",
+  "name" : "Updated Registration",
+  "version" : 3,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1714762194.395345000,
+    "lastUpdatedAt" : 1714762194.395345000,
+    "language" : "en",
+    "subject" : "Participant has updated registration form in Global A-T Family Data Platform",
+    "bodyPopulateFile" : "en/atcp_updated_registration-1.html"
+  } ]
+}
