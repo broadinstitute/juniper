@@ -57,7 +57,8 @@ public class ParticipantUserExtService {
     participantUser.setPortalParticipantUsers(List.of(portalParticipantUser));
     return participantUser;
   }
-/** updates the participantUser -- currently only supports editing the username */
+
+  /** updates the participantUser -- currently only supports editing the username */
   @EnforcePortalEnvPermission(permission = "participant_data_edit")
   @SuperuserOnly
   public ParticipantUser update(
