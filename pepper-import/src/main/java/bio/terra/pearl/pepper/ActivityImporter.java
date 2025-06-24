@@ -99,13 +99,18 @@ public class ActivityImporter {
         // but they seem to be unused in pepper
 
         ArrayNode pages = root.putArray("pages");
+
+        SurveyImportContext surveyImportContext = new SurveyImportContext();
+        surveyImportContext.setFormStableId(activityDef.getActivityCode());
+        surveyImportContext.setAllLangMap(allLangMap);
+
         for (FormSectionDef section : activityDef.getAllSections()) {
             ObjectNode page = objectMapper.createObjectNode();
             pages.add(page);
             ArrayNode elements = objectMapper.createArrayNode();
             page.set("elements", elements);
             for (FormBlockDef blockDef : section.getBlocks()) {
-                elements.addAll(convertBlock(allLangMap, blockDef));
+                elements.addAll(convertBlock(surveyImportContext, blockDef));
             }
         }
         try {
@@ -120,7 +125,7 @@ public class ActivityImporter {
         return survey;
     }
 
-    private List<JsonNode> convertBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+    private List<JsonNode> convertBlock(SurveyImportContext ctx, FormBlockDef blockDef) {
         // originally, we just used the "getQuestions" method on the blockDef
         // to handle nested questions, but this doesn't surface any of the
         // nested conditional visibility expressions, so we have to
@@ -129,19 +134,19 @@ public class ActivityImporter {
 
         switch (blockDef.getBlockType()) {
             case QUESTION:
-                elements.addAll(convertBlockQuestions(allLangMap, blockDef));
+                elements.addAll(convertBlockQuestions(ctx, blockDef));
                 break;
             case CONTENT:
-                elements.addAll(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
+                elements.addAll(getJsonNodeForContentBlock(ctx, (ContentBlockDef) blockDef));
                 break;
             case COMPONENT:
-                elements.addAll(getJsonNodeForComponentBlock(allLangMap, (ComponentBlockDef) blockDef));
+                elements.addAll(getJsonNodeForComponentBlock(ctx, (ComponentBlockDef) blockDef));
                 break;
             case GROUP:
-                elements.addAll(convertGroupBlock(allLangMap, blockDef));
+                elements.addAll(convertGroupBlock(ctx, blockDef));
                 break;
             case CONDITIONAL:
-                elements.addAll(convertConditionalBlock(allLangMap, (ConditionalBlockDef) blockDef));
+                elements.addAll(convertConditionalBlock(ctx, (ConditionalBlockDef) blockDef));
                 break;
             default:
                 log.warn("Unsupported block type: " + blockDef.getBlockType());
@@ -149,14 +154,14 @@ public class ActivityImporter {
         return elements;
     }
 
-    private List<JsonNode> convertGroupBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+    private List<JsonNode> convertGroupBlock(SurveyImportContext ctx, FormBlockDef blockDef) {
         List<JsonNode> nodes = new ArrayList<>();
         if (blockDef.getBlockType().equals(BlockType.GROUP)) {
             GroupBlockDef groupBlockDef = ((GroupBlockDef) blockDef);
             List<FormBlockDef> nestedBlockdefs = groupBlockDef.getNested();
             for (FormBlockDef nestedBlockDef : nestedBlockdefs) {
                 nestedBlockDef.setShownExpr(concatShownExpr(blockDef.getShownExpr(), nestedBlockDef.getShownExpr()));
-                nodes.addAll(convertBlock(allLangMap, nestedBlockDef));
+                nodes.addAll(convertBlock(ctx, nestedBlockDef));
             }
         }
 
@@ -169,15 +174,15 @@ public class ActivityImporter {
         return List.of(objectMapper.valueToTree(panel));
     }
 
-    private List<JsonNode> convertConditionalBlock(Map<String, Map<String, Object>> allLangMap, ConditionalBlockDef blockDef) {
+    private List<JsonNode> convertConditionalBlock(SurveyImportContext ctx, ConditionalBlockDef blockDef) {
         List<JsonNode> elements = new ArrayList<>();
         if (blockDef.getBlockType().equals(BlockType.CONDITIONAL)) {
 
-            elements.addAll(convertQuestionToSurveyJsFormat(blockDef, allLangMap, blockDef.getControl()));
+            elements.addAll(convertQuestionToSurveyJsFormat(ctx, blockDef, blockDef.getControl()));
 
             for (FormBlockDef formBlockDef : blockDef.getNested()) {
                 formBlockDef.setShownExpr(concatShownExpr(blockDef.getShownExpr(), formBlockDef.getShownExpr()));
-                elements.addAll(convertBlock(allLangMap, formBlockDef));
+                elements.addAll(convertBlock(ctx, formBlockDef));
             }
         }
         return elements;
@@ -189,21 +194,21 @@ public class ActivityImporter {
                 .collect(Collectors.joining(" && "));
     }
 
-    private List<JsonNode> convertBlockQuestions(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+    private List<JsonNode> convertBlockQuestions(SurveyImportContext ctx, FormBlockDef blockDef) {
         List<JsonNode> questionNodes = new ArrayList<>();
         if (blockDef.getBlockType().equals(BlockType.QUESTION)) {
-            questionNodes.addAll(convertQuestionToSurveyJsFormat(blockDef, allLangMap, ((QuestionBlockDef) blockDef).getQuestion()));
+            questionNodes.addAll(convertQuestionToSurveyJsFormat(ctx, blockDef, ((QuestionBlockDef) blockDef).getQuestion()));
             return questionNodes;
         }
 
         return questionNodes;
     }
 
-    private List<JsonNode> convertQuestionToSurveyJsFormat(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
+    private List<JsonNode> convertQuestionToSurveyJsFormat(SurveyImportContext ctx, FormBlockDef blockDef, QuestionDef pepperQuestionDef) {
         if (pepperQuestionDef.getQuestionType().equals(QuestionType.COMPOSITE)) {
             // composite questions are not 'questions' in surveyjs, rather panels.
             // so, they need to be handled totally differently
-            return List.of(convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef));
+            return List.of(convertCompositeQuestion(ctx, blockDef, (CompositeQuestionDef) pepperQuestionDef));
         }
 
         Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
@@ -241,7 +246,7 @@ public class ActivityImporter {
         List<JsonNode> otherQuestions = new ArrayList<>();
         if (pepperQuestionDef.getQuestionType().equals(QuestionType.PICKLIST)) {
             PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
-            choices = getPicklistChoices(picklistQuestionDef, allLangMap);
+            choices = getPicklistChoices(picklistQuestionDef, ctx.getAllLangMap());
 
             // confusingly, label is placeholder for picklists
             if (Objects.nonNull(picklistQuestionDef.getPicklistLabelTemplate())) {
@@ -250,7 +255,7 @@ public class ActivityImporter {
 
             // surveyjs only supports 1 other question at a time, but pepper often has many other
             // questions to just one picklist
-            otherQuestions = createOtherQuestions(picklistQuestionDef, allLangMap, choices);
+            otherQuestions = createOtherQuestions(ctx, picklistQuestionDef, choices);
         }
 
         Map<String, String> labelTrue = null;
@@ -318,7 +323,22 @@ public class ActivityImporter {
         return out;
     }
 
-    private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
+    // pepper does not require content (html/text) stable ids to be unique, but
+    // juniper does. this function ensures uniqueness by appending _1, _2, etc. to the stable id,
+    // should only be used for content blocks
+    private String ensureUniqueContentBlockStableIds(SurveyImportContext ctx, String stableId) {
+        String uniqueStableId = stableId;
+        int counter = 1;
+        while (ctx.getContentBlockStableIds().contains(uniqueStableId)) {
+            uniqueStableId = stableId + "_" + counter;
+            System.out.println("WARNING: duplicate stableId found: " + stableId + ", renaming to " + uniqueStableId);
+            counter++;
+        }
+        ctx.getContentBlockStableIds().add(uniqueStableId);
+        return uniqueStableId;
+    }
+
+    private List<JsonNode> createOtherQuestions(SurveyImportContext ctx, PicklistQuestionDef picklistQuestionDef, List<SurveyJSQuestion.Choice> choices) {
 
         boolean hasDetailsAllowed = picklistQuestionDef.getPicklistOptions().stream().anyMatch(PicklistOptionDef::isDetailsAllowed);
 
@@ -366,7 +386,7 @@ public class ActivityImporter {
         return otherQuestions;
     }
 
-    private JsonNode convertCompositeQuestion(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, CompositeQuestionDef pepperQuestionDef) {
+    private JsonNode convertCompositeQuestion(SurveyImportContext ctx, FormBlockDef blockDef, CompositeQuestionDef pepperQuestionDef) {
 
         // add button template is the text of the add button
         Map<String, String> addButtonTemplate = null;
@@ -383,7 +403,7 @@ public class ActivityImporter {
 
         // find all subquestions for the composite question
         List<JsonNode> subQuestions = pepperQuestionDef.getChildren().stream()
-                .flatMap(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child).stream())
+                .flatMap(child -> convertQuestionToSurveyJsFormat(ctx, blockDef, child).stream())
                 .collect(Collectors.toList());
 
         SurveyJSPanel panel;
@@ -524,7 +544,7 @@ public class ActivityImporter {
     }
 
 
-    private List<JsonNode> getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
+    private List<JsonNode> getJsonNodeForContentBlock(SurveyImportContext ctx, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
         String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null; //where to set this title txt ?
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
@@ -539,7 +559,7 @@ public class ActivityImporter {
             titleTxtMap = getVariableTranslationsTxt(contentBlockDef.getTitleTemplate().getTemplateText(), contentBlockDef.getTitleTemplate().getVariables());
         }
 
-        String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
+        String name = ensureUniqueContentBlockStableIds(ctx, contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName());
 
         List<JsonNode> out = new ArrayList<>();
         if (!titleTxtMap.isEmpty()) {
@@ -561,7 +581,7 @@ public class ActivityImporter {
         return out;
     }
 
-    private List<JsonNode> getJsonNodeForComponentBlock(Map<String, Map<String, Object>> allLangMap, ComponentBlockDef blockDef) {
+    private List<JsonNode> getJsonNodeForComponentBlock(SurveyImportContext ctx, ComponentBlockDef blockDef) {
         ComponentType componentType = blockDef.getComponentType();
         return List.of(); // todo implement this
     }
