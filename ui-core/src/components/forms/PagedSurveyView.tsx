@@ -46,8 +46,12 @@ export function PagedSurveyView({
   setTaskId,
   selectedLanguage,
   justification,
-  setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure,
-  searchParams, setSearchParams,
+  setAutosaveStatus,
+  enrollee,
+  proxyProfile,
+  adminUserId,
+  onSuccess,
+  onFailure,
   showHeaders = true
 }: {
   studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse, referencedAnswers?: Answer[],
@@ -62,8 +66,6 @@ export function PagedSurveyView({
     taskId: string,
     setTaskId: (taskId: string) => void,
     adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
-  searchParams: URLSearchParams,
-  setSearchParams: (params: URLSearchParams) => void
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
   // it's not entirely clear, but we cannot rely on the response object passed into
@@ -73,7 +75,7 @@ export function PagedSurveyView({
   // TODO: JN-1707 refactor this component to clarify state management
   const [complete, setComplete] = React.useState(response?.complete ?? false)
 
-  const pager = useRoutablePageNumber(searchParams, setSearchParams)
+  const pager = useRoutablePageNumber()
 
   const Api = useApiContext()
   const { i18n } = useI18n()
