@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
     implementation 'org.liquibase:liquibase-core:4.31.0'
     implementation 'com.auth0:java-jwt:4.5.0'
-    implementation 'com.google.guava:guava:33.4.6-jre'
+    implementation 'com.google.guava:guava:33.4.8-jre'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
