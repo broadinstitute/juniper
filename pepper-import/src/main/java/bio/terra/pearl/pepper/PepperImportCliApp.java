@@ -44,21 +44,21 @@ public class PepperImportCliApp implements CommandLineRunner {
         String[] formFiles = {
                 "about-cancer.conf",
                 "about-you.conf",
-                "add-child-edited-no-redirect.conf",
-                "blood-consent.conf",
+//                "add-child-edited-no-redirect.conf",
+//                "blood-consent.conf",
                 "child-contact.conf",
-                "colorectal-consent-assent.conf",
-                "colorectal-consent-parental.conf",
-                "colorectal-consent-self.conf",
+//                "colorectal-consent-assent.conf",
+//                "colorectal-consent-parental.conf",
+//                "colorectal-consent-self.conf",
                 "consent-assent.conf",
                 "consent-parental.conf",
                 "consent-self.conf",
-                "diet-lifestyle.conf",
+//                "diet-lifestyle.conf",
 //                "patch-log.conf", there's a lot of patches - plan?
                 "prequal-edited-no-redirect.conf",
                 "release-minor.conf",
                 "release-self.conf",
-                "stool-kit.conf",
+//                "stool-kit.conf",
         };
 
         Config varsCfg = ConfigFactory.parseFile(getFilePath("studies/%s/%s".formatted(studyDir, SUBSTITUTIONS_FILE), ABSOLUTE_SEED_ROOT).toFile());
