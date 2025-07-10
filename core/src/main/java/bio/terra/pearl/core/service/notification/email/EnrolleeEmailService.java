@@ -24,7 +24,10 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -195,6 +198,24 @@ public class EnrolleeEmailService implements NotificationSender {
             log.error("no email template configured: triggerId: {}, portalEnv: {}",
                     config.getId(), config.getPortalEnvironmentId());
             return false;
+        }
+        if (config.getMinMinutesSinceLastNotification() != null) {
+            Optional<Notification> lastSentNotif = notificationService
+                    .findMostRecentSentByEnrolleeAndTriggerId(enrolleeContext.getEnrollee().getId(), config.getId());
+
+            if (lastSentNotif.isPresent()) {
+                Instant lastSentTime = lastSentNotif.get().getCreatedAt();
+                Duration timeSinceLastSent = Duration.between(lastSentTime, Instant.now());
+
+                if (timeSinceLastSent.toMinutes() < config.getMinMinutesSinceLastNotification()) {
+                    log.info("skipping email, last email sent at {}, which is less at than {} minutes ago. enrollee {}, triggerId: {}, portalEnv: {}",
+                            lastSentTime,
+                            config.getMinMinutesSinceLastNotification(),
+                            enrolleeContext.getEnrollee().getShortcode(),
+                            config.getId(), config.getPortalEnvironmentId());
+                    return false;  // too soon to send another email
+                }
+            }
         }
         if (contextInfo == null) {
             // the environment hasn't finished populating yet, skip

@@ -53,6 +53,7 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyE
     private UUID emailTemplateId;
     private EmailTemplate emailTemplate;
     private String rule;
+    private Integer minMinutesSinceLastNotification;
 
     // for admin notifications, comma separated list of admin emails.
     // will not send if the email does not have an associated admin account

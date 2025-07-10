@@ -6,6 +6,7 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.BaseEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
+import bio.terra.pearl.core.service.workflow.EnrolleeFailedLoginEvent;
 import bio.terra.pearl.core.service.workflow.PortalRegistrationEvent;
 
 public enum EventClass {
@@ -14,7 +15,8 @@ public enum EventClass {
     ENROLLEE_SURVEY_EVENT(EnrolleeSurveyEvent.class),
     ENROLLEE_CONSENT_EVENT(EnrolleeConsentEvent.class),
     KIT_STATUS_EVENT(KitStatusEvent.class),
-    SURVEY_PUBLISHED_EVENT(SurveyPublishedEvent.class);
+    SURVEY_PUBLISHED_EVENT(SurveyPublishedEvent.class),
+    ENROLLEE_FAILED_LOGIN_EVENT(EnrolleeFailedLoginEvent.class);
 
     public final Class<? extends BaseEvent> eventClass;
 

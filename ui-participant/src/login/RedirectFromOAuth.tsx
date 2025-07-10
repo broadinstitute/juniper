@@ -43,7 +43,6 @@ export const RedirectFromOAuth = () => {
       // do nothing and wait until a render after AuthProvider is done.
       // Also, we'll be manipulating state, so we may get rendered more than once before we navigate away, so make sure
       // we only process the return from OAuth once (when the user is still "anonymous")
-
       if (auth.error && user) {
         // This case can happen if the user is already logged in and tries to log in again with a consumed oauth state.
         // The user already has a valid session, so we'll log that this happened but navigate to the hub without hassle.

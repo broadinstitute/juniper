@@ -10,10 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +67,10 @@ public class NotificationService extends CrudService<Notification, NotificationD
                 });
 
         return notifications;
+    }
+
+    public Optional<Notification> findMostRecentSentByEnrolleeAndTriggerId(UUID enrolleeId, UUID triggerId) {
+        return dao.findMostRecentSentByEnrolleeAndTriggerId(enrolleeId, triggerId);
     }
 
     private void attachEnrollees(List<Notification> notifications) {

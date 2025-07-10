@@ -172,7 +172,8 @@ const eventTypeOptions = [
   { label: 'Study Consent', value: 'STUDY_CONSENT' },
   { label: 'Survey Completed', value: 'SURVEY_RESPONSE' },
   { label: 'Kit Sent', value: 'KIT_SENT' },
-  { label: 'Kit Returned', value: 'KIT_RECEIVED' }
+  { label: 'Kit Returned', value: 'KIT_RECEIVED' },
+  { label: 'Failed Login', value: 'FAILED_LOGIN' }
 ]
 
 const EventTriggerEditor = (
@@ -192,7 +193,6 @@ const EventTriggerEditor = (
       onChange={opt =>
         updateTrigger('eventType', opt?.value ?? eventTypeOptions[0].value)}
     />
-
   </div>
 }
 
