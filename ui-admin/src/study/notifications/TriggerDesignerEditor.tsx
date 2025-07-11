@@ -412,6 +412,25 @@ const NotificationEditor = (
       <Select options={deliveryTypeOptions} isDisabled={true}
         value={deliveryTypeOptions.find(opt => opt.value === trigger.deliveryType)}/>
     </label>
+    {trigger.actionType === 'NOTIFICATION' && <div className='w-50 mb-2 d-flex flex-row'>
+      <label className="form-label">
+            Minimum minutes since last notification
+        <input
+          className="form-control "
+          value={trigger.minMinutesSinceLastNotification}
+          onChange={e => {
+            if (e.target.value === '') {
+              updateTrigger('minMinutesSinceLastNotification', undefined)
+            } else {
+              updateTrigger(
+                'minMinutesSinceLastNotification',
+                parseInt(e.target.value, 10)
+              )
+            }
+          }}/>
+      </label>
+    </div>}
+
     {hasEmailTemplate &&
         <>
           <EmailTemplateEditor

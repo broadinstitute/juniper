@@ -152,9 +152,12 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
     }
 
     public EnrolleeFailedLoginEvent publishEnrolleeFailedLoginEvent(Enrollee enrollee, PortalParticipantUser ppUser) {
+        EnrolleeContext enrolleeContext = enrolleeContextService.fetchData(enrollee);
+
         EnrolleeFailedLoginEvent event = EnrolleeFailedLoginEvent.builder()
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
+                .enrolleeContext(enrolleeContext)
                 .build();
         saveEvent(EventClass.ENROLLEE_FAILED_LOGIN_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
