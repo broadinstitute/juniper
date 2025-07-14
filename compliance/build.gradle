@@ -40,7 +40,7 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-function-adapter-gcp"
     implementation 'org.springframework.boot:spring-boot-starter-webflux:3.5.3'
     implementation 'com.slack.api:slack-api-client:1.45.3'
-    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation 'com.google.code.gson:gson:2.13.1'
 }
 
 jar {
