@@ -62,7 +62,26 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("accountUsername", getUsername(ruleData.getParticipantUser(), isProxy));
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
-        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), enrolleeContext.getProfile(), isProxy));
+
+
+        // b2c redirect links (with login_hint and preferredLanguage query params)
+        valueMap.put("invitationLink", getB2cRedirectLink(
+                routingPaths.getParticipantInvitationPath(),
+                contextInfo.portalEnv(),
+                contextInfo.portalEnvConfig(),
+                contextInfo.portal().getShortcode(),
+                ruleData.getParticipantUser(),
+                enrolleeContext.getProfile(),
+                isProxy));
+        valueMap.put("resetPasswordLink", getB2cRedirectLink(
+                routingPaths.getResetPasswordPath(),
+                contextInfo.portalEnv(),
+                contextInfo.portalEnvConfig(),
+                contextInfo.portal().getShortcode(),
+                ruleData.getParticipantUser(),
+                enrolleeContext.getProfile(),
+                isProxy));
+
         if (messages != null) {
             valueMap.putAll(messages);
         }
@@ -177,20 +196,23 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     /**
-     * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
+     * gets a b2c redirect link; e.g., invitation or reset password link. Path must be from
+     * ApplicationRoutingPaths.
      */
-    public String getInvitationLink(PortalEnvironment portalEnv,
-                                    PortalEnvironmentConfig config,
-                                    String portalShortcode,
-                                    ParticipantUser participantUser,
-                                    Profile profile,
-                                    boolean isProxy) {
+    public String getB2cRedirectLink(
+            String path,
+            PortalEnvironment portalEnv,
+            PortalEnvironmentConfig config,
+            String portalShortcode,
+            ParticipantUser participantUser,
+            Profile profile,
+            boolean isProxy) {
         try {
             String username = getUsername(participantUser, isProxy);
 
             String url = "%s%s?accountName=%s".formatted(
                     routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
-                    routingPaths.getParticipantInvitationPath(),
+                    path,
                             URLEncoder.encode(
                                     username,
                                     StandardCharsets.UTF_8.toString()));

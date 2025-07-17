@@ -576,7 +576,7 @@ paths:
   /api/public/portals/v1/{portalShortcode}/env/{envName}/externalEvent/failedLogin:
     post:
       summary: Tracks a failed login attempt
-      tags: [ externalEvent ]
+      tags: [ b2cEvent ]
       operationId: trackFailedLogin
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }

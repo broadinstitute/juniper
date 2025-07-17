@@ -1,6 +1,6 @@
 package bio.terra.pearl.api.participant.controller;
 
-import bio.terra.pearl.api.participant.api.ExternalEventApi;
+import bio.terra.pearl.api.participant.api.B2cEventApi;
 import bio.terra.pearl.api.participant.model.ExternalEventFailedLoginBody;
 import bio.terra.pearl.api.participant.service.B2cEventExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @Slf4j
-public class B2cEventController implements ExternalEventApi {
+public class B2cEventController implements B2cEventApi {
 
   private final B2cEventExtService b2cEventExtService;
 
@@ -38,7 +38,7 @@ public class B2cEventController implements ExternalEventApi {
         "https://trccproject.b2clogin.com" // tRCC (prod)
       },
       maxAge = 3600,
-      methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+      methods = {RequestMethod.POST, RequestMethod.OPTIONS})
   public ResponseEntity<Void> trackFailedLogin(
       String portalShortcode, String envName, ExternalEventFailedLoginBody body) {
     try {
