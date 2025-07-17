@@ -12,9 +12,9 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -22,11 +22,13 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,6 +53,8 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
     private KitRequestFactory kitRequestFactory;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private ProfileService profileService;
 
     @Test
     @Transactional
@@ -206,6 +210,66 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
 
         notifications = notificationService.findByEnrolleeId(enrolleeBundle2.enrollee().getId());
         assertThat(notifications.get(0).getTriggerId(), equalTo(salivaConfig.getId()));
+
+    }
+
+    @Test
+    @Transactional
+    public void testTriggerRules(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
+
+        // create a trigger with a rule that matches the enrollee
+        Trigger over18Trigger = Trigger.builder()
+                .triggerType(TriggerType.EVENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
+                .actionType(TriggerActionType.NOTIFICATION)
+                .deliveryType(NotificationDeliveryType.EMAIL)
+                .studyEnvironmentId(studyEnv.getId())
+                .portalEnvironmentId(portalEnv.getId())
+                .rule("{age} > 18")
+                .build();
+        over18Trigger = triggerService.create(over18Trigger);
+
+
+        Trigger under18Trigger = Trigger.builder()
+                .triggerType(TriggerType.EVENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
+                .actionType(TriggerActionType.NOTIFICATION)
+                .deliveryType(NotificationDeliveryType.EMAIL)
+                .studyEnvironmentId(studyEnv.getId())
+                .portalEnvironmentId(portalEnv.getId())
+                .rule("{age} < 18")
+                .build();
+
+        under18Trigger = triggerService.create(under18Trigger);
+
+        EnrolleeBundle over18EnrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, true);
+
+        Profile over18Profile = over18EnrolleeBundle.enrollee().getProfile();
+        over18Profile.setBirthDate(LocalDate.now().minusYears(25));
+
+        profileService.update(over18Profile, getAuditInfo(testInfo));
+
+        EnrolleeBundle under18EnrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv, true);
+        Profile under18Profile = under18EnrolleeBundle.enrollee().getProfile();
+        under18Profile.setBirthDate(LocalDate.now().minusYears(15));
+        profileService.update(under18Profile, getAuditInfo(testInfo));
+
+        eventService.publishEnrolleeConsentEvent(over18EnrolleeBundle.enrollee(), over18EnrolleeBundle.portalParticipantUser());
+        eventService.publishEnrolleeConsentEvent(under18EnrolleeBundle.enrollee(), under18EnrolleeBundle.portalParticipantUser());
+
+
+        List<Notification> over18Notifications = notificationService.findByEnrolleeId(over18EnrolleeBundle.enrollee().getId());
+
+        assertThat(over18Notifications.size(), equalTo(1));
+        assertThat(over18Notifications.getFirst().getTriggerId(), equalTo(over18Trigger.getId()));
+
+        List<Notification> under18Notifications = notificationService.findByEnrolleeId(under18EnrolleeBundle.enrollee().getId());
+
+        assertThat(under18Notifications.size(), equalTo(1));
+        assertThat(under18Notifications.getFirst().getTriggerId(), equalTo(under18Trigger.getId()));
 
     }
 

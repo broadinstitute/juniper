@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -18,6 +19,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
@@ -56,6 +58,8 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     EnrolleeContextService enrolleeContextService;
     @Autowired
     PortalParticipantUserService portalParticipantUserService;
+    @Autowired
+    ParticipantUserService participantUserService;
 
 
     @Test
@@ -764,6 +768,54 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee2).build()));
         assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee3).build()));
         assertTrue(searchExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee4).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testIsNull(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle3 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle4 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        // enrolleeBundle1/enrolleeBundle2 have no last login, enrolleeBundle3/enrolleeBundle4 have last logins
+        ParticipantUser user1 = enrolleeBundle1.participantUser();
+        ParticipantUser user2 = enrolleeBundle2.participantUser();
+        ParticipantUser user3 = enrolleeBundle3.participantUser();
+        ParticipantUser user4 = enrolleeBundle4.participantUser();
+
+
+        user1.setLastLogin(null);
+        participantUserService.update(user1);
+
+        user2.setLastLogin(null);
+        participantUserService.update(user2);
+
+        user3.setLastLogin(Instant.now());
+        participantUserService.update(user3);
+
+        user4.setLastLogin(Instant.now());
+        participantUserService.update(user4);
+
+
+        EnrolleeSearchExpression isNullExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.lastLogin} isNull"
+        );
+
+        EnrolleeSearchExpression isNotNullExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.lastLogin} isNotNull"
+        );
+
+        assertTrue(isNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle1.enrollee()).build()));
+        assertTrue(isNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle2.enrollee()).build()));
+        assertFalse(isNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle3.enrollee()).build()));
+        assertFalse(isNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle4.enrollee()).build()));
+
+        assertFalse(isNotNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle1.enrollee()).build()));
+        assertFalse(isNotNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle2.enrollee()).build()));
+        assertTrue(isNotNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle3.enrollee()).build()));
+        assertTrue(isNotNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle4.enrollee()).build()));
     }
 
 }
