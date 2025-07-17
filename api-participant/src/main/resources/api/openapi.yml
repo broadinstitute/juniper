@@ -584,13 +584,10 @@ paths:
       requestBody:
         description: The username used in the failed login attempt
         content:
-          application/json:
-            schema: {
-              type: object,
-              properties: {
-                username: { type: string, description: "The username used in the failed login attempt" },
-              }
-            }
+          text/plain:
+            schema:
+              type: string
+              description: The username used in the failed login attempt
       responses:
         '204':
           description: always returns 204 No Content
