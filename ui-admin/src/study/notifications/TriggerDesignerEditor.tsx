@@ -414,7 +414,11 @@ const NotificationEditor = (
     </label>
     {trigger.actionType === 'NOTIFICATION' && <div className='w-50 mb-2 d-flex flex-row'>
       <label className="form-label">
-            Minimum minutes since last notification
+          Minimum minutes since last notification
+        <InfoPopup content={
+          'If specified, notifications will be skipped if an email has been ' +
+            'recently sent within the specified number of minutes.'
+        }/>
         <input
           className="form-control "
           value={trigger.minMinutesSinceLastNotification}

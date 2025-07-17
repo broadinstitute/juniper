@@ -2,7 +2,7 @@ package bio.terra.pearl.api.participant.controller;
 
 import bio.terra.pearl.api.participant.api.ExternalEventApi;
 import bio.terra.pearl.api.participant.model.ExternalEventFailedLoginBody;
-import bio.terra.pearl.api.participant.service.ExternalEventExtService;
+import bio.terra.pearl.api.participant.service.B2cEventExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @Slf4j
-public class ExternalEventController implements ExternalEventApi {
+public class B2cEventController implements ExternalEventApi {
 
-  private final ExternalEventExtService externalEventExtService;
+  private final B2cEventExtService b2cEventExtService;
 
-  public ExternalEventController(ExternalEventExtService externalEventExtService) {
-    this.externalEventExtService = externalEventExtService;
+  public B2cEventController(B2cEventExtService b2cEventExtService) {
+    this.b2cEventExtService = b2cEventExtService;
   }
 
   @Override
@@ -43,7 +43,7 @@ public class ExternalEventController implements ExternalEventApi {
       String portalShortcode, String envName, ExternalEventFailedLoginBody body) {
     try {
       // track asynchronously; caller doesn't care if it succeeds or fails
-      externalEventExtService.trackFailedLoginEventAsync(
+      b2cEventExtService.trackFailedLoginEventAsync(
           portalShortcode, EnvironmentName.valueOfCaseInsensitive(envName), body.getUsername());
     } catch (Exception e) {
       log.error("Failed to call failed login async method: {}", e.getMessage());

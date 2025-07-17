@@ -18,12 +18,12 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-class ExternalEventExtServiceTest extends BaseSpringBootTest {
+class B2cEventExtServiceTest extends BaseSpringBootTest {
 
   @Autowired EnrolleeFactory enrolleeFactory;
   @Autowired StudyEnvironmentFactory studyEnvironmentFactory;
   @Autowired EventService eventService;
-  @Autowired ExternalEventExtService externalEventExtService;
+  @Autowired B2cEventExtService b2cEventExtService;
 
   @Test
   @Transactional
@@ -38,7 +38,7 @@ class ExternalEventExtServiceTest extends BaseSpringBootTest {
 
     ParticipantUser participantUser = enrolleeBundle.participantUser();
 
-    externalEventExtService.trackFailedLogin(
+    b2cEventExtService.trackFailedLogin(
         studyEnvBundle.getPortal().getShortcode(),
         EnvironmentName.irb, // different environment to test
         participantUser.getUsername());
@@ -50,7 +50,7 @@ class ExternalEventExtServiceTest extends BaseSpringBootTest {
 
     assertEquals(0, failedLoginEvents.size());
 
-    externalEventExtService.trackFailedLogin(
+    b2cEventExtService.trackFailedLogin(
         studyEnvBundle.getPortal().getShortcode(),
         studyEnvBundle.getStudyEnv().getEnvironmentName(),
         participantUser.getUsername());

@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -200,21 +201,10 @@ public class EnrolleeEmailService implements NotificationSender {
             return false;
         }
         if (config.getMinMinutesSinceLastNotification() != null) {
-            Optional<Notification> lastSentNotif = notificationService
-                    .findMostRecentSentByEnrolleeAndTriggerId(enrolleeContext.getEnrollee().getId(), config.getId());
-
-            if (lastSentNotif.isPresent()) {
-                Instant lastSentTime = lastSentNotif.get().getCreatedAt();
-                Duration timeSinceLastSent = Duration.between(lastSentTime, Instant.now());
-
-                if (timeSinceLastSent.toMinutes() < config.getMinMinutesSinceLastNotification()) {
-                    log.info("skipping email, last email sent at {}, which is less at than {} minutes ago. enrollee {}, triggerId: {}, portalEnv: {}",
-                            lastSentTime,
-                            config.getMinMinutesSinceLastNotification(),
-                            enrolleeContext.getEnrollee().getShortcode(),
-                            config.getId(), config.getPortalEnvironmentId());
-                    return false;  // too soon to send another email
-                }
+            if (hasLastNotificationBeenSentWithinMinutes(enrolleeContext, config.getId(), config.getMinMinutesSinceLastNotification())) {
+                log.info("skipping email, last notification sent within trigger's threshold of {} minutes: enrollee {}, triggerId: {}, portalEnv: {}",
+                        config.getMinMinutesSinceLastNotification(), enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                return false;
             }
         }
         if (contextInfo == null) {
@@ -223,6 +213,20 @@ public class EnrolleeEmailService implements NotificationSender {
             return false;
         }
         return true;
+    }
+
+
+    private boolean hasLastNotificationBeenSentWithinMinutes(EnrolleeContext enrolleeContext, UUID triggerId, Integer minutes) {
+        Optional<Notification> lastSentNotif = notificationService
+                .findMostRecentSentByEnrolleeAndTriggerId(enrolleeContext.getEnrollee().getId(), triggerId);
+
+        if (lastSentNotif.isPresent()) {
+            Instant lastSentTime = lastSentNotif.get().getCreatedAt();
+            Duration timeSinceLastSent = Duration.between(lastSentTime, Instant.now());
+
+            return timeSinceLastSent.toMinutes() < minutes;  // too soon to send another email
+        }
+        return false;
     }
 
     /**
