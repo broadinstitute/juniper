@@ -87,6 +87,7 @@ export type Trigger = {
   emailTemplateId: string
   emailTemplate: EmailTemplate
   targetEmails?: string
+  minMinutesSinceLastNotification?: number
 }
 
 export type EmailTemplate = {

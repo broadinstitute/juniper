@@ -6,6 +6,7 @@ import bio.terra.pearl.core.service.kit.KitSentEvent;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.BaseEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
+import bio.terra.pearl.core.service.workflow.EnrolleeFailedLoginEvent;
 import bio.terra.pearl.core.service.workflow.PortalRegistrationEvent;
 
 public enum TriggerEventType {
@@ -14,7 +15,8 @@ public enum TriggerEventType {
     STUDY_ENROLLMENT(EnrolleeCreationEvent.class),
     STUDY_CONSENT(EnrolleeConsentEvent.class),
     KIT_SENT(KitSentEvent.class),
-    KIT_RECEIVED(KitReceivedEvent.class);
+    KIT_RECEIVED(KitReceivedEvent.class),
+    FAILED_LOGIN(EnrolleeFailedLoginEvent.class);
 
     public final Class<? extends BaseEvent> eventClass;
     TriggerEventType(Class<? extends BaseEvent> eventClass) {

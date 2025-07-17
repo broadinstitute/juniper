@@ -11,7 +11,10 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.*;
+import bio.terra.pearl.core.model.workflow.Event;
+import bio.terra.pearl.core.model.workflow.EventClass;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -144,6 +147,19 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .build();
 
         dao.create(event);
+        applicationEventPublisher.publishEvent(event);
+        return event;
+    }
+
+    public EnrolleeFailedLoginEvent publishEnrolleeFailedLoginEvent(Enrollee enrollee, PortalParticipantUser ppUser) {
+        EnrolleeContext enrolleeContext = enrolleeContextService.fetchData(enrollee);
+
+        EnrolleeFailedLoginEvent event = EnrolleeFailedLoginEvent.builder()
+                .enrollee(enrollee)
+                .portalParticipantUser(ppUser)
+                .enrolleeContext(enrolleeContext)
+                .build();
+        saveEvent(EventClass.ENROLLEE_FAILED_LOGIN_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
