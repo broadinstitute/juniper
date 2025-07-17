@@ -800,11 +800,11 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
 
         EnrolleeSearchExpression isNullExp = enrolleeSearchExpressionParser.parseRule(
-                "{user.lastLogin} isNull"
+                "{user.lastLogin} = null"
         );
 
         EnrolleeSearchExpression isNotNullExp = enrolleeSearchExpressionParser.parseRule(
-                "{user.lastLogin} isNotNull"
+                "{user.lastLogin} != null"
         );
 
         assertTrue(isNullExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeBundle1.enrollee()).build()));

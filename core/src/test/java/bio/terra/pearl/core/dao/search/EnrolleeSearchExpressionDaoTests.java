@@ -962,11 +962,11 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
 
         EnrolleeSearchExpression isNullExp = enrolleeSearchExpressionParser.parseRule(
-                "{user.lastLogin} isNull"
+                "{user.lastLogin} = null"
         );
 
         EnrolleeSearchExpression isNotNullExp = enrolleeSearchExpressionParser.parseRule(
-                "{user.lastLogin} isNotNull"
+                "{user.lastLogin} != null"
         );
 
         List<EnrolleeSearchExpressionResult> resultsIsNull = enrolleeSearchExpressionDao.executeSearch(isNullExp, studyEnvBundle.getStudyEnv().getId());

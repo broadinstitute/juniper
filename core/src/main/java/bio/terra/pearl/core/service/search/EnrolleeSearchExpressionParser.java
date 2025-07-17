@@ -110,14 +110,6 @@ public class EnrolleeSearchExpressionParser {
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
 
-        if (ctx.UNARY_OP() != null) {
-            return new UnaryExpression(
-                    enrolleeDao,
-                    profileDao,
-                    parseTerm(ctx.term(0)),
-                    expToUnaryOperator(ctx));
-        }
-
         return new EnrolleeTermComparisonFacet(
                 enrolleeDao,
                 profileDao,
@@ -146,14 +138,6 @@ public class EnrolleeSearchExpressionParser {
             case "<=" -> SearchOperators.LESS_THAN_EQ;
             case "contains" -> SearchOperators.CONTAINS;
             default -> throw new IllegalArgumentException("Unknown operator");
-        };
-    }
-
-    private UnarySearchOperator expToUnaryOperator(CohortRuleParser.ExprContext ctx) {
-        return switch (ctx.UNARY_OP().getText().trim()) {
-            case "isNull" -> UnarySearchOperator.IS_NULL;
-            case "isNotNull" -> UnarySearchOperator.IS_NOT_NULL;
-            default -> throw new IllegalArgumentException("Unknown unary operator");
         };
     }
 

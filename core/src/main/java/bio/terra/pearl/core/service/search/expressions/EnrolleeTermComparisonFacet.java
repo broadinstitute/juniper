@@ -26,7 +26,7 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
     private final SearchTerm leftTermExtractor;
     private final SearchTerm rightTermExtractor;
     private final SearchOperators operator;
-    private final TimeComparisonType comparisonType;
+    private final TimeComparisonType timeComparisonType;
 
     public EnrolleeTermComparisonFacet(EnrolleeDao enrolleeDao, ProfileDao profileDao, SearchTerm leftTermExtractor, SearchTerm rightTermExtractor, SearchOperators operator) {
         this.leftTermExtractor = leftTermExtractor;
@@ -34,7 +34,7 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
         this.operator = operator;
         this.enrolleeDao = enrolleeDao;
         this.profileDao = profileDao;
-        this.comparisonType = getTimeComparisonType();
+        this.timeComparisonType = getTimeComparisonType();
     }
 
     @Override
@@ -42,10 +42,10 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
         SearchValue leftSearchValue = leftTermExtractor.extract(enrolleeCtx);
         SearchValue rightSearchValue = rightTermExtractor.extract(enrolleeCtx);
 
-        if (comparisonType.equals(TimeComparisonType.TEMPORAL_TO_STRING)) {
+        if (timeComparisonType.equals(TimeComparisonType.TEMPORAL_TO_STRING)) {
             // If the left value is an instant/date and the right value is a string, we need to parse the right value to an instant
             rightSearchValue.parseTo(leftSearchValue.getSearchValueType());
-        } else if (comparisonType.equals(TimeComparisonType.STRING_TO_TEMPORAL)) {
+        } else if (timeComparisonType.equals(TimeComparisonType.STRING_TO_TEMPORAL)) {
             // If the right value is an instant/date and the left value is a string, we need to parse the right value to an instant
             leftSearchValue.parseTo(rightSearchValue.getSearchValueType());
         }
@@ -78,28 +78,16 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
 
         Condition whereCondition;
         if (this.operator.equals(SearchOperators.CONTAINS)) {
-            // If the operator is CONTAINS, we need to wrap the right term in % to make it a valid SQL LIKE clause
-            // contains is case insensitive
-            whereCondition = condition(
-                    this.leftTermExtractor.termClause() + " ILIKE concat('%', " + rightTermExtractor.termClause() + ", '%')",
-                    boundObjects.toArray()
-            );
+            whereCondition = createContainsCondition(boundObjects);
+        } else if (requiresTemporalCast()) {
+            whereCondition = createConditionWithTemporalCast(boundObjects);
+        } else if (isNullComparison()) {
+            whereCondition = createNullComparisonCondition(boundObjects);
         } else {
-            if (comparisonType.equals(TimeComparisonType.TEMPORAL_TO_STRING)) {
-                String castType = leftTermExtractor.type().getType().equals(SearchValue.SearchValueType.INSTANT) ? "timestamp" : "date";
-                whereCondition = condition(
-                        "%s %s %s::%s".formatted(this.leftTermExtractor.termClause(), this.operator.getOperator(), this.rightTermExtractor.termClause(), castType),
-                        boundObjects.toArray());
-            } else if (comparisonType.equals(TimeComparisonType.STRING_TO_TEMPORAL)) {
-                String castType = rightTermExtractor.type().getType().equals(SearchValue.SearchValueType.INSTANT) ? "timestamp" : "date";
-                whereCondition = condition(
-                        "%s::%s %s %s".formatted(this.leftTermExtractor.termClause(), castType, this.operator.getOperator(), this.rightTermExtractor.termClause()),
-                        boundObjects.toArray());
-            } else {
-                whereCondition = condition(
+            // for simple comparisons, use terms and operator directly
+            whereCondition = condition(
                         "%s %s %s".formatted(leftTermExtractor.termClause(), this.operator.getOperator(), this.rightTermExtractor.termClause()),
                         boundObjects.toArray());
-            }
         }
 
         if (leftTermExtractor.requiredConditions().isPresent()) {
@@ -113,6 +101,52 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
         enrolleeSearchQueryBuilder.addCondition(whereCondition);
 
         return enrolleeSearchQueryBuilder;
+    }
+
+    private Condition createContainsCondition(List<Object> boundObjects) {
+        // If the operator is CONTAINS, we need to wrap the right term in % to make it a valid SQL LIKE clause
+        // contains is case insensitive
+        return condition(
+                this.leftTermExtractor.termClause() + " ILIKE concat('%', " + rightTermExtractor.termClause() + ", '%')",
+                boundObjects.toArray());
+    }
+
+    private boolean requiresTemporalCast() {
+        return !this.timeComparisonType.equals(TimeComparisonType.OTHER);
+    }
+
+    private Condition createConditionWithTemporalCast(List<Object> boundObjects) {
+        return switch (timeComparisonType) {
+            case TEMPORAL_TO_STRING -> {
+                String castType = leftTermExtractor.type().getType().equals(SearchValue.SearchValueType.INSTANT) ? "timestamp" : "date";
+                yield condition(
+                        "%s %s %s::%s".formatted(this.leftTermExtractor.termClause(), this.operator.getOperator(), this.rightTermExtractor.termClause(), castType),
+                        boundObjects.toArray());
+            }
+            case STRING_TO_TEMPORAL -> {
+                String castType = rightTermExtractor.type().getType().equals(SearchValue.SearchValueType.INSTANT) ? "timestamp" : "date";
+                yield condition(
+                        "%s::%s %s %s".formatted(this.leftTermExtractor.termClause(), castType, this.operator.getOperator(), this.rightTermExtractor.termClause()),
+                        boundObjects.toArray());
+            }
+            case OTHER -> throw new IllegalArgumentException("no temporal cast required for this comparison type");
+        };
+    }
+
+    private boolean isNullComparison() {
+        return this.rightTermExtractor.type().getType().equals(SearchValue.SearchValueType.NULL) &&
+                (this.operator.equals(SearchOperators.EQUALS) || this.operator.equals(SearchOperators.NOT_EQUALS));
+    }
+
+    private Condition createNullComparisonCondition(List<Object> boundObjects) {
+        return switch (this.operator) {
+            case EQUALS -> condition("%s IS NULL".formatted(leftTermExtractor.termClause()), boundObjects.toArray());
+            case NOT_EQUALS ->
+                    condition("%s IS NOT NULL".formatted(leftTermExtractor.termClause()), boundObjects.toArray());
+            default ->
+                    throw new IllegalArgumentException("Cannot use operator %s with NULL value".formatted(this.operator));
+        };
+
     }
 
     /** We need to do special-case parsing and casting for time comparison, to handle string -> time conversions */
