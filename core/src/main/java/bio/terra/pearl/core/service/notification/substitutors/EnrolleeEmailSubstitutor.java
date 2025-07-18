@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
-import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
@@ -18,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -30,8 +28,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class EnrolleeEmailSubstitutor implements StringLookup {
     private final Map<String, Object> valueMap = new HashMap<>();
-    private EnrolleeContext enrolleeContext;
-    private NotificationContextInfo contextInfo;
+    private final EnrolleeContext enrolleeContext;
+    private final NotificationContextInfo contextInfo;
     private final ApplicationRoutingPaths routingPaths;
 
     protected EnrolleeEmailSubstitutor(EnrolleeContext ruleData,
@@ -62,7 +60,26 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("accountUsername", getUsername(ruleData.getParticipantUser(), isProxy));
         valueMap.put("enrollee", ruleData.getEnrollee());
         valueMap.put("study", contextInfo.study());
-        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser(), enrolleeContext.getProfile(), isProxy));
+
+
+        // b2c redirect links (with login_hint and preferredLanguage query params)
+        valueMap.put("invitationLink", getB2cRedirectLink(
+                routingPaths.getParticipantInvitationPath(),
+                contextInfo.portalEnv(),
+                contextInfo.portalEnvConfig(),
+                contextInfo.portal().getShortcode(),
+                ruleData.getParticipantUser(),
+                enrolleeContext.getProfile(),
+                isProxy));
+        valueMap.put("resetPasswordLink", getB2cRedirectLink(
+                routingPaths.getResetPasswordPath(),
+                contextInfo.portalEnv(),
+                contextInfo.portalEnvConfig(),
+                contextInfo.portal().getShortcode(),
+                ruleData.getParticipantUser(),
+                enrolleeContext.getProfile(),
+                isProxy));
+
         if (messages != null) {
             valueMap.putAll(messages);
         }
@@ -177,31 +194,31 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     /**
-     * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
+     * builds URL from path with `accountName` and `preferredLanguage` query parameters,
+     * used by juniper links that redirect unauthenticated users to B2C to provide
+     * B2C with account information.
      */
-    public String getInvitationLink(PortalEnvironment portalEnv,
-                                    PortalEnvironmentConfig config,
-                                    String portalShortcode,
-                                    ParticipantUser participantUser,
-                                    Profile profile,
-                                    boolean isProxy) {
-        try {
-            String username = getUsername(participantUser, isProxy);
+    public String getB2cRedirectLink(
+            String path,
+            PortalEnvironment portalEnv,
+            PortalEnvironmentConfig config,
+            String portalShortcode,
+            ParticipantUser participantUser,
+            Profile profile,
+            boolean isProxy) {
+        String username = getUsername(participantUser, isProxy);
 
-            String url = "%s%s?accountName=%s".formatted(
-                    routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
-                    routingPaths.getParticipantInvitationPath(),
-                            URLEncoder.encode(
-                                    username,
-                                    StandardCharsets.UTF_8.toString()));
+        String url = "%s%s?accountName=%s".formatted(
+                routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
+                path,
+                URLEncoder.encode(
+                        username,
+                        StandardCharsets.UTF_8));
 
-            if (profile != null && StringUtils.isNotEmpty(profile.getPreferredLanguage())) {
-                url += "&preferredLanguage=" + profile.getPreferredLanguage();
-            }
-            return url;
-        } catch (UnsupportedEncodingException e) {
-            throw new IOInternalException("unable to encode username");
+        if (profile != null && StringUtils.isNotEmpty(profile.getPreferredLanguage())) {
+            url += "&preferredLanguage=" + profile.getPreferredLanguage();
         }
+        return url;
     }
 
     private String getUsername(ParticipantUser participantUser, boolean isProxy) {

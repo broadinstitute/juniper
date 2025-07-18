@@ -47,6 +47,7 @@ import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
 import mixpanel from 'mixpanel-browser'
+import ResetPasswordPage from 'landing/registration/ResetPasswordPage'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -114,6 +115,9 @@ function App() {
     )
   }
   // add routes for portal registration and invitations not tied to a specific study (e.g. 'join HeartHive')
+  landingRoutes.push(<Route key="portalReg" path="/reset-password"
+    element={<ResetPasswordPage/>}>
+  </Route>)
   landingRoutes.push(<Route key="portalReg" path="/join/invitation"
     element={<InvitationPage/>}>
   </Route>)

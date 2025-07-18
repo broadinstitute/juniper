@@ -23,6 +23,8 @@ public class ApplicationRoutingPaths {
     @Getter
     private final String participantInvitationPath = "/join/invitation";
     @Getter
+    private final String resetPasswordPath = "/reset-password";
+    @Getter
     private final String supportEmailAddress;  // the site-wide support email address (e.g. support@juniper...) NOT study-specific
     @Getter
     private final String deploymentZone; // demo|prod|local
