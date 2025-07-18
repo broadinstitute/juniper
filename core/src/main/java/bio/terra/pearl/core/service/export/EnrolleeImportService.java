@@ -386,7 +386,7 @@ public class EnrolleeImportService {
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.participantUser(), regResult.portalParticipantUser(), enrollee, auditInfo);
 
-        /** restore email -- reload the pr5ofile since answermappings may have changed it */
+        /** restore email -- reload the profile since answermappings may have changed it */
         profile = profileService.find(profile.getId()).orElseThrow();
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
@@ -478,9 +478,14 @@ public class EnrolleeImportService {
         }
         profileService.update(profile, auditInfo);
 
-        Optional<Enrollee> enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
+        Optional<Enrollee> enrolleeOpt = enrolleeService.findByParticipantUserIdAndStudyEnvId(registration.participantUser().getId(), studyEnv.getId());
 
-        return enrollee.orElseGet(() -> this.enrollmentService.enroll(registration.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, registration.participantUser(), registration.portalParticipantUser(), null, false).getEnrollee());
+        Enrollee enrollee = enrolleeOpt.orElseGet(() -> this.enrollmentService.enroll(registration.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, registration.participantUser(), registration.portalParticipantUser(), null, false).getEnrollee());
+
+        profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        profile.setDoNotEmail(false);
+        profileService.update(profile, auditInfo);
+        return enrollee;
     }
 
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
