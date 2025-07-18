@@ -58,6 +58,10 @@ public class SearchValue {
     }
 
     public static SearchValue of(Object objValue, SearchValueType type) {
+        if (objValue == null) {
+            return new SearchValue();
+        }
+
         try {
             return switch (type) {
                 case STRING -> new SearchValue(objValue.toString());

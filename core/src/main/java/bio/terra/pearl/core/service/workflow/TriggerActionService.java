@@ -5,21 +5,25 @@ import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerActionType;
 import bio.terra.pearl.core.model.notification.TriggerScope;
 import bio.terra.pearl.core.model.notification.TriggerType;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
-import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Listens for events, finds any correspond action triggers for the study environment,
@@ -40,8 +44,17 @@ public class TriggerActionService {
     private final PortalService portalService;
     private final EmailTemplateService emailTemplateService;
     private final AdminUserService adminUserService;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    private final ProfileService profileService;
 
-    public TriggerActionService(TriggerService triggerService, NotificationDispatcher notificationDispatcher, ParticipantTaskService participantTaskService, AdminEmailService adminEmailService, PortalService portalService, EmailTemplateService emailTemplateService, AdminUserService adminUserService) {
+    public TriggerActionService(TriggerService triggerService,
+                                NotificationDispatcher notificationDispatcher,
+                                ParticipantTaskService participantTaskService,
+                                AdminEmailService adminEmailService,
+                                PortalService portalService,
+                                EmailTemplateService emailTemplateService,
+                                AdminUserService adminUserService,
+                                EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, ProfileService profileService) {
         this.triggerService = triggerService;
         this.notificationDispatcher = notificationDispatcher;
         this.participantTaskService = participantTaskService;
@@ -49,6 +62,8 @@ public class TriggerActionService {
         this.portalService = portalService;
         this.emailTemplateService = emailTemplateService;
         this.adminUserService = adminUserService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
+        this.profileService = profileService;
     }
 
     /** actions could be triggered by just about anything, so listen to all enrollee events */
@@ -64,7 +79,7 @@ public class TriggerActionService {
                 // that match the trigger's event target (if a target is specified)
                 .filter(trigger -> trigger.getFilterTargetStableIds().isEmpty() || trigger.getFilterTargetStableIds().contains(event.getTargetStableId()))
                 // that satisfy the trigger's rule
-                .filter(trigger -> EnrolleeRuleEvaluator.evaluateRule(trigger.getRule(), event.getEnrolleeContext()))
+                .filter(trigger -> evaluateTriggerRule(trigger, event))
                 .toList();
 
         for (Trigger trigger: applicableTriggers) {
@@ -81,6 +96,29 @@ public class TriggerActionService {
                 updateTaskStatus(trigger, event);
             }
         }
+    }
+
+    private boolean evaluateTriggerRule(Trigger trigger, EnrolleeEvent event) {
+        // if the trigger has a rule, evaluate it
+        if (trigger.getRule() != null && !trigger.getRule().isBlank()) {
+
+            try {
+                EnrolleeSearchExpression exp = this.enrolleeSearchExpressionParser.parseRule(trigger.getRule());
+
+                Optional<Profile> profileOpt = profileService.find(event.getEnrollee().getProfileId());
+                if (profileOpt.isEmpty()) {
+                    throw new IllegalStateException("Profile not found for enrollee " + event.getEnrollee().getId());
+                }
+
+
+                return exp.evaluate(new EnrolleeSearchContext(event.getEnrollee(), profileOpt.get()));
+            } catch (Exception e) {
+                log.error("Error evaluating trigger rule for trigger {}: {}", trigger.getId(), e.getMessage());
+                return false; // rule evaluation failed, so the action should not be applied
+            }
+        }
+        // otherwise, the rule is satisfied by default
+        return true;
     }
 
     /**

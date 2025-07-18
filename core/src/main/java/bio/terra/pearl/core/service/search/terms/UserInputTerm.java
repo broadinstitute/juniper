@@ -57,6 +57,9 @@ public class UserInputTerm extends SearchTerm {
             case DATE -> {
                 return List.of(searchValue.getDateValue());
             }
+            case NULL -> {
+                return List.of();
+            }
             default -> {
                 throw new IllegalArgumentException("Unsupported term type: " + searchValue.getSearchValueType());
             }
@@ -65,6 +68,12 @@ public class UserInputTerm extends SearchTerm {
 
     @Override
     public String termClause() {
+        // comparison term should catch that the search value is null and automatically
+        // make the IS NULL / IS NOT NULL comparison, but just in case.
+        if (searchValue.getSearchValueType().equals(SearchValue.SearchValueType.NULL)) {
+            return "NULL";
+        }
+
         return "?";
     }
 

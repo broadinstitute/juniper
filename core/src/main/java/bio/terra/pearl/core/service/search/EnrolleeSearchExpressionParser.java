@@ -109,6 +109,7 @@ public class EnrolleeSearchExpressionParser {
             EnrolleeSearchExpression right = parseExpression(ctx.expr(1));
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
+
         return new EnrolleeTermComparisonFacet(
                 enrolleeDao,
                 profileDao,
