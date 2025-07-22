@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "trigger_min_minutes_since_last_notification"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: trigger
+            columns:
+              - column:
+                  name: min_minutes_since_last_notification
+                  type: int
+                  constraints:
+                      nullable: true
+

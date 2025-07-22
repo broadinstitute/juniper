@@ -1,10 +1,22 @@
-import { mockEnrollee, mockPortal, mockStudyEnvContext, renderInPortalRouter } from 'test-utils/mocking-utils'
-import { mockParticipantUser } from '@juniper/ui-participant/src/test-utils/test-participant-factory'
+import {
+  mockEnrollee,
+  mockParticipantUser,
+  mockPortal,
+  mockStudy,
+  mockStudyEnv,
+  mockStudyEnvContext,
+  renderInPortalRouter
+} from 'test-utils/mocking-utils'
 import PortalUserList from './PortalUserList'
-import { mockStudy, mockStudyEnv } from '@juniper/ui-participant/src/test-utils/test-portal-factory'
-import Api, { ParticipantUsersAndEnrollees, Study } from 'api/api'
+import Api, {
+  ParticipantUsersAndEnrollees,
+  Study
+} from 'api/api'
 import React from 'react'
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { expectCellToHaveText } from 'test-utils/table-testing-utils'
 import { userEvent } from '@testing-library/user-event'
 import { mockProfile } from '@juniper/ui-core'

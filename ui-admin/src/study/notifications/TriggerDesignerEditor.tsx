@@ -172,7 +172,8 @@ const eventTypeOptions = [
   { label: 'Study Consent', value: 'STUDY_CONSENT' },
   { label: 'Survey Completed', value: 'SURVEY_RESPONSE' },
   { label: 'Kit Sent', value: 'KIT_SENT' },
-  { label: 'Kit Returned', value: 'KIT_RECEIVED' }
+  { label: 'Kit Returned', value: 'KIT_RECEIVED' },
+  { label: 'Failed Login', value: 'FAILED_LOGIN' }
 ]
 
 const EventTriggerEditor = (
@@ -192,7 +193,6 @@ const EventTriggerEditor = (
       onChange={opt =>
         updateTrigger('eventType', opt?.value ?? eventTypeOptions[0].value)}
     />
-
   </div>
 }
 
@@ -412,6 +412,29 @@ const NotificationEditor = (
       <Select options={deliveryTypeOptions} isDisabled={true}
         value={deliveryTypeOptions.find(opt => opt.value === trigger.deliveryType)}/>
     </label>
+    {trigger.actionType === 'NOTIFICATION' && <div className='w-50 mb-2 d-flex flex-row'>
+      <label className="form-label">
+          Minimum minutes since last notification
+        <InfoPopup content={
+          'If specified, notifications will be skipped if an email has been ' +
+            'recently sent within the specified number of minutes.'
+        }/>
+        <input
+          className="form-control "
+          value={trigger.minMinutesSinceLastNotification}
+          onChange={e => {
+            if (e.target.value === '') {
+              updateTrigger('minMinutesSinceLastNotification', undefined)
+            } else {
+              updateTrigger(
+                'minMinutesSinceLastNotification',
+                parseInt(e.target.value, 10)
+              )
+            }
+          }}/>
+      </label>
+    </div>}
+
     {hasEmailTemplate &&
         <>
           <EmailTemplateEditor

@@ -139,7 +139,7 @@ export const mockUsePortalEnv = () => {
 
 export const mockPortalEnvContextT = (): PortalEnvContextT => ({
   portal: mockPortal(),
-  portalEnv: mockPortalEnvironment('sandbox'),
+  portalEnv: mockPortalEnvironment(),
   reloadPortal: jest.fn(),
   localContent: mockLocalSiteContent()
 })

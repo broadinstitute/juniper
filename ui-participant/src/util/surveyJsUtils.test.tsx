@@ -37,7 +37,6 @@ import {
   mockEnrollee,
   mockProfile
 } from '../test-utils/test-participant-factory'
-import { useSearchParams } from 'react-router-dom'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 jest.mock('providers/UserProvider')
@@ -49,9 +48,7 @@ beforeEach(() => {
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
 function PlainSurveyComponent({ formModel, profile }: { formModel: Survey, profile?: Profile }) {
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const pager = useRoutablePageNumber(searchParams, setSearchParams)
+  const pager = useRoutablePageNumber()
   const mockStudyEnvParams = { studyShortcode: 'foo', envName: 'sandbox' as EnvironmentName, portalShortcode: 'bar' }
   const { surveyModel } = useSurveyJSModel(
     formModel,

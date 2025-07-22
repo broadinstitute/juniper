@@ -13,6 +13,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -22,6 +23,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
@@ -72,6 +74,8 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     ProfileService profileService;
     @Autowired
     TimeShiftDao timeShiftDao;
+    @Autowired
+    ParticipantUserService participantUserService;
 
 
     @Test
@@ -928,4 +932,53 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrollee4.getId())));
     }
 
+    @Transactional
+    @Test
+    public void testIsNull(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle enrolleeBundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle3 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle enrolleeBundle4 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        // enrolleeBundle1/enrolleeBundle2 have no last login, enrolleeBundle3/enrolleeBundle4 have last logins
+        ParticipantUser user1 = enrolleeBundle1.participantUser();
+        ParticipantUser user2 = enrolleeBundle2.participantUser();
+        ParticipantUser user3 = enrolleeBundle3.participantUser();
+        ParticipantUser user4 = enrolleeBundle4.participantUser();
+
+
+        user1.setLastLogin(null);
+        participantUserService.update(user1);
+
+        user2.setLastLogin(null);
+        participantUserService.update(user2);
+
+        user3.setLastLogin(Instant.now());
+        participantUserService.update(user3);
+
+        user4.setLastLogin(Instant.now());
+        participantUserService.update(user4);
+
+
+        EnrolleeSearchExpression isNullExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.lastLogin} = null"
+        );
+
+        EnrolleeSearchExpression isNotNullExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.lastLogin} != null"
+        );
+
+        List<EnrolleeSearchExpressionResult> resultsIsNull = enrolleeSearchExpressionDao.executeSearch(isNullExp, studyEnvBundle.getStudyEnv().getId());
+        List<EnrolleeSearchExpressionResult> resultsIsNotNull = enrolleeSearchExpressionDao.executeSearch(isNotNullExp, studyEnvBundle.getStudyEnv().getId());
+
+        Assertions.assertEquals(2, resultsIsNull.size());
+        Assertions.assertEquals(2, resultsIsNotNull.size());
+
+        assertTrue(resultsIsNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle1.enrollee().getId())));
+        assertTrue(resultsIsNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle2.enrollee().getId())));
+
+        assertTrue(resultsIsNotNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle3.enrollee().getId())));
+        assertTrue(resultsIsNotNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle4.enrollee().getId())));
+    }
 }

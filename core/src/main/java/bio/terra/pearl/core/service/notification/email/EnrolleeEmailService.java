@@ -24,7 +24,11 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -196,12 +200,33 @@ public class EnrolleeEmailService implements NotificationSender {
                     config.getId(), config.getPortalEnvironmentId());
             return false;
         }
+        if (config.getMinMinutesSinceLastNotification() != null) {
+            if (hasLastNotificationBeenSentWithinMinutes(enrolleeContext, config.getId(), config.getMinMinutesSinceLastNotification())) {
+                log.info("skipping email, last notification sent within trigger's threshold of {} minutes: enrollee {}, triggerId: {}, portalEnv: {}",
+                        config.getMinMinutesSinceLastNotification(), enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                return false;
+            }
+        }
         if (contextInfo == null) {
             // the environment hasn't finished populating yet, skip
             log.info("Email send skipped: no environment context could be loaded");
             return false;
         }
         return true;
+    }
+
+
+    private boolean hasLastNotificationBeenSentWithinMinutes(EnrolleeContext enrolleeContext, UUID triggerId, Integer minutes) {
+        Optional<Notification> lastSentNotif = notificationService
+                .findMostRecentSentByEnrolleeAndTriggerId(enrolleeContext.getEnrollee().getId(), triggerId);
+
+        if (lastSentNotif.isPresent()) {
+            Instant lastSentTime = lastSentNotif.get().getCreatedAt();
+            Duration timeSinceLastSent = Duration.between(lastSentTime, Instant.now());
+
+            return timeSinceLastSent.toMinutes() < minutes;  // too soon to send another email
+        }
+        return false;
     }
 
     /**

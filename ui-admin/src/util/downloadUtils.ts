@@ -1,6 +1,6 @@
 /** escapes double quotes with an extra ", and adds double quotes around any values that contain commas or newlines */
 export const escapeCsvValue = (value?: string) => {
-  if (!value) {
+  if (!value || !value.replaceAll) {
     return ''
   }
   value = value.replaceAll('"', '""')

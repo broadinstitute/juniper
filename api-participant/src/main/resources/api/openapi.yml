@@ -573,6 +573,26 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/externalEvent/failedLogin:
+    post:
+      summary: Tracks a failed login attempt
+      tags: [ b2cEvent ]
+      operationId: trackFailedLogin
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        description: The username used in the failed login attempt
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: The username used in the failed login attempt
+      responses:
+        '204':
+          description: always returns 204 No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode (legacy endpoint for siteMedia--will be removed)

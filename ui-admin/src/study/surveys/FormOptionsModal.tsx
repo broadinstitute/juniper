@@ -118,6 +118,18 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Required
             </label>
+            { workingForm.surveyType === 'OUTREACH' && <label className="form-label d-block">
+              <div>Dashboard blurb <InfoPopup placement="right" content={<div>
+                For outreach surveys, 1-2 sentences that will be shown in the block that appears in the
+                participant dashboard.
+              </div>}/></div>
+              <textarea rows={3} cols={40}
+                value={workingForm.blurb}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, blurb: e.target.value
+                })}
+              />
+            </label>}
             <label className="form-label d-block">
               <input type="checkbox" checked={workingForm.autoAssign}
                 onChange={e => updateWorkingForm({

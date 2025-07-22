@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service.participant;
 
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnvAuthContext;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -55,5 +56,26 @@ public class ParticipantUserExtService {
             .orElseThrow(() -> new NotFoundException("Participant user not found"));
     participantUser.setPortalParticipantUsers(List.of(portalParticipantUser));
     return participantUser;
+  }
+
+  /** updates the participantUser -- currently only supports editing the username */
+  @EnforcePortalEnvPermission(permission = "participant_data_edit")
+  @SuperuserOnly
+  public ParticipantUser update(
+      PortalEnvAuthContext authContext, UUID participantUserId, ParticipantUser updatedUser) {
+
+    ParticipantUser participantUser =
+        participantUserService
+            .find(participantUserId)
+            .orElseThrow(() -> new NotFoundException("Participant user not found"));
+
+    // since this is superuser-only, mostly checking as a sanity check that we're in the right
+    // environment
+    portalParticipantUserService
+        .findOne(participantUser.getId(), authContext.getPortalEnvironment().getId())
+        .orElseThrow(() -> new NotFoundException("Participant user not found"));
+
+    participantUser.setUsername(updatedUser.getUsername());
+    return participantUserService.update(participantUser);
   }
 }

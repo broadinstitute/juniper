@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
@@ -32,10 +33,13 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -62,6 +66,8 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private LocalizedSiteContentService localizedSiteContentService;
     @Autowired
     private LanguageTextService languageTextService;
+    @Autowired
+    private TimeShiftDao timeShiftDao;
 
 
     @Test
@@ -280,6 +286,34 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         testDoNotSendSolicitProfile(enrolleeEmailService, enrolleeBundle, config);
     }
 
+    @Test
+    @Transactional
+    public void testMinMinutesSinceLastNotification(TestInfo info) {
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
+        Trigger config = triggerFactory.buildPersisted(
+                Trigger.builder()
+                        .emailTemplateId(emailTemplate.getId())
+                        .deliveryType(NotificationDeliveryType.EMAIL)
+                        .triggerType(TriggerType.EVENT)
+                        .minMinutesSinceLastNotification(60) // 1 hour
+                        .eventType(TriggerEventType.FAILED_LOGIN),
+                enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
+
+        // First notification should be sent
+        Notification firstNotif = testSend(enrolleeEmailService, enrolleeBundle, config);
+        assertNotEquals(NotificationDeliveryStatus.SKIPPED, firstNotif.getDeliveryStatus());
+        // Second notification should be skipped
+        assertEquals(NotificationDeliveryStatus.SKIPPED, testSend(enrolleeEmailService, enrolleeBundle, config).getDeliveryStatus());
+
+        timeShiftDao.changeNotificationCreationTime(
+                firstNotif.getId(), firstNotif.getCreatedAt().minus(Duration.ofMinutes(62)));
+
+        // After shifting time, the next notification should be sent
+        assertNotEquals(NotificationDeliveryStatus.SKIPPED, testSend(enrolleeEmailService, enrolleeBundle, config).getDeliveryStatus());
+
+    }
+
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null, null);
@@ -306,6 +340,20 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
+    }
+
+    private Notification testSend(EnrolleeEmailService enrolleeEmailService, EnrolleeBundle enrolleeBundle, Trigger config) {
+        Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().contactEmail("someAddress").build(), null, null);
+        NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
+        enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
+        Notification notif = notificationService.find(notification.getId()).get();
+        if (notif.getDeliveryStatus() == NotificationDeliveryStatus.FAILED) {
+            // failure is expected since sendgrid is not configured in tests, so pretend it worked
+            notif.setDeliveryStatus(NotificationDeliveryStatus.SENT);
+            return notificationService.update(notif);
+        }
+        return notif;
     }
 
 }

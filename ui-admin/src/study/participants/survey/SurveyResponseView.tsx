@@ -10,8 +10,7 @@ import {
 
 import {
   NavLink,
-  useParams,
-  useSearchParams
+  useParams
 } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyResponseEditor from './SurveyResponseEditor'
@@ -72,10 +71,7 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
 }) {
   const params = useParams<EnrolleeParams>()
   const [showAssignModal, setShowAssignModal] = useState(false)
-
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  let { taskId } = useTaskIdParam(searchParams, setSearchParams)
+  let { taskId } = useTaskIdParam()
 
   const surveyStableId: string | undefined = params.surveyStableId
 

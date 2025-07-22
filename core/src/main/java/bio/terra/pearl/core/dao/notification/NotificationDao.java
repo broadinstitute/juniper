@@ -61,4 +61,19 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     public List<Notification> findAllByConfigId(UUID configId) {
         return findAllByProperty("trigger_id", configId);
     }
+
+    public Optional<Notification> findMostRecentSentByEnrolleeAndTriggerId(UUID enrolleeId, UUID triggerId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                SELECT * FROM notification
+                                WHERE enrollee_id = :enrolleeId AND trigger_id = :triggerId
+                                AND delivery_status = 'SENT'
+                                ORDER BY created_at DESC LIMIT 1
+                                """)
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("triggerId", triggerId)
+                        .mapTo(getClazz())
+                        .findFirst()
+        );
+    }
 }

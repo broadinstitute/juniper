@@ -577,6 +577,25 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Updates participant user; currently, only the username field can be updated.
+      tags: [ participantUser ]
+      operationId: update
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        description: participant user with all desired changes
+        content: *jsonContent
+      responses:
+        '200':
+          description: updated participant user
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
   /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/plan:
     post:
       summary: gets a merge plan for the given participant users. This does not perform the merge.
