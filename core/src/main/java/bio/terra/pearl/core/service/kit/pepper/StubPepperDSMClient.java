@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -39,7 +38,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata) {
         log.info("STUB sending kit request");
         if (kitRequest.getDistributionMethod().equals(DistributionMethod.MAILED) && (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX))) {
             throw new  PepperApiException(

@@ -52,6 +52,14 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean enableInPersonKits = false;
 
     /**
+     * if true, send the participant's sex at birth to DSM/BSP based on their
+     * profile. likely, this setting should be per-kit-type, but this would be
+     * a decent lift and a rare need, so, for now, it's a global study env setting.
+     */
+    @Builder.Default
+    private boolean includeSexAtBirthInKitMetadata = false;
+
+    /**
      * the "home" timezone of the study (e.g. where the study staff is located).  For now, this only impacts export behavior
      * This is a ZoneId stored as a String
      */

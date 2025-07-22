@@ -28,11 +28,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.matchesRegex;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -83,7 +80,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, new PepperKitMetadata());
 
         // Assert
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, act);
@@ -109,7 +106,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         PepperApiException pepperApiException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address));
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, new PepperKitMetadata()));
 
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
@@ -137,7 +134,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address)
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, new PepperKitMetadata())
         );
         assertThat(pepperException.getMessage(), containsString(kitId));
         assertThat(pepperException.getMessage(), containsString(errorMessage));
@@ -155,7 +152,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, new PepperKitMetadata());
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class, act);
@@ -180,10 +177,50 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, new PepperKitMetadata());
 
         assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
-        verifyRequestForPath("/shipKit");
+        RecordedRequest request = verifyRequestForPath("/shipKit");
+
+        assertThat(request.getMethod(), equalTo("POST"));
+
+
+        String requestBodyStr = request.getBody().readUtf8();
+
+        PepperDSMKitRequest requestBody = objectMapper.readValue(requestBodyStr, PepperDSMKitRequest.class);
+        assertNull(requestBody.getJuniperKitRequest().getSexAtBirth());
+    }
+
+    @Transactional
+    @Test
+    public void testSendKitRequestWithSexAtBirth(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
+        PepperKit kitStatus = PepperKit.builder()
+                .juniperKitId(kitRequest.getId().toString())
+                .currentStatus(PepperKitStatus.CREATED.pepperString)
+                .build();
+        PepperKitStatusResponse mockResponse = PepperKitStatusResponse.builder()
+                .isError(false)
+                .kits(new PepperKit[]{kitStatus})
+                .build();
+
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
+
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address, PepperKitMetadata.builder().sexAtBirth("M").build());
+
+        assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
+        RecordedRequest request = verifyRequestForPath("/shipKit");
+
+        assertThat(request.getMethod(), equalTo("POST"));
+
+
+        String requestBodyStr = request.getBody().readUtf8();
+
+        PepperDSMKitRequest requestBody = objectMapper.readValue(requestBodyStr, PepperDSMKitRequest.class);
+        assertThat(requestBody.getJuniperKitRequest().getSexAtBirth(), equalTo("M"));
     }
 
     @Transactional
@@ -251,9 +288,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 .setBody(pepperResponse));
     }
 
-    private void verifyRequestForPath(String path) throws Exception {
+    private RecordedRequest verifyRequestForPath(String path) throws Exception {
         RecordedRequest recordedRequest = mockWebServer.takeRequest(5, TimeUnit.SECONDS);
         assertThat(recordedRequest.getPath(), equalTo(path));
         assertThat(recordedRequest.getHeader("Authorization"), matchesRegex("Bearer .+"));
+
+        return recordedRequest;
     }
 }

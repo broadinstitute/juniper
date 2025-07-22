@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +23,7 @@ public class PepperDSMKitRequest {
         private String postalCode;
         private String country;
         private String phoneNumber;
+        private String sexAtBirth;
         private String juniperKitId;
         @JsonProperty("juniperParticipantID")
         private String juniperParticipantId;

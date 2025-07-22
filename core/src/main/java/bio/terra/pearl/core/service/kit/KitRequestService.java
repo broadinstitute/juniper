@@ -17,12 +17,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
-import bio.terra.pearl.core.service.kit.pepper.PepperDSMClientWrapper;
-import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
-import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -33,18 +28,13 @@ import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -128,9 +118,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     private KitRequestDto createNewPepperReturnOnlyKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequest kitRequest) {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        Profile profile = profileService.find(enrollee.getProfileId()).get();
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null, buildMetadata(studyEnvironmentConfig, profile));
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
@@ -147,6 +138,30 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
+    private PepperKitMetadata buildMetadata(StudyEnvironmentConfig studyEnvConfig, Profile profile) {
+        PepperKitMetadata metadata = new PepperKitMetadata();
+
+        if (studyEnvConfig.isIncludeSexAtBirthInKitMetadata()) {
+            metadata.setSexAtBirth(normalizeSexAtBirth(profile.getSexAtBirth()));
+        }
+
+        return metadata;
+    }
+
+    private String normalizeSexAtBirth(String sexAtBirth) {
+        if (StringUtils.isEmpty(sexAtBirth)) {
+            return "";
+        } else if (sexAtBirth.toLowerCase().startsWith("m")) {
+            return "M";
+        } else if (sexAtBirth.toLowerCase().startsWith("f")) {
+            return "F";
+        } else {
+            // BSP can only process M or F; it won't error given other values,
+            // so return them to give as much info as possible.
+            return sexAtBirth;
+        }
+    }
+
     private KitRequestDto createNewPepperKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
@@ -154,7 +169,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress, buildMetadata(studyEnvironmentConfig, profile));
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
