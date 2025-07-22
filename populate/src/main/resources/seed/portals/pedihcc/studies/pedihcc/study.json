@@ -5,20 +5,13 @@
   "surveyFiles": [
     "surveys/about-cancer.conf",
     "surveys/about-you.conf",
-    "surveys/add-child-edited-no-redirect.conf",
-    "surveys/blood-consent.conf",
     "surveys/child-contact.conf",
-    "surveys/colorectal-consent-assent.conf",
-    "surveys/colorectal-consent-parental.conf",
-    "surveys/colorectal-consent-self.conf",
     "surveys/consent-assent.conf",
     "surveys/consent-parental.conf",
     "surveys/consent-self.conf",
-    "surveys/diet-lifestyle.conf",
     "surveys/prequal-edited-no-redirect.conf",
     "surveys/release-minor.conf",
-    "surveys/release-self.conf",
-    "surveys/stool-kit.conf"
+    "surveys/release-self.conf"
   ],
   "emailTemplateFiles": [],
   "studyEnvironmentDtos": [
@@ -51,33 +44,8 @@
         },
         {
           "active": true,
-          "surveyOrder": 2,
-          "populateFileName": "surveys/add-child-edited-no-redirect.conf"
-        },
-        {
-          "active": true,
-          "surveyOrder": 3,
-          "populateFileName": "surveys/blood-consent.conf"
-        },
-        {
-          "active": true,
           "surveyOrder": 4,
           "populateFileName": "surveys/child-contact.conf"
-        },
-        {
-          "active": true,
-          "surveyOrder": 5,
-          "populateFileName": "surveys/colorectal-consent-assent.conf"
-        },
-        {
-          "active": true,
-          "surveyOrder": 6,
-          "populateFileName": "surveys/colorectal-consent-parental.conf"
-        },
-        {
-          "active": true,
-          "surveyOrder": 7,
-          "populateFileName": "surveys/colorectal-consent-self.conf"
         },
         {
           "active": true,
@@ -96,11 +64,6 @@
         },
         {
           "active": true,
-          "surveyOrder": 11,
-          "populateFileName": "surveys/diet-lifestyle.conf"
-        },
-        {
-          "active": true,
           "surveyOrder": 12,
           "populateFileName": "surveys/release-minor.conf"
         },
@@ -108,11 +71,6 @@
           "active": true,
           "surveyOrder": 13,
           "populateFileName": "surveys/release-self.conf"
-        },
-        {
-          "active": true,
-          "surveyOrder": 14,
-          "populateFileName": "surveys/stool-kit.conf"
         }
       ],
       "triggerDtos": [

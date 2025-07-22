@@ -592,15 +592,17 @@ public class ActivityImporter {
             return null;
         }
 
-        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
+        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.(instances\\[specific]\\.)?questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
         // study e.g.: !user.studies["atcp"].isGovernedParticipant()
         Pattern studyPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.(.*?)\\(\\)");
+
         String out = questionPattern.matcher(pepperExpr).replaceAll(matchResult -> {
             String study = matchResult.group(1);
             String form = matchResult.group(2);
-            String question = matchResult.group(3);
-            String pepperOperation = matchResult.group(4);
-            String value = matchResult.group(5);
+            String instance = matchResult.group(3) != null ? matchResult.group(3) : "";
+            String question = matchResult.group(4);
+            String pepperOperation = matchResult.group(5);
+            String value = matchResult.group(6);
             String stableId = "{" + question + "}";
             String loweredOperation = pepperOperation.toLowerCase().trim();
 
@@ -615,7 +617,8 @@ public class ActivityImporter {
                 case "answers.hasanyoption" -> {
                     return convertVisibilityExpressionHasAnyOption(question, value);
                 }
-                default -> throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+                default ->
+                        throw new RuntimeException("Unsupported pepper operation: " + pepperOperation + " in expression: " + pepperExpr);
             }
             if (value.startsWith("\"") && value.endsWith("\"")) {
                 value = value.substring(1, value.length() - 1);
@@ -633,6 +636,15 @@ public class ActivityImporter {
                     throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
             }
         });
+
+        if (pepperExpr.trim().equals("true") || pepperExpr.trim().equals("false")) {
+            return pepperExpr.trim();
+        }
+
+        // if nothing has changed, then the pepper-formatted expression was not converted
+        if (out.equals(pepperExpr)) {
+            throw new RuntimeException("could not convert visibility expression: " + pepperExpr);
+        }
 
         return out.replace("&&", "and").replace("\n", "").trim();
 
