@@ -54,6 +54,7 @@ public class StudyEnvironmentConfig extends BaseEntity {
     /**
      * enrollee search expression used to determine kit eligibility.
      * if not specified, enrollees are eligible if they have completed all required surveys.
+     * note: this eligibility rule is not verified by the backend; it is only used as a frontend filter.
      */
     @Builder.Default
     private String kitEligibilityRule = null;

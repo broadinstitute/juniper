@@ -67,14 +67,19 @@ export const useParticipantSearchState = (
   familyLinkageEnabled: boolean,
   studyEnvParams: StudyEnvParams,
   searchParamName = 'search',
-  defaultState: Partial<ParticipantSearchState> = {}) => {
+  defaults: Partial<ParticipantSearchState> = {}) => {
   const [searchParams, setSearchParams] = useSearchParams()
+
+  const defaultState = {
+    ...DefaultParticipantSearchState,
+    ...defaults
+  }
 
   const searchState = urlParamsToSearchState(searchParams, searchParamName, defaultState)
   const searchExpression = toExpression(searchState, defaultIncludes, familyLinkageEnabled)
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(params => {
-      params.set(searchParamName, searchStateToUrlParam(newSearchState))
+      params.set(searchParamName, searchStateToUrlParam(newSearchState, defaultState))
       return params
     })
   }
@@ -113,10 +118,13 @@ export const useParticipantSearchFacets = (searchState: ParticipantSearchState, 
 }
 
 /** maps search state to a url param excluding default params */
-const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
+const searchStateToUrlParam = (
+  searchState: ParticipantSearchState,
+  defaultState: ParticipantSearchState = DefaultParticipantSearchState
+) => {
   const explicitSearchState: Partial<ParticipantSearchState> = {}
   for (const [key, value] of Object.entries(searchState)) {
-    if (!isEqual(value, DefaultParticipantSearchState[key as keyof ParticipantSearchState]) &&
+    if (!isEqual(value, defaultState[key as keyof ParticipantSearchState]) &&
     !['includeFacets', 'queryFacets'].includes(key)) {
       // @ts-ignore
       explicitSearchState[key as keyof ParticipantSearchState] = value
@@ -128,9 +136,9 @@ const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
 const urlParamsToSearchState = (
   searchParams: URLSearchParams,
   searchParamName: string,
-  defaultState: Partial<ParticipantSearchState> = {}
+  defaultState: ParticipantSearchState = DefaultParticipantSearchState
 ): ParticipantSearchState => {
-  let searchState = { ...DefaultParticipantSearchState, ...defaultState }
+  let searchState = defaultState
   if (searchParams.get(searchParamName)) {
     try {
       const explicitSearchState = JSON.parse(searchParams.get(searchParamName) as string)
@@ -224,7 +232,10 @@ export const toExpression = (searchState: ParticipantSearchState,
 /**
  * Returns the search expression state as a list of human-readable facets.
  */
-export const getFacets = (searchState: ParticipantSearchState, opts?: { includeKeywordSearch: boolean }): {
+export const getFacets = (searchState: ParticipantSearchState, opts?: {
+  includeKeywordSearch?: boolean,
+  customLabels?: { [index: string]: string }
+}): {
   label: string,
   value: string
 }[] => {
@@ -243,8 +254,13 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeK
       } else if (['includeFacets', 'queryFacets', 'includeFacetKeys'].includes(key)) {
         // skip -- not shown directly to users
       } else {
+        const label = (
+          opts?.customLabels?.[key]
+          || ParticipantSearchStateLabels[key as keyof ParticipantSearchState]
+          || key)
+
         facets.push({
-          label: ParticipantSearchStateLabels[key as keyof ParticipantSearchState] || key,
+          label,
           value: getValueAsString(key as keyof ParticipantSearchState, value as string | number | boolean)
         })
       }

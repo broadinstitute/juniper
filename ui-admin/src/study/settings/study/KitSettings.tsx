@@ -27,7 +27,7 @@ import {
 } from 'components/InfoCard'
 import { RequireUserPermission } from 'util/RequireUserPermission'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
-import { isEmpty } from 'lodash'
+import { isNil } from 'lodash'
 
 export const KitSettings = (
   {
@@ -135,27 +135,36 @@ export const KitSettings = (
       </label>
     </div>
 
+    <label className="form-label">
+      Use custom kit eligibility rule <InfoPopup content={
+      `If checked, the Kits page will use the provided search expression as the default filter for enrollees.
+          If not checked, the Kits page will only show enrollees that have completed all required surveys.`
+      }/>
+      <input type="checkbox" checked={!isNil(config.kitEligibilityRule)}
+        onChange={e => {
+          if (e.target.checked) {
+            updateConfig('kitEligibilityRule', '')
+          } else {
+            updateConfig('kitEligibilityRule', undefined)
+          }
+        }}/>
+    </label>
+    {!isNil(config.kitEligibilityRule) &&
     <InfoCard>
       <InfoCardHeader>
-        <InfoCardTitle title={'Kit eligibility'}/>
+        <InfoCardTitle title={'Kit eligibility rule'}/>
       </InfoCardHeader>
       <InfoCardBody>
-        <div>
-          If specified, overrides the default kit eligibility rule.
-          <LazySearchQueryBuilder
-            studyEnvContext={studyEnvContext}
-            onSearchExpressionChange={searchExp => {
-              if (!isEmpty(searchExp)) {
-                updateConfig('kitEligibilityRule', searchExp)
-              } else {
-                updateConfig('kitEligibilityRule', undefined)
-              }
-            }}
-            searchExpression={config.kitEligibilityRule || ''}
-          />
-        </div>
+        <LazySearchQueryBuilder
+          studyEnvContext={studyEnvContext}
+          onSearchExpressionChange={searchExp => {
+            updateConfig('kitEligibilityRule', searchExp)
+          }}
+          searchExpression={config.kitEligibilityRule || ''}
+        />
       </InfoCardBody>
 
     </InfoCard>
+    }
   </>
 }

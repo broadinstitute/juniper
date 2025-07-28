@@ -53,10 +53,7 @@ import {
   enrolleeConsentedColumn,
   getDynamicColumn
 } from 'util/table/columnUtils'
-import {
-  isEmpty,
-  isNil
-} from 'lodash'
+import { isNil } from 'lodash'
 import ParticipantSearch from 'study/participants/participantList/search/ParticipantSearch'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
@@ -70,7 +67,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
 
   const customKitEligibilityRule = currentEnv.studyEnvironmentConfig.kitEligibilityRule
-  const hasCustomKitEligibilityRule = !isNil(customKitEligibilityRule) && !isEmpty(customKitEligibilityRule)
+  const hasCustomKitEligibilityRule = !isNil(customKitEligibilityRule)
 
   const [studyEnvKitTypes, setStudyEnvKitTypes] = useState<KitType[]>([])
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
@@ -270,6 +267,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           updateSearchState={updateSearchState}
           setSearchState={setSearchState}
           disabled={false}
+          customLabels={{
+            'custom': 'Kit Eligibility'
+          }}
         />
       </div>
     </div>
