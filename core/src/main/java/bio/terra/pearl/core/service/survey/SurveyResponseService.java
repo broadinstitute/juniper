@@ -272,7 +272,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         }
 
         logger.info("SurveyResponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
-        HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(enrollee, enrolleeContext, response);
+        HubResponse<SurveyResponse> hubResponse;
+        UUID operatorUserId = operator.getParticipantUser() != null ? operator.getParticipantUser().getId() : enrollee.getParticipantUserId();
+        hubResponse = eventService.buildHubResponse(operatorUserId, enrollee, enrolleeContext, response);
         return hubResponse;
     }
 
