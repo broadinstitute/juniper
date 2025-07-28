@@ -6,7 +6,10 @@ import {
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
-import Api, { ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from '../api/api'
+import Api, {
+  ExpressionSearchFacets,
+  KeyedSearchValueTypeDefinition
+} from '../api/api'
 import { StudyEnvParams } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 
@@ -59,12 +62,15 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (defaultIncludes: string[], familyLinkageEnabled: boolean,
-  studyEnvParams: StudyEnvParams, searchParamName = 'search') => {
+export const useParticipantSearchState = (
+  defaultIncludes: string[],
+  familyLinkageEnabled: boolean,
+  studyEnvParams: StudyEnvParams,
+  searchParamName = 'search',
+  defaultState: Partial<ParticipantSearchState> = {}) => {
   const [searchParams, setSearchParams] = useSearchParams()
 
-
-  const searchState = urlParamsToSearchState(searchParams, searchParamName)
+  const searchState = urlParamsToSearchState(searchParams, searchParamName, defaultState)
   const searchExpression = toExpression(searchState, defaultIncludes, familyLinkageEnabled)
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(params => {
@@ -119,8 +125,12 @@ const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
   return JSON.stringify(explicitSearchState)
 }
 /** maps url params to a search state, using DefaultParticipantSearchState for any unspecified fields */
-const urlParamsToSearchState = (searchParams: URLSearchParams, searchParamName: string): ParticipantSearchState => {
-  let searchState = DefaultParticipantSearchState
+const urlParamsToSearchState = (
+  searchParams: URLSearchParams,
+  searchParamName: string,
+  defaultState: Partial<ParticipantSearchState> = {}
+): ParticipantSearchState => {
+  let searchState = { ...DefaultParticipantSearchState, ...defaultState }
   if (searchParams.get(searchParamName)) {
     try {
       const explicitSearchState = JSON.parse(searchParams.get(searchParamName) as string)

@@ -21,10 +21,13 @@ import {
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import {
   InfoCard,
+  InfoCardBody,
   InfoCardHeader,
   InfoCardTitle
 } from 'components/InfoCard'
 import { RequireUserPermission } from 'util/RequireUserPermission'
+import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+import { isEmpty } from 'lodash'
 
 export const KitSettings = (
   {
@@ -83,9 +86,9 @@ export const KitSettings = (
               isClearable={false}
               isDisabled={studyEnv.environmentName !== 'sandbox'}
               onChange={selected => setSelectedKitTypes(selected as {
-                    value: string,
-                    label: string
-                  }[])}
+                value: string,
+                label: string
+              }[])}
             />
           </div>
           <Button onClick={saveKitTypes}
@@ -102,7 +105,7 @@ export const KitSettings = (
 
       <div>
         <label className="form-label">
-        Use mock kit requests <InfoPopup content={
+          Use mock kit requests <InfoPopup content={
           `If checked, kit requests will be mocked for this environment, `
           + `and not sent to any external services.`
           }/>
@@ -112,9 +115,9 @@ export const KitSettings = (
       </div>
       <div>
         <label className="form-label">
-        Use kit request development realm
+          Use kit request development realm
           <InfoPopup content={
-          `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
+            `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
                will not be shipped. To actually mail kits, this and the above field should be unchecked.`}/>
           <input type="checkbox" checked={config.useDevDsmRealm}
             onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
@@ -124,12 +127,35 @@ export const KitSettings = (
     <div>
       <label className="form-label">
         Enable in-person kits <InfoPopup content={
-          `If checked, in-person kit requests will be enabled for this study environment.
+        `If checked, in-person kit requests will be enabled for this study environment.
           Participants will see information about completing in-person kits on the participant dashboard.`
         }/>
         <input type="checkbox" checked={config.enableInPersonKits}
           onChange={e => updateConfig('enableInPersonKits', e.target.checked)}/>
       </label>
     </div>
+
+    <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={'Kit eligibility'}/>
+      </InfoCardHeader>
+      <InfoCardBody>
+        <div>
+          If specified, overrides the default kit eligibility rule.
+          <LazySearchQueryBuilder
+            studyEnvContext={studyEnvContext}
+            onSearchExpressionChange={searchExp => {
+              if (!isEmpty(searchExp)) {
+                updateConfig('kitEligibilityRule', searchExp)
+              } else {
+                updateConfig('kitEligibilityRule', undefined)
+              }
+            }}
+            searchExpression={config.kitEligibilityRule || ''}
+          />
+        </div>
+      </InfoCardBody>
+
+    </InfoCard>
   </>
 }
