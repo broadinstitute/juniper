@@ -149,8 +149,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       loginState?.ppUsers.find(ppUser => ppUser.profileId === profile.id)?.participantUserId === loginState?.user?.id
     )
 
-    console.log('updating profile', profile, 'isPrimaryUser', isPrimaryUser)
-
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
