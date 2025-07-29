@@ -1,9 +1,5 @@
 package bio.terra.pearl.api.admin.service.kit;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
@@ -14,12 +10,17 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import java.util.Arrays;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class KitExtServiceTests extends BaseSpringBootTest {
   @Autowired private KitExtService kitExtService;
@@ -57,7 +58,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
                     adminUser, "someportal", "somestudy", EnvironmentName.sandbox),
                 Arrays.asList("enrollee1", "enrollee2"),
                 new KitRequestService.KitRequestCreationDto(
-                    "SALIVA", DistributionMethod.MAILED, null, false)));
+                        "SALIVA", DistributionMethod.MAILED, null, false, null)));
   }
 
   @Test

@@ -10,6 +10,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import jakarta.validation.Validator;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
@@ -69,7 +68,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     throws PepperApiException, PepperParseException {
         String kitRequestBody;
 
-        if (kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
+        if (isReturnOnlyKitRequest(kitRequest)) {
             kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest);
         } else {
             kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
@@ -82,6 +81,11 @@ public class LivePepperDSMClient implements PepperDSMClient {
                     kitRequest.getId(), response.getKits().length), Arrays.toString(response.getKits()), response);
         }
         return response.getKits()[0];
+    }
+
+    private boolean isReturnOnlyKitRequest(KitRequest kitRequest) {
+        return kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON ||
+                kitRequest.getDistributionMethod() == DistributionMethod.MANUAL;
     }
 
     @Override

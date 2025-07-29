@@ -1,13 +1,23 @@
-import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
+import {
+  paramsFromContext,
+  StudyEnvContextT
+} from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
-import { useBadAddressOverride, useKitTypeSelect } from '../participants/RequestKitModal'
+import {
+  useBadAddressOverride,
+  useKitTypeSelect
+} from '../participants/RequestKitModal'
 import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from 'util/notifications'
+import {
+  failureNotification,
+  successNotification
+} from 'util/notifications'
 import { Modal } from 'react-bootstrap'
 import LoadingSpinner from 'util/LoadingSpinner'
 import pluralize from 'pluralize'
+import { KitRequestCreationDto } from '@juniper/ui-core'
 
 
 /** Renders a modal for an admin to submit multiple kit requests. */
@@ -26,8 +36,15 @@ export default function RequestKitsModal({
   const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
   const handleSubmit = async () => {
     doApiLoad(async () => {
-      const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
-        enrolleeShortcodes, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
+      const kitRequest: KitRequestCreationDto = { kitType, distributionMethod: 'MAILED', skipAddressValidation }
+
+      const payload: { [shortcode: string]: KitRequestCreationDto } = {}
+
+      for (const enrolleeShortcode of enrolleeShortcodes) {
+        payload[enrolleeShortcode] = kitRequest
+      }
+
+      const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName, payload)
       if (response.exceptions.length) {
         const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')

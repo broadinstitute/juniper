@@ -7,28 +7,53 @@ import {
   ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel, SortingState,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { EnrolleeSearchExpressionResult, KeyedSearchValueTypeDefinition, ParticipantTask } from 'api/api'
-import { paramsFromContext, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import Api, {
+  EnrolleeSearchExpressionResult,
+  KeyedSearchValueTypeDefinition,
+  ParticipantTask
+} from 'api/api'
+import {
+  paramsFromContext,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import {
   basicTableLayout,
-  IndeterminateCheckbox, renderEmptyMessage,
-  RowVisibilityCount, checkboxColumnCell, DownloadControl
+  checkboxColumnCell,
+  DownloadControl,
+  IndeterminateCheckbox,
+  renderEmptyMessage,
+  RowVisibilityCount
 } from 'util/table/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { currentIsoDate, Enrollee, instantToDateString, KitType, StudyEnvParams } from '@juniper/ui-core'
+import {
+  currentIsoDate,
+  Enrollee,
+  instantToDateString,
+  KitType,
+  StudyEnvParams
+} from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faQrcode } from '@fortawesome/free-solid-svg-icons'
+import {
+  faBoxOpen,
+  faPaperPlane,
+  faQrcode
+} from '@fortawesome/free-solid-svg-icons'
 import { useParticipantSearchState } from 'util/participantSearchUtils'
-import { ColumnVisibilityControl, enrolleeConsentedColumn, getDynamicColumn } from 'util/table/columnUtils'
+import {
+  ColumnVisibilityControl,
+  enrolleeConsentedColumn,
+  getDynamicColumn
+} from 'util/table/columnUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -54,6 +79,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
+  const [showAssignKitModal, setShowAssignKitModal] = useState(false)
 
   const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
     paramsFromContext(studyEnvContext))
@@ -217,8 +243,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       </div>
       <div className="d-flex">
         <Link to={'../scan'}>
-          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan kit</Button>
+          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
         </Link>
+        <Button onClick={() => {
+          setShowRequestKitModal(true)
+        }}
+        variant="light" className="border m-1" disabled={!enableActionButtons}
+        tooltip={enableActionButtons ? 'Manually scan and kits' : 'Select at least one participant'}>
+          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign return-only kit
+        </Button>
         <Button onClick={() => { setShowRequestKitModal(true) }}
           variant="light" className="border m-1" disabled={!enableActionButtons}
           tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>

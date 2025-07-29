@@ -13,6 +13,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -23,7 +24,6 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -79,7 +79,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false));
+        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false, null));
 
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
@@ -111,7 +111,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         });
 
         assertThrows(PepperApiException.class, () ->
-                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false))
+                kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false, null))
         );
     }
 
@@ -135,7 +135,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false));
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false, null));
         KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
 
         assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
@@ -160,7 +160,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.getMailingAddress().setStreet1("123 Fake Street");
         profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
-        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, null, false));
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, null, false, null));
         KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
 
         assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
@@ -324,7 +324,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        KitRequestService.KitRequestCreationDto kitRequestCreationDto = new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, "testLabel", false);
+        KitRequestService.KitRequestCreationDto kitRequestCreationDto = new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, "testLabel", false, null);
         KitRequestDto kitRequest = kitRequestService.createNewInPersonKitRequest(adminUser, enrollee, kitRequestCreationDto);
 
         assertThat(kitRequest.getStatus(), equalTo(KitRequestStatus.CREATED));
@@ -578,7 +578,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(mockPepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         KitRequestDto kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null));
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(mockPepperDSMClient).fetchKitStatus(any(), any());
         Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
@@ -590,7 +590,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(livePepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null));
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
         Mockito.verify(livePepperDSMClient).fetchKitStatus(any(), any());

@@ -17,12 +17,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
-import bio.terra.pearl.core.service.kit.pepper.PepperDSMClientWrapper;
-import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
-import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -38,13 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -97,7 +86,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
          */
         return switch (kitRequestCreationDto.distributionMethod) {
             case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
-            case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
+            case MAILED, MANUAL -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
@@ -172,7 +161,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel, boolean skipAddressValidation) { }
+    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel,
+                                        boolean skipAddressValidation,
+                                        String returnTrackingNumber) {
+    }
 
     public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
 
@@ -379,6 +371,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .status(KitRequestStatus.CREATED)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
+                .distributionMethod(kitRequestCreationDto.distributionMethod)
+                .returnTrackingNumber(kitRequestCreationDto.returnTrackingNumber)
+                .kitLabel(kitRequestCreationDto.kitLabel)
                 .build();
         return kitRequest;
     }
