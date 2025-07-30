@@ -4,7 +4,10 @@ import {
 } from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
 import { useKitTypeSelect } from '../participants/RequestKitModal'
-import { doApiLoad } from 'api/api-utils'
+import {
+  doApiLoad,
+  useLoadingEffect
+} from 'api/api-utils'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import {
@@ -13,7 +16,11 @@ import {
 } from 'util/notifications'
 import { Modal } from 'react-bootstrap'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Enrollee } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDateString,
+  KitRequest
+} from '@juniper/ui-core'
 import {
   isEmpty,
   isNil,
@@ -39,24 +46,43 @@ type ManualKitRequestCreationDto = {
   kitType: string,
   kitLabel: string,
   skipAddressValidation: boolean,
+  trackingNumber?: string,
   returnTrackingNumber?: string,
 }
 /** Renders a modal for an admin to quickly scan & send one or more kit requests. */
 export default function AssignKitModal({
   studyEnvContext, enrollee,
-  onDismiss, onSubmit, queueIdx, queueLength
+  onDismiss, onSubmit, queueIdx, queueLength, skip
 }: {
   studyEnvContext: StudyEnvContextT,
   onDismiss: () => void,
   enrollee: Enrollee,
   onSubmit: (anyKitWasCreated: boolean) => void,
   queueIdx?: number,
-  queueLength?: number
+  queueLength?: number,
+  skip?: () => void
 }) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [kitLabel, setKitLabel] = useState<string>()
+  const [trackingNumber, setTrackingNumber] = useState<string>()
   const [returnTrackingNumber, setReturnTrackingNumber] = useState<string>()
+
+  const [enrolleeKits, setEnrolleeKits] = useState<KitRequest[]>([])
+
+  const {
+    isLoading: isLoadingEnrolleeKits
+  } = useLoadingEffect(async () => {
+    const kits = await Api.fetchEnrolleeKitRequests(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      enrollee.shortcode)
+
+    setEnrolleeKits(kits)
+  }, [studyEnvContext, enrollee.shortcode], 'Loading enrollee kits')
+
+  const isLoading = isLoadingEnrolleeKits || isSubmitting
 
 
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
@@ -66,7 +92,8 @@ export default function AssignKitModal({
     distributionMethod: 'MANUAL',
     kitLabel: kitLabel || '',
     skipAddressValidation: false,
-    returnTrackingNumber
+    returnTrackingNumber,
+    trackingNumber
   }
   // only required field is kitLabel
   const isKitComplete = !isEmpty(assembledKitDto.kitLabel)
@@ -82,24 +109,25 @@ export default function AssignKitModal({
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
         enrollee.shortcode,
-        {
-          kitType: 'SALIVA',
-          distributionMethod: 'MANUAL',
-          kitLabel,
-          returnTrackingNumber,
-          skipAddressValidation: false
-        }
+        assembledKitDto
       )
       Store.addNotification(successNotification('Kit successfully assigned'))
       onSubmit(true)
+      setKitLabel(undefined)
+      setReturnTrackingNumber(undefined)
+      setTrackingNumber(undefined)
     }, {
       setError: error => {
         if (error) {
           Store.addNotification(failureNotification(`Failed to assign kit: ${error}`))
         }
       },
-      setIsLoading
+      setIsLoading: setIsSubmitting
     })
+  }
+
+  const naturalCase = (str: string) => {
+    return startCase(str.toLowerCase())
   }
 
 
@@ -114,6 +142,7 @@ export default function AssignKitModal({
       </div>
     </Modal.Header>
     <Modal.Body>
+      <h4>Profile</h4>
       {isLoading ? <LoadingSpinner/> : <>
         <InfoCard>
           <InfoCardHeader>
@@ -125,12 +154,33 @@ export default function AssignKitModal({
               values={[`${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`]}
               condensed/>
             <InfoCardValue title={'Sex At Birth'} values={[enrollee.profile?.sexAtBirth || '']} condensed/>
+
+            {enrolleeKits.map(kit => {
+              return <>
+                <InfoCardRow
+                  title={`${naturalCase(kit.kitType.name)} Kit (${instantToDateString(kit.createdAt)})`}
+                  condensed>
+                  <p className='m-0'>
+                    Status: <span className='fst-italic'>{naturalCase(kit.status)}</span>
+                  </p>
+                  <p className='m-0'>
+                    Label: <span className='fst-italic'>{kit.kitLabel || 'N/A'}</span>
+                  </p>
+                  <p className='m-0'>
+                    Return Tracking: <span className='fst-italic'>{kit.returnTrackingNumber || 'N/A'}</span>
+                  </p>
+                  <p className='m-0'>
+                    Sent: <span className='fst-italic'>{kit.sentAt ? instantToDateString(kit.sentAt) : 'N/A'}</span>
+                  </p>
+                </InfoCardRow>
+              </>
+            })}
           </InfoCardBody>
         </InfoCard>
 
         <InfoCard>
           <InfoCardHeader>
-            <InfoCardTitle title={'Kit Details'}/>
+            <InfoCardTitle title={'New Kit'}/>
           </InfoCardHeader>
           <InfoCardBody>
             <InfoCardRow title={'Kit Type'}>
@@ -141,6 +191,12 @@ export default function AssignKitModal({
                 field={'kitLabel'}
                 value={kitLabel || ''}
                 setValue={setKitLabel}/>
+            </InfoCardRow>
+            <InfoCardRow title={'Tracking Number (optional)'}>
+              <LabelScanner
+                field={'trackingNumber'}
+                value={trackingNumber || ''}
+                setValue={setTrackingNumber}/>
             </InfoCardRow>
             <InfoCardRow title={'Return Tracking (optional)'}>
               <LabelScanner
@@ -154,10 +210,19 @@ export default function AssignKitModal({
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-        <button className='btn btn-primary' onClick={assignKit} disabled={!isKitComplete || isLoading}>
-          Assign kit
-        </button>
+        <div className="d-flex justify-content-between w-100">
+          <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
+          <div>
+            {skip &&
+                <button className='btn btn-secondary me-2' onClick={skip}>
+                    Skip
+                </button>}
+            <button className='btn btn-primary' onClick={assignKit} disabled={!isKitComplete || isLoading}>
+              Assign kit
+            </button>
+          </div>
+        </div>
+
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>

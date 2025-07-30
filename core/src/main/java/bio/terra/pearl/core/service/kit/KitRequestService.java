@@ -161,9 +161,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel,
+    public record KitRequestCreationDto(String kitType,
+                                        DistributionMethod distributionMethod,
+                                        String kitLabel,
                                         boolean skipAddressValidation,
-                                        String returnTrackingNumber) {
+                                        String returnTrackingNumber,
+                                        String trackingNumber) {
     }
 
     public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
@@ -372,9 +375,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
                 .distributionMethod(kitRequestCreationDto.distributionMethod)
+                .trackingNumber(kitRequestCreationDto.trackingNumber)
                 .returnTrackingNumber(kitRequestCreationDto.returnTrackingNumber)
                 .kitLabel(kitRequestCreationDto.kitLabel)
                 .build();
+
+        if (kitRequest.getDistributionMethod() == DistributionMethod.MANUAL) {
+            // if kit is being manually assigned, assume it's being sent same-day by staff
+            kitRequest.setLabeledAt(Instant.now());
+            kitRequest.setSentAt(Instant.now());
+            kitRequest.setStatus(KitRequestStatus.SENT_BY_STAFF);
+        }
+
         return kitRequest;
     }
 

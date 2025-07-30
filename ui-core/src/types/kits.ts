@@ -6,15 +6,16 @@ export type KitType = {
 }
 
 export type KitRequestStatus =
-    'NEW' |
-    'CREATED' |
-    'QUEUED' |
-    'SENT' |
-    'COLLECTED_BY_STAFF' |
-    'RECEIVED' |
-    'ERRORED' |
-    'DEACTIVATED' |
-    'UNKNOWN'
+  'NEW' |
+  'CREATED' |
+  'QUEUED' |
+  'SENT' |
+  'SENT_BY_STAFF' |
+  'COLLECTED_BY_STAFF' |
+  'RECEIVED' |
+  'ERRORED' |
+  'DEACTIVATED' |
+  'UNKNOWN'
 
 export type KitRequest = {
     id: string,

@@ -105,6 +105,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         id: `${kitType.name}KitRequested`, value: false
       }))
     ])
+    setRowSelection({})
 
     const enrolleeRows: EnrolleeRow[] = enrollees.map(result => {
       const taskCompletionStatus = _mapValues(
@@ -282,7 +283,10 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         <AssignKitQueueModal
           show={showAssignKitModal}
           studyEnvContext={studyEnvContext}
-          onDismiss={() => setShowAssignKitModal(false)}
+          onDismiss={() => {
+            setShowAssignKitModal(false)
+            reload()
+          }}
           enrollees={selectedEnrollees}
         />
 
@@ -310,6 +314,13 @@ const AssignKitQueueModal = ({
     setQueueIndex(0)
   }, [enrollees])
 
+  const incrementQueueIndex = () => {
+    if (queueIndex < enrollees.length - 1) {
+      setQueueIndex(queueIndex + 1)
+    } else {
+      onDismiss()
+    }
+  }
 
   if (!show || !enrollees || enrollees.length === 0) {
     return <></>
@@ -318,13 +329,8 @@ const AssignKitQueueModal = ({
     studyEnvContext={studyEnvContext}
     enrollee={enrollees[queueIndex]}
     onDismiss={onDismiss}
-    onSubmit={() => {
-      if (queueIndex < enrollees.length - 1) {
-        setQueueIndex(queueIndex + 1)
-      } else {
-        onDismiss()
-      }
-    }}
+    onSubmit={incrementQueueIndex}
+    skip={incrementQueueIndex}
     queueIdx={queueIndex}
     queueLength={enrollees.length}
   />

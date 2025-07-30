@@ -1094,6 +1094,7 @@ export default {
       distributionMethod: string,
       skipAddressValidation: boolean,
       kitLabel?: string,
+      trackingNumber?: string,
       returnTrackingNumber?: string
     }
   ): Promise<string> {
