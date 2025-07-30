@@ -14,7 +14,16 @@ import {
 import { Modal } from 'react-bootstrap'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Enrollee } from '@juniper/ui-core'
-import { isEmpty } from 'lodash'
+import {
+  isEmpty,
+  startCase
+} from 'lodash'
+import { BarcodeScanner } from 'study/kits/kitcollection/BarcodeScanner'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCamera } from '@fortawesome/free-solid-svg-icons'
+import { Checkbox } from 'components/forms/Checkbox'
+import { Textarea } from 'components/forms/Textarea'
 
 type ManualKitRequestCreationDto = {
   distributionMethod: 'MANUAL',
@@ -33,7 +42,6 @@ export default function AssignKitModal({
   enrollee: Enrollee,
   onSubmit: (anyKitWasCreated: boolean) => void
 }) {
-  const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
 
   const [kitLabel, setKitLabel] = useState<string>()
@@ -53,62 +61,141 @@ export default function AssignKitModal({
   const isKitComplete = !isEmpty(assembledKitDto.kitLabel)
 
 
-  const handleSubmit = async () => {
+  const assignKit = async () => {
+    if (!enrollee || !kitLabel) {
+      return
+    }
     doApiLoad(async () => {
-      const response = await Api.createKitRequest(
-        portal.shortcode,
-        study.shortcode,
-        currentEnv.environmentName,
+      await Api.createKitRequest(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
         enrollee.shortcode,
-        assembledKitDto)
-      if (response.exceptions.length) {
-        const errorMessage = response.exceptions
-          .map(exception => exception.message).join('; ')
-        Store.addNotification(failureNotification(
-          `${response.exceptions.length} kit requests failed. ${errorMessage}`))
-      }
-      if (response.kitRequests.length) {
-        Store.addNotification(successNotification(
-          `${response.kitRequests.length} kit requests created`
-        ))
-      }
-      onSubmit(!!response.kitRequests.length)
-    }, { setIsLoading })
+        {
+          kitType: 'SALIVA',
+          distributionMethod: 'MANUAL',
+          kitLabel,
+          returnTrackingNumber,
+          skipAddressValidation: false
+        }
+      )
+      Store.addNotification(successNotification('Kit successfully assigned'))
+      onSubmit(true)
+    }, {
+      setError: error => {
+        if (error) {
+          Store.addNotification(failureNotification(`Failed to assign kit: ${error}`))
+        }
+      },
+      setIsLoading
+    })
   }
 
 
-  return <Modal show={true} onHide={onDismiss}>
+  return <Modal show={true} onHide={onDismiss} size="lg">
     <Modal.Header closeButton>
       <Modal.Title>Assign Kit</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <div>
-        <p>
-          Please confirm profile information:
-        </p>
-        <p>Shortcode: {enrollee.shortcode}</p>
-        <p>Full name: {enrollee.profile.givenName} {enrollee.profile.familyName}</p>
-        <p>Sex at birth: {enrollee.profile.sexAtBirth}</p>
-      </div>
-      <form onSubmit={e => e.preventDefault()}>
+      {isLoading ? <LoadingSpinner/> : <>
         <div>
-          <label className='form-label'>
-            Kit type
-            {KitSelect}
-          </label>
+          <p>
+            Please confirm profile information:
+          </p>
+          <p>Shortcode: {enrollee.shortcode}</p>
+          <p>Full name: {enrollee.profile?.givenName} {enrollee.profile?.familyName}</p>
+          <p>Sex at birth: {enrollee.profile?.sexAtBirth}</p>
         </div>
-        <div>
+        <form onSubmit={e => e.preventDefault()}>
+          <div>
+            <label className='form-label'>
+              Kit type
+              {KitSelect}
+            </label>
+          </div>
 
-        </div>
-      </form>
+          <div className="card p-3 bg-light">
+            <div>
+              <label className='form-label'>
+                Kit Label
+              </label>
+            </div>
+            <LabelScanner
+              field={'kitLabel'}
+              value={kitLabel || ''}
+              setValue={setKitLabel}/>
+          </div>
+
+          <div>
+            <label className='form-label'>
+              Return tracking (optional)
+            </label>
+          </div>
+
+          <LabelScanner
+            field={'returnTrackingNumber'}
+            value={returnTrackingNumber || ''}
+            setValue={setReturnTrackingNumber}/>
+        </form>
+      </>}
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-        <button className='btn btn-primary' onClick={handleSubmit} disabled={!isKitComplete}>
+        <button className='btn btn-primary' onClick={assignKit} disabled={!isKitComplete || isLoading}>
           Assign kit
         </button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
+}
+
+
+const LabelScanner = ({
+  field,
+  value,
+  setValue
+}: {
+  field: string,
+  value: string,
+  setValue: (value: string) => void
+}) => {
+  const title = startCase(field).toLowerCase()
+
+  const [showScanner, setShowScanner] = useState(false)
+  const [enableOverride, setEnableOverride] = useState(false)
+  const [error, setError] = useState<string>()
+
+  return <>
+    {showScanner &&
+        <BarcodeScanner
+          expectedFormats={['code_128']}
+          onError={error => setError(error)}
+          onSuccess={result => {
+            setValue(result.rawValue)
+            setShowScanner(false)
+          }}/>
+    }
+    <Button className="my-2" variant={'primary'}
+      onClick={() => setShowScanner(!showScanner)}>
+      <FontAwesomeIcon icon={faCamera} className={'pe-2'}/>Click to scan {title}
+    </Button>
+    <Checkbox
+      label={`Enable manual ${title} override`}
+      checked={enableOverride}
+      onChange={e => {
+        setEnableOverride(e)
+      }}/>
+    <Textarea
+      className="my-2"
+      rows={2}
+      disabled={!enableOverride}
+      placeholder={`Scan ${title}`}
+      value={value}
+      onChange={e => setValue(e)}>
+    </Textarea>
+    {error &&
+        <div className="text-danger">{error}</div>
+    }
+  </>
 }

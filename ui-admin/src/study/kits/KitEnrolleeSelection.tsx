@@ -54,6 +54,7 @@ import {
   enrolleeConsentedColumn,
   getDynamicColumn
 } from 'util/table/columnUtils'
+import AssignKitModal from 'study/kits/AssignKitModal'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -79,7 +80,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
-  const [showAssignKitModal, setShowAssignKitModal] = useState(false)
+  const [assignKitQueue, setAssignKitQueue] = useState<Enrollee[]>([])
 
   const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
     paramsFromContext(studyEnvContext))
@@ -123,10 +124,19 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       table.toggleAllRowsSelected(false)
     }
   }
-  const enrolleesSelected = Object.keys(rowSelection)
+  const selectedEnrollees = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
-    .map(key => enrollees[parseInt(key)].enrollee.shortcode)
-  const numSelected = enrolleesSelected.length
+    .map(key => {
+      const searchExp = enrollees[parseInt(key)]
+
+      const enrollee = searchExp.enrollee
+      enrollee.profile = searchExp.profile
+      return enrollee
+    })
+
+  const selectedEnrolleeShortcodes = selectedEnrollees.map(enrollee => enrollee.shortcode)
+
+  const numSelected = selectedEnrolleeShortcodes.length
   const enableActionButtons = numSelected > 0
 
   const requiredResearchSurveys = currentEnv.configuredSurveys
@@ -246,7 +256,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
         </Link>
         <Button onClick={() => {
-          setShowRequestKitModal(true)
+          setAssignKitQueue(selectedEnrollees)
         }}
         variant="light" className="border m-1" disabled={!enableActionButtons}
         tooltip={enableActionButtons ? 'Manually scan and kits' : 'Select at least one participant'}>
@@ -263,8 +273,20 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         { showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
-          enrolleeShortcodes={enrolleesSelected}
+          enrolleeShortcodes={selectedEnrolleeShortcodes}
           onSubmit={onSubmit}/> }
+
+        {assignKitQueue.length > 0 && <AssignKitModal
+          studyEnvContext={studyEnvContext}
+          onDismiss={() => setAssignKitQueue([])}
+          onSubmit={() => {
+            setAssignKitQueue(prev => {
+              return prev.slice(1) // remove the first enrollee from the queue
+            })
+          }}
+          enrollee={assignKitQueue[0]} // assign one kit at a time
+        />}
+
       </div>
     </div>
     { basicTableLayout(table, { filterable: true }) }

@@ -17,7 +17,6 @@ import {
 import { Modal } from 'react-bootstrap'
 import LoadingSpinner from 'util/LoadingSpinner'
 import pluralize from 'pluralize'
-import { KitRequestCreationDto } from '@juniper/ui-core'
 
 
 /** Renders a modal for an admin to submit multiple kit requests. */
@@ -25,10 +24,11 @@ export default function RequestKitsModal({
   studyEnvContext, enrolleeShortcodes,
   onDismiss, onSubmit
 }: {
-    studyEnvContext: StudyEnvContextT,
-    onDismiss: () => void,
-    enrolleeShortcodes: string[],
-    onSubmit: (anyKitWasCreated: boolean) => void }) {
+  studyEnvContext: StudyEnvContextT,
+  onDismiss: () => void,
+  enrolleeShortcodes: string[],
+  onSubmit: (anyKitWasCreated: boolean) => void
+}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
 
@@ -36,24 +36,17 @@ export default function RequestKitsModal({
   const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
   const handleSubmit = async () => {
     doApiLoad(async () => {
-      const kitRequest: KitRequestCreationDto = { kitType, distributionMethod: 'MAILED', skipAddressValidation }
-
-      const payload: { [shortcode: string]: KitRequestCreationDto } = {}
-
-      for (const enrolleeShortcode of enrolleeShortcodes) {
-        payload[enrolleeShortcode] = kitRequest
-      }
-
-      const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName, payload)
+      const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
+        enrolleeShortcodes, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
       if (response.exceptions.length) {
         const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')
         Store.addNotification(failureNotification(
-                    `${response.exceptions.length} kit requests failed. ${errorMessage}`))
+          `${response.exceptions.length} kit requests failed. ${errorMessage}`))
       }
       if (response.kitRequests.length) {
         Store.addNotification(successNotification(
-                    `${response.kitRequests.length} kit requests created`
+          `${response.kitRequests.length} kit requests created`
         ))
       }
       onSubmit(!!response.kitRequests.length)
@@ -68,11 +61,11 @@ export default function RequestKitsModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-                    Request a kit for {enrolleeShortcodes.length} enrollees
+          Request a kit for {enrolleeShortcodes.length} enrollees
         </div>
         <div>
           <label className='form-label'>
-                        Kit type
+            Kit type
             {KitSelect}
           </label>
           { OverrideControl}
