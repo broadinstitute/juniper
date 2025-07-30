@@ -16,6 +16,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Enrollee } from '@juniper/ui-core'
 import {
   isEmpty,
+  isNil,
   startCase
 } from 'lodash'
 import { BarcodeScanner } from 'study/kits/kitcollection/BarcodeScanner'
@@ -24,6 +25,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCamera } from '@fortawesome/free-solid-svg-icons'
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
+import {
+  InfoCard,
+  InfoCardBody,
+  InfoCardHeader,
+  InfoCardRow,
+  InfoCardTitle,
+  InfoCardValue
+} from 'components/InfoCard'
 
 type ManualKitRequestCreationDto = {
   distributionMethod: 'MANUAL',
@@ -35,12 +44,14 @@ type ManualKitRequestCreationDto = {
 /** Renders a modal for an admin to quickly scan & send one or more kit requests. */
 export default function AssignKitModal({
   studyEnvContext, enrollee,
-  onDismiss, onSubmit
+  onDismiss, onSubmit, queueIdx, queueLength
 }: {
   studyEnvContext: StudyEnvContextT,
   onDismiss: () => void,
   enrollee: Enrollee,
-  onSubmit: (anyKitWasCreated: boolean) => void
+  onSubmit: (anyKitWasCreated: boolean) => void,
+  queueIdx?: number,
+  queueLength?: number
 }) {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -94,49 +105,51 @@ export default function AssignKitModal({
 
   return <Modal show={true} onHide={onDismiss} size="lg">
     <Modal.Header closeButton>
-      <Modal.Title>Assign Kit</Modal.Title>
+      <div className="d-flex align-items-center justify-content-between w-100 pe-2">
+        <Modal.Title>Assign Kit</Modal.Title>
+        {!isNil(queueIdx) && !isNil(queueLength) &&
+            <div className="ms-2 text-muted">
+              {queueIdx + 1} of {queueLength}
+            </div>}
+      </div>
     </Modal.Header>
     <Modal.Body>
       {isLoading ? <LoadingSpinner/> : <>
-        <div>
-          <p>
-            Please confirm profile information:
-          </p>
-          <p>Shortcode: {enrollee.shortcode}</p>
-          <p>Full name: {enrollee.profile?.givenName} {enrollee.profile?.familyName}</p>
-          <p>Sex at birth: {enrollee.profile?.sexAtBirth}</p>
-        </div>
-        <form onSubmit={e => e.preventDefault()}>
-          <div>
-            <label className='form-label'>
-              Kit type
+        <InfoCard>
+          <InfoCardHeader>
+            <InfoCardTitle title={'Enrollee'}/>
+          </InfoCardHeader>
+          <InfoCardBody>
+            <InfoCardValue title={'Shortcode'} values={[enrollee.shortcode]} condensed/>
+            <InfoCardValue title={'Name'}
+              values={[`${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`]}
+              condensed/>
+            <InfoCardValue title={'Sex At Birth'} values={[enrollee.profile?.sexAtBirth || '']} condensed/>
+          </InfoCardBody>
+        </InfoCard>
+
+        <InfoCard>
+          <InfoCardHeader>
+            <InfoCardTitle title={'Kit Details'}/>
+          </InfoCardHeader>
+          <InfoCardBody>
+            <InfoCardRow title={'Kit Type'}>
               {KitSelect}
-            </label>
-          </div>
-
-          <div className="card p-3 bg-light">
-            <div>
-              <label className='form-label'>
-                Kit Label
-              </label>
-            </div>
-            <LabelScanner
-              field={'kitLabel'}
-              value={kitLabel || ''}
-              setValue={setKitLabel}/>
-          </div>
-
-          <div>
-            <label className='form-label'>
-              Return tracking (optional)
-            </label>
-          </div>
-
-          <LabelScanner
-            field={'returnTrackingNumber'}
-            value={returnTrackingNumber || ''}
-            setValue={setReturnTrackingNumber}/>
-        </form>
+            </InfoCardRow>
+            <InfoCardRow title={'Kit Label'}>
+              <LabelScanner
+                field={'kitLabel'}
+                value={kitLabel || ''}
+                setValue={setKitLabel}/>
+            </InfoCardRow>
+            <InfoCardRow title={'Return Tracking (optional)'}>
+              <LabelScanner
+                field={'returnTracking'}
+                value={returnTrackingNumber || ''}
+                setValue={setReturnTrackingNumber}/>
+            </InfoCardRow>
+          </InfoCardBody>
+        </InfoCard>
       </>}
     </Modal.Body>
     <Modal.Footer>

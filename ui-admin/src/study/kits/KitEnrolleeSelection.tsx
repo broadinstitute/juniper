@@ -1,4 +1,7 @@
-import React, { useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import _keyBy from 'lodash/keyBy'
 import _mapValues from 'lodash/mapValues'
 import { Link } from 'react-router-dom'
@@ -80,7 +83,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
-  const [assignKitQueue, setAssignKitQueue] = useState<Enrollee[]>([])
+  const [showAssignKitModal, setShowAssignKitModal] = useState(false)
 
   const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
     paramsFromContext(studyEnvContext))
@@ -256,7 +259,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
         </Link>
         <Button onClick={() => {
-          setAssignKitQueue(selectedEnrollees)
+          setShowAssignKitModal(true)
         }}
         variant="light" className="border m-1" disabled={!enableActionButtons}
         tooltip={enableActionButtons ? 'Manually scan and kits' : 'Select at least one participant'}>
@@ -276,20 +279,53 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           enrolleeShortcodes={selectedEnrolleeShortcodes}
           onSubmit={onSubmit}/> }
 
-        {assignKitQueue.length > 0 && <AssignKitModal
+        <AssignKitQueueModal
+          show={showAssignKitModal}
           studyEnvContext={studyEnvContext}
-          onDismiss={() => setAssignKitQueue([])}
-          onSubmit={() => {
-            setAssignKitQueue(prev => {
-              return prev.slice(1) // remove the first enrollee from the queue
-            })
-          }}
-          enrollee={assignKitQueue[0]} // assign one kit at a time
-        />}
+          onDismiss={() => setShowAssignKitModal(false)}
+          enrollees={selectedEnrollees}
+        />
 
       </div>
     </div>
     { basicTableLayout(table, { filterable: true }) }
     { renderEmptyMessage(enrollees, 'No participants') }
   </LoadingSpinner>
+}
+
+const AssignKitQueueModal = ({
+  show,
+  studyEnvContext,
+  enrollees,
+  onDismiss
+}: {
+  show: boolean,
+  studyEnvContext: StudyEnvContextT,
+  enrollees: Enrollee[],
+  onDismiss: () => void,
+}) => {
+  const [queueIndex, setQueueIndex] = useState(0)
+
+  useEffect(() => {
+    setQueueIndex(0)
+  }, [enrollees])
+
+
+  if (!show || !enrollees || enrollees.length === 0) {
+    return <></>
+  }
+  return <AssignKitModal
+    studyEnvContext={studyEnvContext}
+    enrollee={enrollees[queueIndex]}
+    onDismiss={onDismiss}
+    onSubmit={() => {
+      if (queueIndex < enrollees.length - 1) {
+        setQueueIndex(queueIndex + 1)
+      } else {
+        onDismiss()
+      }
+    }}
+    queueIdx={queueIndex}
+    queueLength={enrollees.length}
+  />
 }
