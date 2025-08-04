@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "custom_kit_eligibility"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column:
+                  name: kit_eligibility_rule
+                  type: text
+

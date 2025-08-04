@@ -10,12 +10,20 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons'
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, setSearchState, disabled = false }: {
+function ParticipantSearch({
+  studyEnvContext,
+  searchState,
+  updateSearchState,
+  setSearchState,
+  disabled = false,
+  customLabels = {}
+}: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
   setSearchState: (searchState: ParticipantSearchState) => void,
-  disabled?: boolean
+  disabled?: boolean,
+  customLabels?: { [index: string]: string }
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
@@ -41,7 +49,9 @@ function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, se
     </div>
     <SearchCriteriaView
       searchState={searchState}
-      updateSearchState={updateSearchState}/>
+      updateSearchState={updateSearchState}
+      customLabels={customLabels}
+    />
   </>
 }
 
