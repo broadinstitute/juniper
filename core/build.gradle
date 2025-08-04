@@ -57,7 +57,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-context:4.2.0'
 
     liquibaseRuntime 'org.liquibase:liquibase-core:4.31.0'
-    liquibaseRuntime 'info.picocli:picocli:4.7.6'
+    liquibaseRuntime 'info.picocli:picocli:4.7.7'
     liquibaseRuntime 'org.postgresql:postgresql'
     liquibaseRuntime 'ch.qos.logback:logback-classic'
 
