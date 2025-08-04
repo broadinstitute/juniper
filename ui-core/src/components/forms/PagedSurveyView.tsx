@@ -190,6 +190,13 @@ export function PagedSurveyView({
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
       updateProfile(response.profile)
+      if (!isNil(response.proxyEnrollee)) {
+        updateEnrollee(response.proxyEnrollee)
+      }
+      if (!isNil(response.proxyProfile)) {
+        updateProfile(response.proxyProfile)
+      }
+
       refreshSurvey(surveyModel, null)
       onSuccess()
     } catch {

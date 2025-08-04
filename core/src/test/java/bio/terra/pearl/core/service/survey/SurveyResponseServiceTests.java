@@ -44,8 +44,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -672,9 +671,17 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         });
 
         // doesn't throw updating newest
-        surveyResponseService.updateResponse(
+        HubResponse hubResponse = surveyResponseService.updateResponse(
                 newResponse2, new ResponsibleEntity(proxyUser), "test",
                 proxyPpUser, governedEnrollee, task2.getId(), survey.getPortalId());
+
+        // make sure hub response includes proxy info
+        assertNotNull(hubResponse.getProxyEnrollee());
+        assertEquals(hubResponse.getProxyEnrollee().getId(), proxyEnrollee.getId());
+
+        assertNotNull(hubResponse.getProxyProfile());
+        assertEquals(hubResponse.getProxyProfile().getId(), proxyEnrollee.getProfileId());
+
 
     }
 
