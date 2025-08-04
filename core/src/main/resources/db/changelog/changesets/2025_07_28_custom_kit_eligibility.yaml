@@ -9,6 +9,4 @@ databaseChangeLog:
               - column:
                   name: kit_eligibility_rule
                   type: text
-                  constraints:
-                      nullable: true
 
