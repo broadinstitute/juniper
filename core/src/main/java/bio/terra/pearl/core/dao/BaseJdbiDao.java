@@ -309,9 +309,18 @@ public abstract class BaseJdbiDao<T extends BaseEntity> implements JdbiDao<T> {
 
     protected Optional<T> findByTwoProperties(String column1Name, Object column1Value,
                                               String column2Name, Object column2Value) {
+        return findByTwoProperties(column1Name, column1Value, column2Name, column2Value, false);
+    }
+
+    protected Optional<T> findByTwoProperties(String column1Name, Object column1Value,
+                                              String column2Name, Object column2Value,
+                                              boolean withLock) {
+        String lockString = withLock ? "FOR UPDATE" : "";
         return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
-                        + " and " + column2Name + " = :column2Value;")
+                handle.createQuery("""
+                            select * from %s where %s = :column1Value"
+                            and %s = :column2Value %s;
+                            """.formatted(tableName, column1Name, column2Name, lockString))
                         .bind("column1Value", column1Value)
                         .bind("column2Value", column2Value)
                         .mapTo(clazz)

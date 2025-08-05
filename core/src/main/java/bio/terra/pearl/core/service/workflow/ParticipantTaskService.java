@@ -57,8 +57,8 @@ public class ParticipantTaskService extends ParticipantDataAuditedService<Partic
 
     public void deleteByEnrolleeId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId);}
 
-    public Optional<ParticipantTask> authTaskToEnrolleeId(UUID taskId, UUID enrolleeId) {
-        return dao.findByEnrolleeId(taskId, enrolleeId);
+    public Optional<ParticipantTask> authTaskToEnrolleeId(UUID taskId, UUID enrolleeId, boolean withLock) {
+        return dao.findByEnrolleeId(taskId, enrolleeId, withLock);
     }
 
     public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId) {
