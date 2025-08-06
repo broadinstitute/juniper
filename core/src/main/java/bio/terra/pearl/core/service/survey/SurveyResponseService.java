@@ -157,7 +157,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
     /**
      * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey.
-     * admins can update any response.
+     * admins can update any valid response.
      */
     private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId, ResponsibleEntity operator) {
 
@@ -171,6 +171,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         if (task.getStatus() == TaskStatus.REJECTED || task.getStatus() == TaskStatus.REMOVED) {
             return false; // cannot edit removed/rejected tasks
+        }
+        if (operator.getParticipantUser() == null) {
+            return true; // admins and system processes can update any task
         }
 
         // with a completed task, we can only edit if it's the
