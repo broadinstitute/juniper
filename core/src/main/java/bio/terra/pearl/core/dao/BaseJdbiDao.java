@@ -318,7 +318,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> implements JdbiDao<T> {
         String lockString = withLock ? "FOR UPDATE" : "";
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
-                            select * from %s where %s = :column1Value"
+                            select * from %s where %s = :column1Value
                             and %s = :column2Value %s;
                             """.formatted(tableName, column1Name, column2Name, lockString))
                         .bind("column1Value", column1Value)
