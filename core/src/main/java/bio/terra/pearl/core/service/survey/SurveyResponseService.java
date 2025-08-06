@@ -140,8 +140,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     //if the cutoff time has passed, create a new task and response
-    private boolean shouldCreateNewLongitudinalTaskAndResponse(Integer createNewResponseAfterDays, Instant surveyResponseLastUpdatedAt) {
-        if(createNewResponseAfterDays == null) {
+    private boolean shouldCreateNewLongitudinalTaskAndResponse(ParticipantTask task, Integer createNewResponseAfterDays, Instant surveyResponseLastUpdatedAt, ResponsibleEntity operator) {
+        if (task.getStatus() != TaskStatus.COMPLETE) {
+            return false; // if the prior task wasn't complete, no new task
+        }
+        if (operator.getParticipantUser() == null) {
+            return false; // only participants automatically create new responses
+        }
+        if (createNewResponseAfterDays == null) {
             return false;
         }
         Instant cutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
@@ -150,9 +156,10 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
-     * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey
+     * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey.
+     * admins can update any response.
      */
-    private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId) {
+    private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId, ResponsibleEntity operator) {
 
         List<ParticipantTask> tasks = participantTaskService.findAllTasksForActivityByEnrollee(enrollee.getId(), surveyStableId);
 
@@ -199,19 +206,19 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());
 
-
         SurveyResponse response = task.getSurveyResponseId() != null ?
                 dao.findOneWithAnswers(task.getSurveyResponseId()).orElseThrow() : null;
 
-        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
-         && operator.getParticipantUser() != null && response != null) {
-            // handle participant response to a longitudinal survey with prior response
-            if (!isLongitudinalTaskEditable(enrollee, response, survey.getStableId())) {
-                // only admins can edit old longitudinal responses
+        // handle response to a longitudinal survey with prior response
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && response != null) {
+            if (!isLongitudinalTaskEditable(enrollee, response, survey.getStableId(), operator)) {
                 throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");
             }
-            if (task.getStatus() == TaskStatus.COMPLETE
-                    && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), response.getLastUpdatedAt())
+            if (shouldCreateNewLongitudinalTaskAndResponse(
+                            task,
+                            survey.getCreateNewResponseAfterDays(),
+                            response.getLastUpdatedAt(),
+                            operator)
             ) {
                 ParticipantTask newTask = participantTaskService.cleanForCopying(task);
                 newTask.setStatus(TaskStatus.IN_PROGRESS);
