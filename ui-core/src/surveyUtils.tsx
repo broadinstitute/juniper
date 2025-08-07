@@ -433,6 +433,14 @@ export function useSurveyJSModel(
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
     newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
 
+    newSurveyModel.onVariableChanged.add((_model, event) => {
+      const valAsBool = isString(event.value) ? event.value === 'true' : !!event.value
+
+      if (event.name.toLowerCase() === 'removecompletebutton') {
+        newSurveyModel.showCompleteButton = !valAsBool
+      }
+    })
+
     if (readonly) {
       newSurveyModel.mode = 'display'
     }
