@@ -103,6 +103,14 @@ public class KitExtService {
                 authContext.getStudyShortcode(),
                 enrollee,
                 kitRequestCreationDto);
+        if (!enrolleeShortcode.equals(enrolleeShortcodes.getLast())) {
+          // add a small sleep between repeated requests to take it easy on DSM.
+          try {
+            Thread.sleep(200);
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+        }
         response.addKitRequest(createdKit);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
