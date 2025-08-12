@@ -1,0 +1,72 @@
+{
+  "stableId": "sleepPreenroll",
+  "version": 1,
+  "name": "Pre-enroll",
+  "surveyType": "PRE_ENROLL",
+  "assignToAllNewEnrollees": false,
+  "autoAssign": false,
+  "jsonContent": {
+    "title": {
+      "en": "Sleep study pre-enroll",
+      "es": "Preinscripción de sleep",
+      "dev": "DEV_Sleep pre-enroll"
+    },
+    "logoPosition": "right",
+    "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
+    "progressBarType": "requiredQuestions",
+    "completeText": "Submit",
+    "pages": [
+      {
+        "name": "page2",
+        "title": {
+          "en": "Study Eligibility",
+          "es": "Elegibilidad para el estudio",
+          "dev": "DEV_Study Eligibility"
+        },
+        "description": {
+          "en": "Thank you for your interest in participating in the Sleep study. To get started, please answer these questions to make sure you’re eligible to participate.",
+          "es": "Gracias por su interés en participar en Sleep Study. Para comenzar, responda estas preguntas para asegurarse de que es elegible para participar.",
+          "dev": "DEV_Thank you for your interest in participating in Sleep study. To get started, please answer these questions to make sure you’re eligible to participate."
+        },
+        "elements": [
+          {
+            "type": "radiogroup",
+            "name": "sleep_troubleSleeping",
+            "title": {
+              "en": "I often have trouble sleeping.",
+              "es": "Yo sleep mal.",
+              "dev": "DEV_I often have trouble sleeping."
+            },
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": {
+                  "en": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                }
+              },
+              {
+                "value": "no",
+                "text": {
+                  "en": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{sleep_troubleSleeping} = 'yes'",
+        "includeIntoResult": true
+      }
+    ]
+  }
+}

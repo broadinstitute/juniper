@@ -1,0 +1,19 @@
+{
+  "stableId": "sleepStudyConsent",
+  "name": "Consent email",
+  "version": 1,
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Thank you!",
+    "bodyPopulateFile": "en/studyConsent.html"
+  },{
+    "language": "es",
+    "subject": "¡Gracias!",
+    "bodyPopulateFile": "es/studyConsent.html"
+  }, {
+    "language": "dev",
+    "subject": "DEV_Thank you!",
+    "bodyPopulateFile": "dev/studyConsent.html"
+  }]
+}

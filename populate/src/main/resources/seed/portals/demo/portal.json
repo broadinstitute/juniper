@@ -2,7 +2,8 @@
   "name": "Juniper Heart Demo",
   "shortcode": "demo",
   "populateStudyFiles": [
-    "studies/heartdemo/study.json"
+    "studies/heartdemo/study.json",
+    "studies/sleep/study.json"
   ],
   "siteContentFiles": [
     "siteContent/siteContent-1/siteContent.json", "siteContent/siteContent-2/siteContent.json"

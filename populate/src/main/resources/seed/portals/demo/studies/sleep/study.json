@@ -1,0 +1,128 @@
+{
+  "name": "Sleep study",
+  "shortcode": "demosleep",
+  "surveyFiles": [
+    "surveys/preEnroll.json",
+    "surveys/sleepConsent.json",
+    "surveys/sleepMain.json"
+  ],
+  "emailTemplateFiles": [
+    "emails/studyConsent.json",
+    "emails/studyEnroll.json",
+    "emails/consentReminder.json",
+    "emails/surveyReminder.json"
+  ],
+  "studyEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true,
+        "enableInPersonKits": true
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
+        {"populateFileName": "surveys/sleepConsent.json"},
+        {"populateFileName": "surveys/sleepMain.json"}
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      }],
+      "enrolleeFiles": []
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true,
+        "enableInPersonKits": true
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
+        {"populateFileName": "surveys/sleepConsent.json"},
+        {"populateFileName": "surveys/sleepMain.json"}
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      }],
+      "enrolleeFiles": []
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true,
+        "enableInPersonKits": true
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/preEnroll.json"},
+        {"populateFileName": "surveys/sleepConsent.json"},
+        {"populateFileName": "surveys/sleepMain.json"}
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      }],
+      "enrolleeFiles": []
+    }
+  ]
+}

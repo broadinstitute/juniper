@@ -1,0 +1,19 @@
+{
+  "stableId": "sleepStudyEnroll",
+  "name": "Enrollment email",
+  "version": 1,
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Welcome!",
+    "bodyPopulateFile": "en/studyEnroll.html"
+  },{
+    "language": "es",
+    "subject": "¡Bienvenido!",
+    "bodyPopulateFile": "es/studyEnroll.html"
+  },{
+    "language": "dev",
+    "subject": "DEV_Welcome!",
+    "bodyPopulateFile": "dev/studyEnroll.html"
+  }]
+}
