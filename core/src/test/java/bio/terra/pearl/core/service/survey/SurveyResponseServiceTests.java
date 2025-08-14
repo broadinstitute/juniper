@@ -5,10 +5,7 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.fileupload.ParticipantFileFactory;
-import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
-import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
-import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
+import bio.terra.pearl.core.factory.participant.*;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
@@ -21,10 +18,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.RecurrenceType;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -41,6 +35,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -81,6 +77,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     private ParticipantFileService participantFileService;
     @Autowired
     private PortalParticipantUserService portalParticipantUserService;
+    @Autowired
+    private ParticipantTaskFactory participantTaskFactory;
 
     @Test
     @Transactional
@@ -604,7 +602,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 newResponse, new ResponsibleEntity(new AdminUser()), null,
                 enrolleeBundle.portalParticipantUser(), enrollee, task1.getId(), survey.getPortalId());
     }
-    
+
     @Test
     @Transactional
     public void testCannotUpdateLongitudinalProxies(TestInfo info) {
