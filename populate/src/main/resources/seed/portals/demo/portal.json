@@ -2,7 +2,8 @@
   "name": "Juniper Heart Demo",
   "shortcode": "demo",
   "populateStudyFiles": [
-    "studies/heartdemo/study.json"
+    "studies/heartdemo/study.json",
+    "studies/sleep/study.json"
   ],
   "siteContentFiles": [
     "siteContent/siteContent-1/siteContent.json", "siteContent/siteContent-2/siteContent.json"
@@ -16,7 +17,8 @@
         "password": "broad_institute",
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio",
-        "defaultLanguage": "en"
+        "defaultLanguage": "en",
+        "primaryStudy": "heartdemo"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -73,7 +75,8 @@
         "password": "broad_institute",
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio",
-        "defaultLanguage": "en"
+        "defaultLanguage": "en",
+        "primaryStudy": "heartdemo"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -91,7 +94,8 @@
         "initialized": true,
         "participantHostname" : "juniperdemostudy.dev",
         "emailSourceAddress": "support@juniper.terra.bio",
-        "defaultLanguage": "en"
+        "defaultLanguage": "en",
+        "primaryStudy": "heartdemo"
       },
       "supportedLanguages": [{
         "languageName": "English",

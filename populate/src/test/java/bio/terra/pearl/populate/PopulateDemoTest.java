@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
 import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -48,9 +49,10 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         baseSeedPopulator.populateKitTypes();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
         Assertions.assertEquals("demo", portal.getShortcode());
-        PortalEnvironment sandbox = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).get();
-        assertThat(portal.getPortalStudies(), hasSize(1));
-        Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
+        assertThat(portal.getPortalStudies(), hasSize(2));
+        Study mainStudy = studyService.findByShortcode("heartdemo").get();
+        assertThat(portal.getPortalStudies().stream().map(PortalStudy::getStudyId)
+                .filter(id -> id.equals(mainStudy.getId())).count(), is(1L));
         List<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
@@ -239,17 +241,18 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         baseSeedPopulator.populateKitTypes();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, newShortcode), true);
         assertThat(portal.getShortcode(), equalTo(newShortcode));
-        Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
-        assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
+        Study mainStudy = studyService.findByShortcode(newShortcode + "_heartdemo").orElseThrow();
+        assertThat(portal.getPortalStudies().stream().map(PortalStudy::getStudyId)
+                .filter(id -> id.equals(mainStudy.getId())).count(), is(1L));
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
-        assertThat(surveys, hasSize(17));
+        assertThat(surveys, hasSize(20));
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         assertThat(siteContents, hasSize(2));
         siteContents.forEach(siteContent -> {
             assertThat(siteContent.getStableId(), Matchers.startsWith(newShortcode));
         });
         List<EmailTemplate> emailTemplates = emailTemplateService.findByPortalId(portal.getId());
-        assertThat(emailTemplates, hasSize(13));
+        assertThat(emailTemplates, hasSize(17));
         emailTemplates.forEach(emailTemplate -> {
             assertThat(emailTemplate.getStableId(), Matchers.startsWith(newShortcode));
         });
