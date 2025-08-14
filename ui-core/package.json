@@ -6,6 +6,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "@types/diff": "^7.0.1",
     "classnames": "^2.5.1",
