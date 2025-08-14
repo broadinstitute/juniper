@@ -61,9 +61,9 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         assertThat(portalEnvironmentLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
 
         // confirm all templates got repopulated
-        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(17));
-        assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
-        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(13));
+        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(20));
+        assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(2));
+        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(17));
         // confirm both the old and current versions of the site content got populated
 
         List<SiteContent> allSiteContent = siteContentService.findByPortalId(restoredPortal.getId()).stream().sorted(Comparator.comparing(SiteContent::getVersion, Comparator.reverseOrder())).toList();
@@ -76,7 +76,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
                 equalTo(Set.of("en", "es", "dev")));
 
         // confirm the sandbox got configured
-        Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
+        Study study = studyService.findByShortcode("heartdemo").orElseThrow();
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
         assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(13));
         assertThat(studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(sandboxEnv.getId()), hasSize(2));
