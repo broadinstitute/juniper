@@ -440,6 +440,14 @@ export function useSurveyJSModel(
         newSurveyModel.showCompleteButton = !valAsBool
       }
     })
+    newSurveyModel.onAfterRenderSurvey.add((_model, event) => {
+      event.survey.calculatedValues.forEach(val => {
+        const valAsBool = isString(val.value) ? val.value === 'true' : !!val.value
+        if (val.name.toLowerCase() === 'removecompletebutton' && valAsBool) {
+          newSurveyModel.showCompleteButton = false
+        }
+      })
+    })
 
     if (readonly) {
       newSurveyModel.mode = 'display'
