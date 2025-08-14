@@ -273,15 +273,16 @@ export const getJoinLink = (studyShortcode: string, opts?: { isProxyEnrollment?:
 }
 
 /** the default join link -- will be rendered in the top right corner */
-export const getMainJoinLink = (portalStudies: PortalStudy[], portalEnvConfig: PortalEnvironmentConfig) => {
+export const getMainJoinLink = (portalStudies: PortalStudy[], portalEnvConfig: PortalEnvironmentConfig,
+  isProxyEnrollment?: boolean) => {
   // if there's a primary study, link to it
   if (portalEnvConfig.primaryStudy) {
-    return getJoinLink(portalEnvConfig.primaryStudy)
+    return getJoinLink(portalEnvConfig.primaryStudy, { isProxyEnrollment })
   }
   const joinable = filterUnjoinableStudies(portalStudies)
   /** if there's only one joinable study, link directly to it */
   const joinPath = joinable.length === 1
-    ? getJoinLink(joinable[0].study.shortcode)
+    ? getJoinLink(joinable[0].study.shortcode, { isProxyEnrollment })
     : '/join'
   return joinPath
 }
