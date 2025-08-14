@@ -37,7 +37,7 @@ import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { OptionalStudyEnvParams } from './types/study'
-import { Profile } from 'src/types/user'
+import { ParticipantUser, Profile } from './types/user'
 import { DefaultLight } from 'survey-core/themes'
 
 export type SurveyJsResumeData = {
@@ -95,6 +95,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
 }
 
 export type SurveyJsVariableContext = {
+  user?: ParticipantUser | null,
   profile?: Profile,
   proxyProfile?: Profile,
   studyEnvParams?: OptionalStudyEnvParams,

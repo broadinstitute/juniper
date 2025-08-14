@@ -22,7 +22,7 @@ import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import {
   Enrollee,
-  HubResponse,
+  HubResponse, ParticipantUser,
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
@@ -47,6 +47,7 @@ export function PagedSurveyView({
   selectedLanguage,
   justification,
   setAutosaveStatus,
+  participantUser,
   enrollee,
   proxyProfile,
   adminUserId,
@@ -54,18 +55,24 @@ export function PagedSurveyView({
   onFailure,
   showHeaders = true
 }: {
-  studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse, referencedAnswers?: Answer[],
-    updateResponseMap: (stableId: string, response: SurveyResponse) => void
-    onSuccess: () => void, onFailure: () => void,
-    selectedLanguage: string,
-    setAutosaveStatus: (status: AutosaveStatus) => void,
-    updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
-    updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
-    proxyProfile?: Profile,
-    justification?: string,
-    taskId: string,
-    setTaskId: (taskId: string) => void,
-    adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
+  studyEnvParams: StudyEnvParams,
+  form: Survey,
+  response: SurveyResponse,
+  referencedAnswers?: Answer[],
+  updateResponseMap: (stableId: string, response: SurveyResponse) => void
+  onSuccess: () => void, onFailure: () => void,
+  selectedLanguage: string,
+  setAutosaveStatus: (status: AutosaveStatus) => void,
+  updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
+  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
+  proxyProfile?: Profile,
+  justification?: string,
+  taskId: string,
+  setTaskId: (taskId: string) => void,
+  adminUserId: string | null,
+  enrollee: Enrollee,
+  participantUser?: ParticipantUser | null,
+  showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
   // it's not entirely clear, but we cannot rely on the response object passed into
@@ -231,6 +238,7 @@ export function PagedSurveyView({
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
     form, resumableData, onComplete, pager, {
       studyEnvParams,
+      user: participantUser,
       enrolleeShortcode: enrollee.shortcode,
       profile: enrollee.profile,
       proxyProfile,
