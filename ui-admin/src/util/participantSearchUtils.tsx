@@ -6,7 +6,10 @@ import {
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
-import Api, { ExpressionSearchFacets, KeyedSearchValueTypeDefinition } from '../api/api'
+import Api, {
+  ExpressionSearchFacets,
+  KeyedSearchValueTypeDefinition
+} from '../api/api'
 import { StudyEnvParams } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 
@@ -59,16 +62,24 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (defaultIncludes: string[], familyLinkageEnabled: boolean,
-  studyEnvParams: StudyEnvParams, searchParamName = 'search') => {
+export const useParticipantSearchState = (
+  defaultIncludes: string[],
+  familyLinkageEnabled: boolean,
+  studyEnvParams: StudyEnvParams,
+  searchParamName = 'search',
+  defaults: Partial<ParticipantSearchState> = {}) => {
   const [searchParams, setSearchParams] = useSearchParams()
 
+  const defaultState = {
+    ...DefaultParticipantSearchState,
+    ...defaults
+  }
 
-  const searchState = urlParamsToSearchState(searchParams, searchParamName)
+  const searchState = urlParamsToSearchState(searchParams, searchParamName, defaultState)
   const searchExpression = toExpression(searchState, defaultIncludes, familyLinkageEnabled)
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(params => {
-      params.set(searchParamName, searchStateToUrlParam(newSearchState))
+      params.set(searchParamName, searchStateToUrlParam(newSearchState, defaultState))
       return params
     })
   }
@@ -107,10 +118,13 @@ export const useParticipantSearchFacets = (searchState: ParticipantSearchState, 
 }
 
 /** maps search state to a url param excluding default params */
-const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
+const searchStateToUrlParam = (
+  searchState: ParticipantSearchState,
+  defaultState: ParticipantSearchState = DefaultParticipantSearchState
+) => {
   const explicitSearchState: Partial<ParticipantSearchState> = {}
   for (const [key, value] of Object.entries(searchState)) {
-    if (!isEqual(value, DefaultParticipantSearchState[key as keyof ParticipantSearchState]) &&
+    if (!isEqual(value, defaultState[key as keyof ParticipantSearchState]) &&
     !['includeFacets', 'queryFacets'].includes(key)) {
       // @ts-ignore
       explicitSearchState[key as keyof ParticipantSearchState] = value
@@ -119,8 +133,12 @@ const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
   return JSON.stringify(explicitSearchState)
 }
 /** maps url params to a search state, using DefaultParticipantSearchState for any unspecified fields */
-const urlParamsToSearchState = (searchParams: URLSearchParams, searchParamName: string): ParticipantSearchState => {
-  let searchState = DefaultParticipantSearchState
+const urlParamsToSearchState = (
+  searchParams: URLSearchParams,
+  searchParamName: string,
+  defaultState: ParticipantSearchState = DefaultParticipantSearchState
+): ParticipantSearchState => {
+  let searchState = defaultState
   if (searchParams.get(searchParamName)) {
     try {
       const explicitSearchState = JSON.parse(searchParams.get(searchParamName) as string)
@@ -214,7 +232,10 @@ export const toExpression = (searchState: ParticipantSearchState,
 /**
  * Returns the search expression state as a list of human-readable facets.
  */
-export const getFacets = (searchState: ParticipantSearchState, opts?: { includeKeywordSearch: boolean }): {
+export const getFacets = (searchState: ParticipantSearchState, opts?: {
+  includeKeywordSearch?: boolean,
+  customLabels?: { [index: string]: string }
+}): {
   label: string,
   value: string
 }[] => {
@@ -233,8 +254,13 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeK
       } else if (['includeFacets', 'queryFacets', 'includeFacetKeys'].includes(key)) {
         // skip -- not shown directly to users
       } else {
+        const label = (
+          opts?.customLabels?.[key]
+          || ParticipantSearchStateLabels[key as keyof ParticipantSearchState]
+          || key)
+
         facets.push({
-          label: ParticipantSearchStateLabels[key as keyof ParticipantSearchState] || key,
+          label,
           value: getValueAsString(key as keyof ParticipantSearchState, value as string | number | boolean)
         })
       }

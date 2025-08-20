@@ -162,6 +162,12 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         if (context.getShortcodeOverride() != null) {
             popDto.setShortcode(context.getShortcodeOverride());
             popDto.setName(context.getShortcodeOverride());
+            for (PortalEnvironmentPopDto environmentPopDto : popDto.getPortalEnvironmentDtos()) {
+                if (environmentPopDto.getPortalEnvironmentConfig().getPrimaryStudy() != null) {
+                    environmentPopDto.getPortalEnvironmentConfig()
+                            .setPrimaryStudy(context.applyShortcodeOverride(environmentPopDto.getPortalEnvironmentConfig().getPrimaryStudy()));
+                }
+            }
         }
     }
 

@@ -46,6 +46,7 @@ export type StudyEnvironmentConfig = {
   enableInPersonKits: boolean
   includeSexAtBirthInKitMetadata: boolean
   timeZone: string
+  kitEligibilityRule?: string
 }
 
 export type StudyEnvironmentSurvey = {

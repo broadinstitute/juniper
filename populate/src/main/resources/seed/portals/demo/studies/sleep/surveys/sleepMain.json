@@ -1,0 +1,41 @@
+{
+  "stableId": "sleepMain",
+  "version": 1,
+  "name": "Sleep questionnaire",
+  "jsonContent": {
+    "title": {
+      "en": "Sleep",
+      "es": "El Sleep",
+      "dev": "DEV_Sleep"
+    },
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "sleep_description",
+                "type": "html",
+                "html": "<p>The next set of questions asks about your Sleep.</p>"
+              }
+            ]
+          },
+          {
+            "name": "sleep_detail",
+            "type": "radiogroup",
+            "title": "How often in a given week do you stay up after midnight.",
+            "choices": [
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Several days", "value": "severalDays"},
+              {"text": "More than half the days", "value": "moreThanHalf"},
+              {"text": "Nearly every day", "value": "everyDay"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

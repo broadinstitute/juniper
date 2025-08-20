@@ -13,6 +13,8 @@
       "populateFileName": "en/participation.json"
     }, {
       "populateFileName": "en/learnMore.json"
+    }, {
+      "populateFileName": "en/sleepStudy.json"
     }],
     "languageTextOverrides": [
       {

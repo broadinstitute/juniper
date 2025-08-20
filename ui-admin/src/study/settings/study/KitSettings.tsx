@@ -21,10 +21,13 @@ import {
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import {
   InfoCard,
+  InfoCardBody,
   InfoCardHeader,
   InfoCardTitle
 } from 'components/InfoCard'
 import { RequireUserPermission } from 'util/RequireUserPermission'
+import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+import { isNil } from 'lodash'
 
 export const KitSettings = (
   {
@@ -102,6 +105,7 @@ export const KitSettings = (
 
       <div>
         <label className="form-label">
+<<<<<<< HEAD
           Include sex at birth <InfoPopup content={
           `If checked, kit requests sent to DSM/BSP will include the participant's sexAtBirth value, if available, `
           + `from their profile.`
@@ -113,6 +117,8 @@ export const KitSettings = (
 
       <div>
         <label className="form-label">
+=======
+>>>>>>> origin/development
           Use mock kit requests <InfoPopup content={
           `If checked, kit requests will be mocked for this environment, `
           + `and not sent to any external services.`
@@ -142,5 +148,37 @@ export const KitSettings = (
           onChange={e => updateConfig('enableInPersonKits', e.target.checked)}/>
       </label>
     </div>
+
+    <label className="form-label">
+      Use custom kit eligibility rule <InfoPopup content={
+      `If checked, the Kits page will use the provided search expression as the default filter for enrollees.
+          If not checked, the Kits page will only show enrollees that have completed all required surveys.`
+      }/>
+      <input type="checkbox" checked={!isNil(config.kitEligibilityRule)}
+        onChange={e => {
+          if (e.target.checked) {
+            updateConfig('kitEligibilityRule', '')
+          } else {
+            updateConfig('kitEligibilityRule', undefined)
+          }
+        }}/>
+    </label>
+    {!isNil(config.kitEligibilityRule) &&
+    <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={'Kit eligibility rule'}/>
+      </InfoCardHeader>
+      <InfoCardBody>
+        <LazySearchQueryBuilder
+          studyEnvContext={studyEnvContext}
+          onSearchExpressionChange={searchExp => {
+            updateConfig('kitEligibilityRule', searchExp)
+          }}
+          searchExpression={config.kitEligibilityRule || ''}
+        />
+      </InfoCardBody>
+
+    </InfoCard>
+    }
   </>
 }

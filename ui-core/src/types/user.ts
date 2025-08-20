@@ -63,6 +63,9 @@ export type HubResponse = {
     tasks: ParticipantTask[]
     response: SurveyResponse
     profile: Profile
+
+    proxyEnrollee?: Enrollee
+    proxyProfile?: Profile
 }
 
 export type Profile = {

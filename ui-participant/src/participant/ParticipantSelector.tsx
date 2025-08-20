@@ -6,8 +6,7 @@ import { faAngleDown, faPlus, faUser, faUsers } from '@fortawesome/free-solid-sv
 import { useName } from '../util/enrolleeUtils'
 import { Link } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
-import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
-import { Enrollee, useI18n } from '@juniper/ui-core'
+import { Enrollee, getMainJoinLink, useI18n } from '@juniper/ui-core'
 import { sum } from 'lodash'
 import classNames from 'classnames'
 
@@ -23,11 +22,11 @@ export default function ParticipantSelector() {
 
   const activeUserName = useName(ppUser || undefined)
 
-  const { portal } = usePortalEnv()
+  const { portal, portalEnv } = usePortalEnv()
 
-  // in the future, this will need to be refactored to be multi-study compatible. possibly, it could
+  // in the future, this will need to be refactored to be truly multi-study compatible. possibly, it could
   // link to a separate page where you select the desired study to enroll in.
-  const defaultStudyToEnroll = findDefaultEnrollmentStudy(null, portal.portalStudies)
+  const joinLink = getMainJoinLink(portal.portalStudies, portalEnv.portalEnvironmentConfig, true)
 
   return (
     <div className="dropdown participant-selector">
@@ -64,11 +63,7 @@ export default function ParticipantSelector() {
         }
         <li>
           <Link className="dropdown-item"
-            to={
-              defaultStudyToEnroll
-                ? `/studies/${defaultStudyToEnroll.shortcode}/join?isProxyEnrollment=true`
-                : '#'
-            }>
+            to={joinLink}>
             <FontAwesomeIcon icon={faPlus}/>
             <span className='ms-2'>{i18n('addNewParticipant')}</span>
           </Link>

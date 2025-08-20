@@ -1,0 +1,24 @@
+{
+  "itemType": "INTERNAL",
+  "text": "Sleep study",
+  "htmlPageDto": {
+    "title": "Sleep study",
+    "path": "sleep",
+    "sectionDtos": [{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "Sleep study",
+        "blurb": "Have trouble sleeping?  We can give you a PRS report for sleep risk",
+        "blurbAlign": "center",
+        "buttons": [
+          {
+            "type": "join",
+            "text": "Join sleep study",
+            "href": "",
+            "studyShortcode": "demosleep"
+          }
+        ]
+      }
+    }]
+  }
+}

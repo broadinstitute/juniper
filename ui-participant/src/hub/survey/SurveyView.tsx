@@ -17,7 +17,7 @@ import {
   ApiProvider,
   Enrollee,
   EnvironmentName,
-  PagedSurveyView,
+  PagedSurveyView, SurveyResponse,
   useI18n,
   useTaskIdParam
 } from '@juniper/ui-core'
@@ -119,9 +119,10 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         studyEnvParams={studyEnvParams}
         form={formAndResponses.studyEnvironmentSurvey.survey}
         enrollee={enrollee}
+        participantUser={user}
         updateResponseMap={() => { /* no-op */ }}
         proxyProfile={proxyProfile}
-        response={formAndResponses.surveyResponse}
+        response={formAndResponses.surveyResponse as SurveyResponse}
         referencedAnswers={formAndResponses.referencedAnswers}
         selectedLanguage={selectedLanguage}
         setAutosaveStatus={() => { /* no-op */ }}

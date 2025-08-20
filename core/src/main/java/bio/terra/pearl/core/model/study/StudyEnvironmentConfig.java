@@ -60,6 +60,14 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean includeSexAtBirthInKitMetadata = false;
 
     /**
+     * enrollee search expression used to determine kit eligibility.
+     * if not specified, enrollees are eligible if they have completed all required surveys.
+     * note: this eligibility rule is not verified by the backend; it is only used as a frontend filter.
+     */
+    @Builder.Default
+    private String kitEligibilityRule = null;
+
+    /**
      * the "home" timezone of the study (e.g. where the study staff is located).  For now, this only impacts export behavior
      * This is a ZoneId stored as a String
      */

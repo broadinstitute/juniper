@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -19,6 +20,8 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
@@ -26,10 +29,12 @@ import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -43,13 +48,21 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
     private final ParticipantTaskService participantTaskService;
     private final EnrolleeContextService enrolleeContextService;
     private final KitTypeDao kitTypeDao;
+    private final EnrolleeService enrolleeService;
+    private final ProfileService profileService;
 
-    public EventService(EventDao dao, ParticipantTaskService participantTaskService,
-                        EnrolleeContextService enrolleeContextService, KitTypeDao kitTypeDao) {
+    public EventService(EventDao dao,
+                        ParticipantTaskService participantTaskService,
+                        EnrolleeContextService enrolleeContextService,
+                        KitTypeDao kitTypeDao,
+                        @Lazy EnrolleeService enrolleeService,
+                        ProfileService profileService) {
         super(dao);
         this.participantTaskService = participantTaskService;
         this.enrolleeContextService = enrolleeContextService;
         this.kitTypeDao = kitTypeDao;
+        this.enrolleeService = enrolleeService;
+        this.profileService = profileService;
     }
 
     /**
@@ -209,18 +222,31 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
      * Assembles a HubResponse using the objects attached to the event.  this makes sure that the
      * response reflects the latest task list and profile
      */
-    public <T extends BaseEntity> HubResponse<T> buildHubResponse(EnrolleeEvent event, T response) {
-        return buildHubResponse(event.getEnrollee(), event.getEnrolleeContext(), response);
+    public <T extends BaseEntity> HubResponse<T> buildHubResponse(UUID operatorUserId, Enrollee enrollee, EnrolleeContext context, T response) {
+        HubResponse.HubResponseBuilder builder = hubResponseBuilder(context.getEnrollee(), context, response);
+
+        if (operatorUserId != null && !enrollee.getParticipantUserId().equals(operatorUserId)) {
+            Optional<Enrollee> proxyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(operatorUserId, enrollee.getStudyEnvironmentId());
+            Optional<Profile> proxyProfile = proxyEnrollee.isPresent() ? profileService.find(proxyEnrollee.get().getProfileId()) : Optional.empty();
+
+            if (proxyEnrollee.isPresent() && proxyProfile.isPresent()) {
+                builder = builder.proxyProfile(proxyProfile.get()).proxyEnrollee(proxyEnrollee.get());
+            }
+
+        }
+        return builder.build();
     }
 
-    public <T extends BaseEntity> HubResponse<T> buildHubResponse(Enrollee enrollee, EnrolleeContext enrolleeContext, T response) {
-        HubResponse hubResponse = HubResponse.builder()
+
+    private <T extends BaseEntity> HubResponse.HubResponseBuilder<T> hubResponseBuilder(Enrollee enrollee,
+                                                                                        EnrolleeContext enrolleeContext,
+                                                                                        T response) {
+        HubResponse.HubResponseBuilder builder = HubResponse.builder()
                 .response(response)
                 .tasks(enrollee.getParticipantTasks().stream().toList())
                 .enrollee(enrollee)
-                .profile(enrolleeContext.getProfile())
-                .build();
-        return hubResponse;
+                .profile(enrolleeContext.getProfile());
+        return builder;
     }
 
     @Autowired

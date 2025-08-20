@@ -170,7 +170,7 @@ public class EnrollmentService {
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
         log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
-        HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
+        HubResponse hubResponse = eventService.buildHubResponse(operator.getParticipantUserId(), enrollee, event.getEnrolleeContext(), enrollee);
         return hubResponse;
     }
 

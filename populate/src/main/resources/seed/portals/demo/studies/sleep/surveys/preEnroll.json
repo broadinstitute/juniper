@@ -1,0 +1,83 @@
+{
+  "stableId": "sleepPreenroll",
+  "version": 1,
+  "name": "Pre-enroll",
+  "surveyType": "PRE_ENROLL",
+  "assignToAllNewEnrollees": false,
+  "autoAssign": false,
+  "jsonContent": {
+    "title": {
+      "en": "Sleep study pre-enroll",
+      "es": "Preinscripción de sleep",
+      "dev": "DEV_Sleep pre-enroll"
+    },
+    "logoPosition": "right",
+    "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
+    "progressBarType": "requiredQuestions",
+    "completeText": "Submit",
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "type": "panel",
+            "visibleIf": "{user.username} notempty",
+            "elements": [
+              {
+                "type": "html",
+                "name": "thanksInterest",
+                "html": "Thank you for your interest in joining the sleep study. This study builds on the main study that you have already joined, and will deliver you a PRS report for sleep-related disorders.  Please answer the questions below to confirm your eligibility."
+              },
+              {
+                "type": "radiogroup",
+                "name": "sleep_troubleSleeping",
+                "title": {
+                  "en": "I often have trouble sleeping.",
+                  "es": "Yo sleep mal.",
+                  "dev": "DEV_I often have trouble sleeping."
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "value": "yes",
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí",
+                      "dev": "DEV_Yes"
+                    }
+                  },
+                  {
+                    "value": "no",
+                    "text": {
+                      "en": "No",
+                      "es": "No",
+                      "dev": "DEV_No"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "html",
+            "name": "notLoggedIn",
+            "visibleIf": "{user.username} empty",
+            "html": "You must be logged in to join this study. <br/><br/> If you already have joined the OurHealth study, please log in now. <br/><br/> Otherwise, please use the 'Join' link above to join the main study."
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{sleep_troubleSleeping} = 'yes'",
+        "includeIntoResult": true
+      },
+      {
+        "name": "removeCompleteButton",
+        "expression": "{user.username} empty"
+      }
+    ]
+  }
+}
