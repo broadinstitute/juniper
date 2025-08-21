@@ -47,16 +47,29 @@ public class SiteMediaController implements SiteMediaApi {
    * limited to b2c origins that we control.
    */
   public ResponseEntity<Resource> get(
-      String portalShortcode, String envName, String cleanFileName, Integer version) {
-    Optional<SiteMedia> siteMediaOpt;
+      String portalShortcode, String envName, String cleanFileName, String version) {
+    cleanFileName = cleanFileName.toLowerCase();
+    if (version.equalsIgnoreCase("latest")) {
+      Optional<SiteMedia> siteMediaOpt =
+          siteMediaService.findOneLatestVersion(portalShortcode, cleanFileName);
+      return convertToResourceResponse(siteMediaOpt);
+    }
 
-    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName.toLowerCase(), version);
+    int versionInt;
+    try {
+      versionInt = Integer.parseInt(version);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("version must be an integer or 'latest'");
+    }
+
+    Optional<SiteMedia> siteMediaOpt =
+        siteMediaService.findOne(portalShortcode, cleanFileName, versionInt);
     return convertToResourceResponse(siteMediaOpt);
   }
 
   @Override
   public ResponseEntity<Resource> getLegacy(
-      String portalShortcode, String envName, String cleanFileName, Integer version) {
+      String portalShortcode, String envName, String cleanFileName, String version) {
     return get(portalShortcode, envName, cleanFileName, version);
   }
 

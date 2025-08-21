@@ -8,7 +8,8 @@ import {
   faTiktok,
   faTwitter,
   faXTwitter,
-  faYoutube
+  faYoutube,
+  faBluesky
 } from '@fortawesome/free-brands-svg-icons'
 import React from 'react'
 
@@ -27,7 +28,8 @@ type SocialMediaSite = 'Facebook' |
     'TikTok' |
     'Threads' |
     'LinkedIn' |
-    'YouTube'
+    'YouTube' |
+    'BlueSky'
 
 type SocialMediaSiteConfig = {
   domain: string
@@ -91,6 +93,12 @@ export const socialMediaSites: SocialMediaSiteConfig[] = [
     icon: faYoutube,
     label: 'YouTube',
     renderUrl: ({ domain, handle }) => `https://${domain}/@${handle}`
+  },
+  {
+    domain: 'bsky.app',
+    icon: faBluesky,
+    label: 'BlueSky',
+    renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
   }
 ]
 

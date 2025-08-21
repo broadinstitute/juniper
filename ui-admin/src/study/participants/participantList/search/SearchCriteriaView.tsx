@@ -12,26 +12,28 @@ import {
  * Provides a view of the current search criteria showing the facets and values that have been selected,
  * and allowing the user to delete criteria.
  */
-const SearchCriteriaView = ({ searchState, updateSearchState }: {
+const SearchCriteriaView = ({ searchState, updateSearchState, customLabels }: {
   searchState: ParticipantSearchState,
-  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
+  customLabels?: { [index: string]: string }
 }) => {
-  const handleDelete = (label: string) => {
+  const handleDelete = (labelToDelete: string) => {
     // technically, task names could conflict with another facet label (e.g., Age), but it's unlikely
-    if (searchState.tasks.findIndex(task => task.task === label) !== -1) {
-      updateSearchState('tasks', searchState.tasks.filter(task => task.task !== label))
+    if (searchState.tasks.findIndex(task => task.task === labelToDelete) !== -1) {
+      updateSearchState('tasks', searchState.tasks.filter(task => task.task !== labelToDelete))
     } else {
-      for (const [key, value] of Object.entries(ParticipantSearchStateLabels)) {
-        if (value === label) {
-          updateSearchState(key as keyof ParticipantSearchState,
-            DefaultParticipantSearchState[key as keyof ParticipantSearchState])
+      for (const [field, label] of Object.entries(ParticipantSearchStateLabels)) {
+        const customLabel = customLabels?.[field]
+        if (label === labelToDelete || customLabel === labelToDelete) {
+          updateSearchState(field as keyof ParticipantSearchState,
+            DefaultParticipantSearchState[field as keyof ParticipantSearchState])
           return
         }
       }
     }
   }
 
-  const advancedSearchFacets = getFacets(searchState)
+  const advancedSearchFacets = getFacets(searchState, { customLabels })
 
   if (advancedSearchFacets.length === 0) {
     return <></>

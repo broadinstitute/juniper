@@ -58,6 +58,8 @@ import {
   getDynamicColumn
 } from 'util/table/columnUtils'
 import AssignKitModal from 'study/kits/AssignKitModal'
+import { isNil } from 'lodash'
+import ParticipantSearch from 'study/participants/participantList/search/ParticipantSearch'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -68,16 +70,21 @@ type EnrolleeRow = EnrolleeSearchExpressionResult & {
  */
 export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+
+  const customKitEligibilityRule = currentEnv.studyEnvironmentConfig.kitEligibilityRule
+  const hasCustomKitEligibilityRule = !isNil(customKitEligibilityRule)
+
   const [studyEnvKitTypes, setStudyEnvKitTypes] = useState<KitType[]>([])
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'enrollee.createdAt', desc: true },
     { id: 'optionalSurveys', desc: true }
-
   ])
+
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+  // if no custom kit eligibility rule, add default filters
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(hasCustomKitEligibilityRule ? [] : [
     { id: 'enrollee.consented', value: true },
     { id: 'requiredSurveysComplete', value: true }
   ])
@@ -85,8 +92,20 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
   const [showAssignKitModal, setShowAssignKitModal] = useState(false)
 
-  const { searchState, setSearchState, searchExpression, facets } = useParticipantSearchState([], false,
-    paramsFromContext(studyEnvContext))
+  const {
+    searchState,
+    setSearchState,
+    updateSearchState,
+    searchExpression,
+    facets
+  } = useParticipantSearchState(
+    [],
+    false,
+    paramsFromContext(studyEnvContext),
+    'kitSearch',
+    {
+      custom: hasCustomKitEligibilityRule ? customKitEligibilityRule : ''
+    })
 
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -94,8 +113,12 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
     const [kitTypes, enrollees] = await Promise.all([
       Api.fetchKitTypes(studyEnvParams),
-      Api.executeSearchExpression(portal.shortcode, study.shortcode, currentEnv.environmentName,
-        searchExpression, { includes: ['tasks', 'kitRequests'] })
+      Api.executeSearchExpression(
+        portal.shortcode,
+        study.shortcode,
+        currentEnv.environmentName,
+        searchExpression,
+        { includes: ['tasks', 'kitRequests'] })
     ])
 
     setStudyEnvKitTypes(kitTypes)
@@ -252,10 +275,25 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   return <LoadingSpinner isLoading={isLoading}>
     <div className="d-flex align-items-center justify-content-between">
-      <div className="d-flex align-items-center">
+      <div className="flex-grow-1 d-flex align-content-center align-items-center justify-content-between">
+        <ParticipantSearch
+          key={currentEnv.environmentName}
+          studyEnvContext={studyEnvContext}
+          searchState={searchState}
+          updateSearchState={updateSearchState}
+          setSearchState={setSearchState}
+          disabled={false}
+          customLabels={{
+            'custom': 'Kit Eligibility'
+          }}
+        />
+      </div>
+    </div>
+    <div className="d-flex align-items-center justify-content-between">
+      <div className="ps-2">
         <RowVisibilityCount table={table}/>
       </div>
-      <div className="d-flex">
+      <div className="d-flex align-items-center">
         <Link to={'../scan'}>
           <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
         </Link>
@@ -272,9 +310,10 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
         </Button>
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
-        <div><DownloadControl table={table}
-          fileName={`kits-${currentIsoDate()}`}/></div>
-        { showRequestKitModal && <RequestKitsModal
+        <div>
+          <DownloadControl table={table}
+            fileName={`kits-${currentIsoDate()}`}/></div>
+        {showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
           enrolleeShortcodes={selectedEnrolleeShortcodes}
@@ -289,11 +328,10 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           }}
           enrollees={selectedEnrollees}
         />
-
       </div>
     </div>
-    { basicTableLayout(table, { filterable: true }) }
-    { renderEmptyMessage(enrollees, 'No participants') }
+    {basicTableLayout(table, { filterable: true })}
+    {renderEmptyMessage(enrollees, 'No participants')}
   </LoadingSpinner>
 }
 

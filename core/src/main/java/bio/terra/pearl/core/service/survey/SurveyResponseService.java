@@ -140,8 +140,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     //if the cutoff time has passed, create a new task and response
-    private boolean shouldCreateNewLongitudinalTaskAndResponse(Integer createNewResponseAfterDays, Instant surveyResponseLastUpdatedAt) {
-        if(createNewResponseAfterDays == null) {
+    private boolean shouldCreateNewLongitudinalTaskAndResponse(ParticipantTask task, Integer createNewResponseAfterDays, Instant surveyResponseLastUpdatedAt, ResponsibleEntity operator) {
+        if (task.getStatus() != TaskStatus.COMPLETE) {
+            return false; // if the prior task wasn't complete, no new task
+        }
+        if (operator.getParticipantUser() == null) {
+            return false; // only participants automatically create new responses
+        }
+        if (createNewResponseAfterDays == null) {
             return false;
         }
         Instant cutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
@@ -150,9 +156,10 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
-     * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey
+     * Longitudinal tasks are editable by the participant if (and only if) the task is the most recent task for the survey.
+     * admins can update any valid response.
      */
-    private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId) {
+    private boolean isLongitudinalTaskEditable(Enrollee enrollee, SurveyResponse surveyResponse, String surveyStableId, ResponsibleEntity operator) {
 
         List<ParticipantTask> tasks = participantTaskService.findAllTasksForActivityByEnrollee(enrollee.getId(), surveyStableId);
 
@@ -164,6 +171,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         if (task.getStatus() == TaskStatus.REJECTED || task.getStatus() == TaskStatus.REMOVED) {
             return false; // cannot edit removed/rejected tasks
+        }
+        if (operator.getParticipantUser() == null) {
+            return true; // admins and system processes can update any task
         }
 
         // with a completed task, we can only edit if it's the
@@ -193,50 +203,54 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
 
-        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() -> new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
+        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId(), true).orElseThrow(() -> new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
 
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());
 
+        SurveyResponse response = task.getSurveyResponseId() != null ?
+                dao.findOneWithAnswers(task.getSurveyResponseId()).orElseThrow() : null;
 
-        SurveyResponse priorResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElse(null);
-        SurveyResponse response;
-
-        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
-                && priorResponse != null
-                && !isLongitudinalTaskEditable(enrollee, priorResponse, survey.getStableId())
-                // admins should be able to update old responses
-                && operator.getParticipantUser() != null) {
-            throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");
+        // handle response to a longitudinal survey with prior response
+        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL && response != null) {
+            if (!isLongitudinalTaskEditable(enrollee, response, survey.getStableId(), operator)) {
+                throw new IllegalArgumentException("Cannot update previous responses for longitudinal surveys");
+            }
+            if (shouldCreateNewLongitudinalTaskAndResponse(
+                            task,
+                            survey.getCreateNewResponseAfterDays(),
+                            response.getLastUpdatedAt(),
+                            operator)
+            ) {
+                ParticipantTask newTask = participantTaskService.cleanForCopying(task);
+                newTask.setStatus(TaskStatus.IN_PROGRESS);
+                newTask.setCompletedAt(null);
+                response.getAnswers().forEach(a -> a.setSurveyResponseId(null));
+                response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(response);
+                newTask.setSurveyResponseId(response.getId());
+                task = participantTaskService.create(newTask, null);
+            }
         }
 
-        //if the survey is longitudinal and we're past the cutoff point for updating an existing response, we need to create a new response and task
-        if (survey.getRecurrenceType() == RecurrenceType.LONGITUDINAL
-                && priorResponse != null
-                && task.getStatus() == TaskStatus.COMPLETE
-                && shouldCreateNewLongitudinalTaskAndResponse(survey.getCreateNewResponseAfterDays(), priorResponse.getLastUpdatedAt())
-                // admin saving update should never trigger a new response;
-                // they can re-assign if they want a fresh response
-                && operator.getParticipantUser() != null
-        ) {
-            ParticipantTask newTask = participantTaskService.cleanForCopying(task);
-            newTask.setStatus(TaskStatus.IN_PROGRESS);
-            newTask.setCompletedAt(null);
-            priorResponse.getAnswers().forEach(a -> a.setSurveyResponseId(null));
-            response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(priorResponse);
-            newTask.setSurveyResponseId(response.getId());
-            task = participantTaskService.create(newTask, null);
+        if (response == null) {
+            SurveyResponse newResponse = SurveyResponse.builder()
+                    .enrolleeId(enrollee.getId())
+                    .surveyId(survey.getId())
+                    .complete(responseDto.isComplete())
+                    .resumeData(responseDto.getResumeData())
+                    .createdAt(responseDto.getCreatedAt())
+                    .lastUpdatedAt(responseDto.getLastUpdatedAt())
+                    .build();
+            newResponse.setResponsibleUser(operator);
+            response = dao.create(newResponse);
         } else {
-            // find or create the SurveyResponse object to attach the snapshot
-            response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+            updateExistingResponse(response, responseDto);
         }
 
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, justification, survey, ppUser, operator);
-        List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
         List<Answer> existingAnswers = answerService.findByResponse(response.getId());
-        allAnswers.addAll(existingAnswers);
-        response.setAnswers(allAnswers);
+        response.setAnswers(existingAnswers);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
@@ -272,44 +286,20 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         }
 
         logger.info("SurveyResponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
-        HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(enrollee, enrolleeContext, response);
+        HubResponse<SurveyResponse> hubResponse;
+        UUID operatorUserId = operator.getParticipantUser() != null ? operator.getParticipantUser().getId() : enrollee.getParticipantUserId();
+        hubResponse = eventService.buildHubResponse(operatorUserId, enrollee, enrolleeContext, response);
         return hubResponse;
     }
 
-    /**
-     * creates a new snapshot (along with a SurveyResponse container if needed) for the given task
-     * This method does not do any validation or authorization -- callers should ensure the user
-     * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
-     */
-    protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
-                                                  UUID participantUserId, SurveyResponse responseDto,
-                                                  UUID portalId, ResponsibleEntity operator) {
-        UUID taskResponseId = task.getSurveyResponseId();
-        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion(), portalId).get();
-        SurveyResponse response;
-        if (taskResponseId != null) {
-            response = dao.find(taskResponseId).get();
-            // don't allow the response to be marked incomplete if it's already complete
-            if (!response.isComplete()) {
-                response.setComplete(responseDto.isComplete());
-            }
-            // to enable simultaneous editing with page-saving, update this to be a merge, rather than a set
-            response.setResumeData(responseDto.getResumeData());
-            dao.update(response);
-        } else {
-            SurveyResponse newResponse = SurveyResponse.builder()
-                    .enrolleeId(enrollee.getId())
-                    .surveyId(survey.getId())
-                    .complete(responseDto.isComplete())
-                    .resumeData(responseDto.getResumeData())
-                    .createdAt(responseDto.getCreatedAt())
-                    .lastUpdatedAt(responseDto.getLastUpdatedAt())
-                    .build();
-            newResponse.setResponsibleUser(operator);
-            response = dao.create(newResponse);
+    protected void updateExistingResponse(SurveyResponse response, SurveyResponse responseDto) {
+        // don't allow the response to be marked incomplete if it's already complete
+        if (!response.isComplete()) {
+            response.setComplete(responseDto.isComplete());
         }
-
-        return response;
+        // to enable simultaneous editing with page-saving, update this to be a merge, rather than a set
+        response.setResumeData(responseDto.getResumeData());
+        dao.update(response);
     }
 
     protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,

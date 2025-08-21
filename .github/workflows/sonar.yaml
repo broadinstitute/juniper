@@ -12,7 +12,7 @@ jobs:
     name: SonarCloud Java
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set up JDK 21
@@ -55,12 +55,12 @@ jobs:
       matrix:
         subproject: ['ui-admin', 'ui-core', 'ui-participant']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Get branch name
         id: branch-name
-        uses: tj-actions/branch-names@v8
+        uses: tj-actions/branch-names@v9
       - name: Set SonarCloud parameters
         id: set-sonar-params
         env:

@@ -61,7 +61,7 @@ export default function PreEnrollView({ enrollContext, survey }:
       studyEnvParams: { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
       enrolleeShortcode: enrollee?.shortcode || '',
       referencedAnswers: [],
-      extraVariables: { isProxyEnrollment, isSubjectEnrollment }
+      extraVariables: { isProxyEnrollment, isSubjectEnrollment, user }
     },
     { extraCssClasses: { container: 'my-0' } }
   )

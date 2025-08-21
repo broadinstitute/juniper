@@ -37,7 +37,7 @@ import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { OptionalStudyEnvParams } from './types/study'
-import { Profile } from 'src/types/user'
+import { ParticipantUser, Profile } from './types/user'
 import { DefaultLight } from 'survey-core/themes'
 
 export type SurveyJsResumeData = {
@@ -95,6 +95,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
 }
 
 export type SurveyJsVariableContext = {
+  user?: ParticipantUser | null,
   profile?: Profile,
   proxyProfile?: Profile,
   studyEnvParams?: OptionalStudyEnvParams,
@@ -432,6 +433,22 @@ export function useSurveyJSModel(
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
     newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
+
+    newSurveyModel.onVariableChanged.add((_model, event) => {
+      const valAsBool = isString(event.value) ? event.value === 'true' : !!event.value
+
+      if (event.name.toLowerCase() === 'removecompletebutton') {
+        newSurveyModel.showCompleteButton = !valAsBool
+      }
+    })
+    newSurveyModel.onAfterRenderSurvey.add((_model, event) => {
+      event.survey.calculatedValues.forEach(val => {
+        const valAsBool = isString(val.value) ? val.value === 'true' : !!val.value
+        if (val.name.toLowerCase() === 'removecompletebutton' && valAsBool) {
+          newSurveyModel.showCompleteButton = false
+        }
+      })
+    })
 
     if (readonly) {
       newSurveyModel.mode = 'display'
