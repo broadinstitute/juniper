@@ -90,7 +90,9 @@ resource "google_dns_record_set" "additional_customer_records" {
   }
 
   managed_zone = google_dns_managed_zone.customer_dns_zone[each.value.customer_key].name
-  name = "${each.value.name}.${google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name}"
+  name = (each.value.name == ""
+            ? google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name
+            : "${each.value.name}.${google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name}")
   type         = each.value.type
   rrdatas      = [each.value.record_value]
   ttl          = each.value.ttl

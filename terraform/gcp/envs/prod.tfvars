@@ -100,7 +100,14 @@ customer_urls = {
   trcc = {
     url    = "trccproject.org"
     dnssec = "off"
-    additional_records = []
+    additional_records = [
+      {
+        name = ""
+        type = "MX"
+        ttl = 3600
+        record_value = "smtp.google.com."
+      },
+    ]
   }
 }
 
