@@ -301,12 +301,16 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           setShowAssignKitModal(true)
         }}
         variant="light" className="border m-1" disabled={!enableActionButtons}
-        tooltip={enableActionButtons ? 'Manually scan and kits' : 'Select at least one participant'}>
+        tooltip={enableActionButtons
+          ? 'Assign a sample kit to a participant for manual kit shipment'
+          : 'Select at least one participant'}>
           <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign return-only kit
         </Button>
         <Button onClick={() => { setShowRequestKitModal(true) }}
           variant="light" className="border m-1" disabled={!enableActionButtons}
-          tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
+          tooltip={enableActionButtons
+            ? 'Request a sample collection kit to be sent directly to the participant(s)'
+            : 'Select at least one participant'}>
           <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
         </Button>
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
@@ -319,15 +323,14 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
           enrolleeShortcodes={selectedEnrolleeShortcodes}
           onSubmit={onSubmit}/> }
 
-        <AssignKitQueueModal
-          show={showAssignKitModal}
+        {showAssignKitModal && selectedEnrollees.length > 0 && <AssignKitQueueModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => {
             setShowAssignKitModal(false)
             reload()
           }}
           enrollees={selectedEnrollees}
-        />
+        />}
       </div>
     </div>
     {basicTableLayout(table, { filterable: true })}
@@ -336,12 +339,10 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 }
 
 const AssignKitQueueModal = ({
-  show,
   studyEnvContext,
   enrollees,
   onDismiss
 }: {
-  show: boolean,
   studyEnvContext: StudyEnvContextT,
   enrollees: Enrollee[],
   onDismiss: () => void,
@@ -360,9 +361,6 @@ const AssignKitQueueModal = ({
     }
   }
 
-  if (!show || !enrollees || enrollees.length === 0) {
-    return <></>
-  }
   return <AssignKitModal
     studyEnvContext={studyEnvContext}
     enrollee={enrollees[queueIndex]}

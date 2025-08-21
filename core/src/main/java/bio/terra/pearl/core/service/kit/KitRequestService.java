@@ -28,6 +28,7 @@ import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -385,6 +386,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             kitRequest.setLabeledAt(Instant.now());
             kitRequest.setSentAt(Instant.now());
             kitRequest.setStatus(KitRequestStatus.SENT_BY_STAFF);
+
+            if (StringUtils.isEmpty(kitRequest.getKitLabel())) {
+                throw new IllegalArgumentException("Kit label must be provided for manual kit assignment");
+            }
         }
 
         return kitRequest;
