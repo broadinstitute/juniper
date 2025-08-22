@@ -308,7 +308,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         tooltip={enableActionButtons
           ? 'Assign a sample kit to a participant for manual kit shipment'
           : 'Select at least one participant'}>
-          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign return-only kit
+          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign kit for manual shipment
         </Button>
         <Button onClick={() => { setShowRequestKitModal(true) }}
           variant="light" className="border m-1" disabled={!enableActionButtons}
