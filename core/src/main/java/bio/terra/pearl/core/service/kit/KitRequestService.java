@@ -442,6 +442,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 status = KitRequestStatus.COLLECTED_BY_STAFF;
             }
 
+            if (status == KitRequestStatus.SENT && kitRequest.getDistributionMethod() == DistributionMethod.MANUAL) {
+                status = KitRequestStatus.SENT_BY_STAFF;
+            }
+
             kitRequest.setStatus(status);
             setKitDates(kitRequest, pepperKit);
             // for now just copy these over on each update, since there is currently no reason to make it conditional

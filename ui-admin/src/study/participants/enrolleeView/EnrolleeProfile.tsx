@@ -1,24 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { MailingAddress, PortalEnvironment } from 'api/api'
+import Api, {
+  MailingAddress,
+  PortalEnvironment
+} from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
-  dateToDefaultString, Enrollee,
+  dateToDefaultString,
+  Enrollee,
   findDifferencesBetweenObjects,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  PortalEnvironmentLanguage, Profile
+  PortalEnvironmentLanguage,
+  Profile
 } from '@juniper/ui-core'
-import { cloneDeep, isEmpty } from 'lodash'
+import {
+  cloneDeep,
+  isEmpty
+} from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
-import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardRow, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
+import {
+  InfoCard,
+  InfoCardBody,
+  InfoCardHeader,
+  InfoCardRow,
+  InfoCardTitle,
+  InfoCardValue
+} from 'components/InfoCard'
 import { Button } from 'components/forms/Button'
 
 /**
@@ -233,10 +251,12 @@ function EditableProfile(
 export function ReadOnlyMailingAddress(
   {
     title,
-    mailingAddress
+    mailingAddress,
+    condensed = false
   }: {
     title: string,
     mailingAddress: MailingAddress
+    condensed?: boolean
   }
 ) {
   // creates the last row, formatted like: 'City, State 12345'
@@ -260,7 +280,7 @@ export function ReadOnlyMailingAddress(
     mailingAddress.street2 || '',
     createCityStatePostalRow(),
     mailingAddress.country || ''
-  ]}/>
+  ]} condensed/>
 }
 
 

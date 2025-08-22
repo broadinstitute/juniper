@@ -40,6 +40,7 @@ import {
   InfoCardTitle,
   InfoCardValue
 } from 'components/InfoCard'
+import { ReadOnlyMailingAddress } from 'study/participants/enrolleeView/EnrolleeProfile'
 
 type ManualKitRequestCreationDto = {
   distributionMethod: 'MANUAL',
@@ -130,8 +131,10 @@ export default function AssignKitModal({
     return startCase(str.toLowerCase())
   }
 
+  const profile = enrollee.profile || {}
+  const mailingAddress = profile.mailingAddress || {}
 
-  return <Modal show={true} onHide={onDismiss} size="lg">
+  return <Modal show={true} onHide={onDismiss} size="xl">
     <Modal.Header closeButton>
       <div className="d-flex align-items-center justify-content-between w-100 pe-2">
         <Modal.Title>Assign Kit</Modal.Title>
@@ -142,7 +145,6 @@ export default function AssignKitModal({
       </div>
     </Modal.Header>
     <Modal.Body>
-      <h4>Profile</h4>
       {isLoading ? <LoadingSpinner/> : <>
         <InfoCard>
           <InfoCardHeader>
@@ -151,9 +153,10 @@ export default function AssignKitModal({
           <InfoCardBody>
             <InfoCardValue title={'Shortcode'} values={[enrollee.shortcode]} condensed/>
             <InfoCardValue title={'Name'}
-              values={[`${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`]}
+              values={[`${profile.givenName || ''} ${profile.familyName || ''}`]}
               condensed/>
-            <InfoCardValue title={'Sex At Birth'} values={[enrollee.profile?.sexAtBirth || '']} condensed/>
+            <InfoCardValue title={'Sex At Birth'} values={[profile.sexAtBirth || '']} condensed/>
+            <ReadOnlyMailingAddress title={'Mailing Address'} mailingAddress={mailingAddress} condensed/>
 
             {enrolleeKits.map(kit => {
               return <>

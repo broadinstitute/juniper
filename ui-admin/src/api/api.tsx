@@ -81,6 +81,7 @@ export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   answers: Answer[],
   profile: Profile,
+  mailingAddress?: MailingAddress,
   latestKit?: KitRequest,
   families: Family[]
   participantUser?: ParticipantUser

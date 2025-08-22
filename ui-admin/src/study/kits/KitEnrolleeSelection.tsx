@@ -60,6 +60,7 @@ import {
 import AssignKitModal from 'study/kits/AssignKitModal'
 import { isNil } from 'lodash'
 import ParticipantSearch from 'study/participants/participantList/search/ParticipantSearch'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -117,7 +118,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         portal.shortcode,
         study.shortcode,
         currentEnv.environmentName,
-        searchExpression,
+        concatSearchExpressions([searchExpression, 'include({profile.mailingAddress.country})']),
         { includes: ['tasks', 'kitRequests'] })
     ])
 
@@ -158,6 +159,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
       const enrollee = searchExp.enrollee
       enrollee.profile = searchExp.profile
+      if (searchExp.mailingAddress) {
+        enrollee.profile.mailingAddress = searchExp.mailingAddress
+      }
       return enrollee
     })
 
