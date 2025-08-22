@@ -102,6 +102,11 @@ customer_urls = {
     dnssec = "off"
     additional_records = []
   }
+  pedihcc = {
+    url    = "pedihccproject.org"
+    dnssec = "off"
+    additional_records = []
+  }
 }
 
 slack_notification_channel = "projects/broad-juniper-prod/notificationChannels/9072110396476167224"
