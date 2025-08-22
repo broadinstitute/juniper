@@ -64,9 +64,10 @@ variable "customer_urls" {
     dnssec = string
     additional_records = list(object({
       name = string
+      domain_prefix = string
       type = string
       ttl = number
-      record_value = string
+      record_values = list(string)
     }))
   }))
   description = "Customer URLs"
