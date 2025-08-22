@@ -8,7 +8,7 @@ admin_url = "juniper-cmi.org"
 environment = "prod"
 # note: automatically creates DNS records for these portals under the admin domain
 
-portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi", "trccproject", "gvasc"]
+portals = ["demo", "atcp", "ourhealth", "hearthive", "rgp", "cmi", "trccproject", "gvasc", "pedihccproject"]
 
 admin_dnssec = "on"
 k8s_namespace = "juniper-prod"
@@ -102,7 +102,7 @@ customer_urls = {
     dnssec = "off"
     additional_records = []
   }
-  pedihcc = {
+  pedihccproject = {
     url    = "pedihccproject.org"
     dnssec = "off"
     additional_records = []
