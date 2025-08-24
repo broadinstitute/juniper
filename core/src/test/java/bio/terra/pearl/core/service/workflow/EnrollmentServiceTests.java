@@ -2,13 +2,17 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -26,6 +30,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +72,8 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     private EnrolleeService enrolleeService;
     @Autowired
     private SurveyResponseService surveyResponseService;
+    @Autowired
+    private SurveyResponseFactory surveyResponseFactory;
 
     @Test
     @Transactional
@@ -183,6 +190,82 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
                     null, false);
         });
     }
+
+    @Test
+    @Transactional
+    public void testBasicEnrollEligibilityRule(TestInfo testInfo) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        String testEmail = RandomStringUtils.randomAlphabetic(10) + "@gmail.com";
+        StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
+        studyEnvConfig.setStudyEligibilityRule("{user.username} = '%s'".formatted(testEmail));
+        studyEnvironmentConfigService.update(studyEnvConfig);
+
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
+                getTestName(testInfo));
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        assertThrows(IllegalArgumentException.class, () -> {
+            enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                    null, true);
+        });
+
+        userBundle.user().setUsername(testEmail);
+        participantUserService.update(userBundle.user());
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, false);
+        assertThat(hubResponse.getEnrollee(), notNullValue());
+    }
+
+    @Test
+    @Transactional
+    public void testCrossStudyEligibilityRule(TestInfo testInfo) {
+        StudyEnvironmentBundle bundle1 = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.live);
+        StudyEnvironmentBundle bundle2 = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.live, bundle1.getPortal(), bundle1.getPortalEnv());
+        Survey survey1 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo))
+                        .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"isNice\",\"title\":\"Are you nice?\"}]}]}")
+                                .portalId(bundle2.getPortal().getId()));
+
+        // you can only join the second study if you've said you're nice in the first study
+        StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(bundle2.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
+        String eligibilityRule = "{answer[\"%s\"].%s.isNice} = 'yes'".formatted(bundle1.getStudy().getName(), survey1.getStableId());
+        studyEnvConfig.setStudyEligibilityRule(eligibilityRule);
+        studyEnvironmentConfigService.update(studyEnvConfig);
+
+        // someone who hasn't joined the other study is ineligible
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(bundle1.getPortalEnv(),
+                getTestName(testInfo));
+        assertThrows(IllegalArgumentException.class, () -> {
+            enrollmentService.enroll(userBundle.ppUser(), bundle2.getStudyEnv().getEnvironmentName(), bundle2.getStudy().getShortcode(), userBundle.user(), userBundle.ppUser(),
+                    null, true);
+        });
+
+        // someone who has joined the other study but not answered the survey is ineligible.
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.enroll(RandomStringUtils.randomAlphabetic(10) + "@test.com", bundle1.getPortal().getShortcode(), bundle1.getStudy().getShortcode(), bundle1.getStudyEnv().getEnvironmentName());
+        assertThrows(IllegalArgumentException.class, () -> {
+            enrollmentService.enroll(enrolleeBundle.portalParticipantUser(), bundle2.getStudyEnv().getEnvironmentName(), bundle2.getStudy().getShortcode(), enrolleeBundle.participantUser(), enrolleeBundle.portalParticipantUser(),
+                    null, true);
+        });
+
+        // someone who has joined with a wrong answer is ineligible
+        surveyResponseFactory.buildWithAnswers(enrolleeBundle.enrollee(), survey1, Map.of(
+                "isNice", "no"
+        ));
+        assertThrows(IllegalArgumentException.class, () -> {
+            enrollmentService.enroll(enrolleeBundle.portalParticipantUser(), bundle2.getStudyEnv().getEnvironmentName(), bundle2.getStudy().getShortcode(), enrolleeBundle.participantUser(), enrolleeBundle.portalParticipantUser(),
+                    null, true);
+        });
+
+        // someone with the correct answer can join
+        EnrolleeBundle niceEnrollee = enrolleeFactory.enroll(RandomStringUtils.randomAlphabetic(10) + "@test.com", bundle1.getPortal().getShortcode(), bundle1.getStudy().getShortcode(), bundle1.getStudyEnv().getEnvironmentName());
+        surveyResponseFactory.buildWithAnswers(niceEnrollee.enrollee(), survey1, Map.of(
+                "isNice", "yes"
+        ));
+        HubResponse hubResponse = enrollmentService.enroll(niceEnrollee.portalParticipantUser(), bundle2.getStudyEnv().getEnvironmentName(), bundle2.getStudy().getShortcode(),
+                niceEnrollee.participantUser(), niceEnrollee.portalParticipantUser(), null, false);
+        assertThat(hubResponse.getEnrollee(), notNullValue());
+    }
+
 
     @Test
     @Transactional

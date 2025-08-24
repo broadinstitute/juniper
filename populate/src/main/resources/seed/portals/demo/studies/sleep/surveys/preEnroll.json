@@ -22,7 +22,7 @@
         "elements": [
           {
             "type": "panel",
-            "visibleIf": "{user.username} notempty",
+            "visibleIf": "{user.username} notempty and {eligibilityResult.eligible} = true",
             "elements": [
               {
                 "type": "html",
@@ -58,6 +58,12 @@
                 ]
               }
             ]
+          },
+          {
+            "type": "html",
+            "name": "notEligible",
+            "visibleIf": "{eligibilityResult.eligible} = false and {user.username} notempty",
+            "html": "This study is only open to people who have joined the main study and are suffering from symptoms of depression."
           },
           {
             "type": "html",

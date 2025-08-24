@@ -45,6 +45,7 @@ export type StudyEnvironmentConfig = {
   useDevDsmRealm: boolean
   enableInPersonKits: boolean
   timeZone: string
+  studyEligibilityRule?: string
   kitEligibilityRule?: string
 }
 

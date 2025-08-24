@@ -12,10 +12,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.*;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -33,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -57,6 +55,8 @@ public class EnrollmentService {
     private final SurveyResponseService surveyResponseService;
     private final AnswerProcessingService answerProcessingService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private final ProfileService profileService;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     public EnrollmentService(SurveyService surveyService,
                              PreEnrollmentResponseDao preEnrollmentResponseDao,
@@ -71,7 +71,7 @@ public class EnrollmentService {
                              AnswerMappingDao answerMappingDao,
                              SurveyResponseService surveyResponseService,
                              AnswerProcessingService answerProcessingService,
-                             StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
+                             StudyEnvironmentSurveyService studyEnvironmentSurveyService, ProfileService profileService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -87,6 +87,8 @@ public class EnrollmentService {
         this.surveyResponseService = surveyResponseService;
         this.answerProcessingService = answerProcessingService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
+        this.profileService = profileService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
     /**
@@ -150,6 +152,9 @@ public class EnrollmentService {
         }
         if (isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
             throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
+        }
+        if (!isEligibleForStudy(user, ppUser, studyEnvConfig)) {
+            throw new IllegalArgumentException("Not eligible for this study");
         }
 
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(operator, studyEnv, preEnrollResponseId, user.getId(), isSubject);
@@ -420,5 +425,21 @@ public class EnrollmentService {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
         return enroll(portalParticipantUser, environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
+    }
+
+    public boolean isEligibleForStudy(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironmentConfig envConfig) {
+        if (StringUtils.isEmpty(envConfig.getStudyEligibilityRule())) {
+            return true;
+        }
+        EnrolleeSearchContext context = new EnrolleeSearchContext(
+                Enrollee.builder()
+                        .participantUserId(ppUser.getParticipantUserId())
+                        .profileId(ppUser.getProfileId())
+                        .build(),
+                profileService.find(ppUser.getProfileId()).orElse(new Profile())
+        );
+        return enrolleeSearchExpressionParser
+                .parseRule(envConfig.getStudyEligibilityRule())
+                .evaluate(context);
     }
 }

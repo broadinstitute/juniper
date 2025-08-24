@@ -1,5 +1,5 @@
 {
-  "name": "Heart Demo",
+  "name": "HeartDemo",
   "shortcode": "heartdemo",
   "surveyFiles": [
     "surveys/preEnroll.json",

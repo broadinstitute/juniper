@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "custom_study_eligibility"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column:
+                  name: study_eligibility_rule
+                  type: text
+

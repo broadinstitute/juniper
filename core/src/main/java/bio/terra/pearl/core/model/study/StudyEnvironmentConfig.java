@@ -52,6 +52,13 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean enableInPersonKits = false;
 
     /**
+     * enrollee search expression used to study eligibility.
+     * if not specified, allow anyone with a portal account to join
+     */
+    @Builder.Default
+    private String studyEligibilityRule = null;
+
+    /**
      * enrollee search expression used to determine kit eligibility.
      * if not specified, enrollees are eligible if they have completed all required surveys.
      * note: this eligibility rule is not verified by the backend; it is only used as a frontend filter.

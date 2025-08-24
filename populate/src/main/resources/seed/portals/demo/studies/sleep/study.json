@@ -22,7 +22,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "enableInPersonKits": true
+        "enableInPersonKits": true,
+        "studyEligibilityRule": "{answer[\"HeartDemo\"].hd_hd_mental.hd_hd_mental_phq9LostInterest} = '3'"
       },
       "configuredSurveyDtos": [
         {"populateFileName": "surveys/preEnroll.json"},
