@@ -116,7 +116,7 @@ customer_urls = {
         domain_prefix = ""
         type = "MX"
         ttl = 3600
-        record_values = ["smtp.google.com."]
+        record_values = ["1 smtp.google.com."]
       },
     ]
   }
