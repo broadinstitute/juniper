@@ -77,6 +77,10 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         return dao.findOne(portalShortcode, environmentName);
     }
 
+    public Optional<PortalEnvironment> findOne(UUID portalId, EnvironmentName environmentName) {
+        return dao.findOne(portalId, environmentName);
+    }
+
     /** loads a portal environment with everything needed to render the participant-facing site */
     public Optional<PortalEnvironment> loadWithParticipantSiteContent(String portalShortcode,
                                                                        EnvironmentName environmentName,

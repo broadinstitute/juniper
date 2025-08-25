@@ -431,11 +431,14 @@ public class EnrollmentService {
         if (StringUtils.isEmpty(envConfig.getStudyEligibilityRule())) {
             return true;
         }
-        EnrolleeSearchContext context = new EnrolleeSearchContext(
-                Enrollee.builder()
+        StudyEnvironment primaryStudyEnv = studyEnvironmentService.findPrimaryStudyByPortalEnvId(ppUser.getPortalEnvironmentId()).orElseThrow();
+        Enrollee primaryStudyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(ppUser.getId(), primaryStudyEnv.getId())
+                .orElse(Enrollee.builder()
                         .participantUserId(ppUser.getParticipantUserId())
                         .profileId(ppUser.getProfileId())
-                        .build(),
+                        .build());
+        EnrolleeSearchContext context = new EnrolleeSearchContext(
+                primaryStudyEnrollee,
                 profileService.find(ppUser.getProfileId()).orElse(new Profile())
         );
         return enrolleeSearchExpressionParser
