@@ -228,7 +228,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
         // you can only join the second study if you've said you're nice in the first study
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(bundle2.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
-        String eligibilityRule = "{answer[\"%s\"].%s.isNice} = 'yes'".formatted(bundle1.getStudy().getName(), survey1.getStableId());
+        String eligibilityRule = "{answer[\"%s\"].%s.isNice} = 'yes'".formatted(bundle1.getStudy().getShortcode(), survey1.getStableId());
         studyEnvConfig.setStudyEligibilityRule(eligibilityRule);
         studyEnvironmentConfigService.update(studyEnvConfig);
 

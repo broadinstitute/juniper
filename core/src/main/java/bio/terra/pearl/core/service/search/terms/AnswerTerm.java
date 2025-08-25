@@ -18,17 +18,17 @@ import static org.jooq.impl.DSL.condition;
  * this term requires a SQL call to the database per enrollee and as such could be slow for a large list of enrollees.
  */
 public class AnswerTerm extends SearchTerm {
-    private final String studyName;
+    private final String studyShortcode;
     private final String questionStableId;
     private final String surveyStableId;
     private final AnswerDao answerDao;
 
-    public AnswerTerm(AnswerDao answerDao, String studyName, String surveyStableId, String questionStableId) {
-        if (!isAlphaNumeric(questionStableId) || !isAlphaNumeric(surveyStableId) || !isAlphaNumeric(studyName)) {
+    public AnswerTerm(AnswerDao answerDao, String studyShortcode, String surveyStableId, String questionStableId) {
+        if (!isAlphaNumeric(questionStableId) || !isAlphaNumeric(surveyStableId) || !isAlphaNumeric(studyShortcode)) {
             throw new IllegalArgumentException("Invalid stable ids: must be alphanumeric and underscore only");
         }
 
-        this.studyName = studyName;
+        this.studyShortcode = studyShortcode;
         this.questionStableId = questionStableId;
         this.surveyStableId = surveyStableId;
         this.answerDao = answerDao;
@@ -41,9 +41,9 @@ public class AnswerTerm extends SearchTerm {
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
         Optional<Answer> answerOpt =
-                this.studyName == null
+                this.studyShortcode == null
                         ? answerDao.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId)
-                        : answerDao.findByProfileIdStudyAndQuestion(context.getEnrollee().getProfileId(), studyName, surveyStableId, questionStableId);
+                        : answerDao.findByProfileIdStudyAndQuestion(context.getEnrollee().getProfileId(), studyShortcode, surveyStableId, questionStableId);
         if (answerOpt.isEmpty()) {
             return new SearchValue();
         }
@@ -64,9 +64,9 @@ public class AnswerTerm extends SearchTerm {
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
 
-        if (Objects.nonNull(studyName)) {
+        if (Objects.nonNull(studyShortcode)) {
             List<EnrolleeSearchQueryBuilder.JoinClause> joinClauses = this
-                    .joinClausesForStudy(studyName);
+                    .joinClausesForStudy(studyShortcode);
 
             joinClauses.add(
                     /** CAREFUL! this raw inclusion of the stableIds in the query is only safe because they are validated in the constructor */
@@ -75,7 +75,7 @@ public class AnswerTerm extends SearchTerm {
                             and %s.survey_stable_id = '%s' \
                             and %s.question_stable_id = '%s'\
                             """.formatted(
-                            addStudySuffix("enrollee", studyName),
+                            addStudySuffix("enrollee", studyShortcode),
                             alias(), alias(),
                             surveyStableId, alias(), questionStableId))
             );
@@ -129,8 +129,8 @@ public class AnswerTerm extends SearchTerm {
     }
 
     private String alias() {
-        if (Objects.nonNull(studyName)) {
-            return "answer_" + studyName + "_" + questionStableId;
+        if (Objects.nonNull(studyShortcode)) {
+            return "answer_" + studyShortcode + "_" + questionStableId;
         }
 
         return "answer_" + questionStableId;
