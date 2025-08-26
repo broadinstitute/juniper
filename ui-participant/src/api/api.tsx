@@ -293,7 +293,7 @@ export default {
 
   async checkEligible(studyShortcode: string):
     Promise<EligibilityResult> {
-    const url =  `${baseStudyEnvUrl(false, studyShortcode)}/checkEligible`
+    const url =  `${baseStudyEnvUrl(true, studyShortcode)}/checkEligible`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response, { alertErrors: false })
   },

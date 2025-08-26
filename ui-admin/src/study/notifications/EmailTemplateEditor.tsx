@@ -71,6 +71,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
 
     updateEmailTemplate({
       ...emailTemplate,
+      id: undefined,
       localizedEmailTemplates: [
         ...emailTemplate.localizedEmailTemplates,
         {
@@ -154,6 +155,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
               )
               updateEmailTemplate({
                 ...emailTemplate,
+                id: undefined,
                 localizedEmailTemplates: updatedTemplates
               })
             }}/>
@@ -191,6 +193,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
                 )
                 updateEmailTemplate({
                   ...emailTemplate,
+                  id: undefined,
                   localizedEmailTemplates: updatedTemplates
                 })
               }}/>
