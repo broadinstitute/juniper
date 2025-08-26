@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Api, {
+  EligibilityResult,
   PreEnrollmentResponse,
   Survey
 } from 'api/api'
@@ -17,6 +18,8 @@ import {
 import { useUser } from '../../providers/UserProvider'
 import { useActiveUser } from '../../providers/ActiveUserProvider'
 import { useEnrollmentParams } from './useEnrollmentParams'
+import { LoadingSpinner } from '../../util/LoadingSpinner'
+import { ApiErrorResponse, defaultApiErrorHandle } from '../../util/error-utils'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -24,9 +27,50 @@ import { useEnrollmentParams } from './useEnrollmentParams'
  * */
 const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 
-/** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
-                                        { enrollContext: StudyEnrollContext, survey: Survey }) {
+  { enrollContext: StudyEnrollContext, survey: Survey }) {
+  const eligibleRule = enrollContext.studyEnv.studyEnvironmentConfig.studyEligibilityRule
+
+  // if there's an eligibility rule, we need to check eligibility before showing the survey
+  const [isLoading, setIsLoading] = useState(!!eligibleRule)
+  const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult>({ eligible: !!eligibleRule })
+
+  const checkEligibility = async () => {
+    if (eligibleRule) {
+      setIsLoading(true)
+      try {
+        const response = await Api.checkEligible(enrollContext.studyShortcode)
+        setEligibilityResult(response)
+        setIsLoading(false)
+      } catch (e: unknown) {
+        const statusCode = (e as ApiErrorResponse).statusCode
+        // ignore 401/403s -- not being logged in is handled by the survey content
+        if (statusCode === 403 || statusCode === 401) {
+          setIsLoading(false)
+        } else {
+          defaultApiErrorHandle(e as ApiErrorResponse)
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    checkEligibility()
+  }, [eligibleRule])
+  return <>
+    { !isLoading && <EligiblePreEnrollView enrollContext={enrollContext}
+      eligibilityResult={eligibilityResult} survey={survey}/> }
+    { isLoading && <LoadingSpinner/>}
+  </>
+}
+
+
+/** Renders a pre-enrollment form, and handles submitting the user-inputted response */
+export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult }:
+                                        { enrollContext: StudyEnrollContext,
+                                          survey: Survey,
+                                          eligibilityResult: EligibilityResult
+                                        }) {
   const {
     studyEnv,
     updatePreEnrollResponseId,
@@ -61,7 +105,10 @@ export default function PreEnrollView({ enrollContext, survey }:
       studyEnvParams: { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
       enrolleeShortcode: enrollee?.shortcode || '',
       referencedAnswers: [],
-      extraVariables: { isProxyEnrollment, isSubjectEnrollment, user }
+      extraVariables: {
+        isProxyEnrollment, isSubjectEnrollment, user,
+        eligibilityResult
+      }
     },
     { extraCssClasses: { container: 'my-0' } }
   )

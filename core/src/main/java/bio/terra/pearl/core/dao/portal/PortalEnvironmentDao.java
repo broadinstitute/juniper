@@ -54,6 +54,10 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         );
     }
 
+    public Optional<PortalEnvironment> findOne(UUID portalId, EnvironmentName environmentName) {
+        return findByTwoProperties("portal_id", portalId, "environment_name", environmentName);
+    }
+
     /** load with everything needed to display the participant-facing site */
     public Optional<PortalEnvironment> loadWithSiteContent(String shortcode,
                                                                       EnvironmentName environmentName,

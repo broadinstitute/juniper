@@ -17,12 +17,12 @@ public abstract class SearchTermParser<T extends SearchTerm> {
         List<String> splitModelName = List.of(variableNoBraces.split("\\.", 2));
 
         String modelName = splitModelName.get(0);
-        String studyName = null;
+        String studyShortcode = null;
 
         if (modelName.contains("[")) {
             int startIndex = modelName.indexOf("[");
             int endIndex = modelName.indexOf("]");
-            studyName = modelName.substring(startIndex + 2, endIndex - 1);
+            studyShortcode = modelName.substring(startIndex + 2, endIndex - 1);
             modelName = modelName.substring(0, startIndex);
         }
 
@@ -32,10 +32,10 @@ public abstract class SearchTermParser<T extends SearchTerm> {
 
         String arguments = splitModelName.size() == 1 ? "" : splitModelName.get(1);
 
-        if (studyName == null) {
+        if (studyShortcode == null) {
             return this.parse(arguments);
         } else {
-            return this.parse(studyName, arguments);
+            return this.parse(studyShortcode, arguments);
         }
     }
 

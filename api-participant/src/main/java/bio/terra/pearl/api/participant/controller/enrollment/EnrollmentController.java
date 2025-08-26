@@ -6,11 +6,15 @@ import bio.terra.pearl.api.participant.service.EnrollmentExtService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -21,18 +25,21 @@ public class EnrollmentController implements EnrollmentApi {
   private final HttpServletRequest request;
   private final AuthUtilService authUtilService;
   private final EnrollmentExtService enrollmentExtService;
+  private final StudyEnvironmentConfigService studyEnvironmentConfigService;
 
   public EnrollmentController(
       EnrollmentService enrollmentService,
       RequestUtilService requestUtilService,
       HttpServletRequest request,
       AuthUtilService authUtilService,
-      EnrollmentExtService enrollmentExtService) {
+      EnrollmentExtService enrollmentExtService,
+      StudyEnvironmentConfigService studyEnvironmentConfigService) {
     this.enrollmentService = enrollmentService;
     this.requestUtilService = requestUtilService;
     this.request = request;
     this.authUtilService = authUtilService;
     this.enrollmentExtService = enrollmentExtService;
+    this.studyEnvironmentConfigService = studyEnvironmentConfigService;
   }
 
   @Override
@@ -72,5 +79,25 @@ public class EnrollmentController implements EnrollmentApi {
             governedPpUserId);
 
     return ResponseEntity.ok(response);
+  }
+
+  @Override
+  public ResponseEntity<Object> checkEligible(
+      String portalShortcode, String envName, String studyShortcode) {
+    ParticipantUser user = requestUtilService.requireUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    PortalWithPortalUser portalWithPortalUser =
+        authUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
+    StudyEnvironmentConfig config =
+        studyEnvironmentConfigService.findByStudyShortcode(studyShortcode, environmentName);
+    boolean isEligible =
+        enrollmentService.isEligibleForStudy(user, portalWithPortalUser.ppUser(), config);
+    return ResponseEntity.ok(new EligibilityResponse(isEligible));
+  }
+
+  @Getter
+  @AllArgsConstructor
+  class EligibilityResponse {
+    boolean eligible;
   }
 }
