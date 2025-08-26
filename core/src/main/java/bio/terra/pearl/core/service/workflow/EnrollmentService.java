@@ -439,7 +439,7 @@ public class EnrollmentService {
                         .build());
         EnrolleeSearchContext context = new EnrolleeSearchContext(
                 primaryStudyEnrollee,
-                profileService.find(ppUser.getProfileId()).orElse(new Profile())
+                profileService.loadWithMailingAddress(ppUser.getProfileId()).orElse(new Profile())
         );
         return enrolleeSearchExpressionParser
                 .parseRule(envConfig.getStudyEligibilityRule())

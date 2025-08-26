@@ -51,13 +51,14 @@ public class StudyEnvironmentConfig extends BaseEntity {
     @Builder.Default
     private boolean enableInPersonKits = false;
 
+    /**
      * if true, send the participant's sex at birth to DSM/BSP based on their
      * profile. likely, this setting should be per-kit-type, but this would be
      * a decent lift and a rare need, so, for now, it's a global study env setting.
      */
     @Builder.Default
     private boolean includeSexAtBirthInKitMetadata = false;
-  
+
     /**
      * enrollee search expression used to study eligibility.
      * if not specified, allow anyone with a portal account to join
