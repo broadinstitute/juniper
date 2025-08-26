@@ -126,7 +126,7 @@ public class AnswerDaoTests extends BaseSpringBootTest {
     // find question that enrollee 1 filled out
     Optional<Answer> answer = answerDao.findByProfileIdStudyAndQuestion(
             enrollee1.getProfileId(),
-            studyEnvBundle.getStudy().getName(),
+            studyEnvBundle.getStudy().getShortcode(),
             surveyInEnv1.getStableId(),
             "question_env_1");
     assertThat(answer.get().getStringValue(), equalTo("answer1"));
@@ -134,7 +134,7 @@ public class AnswerDaoTests extends BaseSpringBootTest {
     // find question that enrollee 2 filled out
     answer = answerDao.findByProfileIdStudyAndQuestion(
             enrollee1.getProfileId(),
-            studyEnvBundle2.getStudy().getName(),
+            studyEnvBundle2.getStudy().getShortcode(),
             surveyInEnv2.getStableId(),
             "question_env_2");
     assertThat(answer.get().getStringValue(), equalTo("differentAnswer"));
@@ -143,7 +143,7 @@ public class AnswerDaoTests extends BaseSpringBootTest {
     // find question that enrollee 2 filled out but ask for wrong study
     answer = answerDao.findByProfileIdStudyAndQuestion(
             enrollee1.getProfileId(),
-            studyEnvBundle.getStudy().getName(),
+            studyEnvBundle.getStudy().getShortcode(),
             surveyInEnv2.getStableId(),
             "question_env_2");
     assertThat(answer.isEmpty(), equalTo(true));
@@ -151,7 +151,7 @@ public class AnswerDaoTests extends BaseSpringBootTest {
     // find question that neither enrollee 1 nor 2 filled out
     answer = answerDao.findByProfileIdStudyAndQuestion(
             enrollee1.getProfileId(),
-            studyEnvBundle2.getStudy().getName(),
+            studyEnvBundle2.getStudy().getShortcode(),
             surveyInEnv2.getStableId(),
             "different_question");
     assertThat(answer.isEmpty(), equalTo(true));
