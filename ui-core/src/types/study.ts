@@ -44,6 +44,7 @@ export type StudyEnvironmentConfig = {
   useStubDsm: boolean
   useDevDsmRealm: boolean
   enableInPersonKits: boolean
+  includeSexAtBirthInKitMetadata: boolean
   timeZone: string
   kitEligibilityRule?: string
 }

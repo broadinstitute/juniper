@@ -3,8 +3,6 @@ package bio.terra.pearl.core.service.kit.pepper;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -36,9 +34,9 @@ public class PepperDSMClientWrapper implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException {
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata) throws PepperApiException, PepperParseException {
         return getPepperDSMClient(studyEnvironmentConfig)
-                .sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
+                .sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address, metadata);
     }
 
     @Override
