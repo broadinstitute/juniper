@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: "kit_metadata_sex_at_birth"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column:
+                  name: include_sex_at_birth_in_kit_metadata
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+

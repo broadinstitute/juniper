@@ -13,6 +13,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -23,7 +24,6 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -102,7 +103,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.getMailingAddress().setStreet1("123 Fake Street");
         profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenAnswer(invocation -> {
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenAnswer(invocation -> {
             KitRequest kitRequest = (KitRequest) invocation.getArguments()[3];
             throw new PepperApiException("Error from Pepper with unexpected format: boom",
                     PepperErrorResponse.builder()
@@ -143,7 +144,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(savedKit.getSentToAddress(), equalTo(objectMapper.writeValueAsString(expectedSentToAddress)));
         assertThat(savedKit.getDistributionMethod(), equalTo(DistributionMethod.MAILED));
 
-        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Transactional
@@ -361,7 +362,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(collectedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(collectedKit.getCollectingAdminUserId(), equalTo(adminUser.getId()));
 
-        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Transactional
@@ -565,7 +566,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     /** test that requests are dispatched to the live/stub DSM based on the study environment config */
     @Transactional
     @Test
-    public void testRequestKitStudyEnvConfig(TestInfo testInfo) throws Exception {
+    public void testUseLiveBasedOnStudyEnvConfig(TestInfo testInfo) throws Exception {
         PepperKit mockKit = PepperKit.builder().currentStatus("blah").build();
         // set up a study and enrollee, initially set the study env to use stub DSM
         String testName = getTestName(testInfo);
@@ -575,25 +576,62 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         config.setUseStubDsm(true);
         studyEnvironmentConfigService.update(config);
         Enrollee enrollee = enrolleeFactory.buildWithPortalUser(testName, envBundle.getPortalEnv(), envBundle.getStudyEnv(), new Profile()).enrollee();
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(mockPepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         KitRequestDto kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
                 enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(mockPepperDSMClient).fetchKitStatus(any(), any());
-        Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
         Mockito.verifyNoInteractions(livePepperDSMClient);
 
         // now configure to use the live dsmClient
         config.setUseStubDsm(false);
         studyEnvironmentConfigService.update(config);
-        when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
+        when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(livePepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
                 enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
-        Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
         Mockito.verify(livePepperDSMClient).fetchKitStatus(any(), any());
+    }
+
+    @Transactional
+    @Test
+    public void testSendSexAtBirthBasedOnStudyEnvConfig(TestInfo testInfo) throws Exception {
+        PepperKit mockKit = PepperKit.builder().currentStatus("blah").build();
+        // set up a study and enrollee, initially set the study env to use stub DSM
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
+        config.setUseStubDsm(true);
+        config.setIncludeSexAtBirthInKitMetadata(true);
+        studyEnvironmentConfigService.update(config);
+
+
+        Enrollee enrollee = enrolleeFactory.buildWithPortalUser(testName, envBundle.getPortalEnv(), envBundle.getStudyEnv(), Profile.builder().sexAtBirth("Female").build()).enrollee();
+
+        // first kit: request with includeSexAtBirthInKitMetadata true
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
+        kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+
+        // second kit: request with includeSexAtBirthInKitMetadata false
+        config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
+        config.setIncludeSexAtBirthInKitMetadata(false);
+        studyEnvironmentConfigService.update(config);
+
+        kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+
+
+        // check first kit request call has normalized sex at birth and second has empty metadata
+        InOrder inOrder = Mockito.inOrder(mockPepperDSMClient);
+        inOrder.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), eq(PepperKitMetadata.builder().sexAtBirth("F").build()));
+        inOrder.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), eq(PepperKitMetadata.builder().build()));
+        Mockito.verifyNoMoreInteractions(mockPepperDSMClient);
     }
 
     private void verifyKit(KitRequest kit, PepperKit expectedDSMStatus, KitRequestStatus expectedStatus)
