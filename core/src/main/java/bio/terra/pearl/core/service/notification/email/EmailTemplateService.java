@@ -3,12 +3,14 @@ package bio.terra.pearl.core.service.notification.email;
 import bio.terra.pearl.core.dao.notification.EmailTemplateDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.VersionedEntityService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmailTemplateService extends VersionedEntityService<EmailTemplate, EmailTemplateDao> {
@@ -27,11 +29,27 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
         EmailTemplate template = dao.create(emailTemplate);
         for (LocalizedEmailTemplate localizedEmailTemplate : emailTemplate.getLocalizedEmailTemplates()) {
             localizedEmailTemplate.setEmailTemplateId(template.getId());
+            localizedEmailTemplate.setId(null);
             LocalizedEmailTemplate savedTemplate = localizedEmailTemplateService.create(localizedEmailTemplate);
             template.getLocalizedEmailTemplates().add(savedTemplate);
         }
         return template;
     }
+
+    /**
+     * create a new version of the emailTemplate with the given content.
+     * Note that the passed-in object WILL BE MODIFIED to clean out any ids and set new versions.  It should be
+     * discarded.
+     * */
+    @Transactional
+    public EmailTemplate createNewVersion(EmailTemplate emailTemplate) {
+        cleanForCopying(emailTemplate);
+        int nextVersion = dao.getNextVersion(emailTemplate.getStableId(), emailTemplate.getPortalId());
+        emailTemplate.setVersion(nextVersion);
+        emailTemplate.setPublishedVersion(null);
+        return create(emailTemplate);
+    }
+
 
     public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {
         dao.attachLocalizedTemplate(emailTemplate, language);

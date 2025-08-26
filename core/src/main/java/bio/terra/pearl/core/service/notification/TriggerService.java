@@ -47,7 +47,7 @@ public class TriggerService extends CrudService<Trigger, TriggerDao> implements 
     public Trigger create(Trigger action) {
         EmailTemplate emailTemplate = action.getEmailTemplate();
         if (emailTemplate != null && emailTemplate.getId() == null) {
-            emailTemplate = emailTemplateService.create(emailTemplate);
+            emailTemplate = emailTemplateService.createNewVersion(emailTemplate);
             action.setEmailTemplateId(emailTemplate.getId());
         }
         Trigger savedConfig = dao.create(action);
