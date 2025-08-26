@@ -97,6 +97,7 @@ export type EmailTemplate = {
   stableId: string
   name: string
   version: number
+  publishedVersion?: number
   localizedEmailTemplates: LocalizedEmailTemplate[]
 }
 
