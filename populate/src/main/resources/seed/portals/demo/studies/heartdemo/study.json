@@ -79,6 +79,7 @@
         "triggerType": "EVENT",
         "eventType": "SURVEY_RESPONSE",
         "filterTargetStableIds": ["hd_hd_medHx"],
+        "maxNumNotifications": 1,
         "populateFileName": "emails/medHxComplete.json"
       },{
         "triggerType": "TASK_REMINDER",
