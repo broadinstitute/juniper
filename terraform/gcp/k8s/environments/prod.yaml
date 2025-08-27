@@ -38,11 +38,9 @@ studyCertificates:
   - groupName: hearthive
     urls:
       - thehearthive.org
-  - groupName: trcc
+  - groupName: cmi
     urls:
       - trccproject.org
-      #  - groupName: pedihcc
-      #    urls:
       - pedihccproject.org
 
 b2c:
