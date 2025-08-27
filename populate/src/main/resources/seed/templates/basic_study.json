@@ -31,7 +31,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/consentReminder.json"
     }, {
@@ -41,7 +41,7 @@
       "eventType" : "KIT_RECEIVED",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/kitReturned.json"
     }, {
@@ -51,7 +51,7 @@
       "eventType" : "STUDY_ENROLLMENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/enrollment.json"
     }, {
@@ -62,7 +62,7 @@
       "taskType" : "SURVEY",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 10080,
-      "maxNumReminders" : 2,
+      "maxNumNotifications" : 2,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/surveyReminder.json"
     }, {
@@ -72,7 +72,7 @@
       "eventType" : "KIT_SENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/kitSent.json"
     }, {
@@ -82,7 +82,7 @@
       "eventType" : "STUDY_CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "emails/consentSigned.json"
     }],

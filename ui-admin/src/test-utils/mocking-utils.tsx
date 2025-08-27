@@ -423,7 +423,7 @@ export const mockTrigger = (): Trigger => {
     taskType: '',
     portalEnvironmentId: 'portalEnvId',
     studyEnvironmentId: 'studyEnvId',
-    maxNumReminders: -1,
+    maxNumNotifications: -1,
     afterMinutesIncomplete: -1,
     reminderIntervalMinutes: 10,
     filterTargetStableIds: [],

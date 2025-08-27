@@ -3,6 +3,8 @@ package bio.terra.pearl.core.dao.notification;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.SendgridEvent;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jdbi.v3.core.Jdbi;
@@ -14,13 +16,17 @@ import java.util.UUID;
 
 @Component
 public class NotificationDao extends BaseMutableJdbiDao<Notification> {
+    private final TriggerDao triggerDao;
+    private final EmailTemplateDao emailTemplateDao;
     private ObjectMapper objectMapper;
     private final SendgridEventDao sendgridEventDao;
 
-    public NotificationDao(Jdbi jdbi, ObjectMapper objectMapper, SendgridEventDao sendgridEventDao) {
+    public NotificationDao(Jdbi jdbi, ObjectMapper objectMapper, SendgridEventDao sendgridEventDao, TriggerDao triggerDao, EmailTemplateDao emailTemplateDao) {
         super(jdbi);
         this.objectMapper = objectMapper;
         this.sendgridEventDao = sendgridEventDao;
+        this.triggerDao = triggerDao;
+        this.emailTemplateDao = emailTemplateDao;
     }
 
     @Override
@@ -76,4 +82,11 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
                         .findFirst()
         );
     }
+
+    public List<Notification> findByEnrolleeAndEmailStableId(Enrollee enrollee, String stableId) {
+        List<Trigger> triggers = triggerDao.findByStudyEnvAndEmailTemplate(enrollee.getStudyEnvironmentId(), stableId);
+        return findAllByTwoProperties("enrollee_id", enrollee.getId(),
+                "trigger_id", triggers.stream().map(Trigger::getId).toList());
+    }
+
 }

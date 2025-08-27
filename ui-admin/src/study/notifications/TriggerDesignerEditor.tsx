@@ -149,6 +149,17 @@ const TriggerTypeEditor = (
               <TaskReminderEditor trigger={trigger} updateTrigger={updateTrigger}/>
             </>}
 
+          {(trigger.triggerType === 'TASK_REMINDER' || trigger.triggerType === 'EVENT') &&
+            <div>
+              <label className="form-label">Max number of notifications
+                <input className="form-control" type="number" value={trigger.maxNumNotifications}
+                  onChange={e => updateTrigger(
+                    'maxNumNotifications', parseInt(e.target.value) || 0
+                  )}/>
+              </label>
+            </div>
+          }
+
           {trigger.triggerType !== 'AD_HOC' && <TriggerRuleEditor
             studyEnvContext={studyEnvContext}
             trigger={trigger}
@@ -251,14 +262,6 @@ const TaskReminderEditor = (
               'reminderIntervalMinutes',
               parseInt(e.target.value) * 60 || 0)}/>
           hours</div>
-      </label>
-    </div>
-    <div>
-      <label className="form-label">Max reminders
-        <input className="form-control" type="number" value={trigger.maxNumReminders}
-          onChange={e => updateTrigger(
-            'maxNumReminders', parseInt(e.target.value) || 0
-          )}/>
       </label>
     </div>
   </div>

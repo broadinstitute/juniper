@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.notification;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
+import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
@@ -21,12 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class NotificationDispatcherTests extends BaseSpringBootTest {
+    @Autowired
+    private EmailTemplateFactory emailTemplateFactory;
+
     @Test
     @Transactional
     public void testEventTriggersNotificationCreation() {
         EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser("notificationTriggers");
-        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.STUDY_ENROLLMENT);
+        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.STUDY_ENROLLMENT, 2);
 
         eventService.publishEnrolleeCreationEvent(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
         verifyNotification(config, enrolleeBundle);
@@ -38,7 +42,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(testName);
-        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_SENT);
+        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_SENT, 2);
 
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrolleeBundle.enrollee(), PepperKitStatus.SENT);
         eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
@@ -52,21 +56,49 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(testName);
-        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_RECEIVED);
+        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_RECEIVED, 2);
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrolleeBundle.enrollee(), PepperKitStatus.RECEIVED);
 
         eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
                 KitRequestStatus.SENT);
-        verifyNotification(config, enrolleeBundle);
+        verifyNotification( config, enrolleeBundle);
+        List<Notification> notifications = notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+        assertThat(notifications, hasSize(1));
+
+        // a second event should send another email
+        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
+                KitRequestStatus.SENT);
+        notifications = notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+        assertThat(notifications, hasSize(2));
     }
 
-    private Trigger createNotificationConfig(EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
+    @Test
+    @Transactional
+    void testMaxOnEvent(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        Trigger config = createNotificationConfig(enrolleeBundle, TriggerEventType.KIT_RECEIVED, 1);
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrolleeBundle.enrollee(), PepperKitStatus.RECEIVED);
+        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
+                KitRequestStatus.SENT);
+        verifyNotification(config, enrolleeBundle);
+
+        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
+                KitRequestStatus.SENT);
+        List<Notification> notifications = notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+        assertThat(notifications, hasSize(1));
+    }
+
+    private Trigger createNotificationConfig(EnrolleeBundle enrolleeBundle, TriggerEventType eventType, int maxNumNotifications) {
         Enrollee enrollee = enrolleeBundle.enrollee();
+        EmailTemplate template = emailTemplateFactory.buildPersisted("test", enrolleeBundle.portalId());
         Trigger config = Trigger.builder()
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
                 .eventType(eventType)
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .triggerType(TriggerType.EVENT)
+                .maxNumNotifications(maxNumNotifications)
+                .emailTemplateId(template.getId())
                 .portalEnvironmentId(enrolleeBundle.portalParticipantUser().getPortalEnvironmentId())
                 .build();
         config = triggerService.create(config);

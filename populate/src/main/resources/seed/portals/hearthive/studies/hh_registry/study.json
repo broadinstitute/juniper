@@ -1020,7 +1020,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-2.json"
     }, {
@@ -1032,7 +1032,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-1.json"
     }, {
@@ -1045,7 +1045,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-4.json"
     }, {
@@ -1058,7 +1058,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-5.json"
     }, {
@@ -1070,7 +1070,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
     }, {
@@ -1082,7 +1082,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-1.json"
     }, {
@@ -1094,7 +1094,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-2.json"
     }, {
@@ -1107,7 +1107,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-1.json"
     }, {
@@ -1120,7 +1120,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-2.json"
     }, {
@@ -1133,7 +1133,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-2.json"
     }, {
@@ -1146,7 +1146,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
     }, {
@@ -1159,7 +1159,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-3.json"
     }, {
@@ -1171,7 +1171,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
     }, {
@@ -1183,7 +1183,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-3.json"
     }, {
@@ -1196,7 +1196,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-1.json"
     }, {
@@ -1208,7 +1208,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-2.json"
     }, {
@@ -1221,7 +1221,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-3.json"
     }, {
@@ -1234,7 +1234,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
     }, {
@@ -1246,7 +1246,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-3.json"
     } ],
@@ -1327,7 +1327,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
     }, {
@@ -1340,7 +1340,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
     }, {
@@ -1352,7 +1352,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
     }, {
@@ -1365,7 +1365,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
     } ],
@@ -1441,7 +1441,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 43200,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
     }, {
@@ -1454,7 +1454,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
     }, {
@@ -1466,7 +1466,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_invitationFromDatstat-4.json"
     }, {
@@ -1479,7 +1479,7 @@
       "taskType" : "OUTREACH",
       "afterMinutesIncomplete" : 0,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_outreachReminder-6.json"
     } ],

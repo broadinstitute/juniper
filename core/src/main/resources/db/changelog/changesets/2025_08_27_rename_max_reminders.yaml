@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "rename_max_reminders"
+      author: dbush
+      changes:
+        - renameColumn:
+            tableName: trigger
+            oldColumnName: max_num_reminders
+            newColumnName: max_num_notifications
+
+

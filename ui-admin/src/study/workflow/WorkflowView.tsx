@@ -398,7 +398,7 @@ const TriggerListItem = ({ trigger, studyEnvParams }:
       <span className="text-muted fst-italic">
         <FontAwesomeIcon icon={faCalendarAlt} className="ms-3 me-2"/>
         <span>
-      reminds after {minutesToDayString(trigger.afterMinutesIncomplete)} (max { trigger.maxNumReminders } reminders)
+      reminds after {minutesToDayString(trigger.afterMinutesIncomplete)} (max { trigger.maxNumNotifications } reminders)
         </span>
       </span>
     }

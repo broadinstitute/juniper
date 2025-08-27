@@ -74,7 +74,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-2.json"
     }, {
@@ -86,7 +86,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-3.json"
     }, {
@@ -98,7 +98,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-4.json"
     }, {
@@ -110,7 +110,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-5.json"
     }, {
@@ -122,7 +122,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-3.json"
     }, {
@@ -134,7 +134,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-6.json"
     }, {
@@ -147,7 +147,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-1.json"
     }, {
@@ -160,7 +160,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-2.json"
     }, {
@@ -173,7 +173,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
     }, {
@@ -186,7 +186,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-3.json"
     }, {
@@ -198,7 +198,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-6.json"
     }, {
@@ -210,7 +210,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-1.json"
     }, {
@@ -222,7 +222,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 5,
+      "maxNumNotifications" : 5,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hh_cymop_studyEnroll-1.json"
     }, {
@@ -236,7 +236,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
     }, {
@@ -248,7 +248,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
     }, {
@@ -260,7 +260,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-2.json"
     }, {
@@ -272,7 +272,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-3.json"
     }, {
@@ -284,7 +284,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
     }, {
@@ -296,7 +296,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-4.json"
     } ],
@@ -348,7 +348,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
     }, {
@@ -362,7 +362,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
     }, {
@@ -374,7 +374,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
     } ],
@@ -426,7 +426,7 @@
       "taskType" : "CONSENT",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmConsentReminder-4.json"
     }, {
@@ -440,7 +440,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_cmyopOutreachComplete-1.json"
     }, {
@@ -452,7 +452,7 @@
       "deliveryType" : "EMAIL",
       "afterMinutesIncomplete" : 4320,
       "reminderIntervalMinutes" : 4320,
-      "maxNumReminders" : 3,
+      "maxNumNotifications" : 3,
       "emailTemplateVersion" : 0,
       "populateFileName" : "../../emails/hearthive_hhcmThankyou-5.json"
     } ],

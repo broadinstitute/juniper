@@ -30,7 +30,7 @@ const getDefaultConfig = (): Trigger => {
     reminderIntervalMinutes: 72 * 60,
     filterTargetStableIds: [],
     actionTargetStableIds: [],
-    maxNumReminders: 3,
+    maxNumNotifications: 3,
     emailTemplate: {
       stableId: 'placeholderStableId',
       name: '',
