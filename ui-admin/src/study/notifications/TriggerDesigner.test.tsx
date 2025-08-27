@@ -44,7 +44,7 @@ describe('TriggerDesigner', () => {
         ...trigger,
         emailTemplate: {
           ...trigger.emailTemplate,
-          id: 'emailTemplate1',
+          id: undefined,
           version: 1,
           localizedEmailTemplates: [{
             subject: 'Mock subjectblah',

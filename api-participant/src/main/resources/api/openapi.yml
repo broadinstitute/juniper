@@ -272,6 +272,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/checkEligible:
+    get:
+      summary: Checks whether the signed-in user is eligible for the given study
+      tags: [ enrollment ]
+      operationId: checkEligible
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: object with 'eligible' boolean
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{preEnrollResponseId}/confirm:
     get:
       summary: Confirms a preEnrollment id
@@ -300,21 +315,6 @@ paths:
       responses:
         '200':
           description: hub response with enrollee
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/checkEligible:
-    get:
-      summary: Checks whether the signed-in user is eligible for the given study
-      tags: [ enrollment ]
-      operationId: checkEligible
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: object with 'eligible' boolean
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
