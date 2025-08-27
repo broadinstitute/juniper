@@ -5,15 +5,18 @@ deploymentZone: dev
 replicas: 1
 dsmUrl: https://dsm-dev.datadonationplatform.org/dsm
 dsmIssuer: admin-d2p.ddp-dev.envs.broadinstitute.org
-# "portals" adds certificates for each portal - both for the juniper-cmi.dev subdomains and the custom domain
+# "portals" adds certificates for admin subdomains
 portals:
-  - name: demo
-    customDomain: juniperdemostudy.dev
-  - name: hearthive
-  - name: ourhealth
-  - name: cmi
-  - name: rgp
-  - name: atcp
+  - demo
+  - hearthive
+  - ourhealth
+  - cmi
+  - rgp
+  - atcp
+studyCertificates:
+  - groupName: demo
+    urls:
+      - juniperdemostudy.dev
 b2c:
   admin:
     clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a
