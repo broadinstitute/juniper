@@ -22,11 +22,7 @@ import java.util.UUID;
 
 import static com.github.seregamorph.hamcrest.MoreMatchers.where;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -62,7 +58,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
-        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
+        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address, new PepperKitMetadata());
         assertThat(sendKitResponse.getCurrentStatus(), equalTo("Kit without label"));
     }
 
@@ -84,7 +80,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
 
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, () -> {
-            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
+            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address, new PepperKitMetadata());
         });
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getMessage(), equalTo("UNKNOWN_KIT_TYPE"));

@@ -44,7 +44,9 @@ export type StudyEnvironmentConfig = {
   useStubDsm: boolean
   useDevDsmRealm: boolean
   enableInPersonKits: boolean
+  includeSexAtBirthInKitMetadata: boolean
   timeZone: string
+  studyEligibilityRule?: string
   kitEligibilityRule?: string
 }
 
@@ -96,6 +98,7 @@ export type EmailTemplate = {
   stableId: string
   name: string
   version: number
+  publishedVersion?: number
   localizedEmailTemplates: LocalizedEmailTemplate[]
 }
 

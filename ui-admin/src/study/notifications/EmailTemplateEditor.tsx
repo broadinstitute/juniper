@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useRef,
   useState
 } from 'react'
@@ -19,6 +18,7 @@ import { getMediaBaseUrl } from 'api/api'
 import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 import useReactSingleSelect from 'util/react-select-utils'
 import Select from 'react-select'
+import useUpdateEffect from '../../util/useUpdateEffect'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
@@ -39,7 +39,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const localizedEmailTemplate = emailTemplate.localizedEmailTemplates.find(template =>
     template.language === selectedLanguage?.languageCode)
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (emailEditorRef.current?.editor && localizedEmailTemplate) {
       emailEditorRef.current.editor.loadDesign({
         // @ts-ignore
@@ -47,7 +47,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
         classic: true
       })
     }
-  }, [localizedEmailTemplate, selectedLanguage])
+  }, [selectedLanguage?.languageCode])
 
   const {
     onChange: languageOnChange, options: languageOptions,
@@ -71,6 +71,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
 
     updateEmailTemplate({
       ...emailTemplate,
+      id: undefined,
       localizedEmailTemplates: [
         ...emailTemplate.localizedEmailTemplates,
         {
@@ -101,15 +102,22 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
     unlayer.addEventListener('design:updated', () => {
       if (!emailEditorRef.current?.editor || !localizedEmailTemplate) { return }
       emailEditorRef.current.editor.exportHtml(data => {
+        const matchedTemplate =  emailTemplateRef.current.localizedEmailTemplates.find(template =>
+          template.language === localizedEmailTemplate.language)
+        const updatedBody = insertPlaceholders(data.html)
+        if (matchedTemplate!.body === updatedBody) {
+          return
+        }
         const updatedTemplates = emailTemplateRef.current.localizedEmailTemplates.map(template =>
           template.language === localizedEmailTemplate.language ? {
             ...localizedEmailTemplate,
             id: undefined,
-            body: insertPlaceholders(data.html)
+            body: updatedBody
           } : template
         )
         updateEmailTemplate({
           ...emailTemplateRef.current,
+          id: undefined,
           localizedEmailTemplates: updatedTemplates
         })
       })
@@ -147,6 +155,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
               )
               updateEmailTemplate({
                 ...emailTemplate,
+                id: undefined,
                 localizedEmailTemplates: updatedTemplates
               })
             }}/>
@@ -184,6 +193,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
                 )
                 updateEmailTemplate({
                   ...emailTemplate,
+                  id: undefined,
                   localizedEmailTemplates: updatedTemplates
                 })
               }}/>

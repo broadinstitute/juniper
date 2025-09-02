@@ -19,4 +19,9 @@ public class EnrolleeContext {
     private final Profile profile; // profile is assumed to have the mailing address attached
     private final ParticipantUser participantUser;
     private final List<EnrolleeRelation> relations;
+
+    /** helper function to harmonize this with EnrolleeSearchExpressions */
+    public ParticipantUser getUser() {
+        return participantUser;
+    }
 }

@@ -61,6 +61,10 @@ export type LoginResult = {
   profile: Profile
 }
 
+export type EligibilityResult = {
+  eligible: boolean
+}
+
 export type KitType = {
   id: string,
   name: string,
@@ -285,6 +289,13 @@ export default {
     if (!response.ok) {
       return Promise.reject(response)
     }
+  },
+
+  async checkEligible(studyShortcode: string):
+    Promise<EligibilityResult> {
+    const url =  `${baseStudyEnvUrl(true, studyShortcode)}/checkEligible`
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response, { alertErrors: false })
   },
 
   async register({ preRegResponseId, email, accessToken, preferredLanguage }: {

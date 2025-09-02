@@ -64,14 +64,14 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata)
     throws PepperApiException, PepperParseException {
         String kitRequestBody;
 
         if (isReturnOnlyKitRequest(kitRequest)) {
-            kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest);
+            kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, metadata);
         } else {
-            kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address);
+            kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address, metadata);
         }
 
         WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", kitRequestBody);
@@ -114,11 +114,12 @@ public class LivePepperDSMClient implements PepperDSMClient {
         return "juniper-%s".formatted(studyShortcode);
     }
 
-    private String makeKitRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    private String makeKitRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata) {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
                 .skipAddressValidation(kitRequest.isSkipAddressValidation())
+                .sexAtBirth(metadata.getSexAtBirth())
                 .build();
         PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)
@@ -135,7 +136,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         }
     }
 
-    private String makeKitReturnOnlyRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest) {
+    private String makeKitReturnOnlyRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitMetadata metadata) {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
@@ -143,6 +144,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
                 .kitLabel(kitRequest.getKitLabel())
                 .returnOnly(true)
                 .returnTrackingId(kitRequest.getReturnTrackingNumber())
+                .sexAtBirth(metadata.getSexAtBirth())
                 .build();
         PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)

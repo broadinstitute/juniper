@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,8 @@ public class StudyService extends CrudService<Study, StudyDao> {
         STUDY_ENVIRONMENTS
     }
 
-    public StudyService(StudyDao studyDao, StudyEnvironmentService studyEnvironmentService,
+    public StudyService(StudyDao studyDao,
+                        @Lazy StudyEnvironmentService studyEnvironmentService,
                         PortalStudyService portalStudyService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyDao);
         this.studyEnvironmentService = studyEnvironmentService;

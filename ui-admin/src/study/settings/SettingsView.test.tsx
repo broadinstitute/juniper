@@ -1,5 +1,8 @@
 import React from 'react'
-import { renderWithRouter, setupRouterTest } from '@juniper/ui-core'
+import {
+  renderWithRouter,
+  setupRouterTest
+} from '@juniper/ui-core'
 import {
   mockPortalContext,
   mockPortalEnvironmentConfig,
@@ -170,7 +173,8 @@ describe('Study Settings', () => {
         'useDevDsmRealm': false,
         'useStubDsm': false,
         'enableInPersonKits': false,
-        timeZone: 'America/New_York'
+        timeZone: 'America/New_York',
+        'includeSexAtBirthInKitMetadata': false
       }
     )
   })

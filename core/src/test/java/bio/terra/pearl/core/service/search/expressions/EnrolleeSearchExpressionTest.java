@@ -699,16 +699,16 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         surveyResponseFactory.buildWithAnswers(unrelatedEnrollee, surveyInEnv2, Map.of("question_env_2", "wrongEnrollee"));
 
 
-        String study2StableId = studyEnvBundle2.getStudy().getName();
+        String study2Shortcode = studyEnvBundle2.getStudy().getShortcode();
         String survey1StableId = surveyInEnv1.getStableId();
         String survey2StableId = surveyInEnv2.getStableId();
 
         EnrolleeSearchExpression crossStudyAnswer = enrolleeSearchExpressionParser.parseRule(
-                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2StableId + "\"]." + survey2StableId + ".question_env_2} = 'differentAnswer'"
+                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2Shortcode + "\"]." + survey2StableId + ".question_env_2} = 'differentAnswer'"
         );
 
         EnrolleeSearchExpression wrongOtherStudyAnswer = enrolleeSearchExpressionParser.parseRule(
-                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2StableId + "\"]." + survey2StableId + ".question_env_2} = 'wrongEnrollee'"
+                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2Shortcode + "\"]." + survey2StableId + ".question_env_2} = 'wrongEnrollee'"
         );
 
         EnrolleeSearchExpression wrongOtherStudyName = enrolleeSearchExpressionParser.parseRule(
@@ -716,7 +716,7 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         );
 
         EnrolleeSearchExpression wrongQuestion = enrolleeSearchExpressionParser.parseRule(
-                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2StableId + "\"]." + survey2StableId + ".wrong_question} = 'differentAnswer'"
+                "{answer." + survey1StableId + ".question_env_1} = 'answer1' and {answer[\"" + study2Shortcode + "\"]." + survey2StableId + ".wrong_question} = 'differentAnswer'"
         );
 
 

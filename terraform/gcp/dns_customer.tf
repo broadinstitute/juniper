@@ -81,17 +81,20 @@ resource "google_dns_record_set" "additional_customer_records" {
           for dns_record in dns_config.additional_records : {
             customer_key        = customer_key
             name   = dns_record.name
+            domain_prefix = dns_record.domain_prefix
             type   = dns_record.type
             ttl    = dns_record.ttl
-            record_value  = dns_record.record_value
+            record_values  = dns_record.record_values
         }
         ]
       ]) : "${item.customer_key}.${item.name}" => item # for_each expects maps, so convert the list of objects to a map
   }
 
   managed_zone = google_dns_managed_zone.customer_dns_zone[each.value.customer_key].name
-  name = "${each.value.name}.${google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name}"
+  name = (each.value.domain_prefix == ""
+            ? google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name
+            : "${each.value.domain_prefix}.${google_dns_managed_zone.customer_dns_zone[each.value.customer_key].dns_name}")
   type         = each.value.type
-  rrdatas      = [each.value.record_value]
+  rrdatas      = each.value.record_values
   ttl          = each.value.ttl
 }

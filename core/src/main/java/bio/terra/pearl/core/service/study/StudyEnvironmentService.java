@@ -7,10 +7,12 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.ListChange;
 import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.publishing.VersionedConfigChange;
 import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -26,6 +28,8 @@ import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.publishing.PortalEnvPublishable;
 import bio.terra.pearl.core.service.publishing.PublishingUtils;
 import bio.terra.pearl.core.service.publishing.StudyEnvPublishable;
@@ -58,6 +62,9 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final ImportService importService;
     private final ExportIntegrationService exportIntegrationService;
     private final SurveyService surveyService;
+    private final PortalEnvironmentConfigService portalEnvironmentConfigService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final StudyService studyService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -72,7 +79,11 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    FamilyEnrolleeService familyEnrolleeService,
                                    EnrolleeRelationService enrolleeRelationService,
                                    ParticipantDataChangeService participantDataChangeService,
-                                   @Lazy ExportIntegrationService exportIntegrationService, SurveyService surveyService) {
+                                   @Lazy ExportIntegrationService exportIntegrationService,
+                                   SurveyService surveyService,
+                                   @Lazy PortalEnvironmentConfigService portalEnvironmentConfigService,
+                                   @Lazy PortalEnvironmentService portalEnvironmentService,
+                                   StudyService studyService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -88,6 +99,9 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.participantDataChangeService = participantDataChangeService;
         this.exportIntegrationService = exportIntegrationService;
         this.surveyService = surveyService;
+        this.portalEnvironmentConfigService = portalEnvironmentConfigService;
+        this.portalEnvironmentService = portalEnvironmentService;
+        this.studyService = studyService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -100,6 +114,23 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
 
     public List<StudyEnvironment> findAllByPortalAndEnvironment(UUID portalId, EnvironmentName environmentName) {
         return dao.findAllByPortalAndEnvironment(portalId, environmentName);
+    }
+
+    public Optional<StudyEnvironment> findPrimaryStudyByPortalEnvId(UUID portalEnvId) {
+        PortalEnvironment portalEnvironment = portalEnvironmentService.find(portalEnvId).orElseThrow();
+        PortalEnvironmentConfig portalEnvironmentConfig = portalEnvironmentConfigService.findByPortalEnvId(portalEnvId).orElseThrow();
+        List<Study> studies = studyService.findByPortalId(portalEnvironment.getPortalId());
+
+        if (studies.isEmpty()) {
+            throw new NotFoundException("no studies");
+        }
+        Study primaryStudy = studies.get(0);
+        for (Study study : studies) {
+            if (study.getShortcode().equals(portalEnvironmentConfig.getPrimaryStudy())) {
+                primaryStudy = study;
+            }
+        }
+        return findByStudy(primaryStudy.getShortcode(), portalEnvironment.getEnvironmentName());
     }
 
     public StudyEnvironment verifyStudy(String studyShortcode, EnvironmentName environmentName) {

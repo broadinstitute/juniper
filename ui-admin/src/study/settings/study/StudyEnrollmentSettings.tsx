@@ -75,6 +75,12 @@ export const StudyEnrollmentSettings = (
           onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
       </label>
     </div>
+    <div>
+      <label className="form-label">
+        eligibility rule <input type="text" className="form-control" size={80} value={config.studyEligibilityRule ?? ''}
+          onChange={e => updateConfig('studyEligibilityRule', e.target.value)}/>
+      </label>
+    </div>
     {
       userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
         <div>

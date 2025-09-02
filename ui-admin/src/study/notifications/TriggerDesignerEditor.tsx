@@ -392,8 +392,6 @@ const NotificationEditor = (
   }) => {
   const hasEmailTemplate = !!trigger?.emailTemplate
 
-  const [hasChangedTemplate, setHasChangedTemplate] = React.useState(false)
-
   return <>
     <div className="float-end position-relative">
       <NavLink to='notifications'>View sent notifications</NavLink>
@@ -441,17 +439,7 @@ const NotificationEditor = (
             emailTemplate={trigger.emailTemplate}
             portalShortcode={studyEnvContext.portal.shortcode}
             updateEmailTemplate={updatedTemplate => {
-              updatedTemplate.localizedEmailTemplates.forEach(template => {
-                template.id = undefined
-              })
-              const version = trigger?.emailTemplate?.version || 1
-              updateTrigger('emailTemplate', {
-                ...updatedTemplate,
-                id: undefined,
-                publishedVersion: undefined,
-                version: !hasChangedTemplate ? version + 1 : version
-              })
-              setHasChangedTemplate(true)
+              updateTrigger('emailTemplate', updatedTemplate)
             }
             }
           />

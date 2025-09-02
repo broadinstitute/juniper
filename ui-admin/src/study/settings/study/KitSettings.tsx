@@ -105,6 +105,17 @@ export const KitSettings = (
 
       <div>
         <label className="form-label">
+          Include sex at birth <InfoPopup content={
+          `If checked, kit requests sent to DSM/BSP will include the participant's sexAtBirth value, if available, `
+          + `from their profile.`
+          }/>
+          <input type="checkbox" checked={config.includeSexAtBirthInKitMetadata}
+            onChange={e => updateConfig('includeSexAtBirthInKitMetadata', e.target.checked)}/>
+        </label>
+      </div>
+
+      <div>
+        <label className="form-label">
           Use mock kit requests <InfoPopup content={
           `If checked, kit requests will be mocked for this environment, `
           + `and not sent to any external services.`

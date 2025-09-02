@@ -194,6 +194,7 @@ export const mockStudyEnvironmentConfig = (): StudyEnvironmentConfig => {
     useDevDsmRealm: false,
     useStubDsm: false,
     enableInPersonKits: false,
+    includeSexAtBirthInKitMetadata: false,
     timeZone: 'America/New_York'
   }
 }

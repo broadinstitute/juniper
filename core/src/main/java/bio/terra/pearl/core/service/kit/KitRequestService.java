@@ -118,9 +118,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     private KitRequestDto createNewPepperReturnOnlyKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequest kitRequest) {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        Profile profile = profileService.find(enrollee.getProfileId()).get();
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, null, buildMetadata(studyEnvironmentConfig, profile));
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
@@ -137,6 +138,30 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
+    private PepperKitMetadata buildMetadata(StudyEnvironmentConfig studyEnvConfig, Profile profile) {
+        PepperKitMetadata metadata = new PepperKitMetadata();
+
+        if (studyEnvConfig.isIncludeSexAtBirthInKitMetadata()) {
+            metadata.setSexAtBirth(normalizeSexAtBirth(profile.getSexAtBirth()));
+        }
+
+        return metadata;
+    }
+
+    private String normalizeSexAtBirth(String sexAtBirth) {
+        if (StringUtils.isEmpty(sexAtBirth)) {
+            return "";
+        } else if (sexAtBirth.toLowerCase().startsWith("m")) {
+            return "M";
+        } else if (sexAtBirth.toLowerCase().startsWith("f")) {
+            return "F";
+        } else {
+            // BSP can only process M or F; it won't error given other values,
+            // so return them to give as much info as possible.
+            return sexAtBirth;
+        }
+    }
+
     private KitRequestDto createNewPepperKitRequest(AdminUser operator, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
@@ -144,7 +169,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress, buildMetadata(studyEnvironmentConfig, profile));
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);

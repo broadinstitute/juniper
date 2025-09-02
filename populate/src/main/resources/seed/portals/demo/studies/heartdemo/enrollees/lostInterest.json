@@ -36,7 +36,7 @@
       "answerPopDtos": [
         {"questionStableId": "hd_hd_mental_phq9LostInterest", "stringValue": "3"},
         {"questionStableId": "hd_hd_mental_phq9Depressed", "stringValue": "2"},
-        {"questionStableId": "hd_hd_mental_phq9Sleeping", "stringValue": "1"},
+        {"questionStableId": "hd_hd_mental_phq9Sleeping", "stringValue": "3"},
         {"questionStableId": "hd_hd_mental_phq9Tired", "stringValue": "3"}
       ],
       "currentPageNo": 1,
