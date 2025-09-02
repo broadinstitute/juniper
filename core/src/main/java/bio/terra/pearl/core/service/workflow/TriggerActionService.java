@@ -90,10 +90,12 @@ public class TriggerActionService {
                             event.getPortalParticipantUser().getPortalEnvironmentId());
                 }
             } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
-                try {
-                    adminEmailService.sendEmailFromTrigger(trigger, event);
-                } catch (Exception e) {
-                    log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                if (!isNotificationOverLimit(trigger, event.getEnrolleeContext())) {
+                    try {
+                        adminEmailService.sendEmailFromTrigger(trigger, event);
+                    } catch (Exception e) {
+                        log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                    }
                 }
             } else if (TriggerActionType.TASK_STATUS_CHANGE.equals(trigger.getActionType())) {
                 updateTaskStatus(trigger, event);
