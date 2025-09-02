@@ -118,6 +118,13 @@ customer_urls = {
         ttl = 3600
         record_values = ["1 smtp.google.com."]
       },
+      {
+        name = "gsuite_verification"
+        domain_prefix = ""
+        type = "TXT"
+        ttl = 3600
+        record_values = ["google-site-verification=Vs56YsgRkHl4DxIqUfHYD69HbUUTQLLnPFWZbA3QVXM"]
+      }
     ]
   }
   pedihccproject = {
