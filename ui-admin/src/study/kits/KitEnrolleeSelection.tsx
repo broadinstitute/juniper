@@ -298,9 +298,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         <RowVisibilityCount table={table}/>
       </div>
       <div className="d-flex align-items-center">
-        <Link to={'../scan'}>
-          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
-        </Link>
+        <Button onClick={() => {
+          setShowRequestKitModal(true)
+        }}
+        variant="light" className="border m-1" disabled={!enableActionButtons}
+        tooltip={enableActionButtons
+          ? 'Request a sample collection kit to be sent directly to the participant(s)'
+          : 'Select at least one participant'}>
+          <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send kit
+        </Button>
         <Button onClick={() => {
           setShowAssignKitModal(true)
         }}
@@ -308,19 +314,16 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         tooltip={enableActionButtons
           ? 'Assign a sample kit to a participant for manual kit shipment'
           : 'Select at least one participant'}>
-          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign kit for manual shipment
+          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign kit
         </Button>
-        <Button onClick={() => { setShowRequestKitModal(true) }}
-          variant="light" className="border m-1" disabled={!enableActionButtons}
-          tooltip={enableActionButtons
-            ? 'Request a sample collection kit to be sent directly to the participant(s)'
-            : 'Select at least one participant'}>
-          <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
-        </Button>
+        <Link to={'../scan'}>
+          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
+        </Link>
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         <div>
           <DownloadControl table={table}
-            fileName={`kits-${currentIsoDate()}`}/></div>
+            fileName={`kits-${currentIsoDate()}`}/>
+        </div>
         {showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
