@@ -79,6 +79,7 @@
         "triggerType": "EVENT",
         "eventType": "SURVEY_RESPONSE",
         "filterTargetStableIds": ["hd_hd_medHx"],
+        "maxNumNotifications": 1,
         "populateFileName": "emails/medHxComplete.json"
       },{
         "triggerType": "TASK_REMINDER",
@@ -88,14 +89,14 @@
         "triggerType": "TASK_REMINDER",
         "taskType": "SURVEY",
         "reminderIntervalMinutes": 10080,
-        "maxNumReminders": 2,
+        "maxNumNotifications": 2,
         "populateFileName": "emails/surveyReminder.json"
       },{
         "triggerType": "TASK_REMINDER",
         "taskType": "OUTREACH",
         "afterMinutesIncomplete": 0,
         "reminderIntervalMinutes": 10080,
-        "maxNumReminders": 2,
+        "maxNumNotifications": 2,
         "populateFileName": "emails/outreachReminder.json"
       },{
         "triggerType": "EVENT",
@@ -245,7 +246,7 @@
         "triggerType": "TASK_REMINDER",
         "taskType": "SURVEY",
         "reminderIntervalMinutes": 10080,
-        "maxNumReminders": 2,
+        "maxNumNotifications": 2,
         "populateFileName": "emails/surveyReminder.json"
       },{
         "triggerType": "EVENT",
@@ -301,7 +302,7 @@
         "triggerType": "TASK_REMINDER",
         "taskType": "SURVEY",
         "reminderIntervalMinutes": 10080,
-        "maxNumReminders": 2,
+        "maxNumNotifications": 2,
         "populateFileName": "emails/surveyReminder.json"
       },{
         "triggerType": "EVENT",

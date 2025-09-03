@@ -65,7 +65,7 @@ public class EnrolleeReminderService {
         Duration timeSinceCreation = Duration.ofMinutes(trigger.getAfterMinutesIncomplete());
 
         Duration timeSinceLastNotification = Duration.ofMinutes(trigger.getReminderIntervalMinutes());
-        long maxReminders = trigger.getMaxNumReminders() <= 0 ? 100000 : trigger.getMaxNumReminders();
+        long maxReminders = trigger.getMaxNumNotifications() <= 0 ? 100000 : trigger.getMaxNumNotifications();
         Duration maxTimeSinceCreation = timeSinceCreation.plus(timeSinceLastNotification.multipliedBy(maxReminders));
 
         List<ParticipantTaskDao.EnrolleeWithTasks> enrolleesWithTasks = participantTaskQueryService

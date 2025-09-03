@@ -1,10 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.notification.TriggerType;
+import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
@@ -22,15 +19,14 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class NotificationDispatcher {
-    private TriggerService triggerService;
+    private final EmailTemplateService emailTemplateService;
     private NotificationService notificationService;
     private Map<NotificationDeliveryType, NotificationSender> senderMap;
 
-    public NotificationDispatcher(TriggerService triggerService,
-                                  NotificationService notificationService, EnrolleeEmailService enrolleeEmailService) {
-        this.triggerService = triggerService;
+    public NotificationDispatcher(NotificationService notificationService, EnrolleeEmailService enrolleeEmailService, EmailTemplateService emailTemplateService) {
         this.notificationService = notificationService;
         senderMap = Map.of(NotificationDeliveryType.EMAIL, enrolleeEmailService);
+        this.emailTemplateService = emailTemplateService;
     }
 
     /**
@@ -83,6 +79,4 @@ public class NotificationDispatcher {
     public NotificationContextInfo loadContextInfo(Trigger config) {
         return senderMap.get(config.getDeliveryType()).loadContextInfo(config);
     }
-
-
 }

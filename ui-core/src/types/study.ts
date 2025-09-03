@@ -86,7 +86,7 @@ export type Trigger = {
   statusToUpdateTo?: ParticipantTaskStatus
   afterMinutesIncomplete: number
   reminderIntervalMinutes: number
-  maxNumReminders: number
+  maxNumNotifications: number
   emailTemplateId: string
   emailTemplate: EmailTemplate
   targetEmails?: string

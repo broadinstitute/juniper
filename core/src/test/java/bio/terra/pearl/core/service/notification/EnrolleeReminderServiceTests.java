@@ -311,7 +311,7 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
             .deliveryType(NotificationDeliveryType.EMAIL)
             .studyEnvironmentId(studyEnv.getId())
             .portalEnvironmentId(portalEnv.getId())
-            .maxNumReminders(1)
+            .maxNumNotifications(1)
             .build();
     triggerService.create(config);
     enrolleeReminderService.sendTaskReminders(studyEnv);

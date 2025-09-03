@@ -73,6 +73,10 @@ public class NotificationService extends CrudService<Notification, NotificationD
         return dao.findMostRecentSentByEnrolleeAndTriggerId(enrolleeId, triggerId);
     }
 
+    public List<Notification> findByEnrolleeAndEmailStableId(Enrollee enrollee, String emailStableId) {
+        return dao.findByEnrolleeAndEmailStableId(enrollee, emailStableId);
+    }
+
     private void attachEnrollees(List<Notification> notifications) {
         List<UUID> enrolleeIds = notifications
                 .stream()

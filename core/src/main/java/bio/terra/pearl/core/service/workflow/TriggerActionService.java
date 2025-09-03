@@ -1,19 +1,18 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.notification.TriggerActionType;
-import bio.terra.pearl.core.model.notification.TriggerScope;
-import bio.terra.pearl.core.model.notification.TriggerType;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
@@ -38,6 +37,7 @@ import java.util.Optional;
 @Slf4j
 public class TriggerActionService {
     private final TriggerService triggerService;
+    private final NotificationService notificationService;
     private final NotificationDispatcher notificationDispatcher;
     private final ParticipantTaskService participantTaskService;
     private final AdminEmailService adminEmailService;
@@ -47,7 +47,7 @@ public class TriggerActionService {
     private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
     private final ProfileService profileService;
 
-    public TriggerActionService(TriggerService triggerService,
+    public TriggerActionService(TriggerService triggerService, NotificationService notificationService,
                                 NotificationDispatcher notificationDispatcher,
                                 ParticipantTaskService participantTaskService,
                                 AdminEmailService adminEmailService,
@@ -56,6 +56,7 @@ public class TriggerActionService {
                                 AdminUserService adminUserService,
                                 EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, ProfileService profileService) {
         this.triggerService = triggerService;
+        this.notificationService = notificationService;
         this.notificationDispatcher = notificationDispatcher;
         this.participantTaskService = participantTaskService;
         this.adminEmailService = adminEmailService;
@@ -84,13 +85,17 @@ public class TriggerActionService {
 
         for (Trigger trigger: applicableTriggers) {
             if (TriggerActionType.NOTIFICATION.equals(trigger.getActionType())) {
-                notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
-                        event.getPortalParticipantUser().getPortalEnvironmentId());
+                if (!isNotificationOverLimit(trigger, event.getEnrolleeContext())) {
+                    notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
+                            event.getPortalParticipantUser().getPortalEnvironmentId());
+                }
             } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
-                try {
-                    adminEmailService.sendEmailFromTrigger(trigger, event);
-                } catch (Exception e) {
-                    log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                if (!isNotificationOverLimit(trigger, event.getEnrolleeContext())) {
+                    try {
+                        adminEmailService.sendEmailFromTrigger(trigger, event);
+                    } catch (Exception e) {
+                        log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                    }
                 }
             } else if (TriggerActionType.TASK_STATUS_CHANGE.equals(trigger.getActionType())) {
                 updateTaskStatus(trigger, event);
@@ -145,5 +150,17 @@ public class TriggerActionService {
                 .enrolleeId(event.getEnrollee().getId())
                 .portalParticipantUserId(event.getPortalParticipantUser().getId())
                 .build();
+    }
+
+
+    protected boolean isNotificationOverLimit(Trigger config, EnrolleeContext enrolleeContext) {
+        if (config.getMaxNumNotifications() >= 0 && config.getEmailTemplateId() != null) {
+            EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).orElseThrow();
+            List<Notification> pastNotifications = notificationService.findByEnrolleeAndEmailStableId(enrolleeContext.getEnrollee(), emailTemplate.getStableId());
+            if (pastNotifications.size() >= config.getMaxNumNotifications()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

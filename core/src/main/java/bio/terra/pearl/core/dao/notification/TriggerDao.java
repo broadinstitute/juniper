@@ -38,6 +38,22 @@ public class TriggerDao extends BaseMutableJdbiDao<Trigger> implements StudyEnvA
         );
     }
 
+    /** gets the configs for the study env with the email template stableID */
+    public List<Trigger> findByStudyEnvAndEmailTemplate(UUID studyEnvId, String emailStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select %s.* from %s
+                                join email_template on trigger.email_template_id = email_template.id
+                                where study_environment_id = :studyEnvId
+                                and stable_id = :stableId
+                                """.formatted(tableName, tableName))
+                        .bind("studyEnvId", studyEnvId)
+                        .bind("stableId", emailStableId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
 
 
     public void attachTemplates(List<Trigger> actions) {

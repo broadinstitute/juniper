@@ -55,6 +55,8 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyE
     private String rule;
     // if specified, skips notifications if the last sent notification was sent within this many minutes ago
     private Integer minMinutesSinceLastNotification;
+    @Builder.Default
+    private int maxNumNotifications = 5; // -1 means to keep reminding indefinitely
 
     // for admin notifications, comma separated list of admin emails.
     // will not send if the email does not have an associated admin account
@@ -73,8 +75,7 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig, StudyE
     private int afterMinutesIncomplete = (int) Duration.ofHours(72).toMinutes();
     @Builder.Default
     private int reminderIntervalMinutes = (int) Duration.ofHours(72).toMinutes();
-    @Builder.Default
-    private int maxNumReminders = 5; // -1 means to keep reminding indefinitely
+
     @Override
     public Versioned versionedEntity() {
         return emailTemplate;
