@@ -408,7 +408,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(savedKit.getDistributionMethod(), equalTo(DistributionMethod.MANUAL));
 
         // sent kit to DSM
-        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Transactional
@@ -662,7 +662,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         // first kit: request with includeSexAtBirthInKitMetadata true
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
 
         // second kit: request with includeSexAtBirthInKitMetadata false
         config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
@@ -670,7 +670,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         studyEnvironmentConfigService.update(config);
 
         kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
 
 
         // check first kit request call has normalized sex at birth and second has empty metadata

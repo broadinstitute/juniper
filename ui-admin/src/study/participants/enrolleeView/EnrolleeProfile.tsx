@@ -280,7 +280,7 @@ export function ReadOnlyMailingAddress(
     mailingAddress.street2 || '',
     createCityStatePostalRow(),
     mailingAddress.country || ''
-  ]} condensed/>
+  ]} condensed={condensed}/>
 }
 
 
