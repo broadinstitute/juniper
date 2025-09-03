@@ -1,4 +1,7 @@
-import React, { useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import _keyBy from 'lodash/keyBy'
 import _mapValues from 'lodash/mapValues'
 import { Link } from 'react-router-dom'
@@ -44,6 +47,7 @@ import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/Enrollee
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faBoxOpen,
   faPaperPlane,
   faQrcode
 } from '@fortawesome/free-solid-svg-icons'
@@ -53,8 +57,10 @@ import {
   enrolleeConsentedColumn,
   getDynamicColumn
 } from 'util/table/columnUtils'
+import AssignKitModal from 'study/kits/AssignKitModal'
 import { isNil } from 'lodash'
 import ParticipantSearch from 'study/participants/participantList/search/ParticipantSearch'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 type EnrolleeRow = EnrolleeSearchExpressionResult & {
   taskCompletionStatus: Record<string, boolean>
@@ -85,6 +91,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
 
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
+  const [showAssignKitModal, setShowAssignKitModal] = useState(false)
 
   const {
     searchState,
@@ -111,7 +118,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         portal.shortcode,
         study.shortcode,
         currentEnv.environmentName,
-        searchExpression,
+        concatSearchExpressions([searchExpression, 'include({profile.mailingAddress.country})']),
         { includes: ['tasks', 'kitRequests'] })
     ])
 
@@ -122,6 +129,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         id: `${kitType.name}KitRequested`, value: false
       }))
     ])
+    setRowSelection({})
 
     const enrolleeRows: EnrolleeRow[] = enrollees.map(result => {
       const taskCompletionStatus = _mapValues(
@@ -144,10 +152,22 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       table.toggleAllRowsSelected(false)
     }
   }
-  const enrolleesSelected = Object.keys(rowSelection)
+  const selectedEnrollees = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
-    .map(key => enrollees[parseInt(key)].enrollee.shortcode)
-  const numSelected = enrolleesSelected.length
+    .map(key => {
+      const searchExp = enrollees[parseInt(key)]
+
+      const enrollee = searchExp.enrollee
+      enrollee.profile = searchExp.profile
+      if (searchExp.mailingAddress) {
+        enrollee.profile.mailingAddress = searchExp.mailingAddress
+      }
+      return enrollee
+    })
+
+  const selectedEnrolleeShortcodes = selectedEnrollees.map(enrollee => enrollee.shortcode)
+
+  const numSelected = selectedEnrolleeShortcodes.length
   const enableActionButtons = numSelected > 0
 
   const requiredResearchSurveys = currentEnv.configuredSurveys
@@ -278,28 +298,83 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
         <RowVisibilityCount table={table}/>
       </div>
       <div className="d-flex align-items-center">
-        <Link to={'../scan'}>
-          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan kit</Button>
-        </Link>
         <Button onClick={() => {
           setShowRequestKitModal(true)
         }}
         variant="light" className="border m-1" disabled={!enableActionButtons}
-        tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
-          <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
+        tooltip={enableActionButtons
+          ? 'Request a sample collection kit to be sent directly to the participant(s)'
+          : 'Select at least one participant'}>
+          <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send kit
         </Button>
+        <Button onClick={() => {
+          setShowAssignKitModal(true)
+        }}
+        variant="light" className="border m-1" disabled={!enableActionButtons}
+        tooltip={enableActionButtons
+          ? 'Assign a sample kit to a participant for manual kit shipment'
+          : 'Select at least one participant'}>
+          <FontAwesomeIcon icon={faBoxOpen} className="fa-lg"/> Assign kit
+        </Button>
+        <Link to={'../scan'}>
+          <Button variant="light" className="border m-1"><FontAwesomeIcon icon={faQrcode}/> Scan in-person kit</Button>
+        </Link>
         <ColumnVisibilityControl table={table} dynamicColOpts={dynamicColOpts}/>
         <div>
           <DownloadControl table={table}
-            fileName={`kits-${currentIsoDate()}`}/></div>
+            fileName={`kits-${currentIsoDate()}`}/>
+        </div>
         {showRequestKitModal && <RequestKitsModal
           studyEnvContext={studyEnvContext}
           onDismiss={() => setShowRequestKitModal(false)}
-          enrolleeShortcodes={enrolleesSelected}
-          onSubmit={onSubmit}/>}
+          enrolleeShortcodes={selectedEnrolleeShortcodes}
+          onSubmit={onSubmit}/> }
+
+        {showAssignKitModal && selectedEnrollees.length > 0 && <AssignKitQueueModal
+          studyEnvContext={studyEnvContext}
+          onDismiss={() => {
+            setShowAssignKitModal(false)
+            reload()
+          }}
+          enrollees={selectedEnrollees}
+        />}
       </div>
     </div>
     {basicTableLayout(table, { filterable: true })}
     {renderEmptyMessage(enrollees, 'No participants')}
   </LoadingSpinner>
+}
+
+const AssignKitQueueModal = ({
+  studyEnvContext,
+  enrollees,
+  onDismiss
+}: {
+  studyEnvContext: StudyEnvContextT,
+  enrollees: Enrollee[],
+  onDismiss: () => void,
+}) => {
+  const [queueIndex, setQueueIndex] = useState(0)
+
+  useEffect(() => {
+    setQueueIndex(0)
+  }, [enrollees])
+
+  const incrementQueueIndex = () => {
+    if (queueIndex < enrollees.length - 1) {
+      setQueueIndex(queueIndex + 1)
+    } else {
+      onDismiss()
+    }
+  }
+
+  return <AssignKitModal
+    studyEnvContext={studyEnvContext}
+    enrollee={enrollees[queueIndex]}
+    onDismiss={onDismiss}
+    onSubmit={incrementQueueIndex}
+    skip={incrementQueueIndex}
+    queueIdx={queueIndex}
+    queueLength={enrollees.length}
+  />
 }

@@ -80,7 +80,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false));
+        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false, null, null));
 
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
@@ -112,7 +112,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         });
 
         assertThrows(PepperApiException.class, () ->
-                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false))
+                kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false, null, null))
         );
     }
 
@@ -136,7 +136,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false));
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.MAILED, null, false, null, null));
         KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
 
         assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
@@ -161,7 +161,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.getMailingAddress().setStreet1("123 Fake Street");
         profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
-        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, null, false));
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, null, false, null, null));
         KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
 
         assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
@@ -325,7 +325,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         Enrollee enrollee = enrolleeBundle.enrollee();
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        KitRequestService.KitRequestCreationDto kitRequestCreationDto = new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, "testLabel", false);
+        KitRequestService.KitRequestCreationDto kitRequestCreationDto = new KitRequestService.KitRequestCreationDto(kitType.getName(), DistributionMethod.IN_PERSON, "testLabel", false, null, null);
         KitRequestDto kitRequest = kitRequestService.createNewInPersonKitRequest(adminUser, enrollee, kitRequestCreationDto);
 
         assertThat(kitRequest.getStatus(), equalTo(KitRequestStatus.CREATED));
@@ -362,6 +362,52 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(collectedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(collectedKit.getCollectingAdminUserId(), equalTo(adminUser.getId()));
 
+        verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
+    }
+
+    @Transactional
+    @Test
+    public void testRequestManualKit(TestInfo testInfo) throws JsonProcessingException {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        Profile profile = enrollee.getProfile();
+        profile.setGivenName("Alex");
+        profile.setFamilyName("Tester");
+        profile.setPhoneNumber("111-222-3333");
+        profile.getMailingAddress().setStreet1("123 Fake Street");
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
+
+        PepperKitAddress expectedSentToAddress = PepperKitAddress.builder()
+                .firstName("Alex")
+                .lastName("Tester")
+                .street1("123 Fake Street")
+                .phoneNumber("111-222-3333")
+                .build();
+
+        KitRequestService.KitRequestCreationDto manualKitRequestNoLabel = new KitRequestService.KitRequestCreationDto(
+                kitType.getName(), DistributionMethod.MANUAL, null, false, null, null);
+
+        // cannot make a manual kit w/o a label
+        assertThrows(IllegalArgumentException.class,
+                () -> kitRequestService.requestKit(adminUser, "testStudy", enrollee, manualKitRequestNoLabel)
+        );
+
+        KitRequestService.KitRequestCreationDto minimalManualKitRequest = new KitRequestService.KitRequestCreationDto(
+                kitType.getName(), DistributionMethod.MANUAL, "kitLabel1234", false, null, null);
+
+
+        KitRequestDto sampleKit = kitRequestService.requestKit(adminUser, "testStudy", enrollee, minimalManualKitRequest);
+        KitRequest savedKit = kitRequestDao.find(sampleKit.getId()).get();
+
+        assertThat(savedKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        assertThat(savedKit.getCollectingAdminUserId(), equalTo(null));
+        assertThat(savedKit.getSentToAddress(), equalTo(objectMapper.writeValueAsString(expectedSentToAddress)));
+        assertThat(savedKit.getStatus(), equalTo(KitRequestStatus.SENT_BY_STAFF));
+        assertThat(savedKit.getDistributionMethod(), equalTo(DistributionMethod.MANUAL));
+
+        // sent kit to DSM
         verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
     }
 
@@ -579,7 +625,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(mockPepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         KitRequestDto kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(mockPepperDSMClient).fetchKitStatus(any(), any());
         Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
@@ -591,7 +637,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         when(livePepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
         kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true) );
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
         kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
         Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any(), any());
         Mockito.verify(livePepperDSMClient).fetchKitStatus(any(), any());
@@ -616,7 +662,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         // first kit: request with includeSexAtBirthInKitMetadata true
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any(), any())).thenReturn(mockKit);
         kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
 
         // second kit: request with includeSexAtBirthInKitMetadata false
         config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
@@ -624,7 +670,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         studyEnvironmentConfigService.update(config);
 
         kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
-                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true));
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null));
 
 
         // check first kit request call has normalized sex at birth and second has empty metadata

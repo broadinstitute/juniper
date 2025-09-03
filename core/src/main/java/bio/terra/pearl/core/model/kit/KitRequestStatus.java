@@ -17,6 +17,7 @@ public enum KitRequestStatus {
     CREATED,
     QUEUED,
     SENT,
+    SENT_BY_STAFF,
     COLLECTED_BY_STAFF, // for a kit that has been handed back to study staff in person. staff will mail it back to GP
     RECEIVED, // for a kit that has been received by GP
     ERRORED,

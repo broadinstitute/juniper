@@ -28,7 +28,7 @@ import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.tools.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +87,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
          */
         return switch (kitRequestCreationDto.distributionMethod) {
             case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
-            case MAILED -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
+            case MAILED, MANUAL -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
 
@@ -187,7 +187,13 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
-    public record KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel, boolean skipAddressValidation) { }
+    public record KitRequestCreationDto(String kitType,
+                                        DistributionMethod distributionMethod,
+                                        String kitLabel,
+                                        boolean skipAddressValidation,
+                                        String returnTrackingNumber,
+                                        String trackingNumber) {
+    }
 
     public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
 
@@ -394,7 +400,23 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .status(KitRequestStatus.CREATED)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
+                .distributionMethod(kitRequestCreationDto.distributionMethod)
+                .trackingNumber(kitRequestCreationDto.trackingNumber)
+                .returnTrackingNumber(kitRequestCreationDto.returnTrackingNumber)
+                .kitLabel(kitRequestCreationDto.kitLabel)
                 .build();
+
+        if (kitRequest.getDistributionMethod() == DistributionMethod.MANUAL) {
+            // if kit is being manually assigned, assume it's being sent same-day by staff
+            kitRequest.setLabeledAt(Instant.now());
+            kitRequest.setSentAt(Instant.now());
+            kitRequest.setStatus(KitRequestStatus.SENT_BY_STAFF);
+
+            if (StringUtils.isEmpty(kitRequest.getKitLabel())) {
+                throw new IllegalArgumentException("Kit label must be provided for manual kit assignment");
+            }
+        }
+
         return kitRequest;
     }
 
@@ -443,6 +465,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // kits have been collecting and which are still waiting to be collected.
             if(status == KitRequestStatus.SENT && kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
                 status = KitRequestStatus.COLLECTED_BY_STAFF;
+            }
+
+            if (status == KitRequestStatus.SENT && kitRequest.getDistributionMethod() == DistributionMethod.MANUAL) {
+                status = KitRequestStatus.SENT_BY_STAFF;
             }
 
             kitRequest.setStatus(status);

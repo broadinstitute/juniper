@@ -2,7 +2,13 @@ import React, { useState } from 'react'
 import _capitalize from 'lodash/capitalize'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
-import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import {
+  Link,
+  Navigate,
+  NavLink,
+  Route,
+  Routes
+} from 'react-router-dom'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -16,9 +22,20 @@ import {
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, DownloadControl, renderEmptyMessage } from 'util/table/tableUtils'
-import { currentIsoDate, instantToDateString, KitRequest } from '@juniper/ui-core'
-import { doApiLoad, useLoadingEffect } from 'api/api-utils'
+import {
+  basicTableLayout,
+  DownloadControl,
+  renderEmptyMessage
+} from 'util/table/tableUtils'
+import {
+  currentIsoDate,
+  instantToDateString,
+  KitRequest
+} from '@juniper/ui-core'
+import {
+  doApiLoad,
+  useLoadingEffect
+} from 'api/api-utils'
 import { enrolleeKitRequestPath } from 'study/participants/enrolleeView/EnrolleeView'
 import KitStatusCell from 'study/participants/KitStatusCell'
 import { Button } from 'components/forms/Button'
@@ -27,7 +44,10 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from 'user/UserProvider'
-import { prettifyString, KitRequestDetails } from 'study/participants/KitRequests'
+import {
+  KitRequestDetails,
+  prettifyString
+} from 'study/participants/KitRequests'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { tabLinkStyle } from 'util/subNavStyles'
 import { ColumnVisibilityControl } from 'util/table/columnUtils'
@@ -75,7 +95,7 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    statuses: ['SENT'],
+    statuses: ['SENT', 'SENT_BY_STAFF'],
     key: 'sent',
     additionalColumns: [
       'labeledAt', 'trackingNumber',

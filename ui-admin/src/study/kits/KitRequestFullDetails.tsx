@@ -1,16 +1,30 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import React from 'react'
-import { InfoCard, InfoCardHeader } from 'components/InfoCard'
+import {
+  InfoCard,
+  InfoCardHeader
+} from 'components/InfoCard'
 import { useParams } from 'react-router-dom'
-import { Enrollee, instantToDefaultString, KitRequest, KitRequestStatus, SUPPORT_EMAIL_ADDRESS } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDefaultString,
+  KitRequest,
+  KitRequestStatus,
+  SUPPORT_EMAIL_ADDRESS
+} from '@juniper/ui-core'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { KitRequestAddress } from '../participants/KitRequests'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFedex, faUsps } from '@fortawesome/free-brands-svg-icons'
+import {
+  faFedex,
+  faUsps
+} from '@fortawesome/free-brands-svg-icons'
 import { AdminUser } from 'api/adminUser'
 import {
-  faCircleCheck, faCircleExclamation, faHandshake,
+  faCircleCheck,
+  faCircleExclamation,
+  faHandshake,
   faQuestion,
   faSpinner,
   faTruckFast
@@ -125,9 +139,10 @@ const shippingInformation = (kitRequest: KitRequest, users: AdminUser[]) => {
               </span>
             }
           </div>
-        </div> : `This kit was distributed to the participant in person by ${users.find(
-          user => user.id === kitRequest.creatingAdminUserId
-        )?.username}.`}
+        </div> : `This kit was distributed to the participant ${
+          kitRequest.distributionMethod === 'IN_PERSON' ? 'in person' : 'manually'} by ${users.find(
+            user => user.id === kitRequest.creatingAdminUserId
+          )?.username}.`}
     </div>
   </InfoCard>
 }
@@ -175,6 +190,11 @@ const getKitStatusBadge = (status: KitRequestStatus) => {
       return <StatusBadge
         icon={faTruckFast}
         message="This kit has been shipped to the participant."
+      />
+    case 'SENT_BY_STAFF':
+      return <StatusBadge
+        icon={faTruckFast}
+        message="This kit has been shipped to the participant by study staff."
       />
     case 'RECEIVED':
       return <StatusBadge

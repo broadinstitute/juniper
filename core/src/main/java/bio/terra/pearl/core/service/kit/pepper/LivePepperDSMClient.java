@@ -68,7 +68,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     throws PepperApiException, PepperParseException {
         String kitRequestBody;
 
-        if (kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON) {
+        if (isReturnOnlyKitRequest(kitRequest)) {
             kitRequestBody = makeKitReturnOnlyRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, metadata);
         } else {
             kitRequestBody = makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address, metadata);
@@ -81,6 +81,11 @@ public class LivePepperDSMClient implements PepperDSMClient {
                     kitRequest.getId(), response.getKits().length), Arrays.toString(response.getKits()), response);
         }
         return response.getKits()[0];
+    }
+
+    private boolean isReturnOnlyKitRequest(KitRequest kitRequest) {
+        return kitRequest.getDistributionMethod() == DistributionMethod.IN_PERSON ||
+                kitRequest.getDistributionMethod() == DistributionMethod.MANUAL;
     }
 
     @Override
