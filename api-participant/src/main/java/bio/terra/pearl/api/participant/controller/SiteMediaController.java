@@ -3,8 +3,6 @@ package bio.terra.pearl.api.participant.controller;
 import bio.terra.pearl.api.participant.api.SiteMediaApi;
 import bio.terra.pearl.core.model.site.SiteMedia;
 import bio.terra.pearl.core.service.site.SiteMediaService;
-import java.net.URLConnection;
-import java.util.Optional;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -12,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.net.URLConnection;
+import java.util.Optional;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
@@ -23,23 +24,24 @@ public class SiteMediaController implements SiteMediaApi {
 
   @Override
   @CrossOrigin(
-      origins = {
-        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo)
-        "https://juniperdemoprod.b2clogin.com", // Demo Portal (prod)
-        "https://junipercmidemo.b2clogin.com", // CMI (demo only)
-        "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
-        "https://ourhealthdev.b2clogin.com", // OurHealth (prod)
-        "https://ourhealthstudy.b2clogin.com", // OurHealth (demo)
-        "https://hearthivedev.b2clogin.com", // HeartHive (prod)
-        "https://hearthive.b2clogin.com", // HeartHive (demo)
-        "https://gvascdev.b2clogin.com", // gVASC (demo)
-        "https://gvascprod.b2clogin.com", // gVASC (prod)
-        "https://juniperatcpdev.b2clogin.com", // ATCP (demo)
-        "https://juniperatcp.b2clogin.com", // ATCP (prod)
-        "https://trccproject.b2clogin.com" // tRCC (prod)
-      },
-      maxAge = 3600,
-      methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+          origins = {
+                  "https://juniperdemodev.b2clogin.com", // Heart Demo (demo)
+                  "https://juniperdemoprod.b2clogin.com", // Demo Portal (prod)
+                  "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+                  "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
+                  "https://ourhealthdev.b2clogin.com", // OurHealth (prod)
+                  "https://ourhealthstudy.b2clogin.com", // OurHealth (demo)
+                  "https://hearthivedev.b2clogin.com", // HeartHive (prod)
+                  "https://hearthive.b2clogin.com", // HeartHive (demo)
+                  "https://gvascdev.b2clogin.com", // gVASC (demo)
+                  "https://gvascprod.b2clogin.com", // gVASC (prod)
+                  "https://juniperatcpdev.b2clogin.com", // ATCP (demo)
+                  "https://juniperatcp.b2clogin.com", // ATCP (prod)
+                  "https://trccproject.b2clogin.com", // tRCC (prod)
+                  "https://pedihccproject.b2clogin.com" // PediHCC (prod)
+          },
+          maxAge = 3600,
+          methods = {RequestMethod.GET, RequestMethod.OPTIONS})
   /*
    * This method is used to get the branding information for a portal environment.
    * Since this is only returning publicly available assets (logos, css attributes, etc),
