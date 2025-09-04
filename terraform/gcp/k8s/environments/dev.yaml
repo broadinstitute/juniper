@@ -17,6 +17,10 @@ studyCertificates:
   - groupName: demo
     urls:
       - juniperdemostudy.dev
+  # todo: remove after deploying new cert
+  - groupName: testextracert
+    urls:
+      - juniperdemostudy.dev
 b2c:
   admin:
     clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a

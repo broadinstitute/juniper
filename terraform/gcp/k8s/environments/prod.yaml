@@ -38,6 +38,10 @@ studyCertificates:
   - groupName: hearthive
     urls:
       - thehearthive.org
+  # todo: remove after deploying cmi cert
+  - groupName: trccproject
+    urls:
+      - trccproject.org
   - groupName: cmi
     urls:
       - trccproject.org
