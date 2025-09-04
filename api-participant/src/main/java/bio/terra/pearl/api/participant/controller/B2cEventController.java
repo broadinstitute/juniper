@@ -33,7 +33,8 @@ public class B2cEventController implements B2cEventApi {
         "https://gvascprod.b2clogin.com", // gVASC (prod)
         "https://juniperatcpdev.b2clogin.com", // ATCP (demo)
         "https://juniperatcp.b2clogin.com", // ATCP (prod)
-        "https://trccproject.b2clogin.com" // tRCC (prod)
+        "https://trccproject.b2clogin.com", // tRCC (prod)
+        "https://pedihccproject.b2clogin.com" // PediHCC (prod)
       },
       allowedHeaders = "*",
       maxAge = 3600)
