@@ -1,8 +1,11 @@
 adminUrl: ""
 replicas: 1
 portals:
-  - name: ""
-    customDomain: ""
+  - ""
+studyCertificates:
+  - groupName: ""
+    urls:
+      - ""
 gcpProject: ""
 gcpRegion: ""
 appVersion: 1.4.0

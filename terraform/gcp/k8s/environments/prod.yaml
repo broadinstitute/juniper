@@ -5,23 +5,48 @@ deploymentZone: prod
 replicas: 3
 dsmUrl: https://dsm.datadonationplatform.org/dsm
 dsmIssuer: juniper.terra.bio
-# "portals" adds certificates for each portal - both for the admin subdomains and the custom domain
+# "portals" is used only to generate the admin certificate (without wildcards):
+# e.g. for sandbox.demo.juniper-cmi.org, irb.demo.juniper-cmi.org, etc.
+# any addition to this list will require a short downtime for the admin site while the new
+# certificate is issued.
 portals:
-  - name: demo
-    customDomain: juniperdemostudy.org
-  - name: ourhealth
-    customDomain: ourhealthstudy.org
-  - name: gvasc
-    customDomain: gvascstudy.org
-  - name: atcp
-  - name: hearthive
-    customDomain: thehearthive.org
-  - name: trccproject
-    customDomain: trccproject.org
-  - name: rgp
-  - name: cmi
-  - name: pedihcc
-    customDomain: pedihccproject.org
+  - demo
+  - ourhealth
+  - gvasc
+  - atcp
+  - hearthive
+  - trccproject
+  - rgp
+  - cmi
+  - pedihcc
+
+# we have a maximum of 15 certificates per-ingress. since we have 1 admin certificate,
+# we have a maximum of 14 study certificates in this list.
+# if we need more, we will need to split into multiple ingresses (which costs money).
+# where possible, group multiple portals into a single certificate. this would mean
+# downtime for all URLs in a group when a new URL is added, but that should be rare.
+studyCertificates:
+  - groupName: demo
+    urls:
+      - juniperdemostudy.org
+  - groupName: ourhealth
+    urls:
+      - ourhealthstudy.org
+  - groupName: gvasc
+    urls:
+      - gvascstudy.org
+  - groupName: hearthive
+    urls:
+      - thehearthive.org
+  # todo: remove after deploying cmi cert
+  - groupName: trccproject
+    urls:
+      - trccproject.org
+  - groupName: cmi
+    urls:
+      - trccproject.org
+      - pedihccproject.org
+
 b2c:
   admin:
     clientId: f02b3816-af49-4a78-a2a5-b929c78a6c47
