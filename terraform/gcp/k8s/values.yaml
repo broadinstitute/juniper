@@ -2,7 +2,7 @@ adminUrl: ""
 replicas: 1
 portals:
   - ""
-adminCertName: ""
+adminCertName: "admin-cert"
 studyCertificates:
   - groupName: ""
     urls:
