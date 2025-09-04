@@ -13,5 +13,10 @@
     "name": "STOOL",
     "displayName": "Stool",
     "description": "Stool sample collection kit"
+  },
+  {
+    "name": "BUCCAL",
+    "displayName": "Buccal",
+    "description": "Buccal swab sample collection kit"
   }
 ]
