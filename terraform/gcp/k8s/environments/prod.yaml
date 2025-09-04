@@ -9,6 +9,7 @@ dsmIssuer: juniper.terra.bio
 # e.g. for sandbox.demo.juniper-cmi.org, irb.demo.juniper-cmi.org, etc.
 # any addition to this list will require a short downtime for the admin site while the new
 # certificate is issued.
+# must increment adminCertName if this list changes
 portals:
   - demo
   - ourhealth
@@ -19,12 +20,16 @@ portals:
   - rgp
   - cmi
   - pedihcc
-
+adminCertName: admin-cert-v2
 # we have a maximum of 15 certificates per-ingress. since we have 1 admin certificate,
 # we have a maximum of 14 study certificates in this list.
 # if we need more, we will need to split into multiple ingresses (which costs money).
 # where possible, group multiple portals into a single certificate. this would mean
 # downtime for all URLs in a group when a new URL is added, but that should be rare.
+#
+# also: certificates cannot be updated. if you need to add/remove URLs, you must create a new certificate
+#       with a different name. thus, for certs with multiple URLs, we add v1/v2/etc. to have no downtime,
+#       you can create the new cert first, deploy with both, and then remove the old one in a later deploy.
 studyCertificates:
   - groupName: demo
     urls:
@@ -38,11 +43,11 @@ studyCertificates:
   - groupName: hearthive
     urls:
       - thehearthive.org
-  # todo: remove after deploying cmi cert
+  # todo: remove after deploying cmi-v1 cert
   - groupName: trccproject
     urls:
       - trccproject.org
-  - groupName: cmi
+  - groupName: cmi-v1
     urls:
       - trccproject.org
       - pedihccproject.org

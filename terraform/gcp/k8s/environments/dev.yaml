@@ -6,6 +6,7 @@ replicas: 1
 dsmUrl: https://dsm-dev.datadonationplatform.org/dsm
 dsmIssuer: admin-d2p.ddp-dev.envs.broadinstitute.org
 # "portals" adds certificates for admin subdomains
+# must increment adminCertName if this list changes
 portals:
   - demo
   - hearthive
@@ -13,6 +14,7 @@ portals:
   - cmi
   - rgp
   - atcp
+adminCertName: admin-cert-v2
 studyCertificates:
   - groupName: demo
     urls:
