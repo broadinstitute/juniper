@@ -9,6 +9,7 @@ dsmIssuer: juniper.terra.bio
 # e.g. for sandbox.demo.juniper-cmi.org, irb.demo.juniper-cmi.org, etc.
 # any addition to this list will require a short downtime for the admin site while the new
 # certificate is issued.
+# NOTE: increment adminCertName when changing this list to force a new certificate.
 portals:
   - demo
   - ourhealth
@@ -19,7 +20,7 @@ portals:
   - rgp
   - cmi
   - pedihcc
-
+adminCertName: admin-cert-v2
 # we have a maximum of 15 certificates per-ingress. since we have 1 admin certificate,
 # we have a maximum of 14 study certificates in this list.
 # if we need more, we will need to split into multiple ingresses (which costs money).
