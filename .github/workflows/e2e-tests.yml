@@ -36,7 +36,7 @@ jobs:
         distribution: 'adopt'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v3.5.0
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
         node-version: 20.x
     - name: Install dependencies
