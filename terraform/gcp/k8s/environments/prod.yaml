@@ -20,7 +20,7 @@ portals:
   - rgp
   - cmi
   - pedihccproject
-adminCertName: admin-cert-v2
+adminCertName: admin-cert-v3
 # we have a maximum of 15 certificates per-ingress. since we have 1 admin certificate,
 # we have a maximum of 14 study certificates in this list.
 # if we need more, we will need to split into multiple ingresses (which costs money).
