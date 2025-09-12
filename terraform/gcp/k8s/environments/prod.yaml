@@ -19,8 +19,8 @@ portals:
   - trccproject
   - rgp
   - cmi
-  - pedihcc
-adminCertName: admin-cert-v2
+  - pedihccproject
+adminCertName: admin-cert-v3
 # we have a maximum of 15 certificates per-ingress. since we have 1 admin certificate,
 # we have a maximum of 14 study certificates in this list.
 # if we need more, we will need to split into multiple ingresses (which costs money).
@@ -39,10 +39,6 @@ studyCertificates:
   - groupName: hearthive
     urls:
       - thehearthive.org
-  # todo: remove after deploying cmi cert
-  - groupName: trccproject
-    urls:
-      - trccproject.org
   - groupName: cmi
     urls:
       - trccproject.org
