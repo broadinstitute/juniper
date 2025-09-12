@@ -47,7 +47,9 @@ studyCertificates:
     urls:
       - trccproject.org
       - pedihccproject.org
-
+  - groupName: atcp
+    urls:
+      - atfamilies.org
 b2c:
   admin:
     clientId: f02b3816-af49-4a78-a2a5-b929c78a6c47
