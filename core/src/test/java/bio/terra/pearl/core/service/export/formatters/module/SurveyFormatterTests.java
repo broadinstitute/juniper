@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SurveyFormatterTests extends BaseSpringBootTest {
     @Autowired
@@ -267,6 +268,121 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(value, equalTo("d[f}asdfja"));
     }
 
+    @Test
+    public void testBasicFromStringMapLongitudinal() {
+        Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        SurveyQuestionDefinition question1 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question2 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q2")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question3 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q3")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(question1, question2, question3), List.of(), objectMapper);
+
+        List<SurveyResponseWithTaskDto> dtos = moduleFormatter.listFromStringMap(UUID.randomUUID(),
+                Map.of(
+                        "oh_surveyA.createdAt", "2023-08-22 05:17AM",
+                        "oh_surveyA.oh_surveyA_q1", "testValue1",
+                        "oh_surveyA.oh_surveyA_q2", "testValue2",
+                        "oh_surveyA[2].createdAt", "2023-08-21 05:17AM",
+                        "oh_surveyA[2].oh_surveyA_q1", "testValue3",
+                        "oh_surveyA[2].oh_surveyA_q2", "testValue4",
+                        "oh_surveyA[2].oh_surveyA_q3", "testValue5"
+
+                )
+        );
+
+        assertEquals(2, dtos.size());
+
+        SurveyResponseWithTaskDto first = dtos.getFirst();
+        assertEquals("2023-08-22T09:17:00Z", first.getCreatedAt().toString());
+        assertEquals(2, first.getAnswers().size());
+        assertAnswers(first.getAnswers(), Map.of(
+                "oh_surveyA_q1", "testValue1",
+                "oh_surveyA_q2", "testValue2"
+        ));
+
+
+        SurveyResponseWithTaskDto second = dtos.get(1);
+        assertEquals("2023-08-21T09:17:00Z", second.getCreatedAt().toString());
+        assertEquals(3, second.getAnswers().size());
+        assertAnswers(second.getAnswers(), Map.of(
+                "oh_surveyA_q1", "testValue3",
+                "oh_surveyA_q2", "testValue4",
+                "oh_surveyA_q3", "testValue5"
+        ));
+    }
+
+    @Test
+    public void testFromStringMapEmptyResponse() {
+        Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        SurveyQuestionDefinition question1 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question2 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q2")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question3 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q3")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(question1, question2, question3), List.of(), objectMapper);
+
+        List<SurveyResponseWithTaskDto> dtos = moduleFormatter.listFromStringMap(UUID.randomUUID(),
+                Map.of(
+                        "oh_surveyA.createdAt", "2023-08-23 05:17AM",
+                        "oh_surveyA[2].createdAt", "2023-08-22 05:17AM",
+                        "oh_surveyA[3].createdAt", "2023-08-21 05:17AM",
+                        "oh_surveyA[3].oh_surveyA_q1", "testValue3",
+                        "oh_surveyA[3].oh_surveyA_q2", "testValue4",
+                        "oh_surveyA[3].oh_surveyA_q3", "testValue5"
+
+                )
+        );
+
+        assertEquals(3, dtos.size());
+
+        SurveyResponseWithTaskDto first = dtos.getFirst();
+        assertFalse(first.isComplete());
+        assertEquals("2023-08-23T09:17:00Z", first.getCreatedAt().toString());
+        assertEquals(0, first.getAnswers().size());
+
+        SurveyResponseWithTaskDto second = dtos.get(1);
+        assertFalse(second.isComplete());
+        assertEquals("2023-08-22T09:17:00Z", second.getCreatedAt().toString());
+        assertEquals(0, second.getAnswers().size());
+
+        SurveyResponseWithTaskDto third = dtos.get(2);
+        assertTrue(third.isComplete());
+        assertEquals("2023-08-21T09:17:00Z", third.getCreatedAt().toString());
+        assertEquals(3, third.getAnswers().size());
+        assertAnswers(third.getAnswers(), Map.of(
+                "oh_surveyA_q1", "testValue3",
+                "oh_surveyA_q2", "testValue4",
+                "oh_surveyA_q3", "testValue5"
+        ));
+    }
+
     /**
      * helper for testing generation of answer maps values for a single question-answer pair
      */
@@ -299,6 +415,17 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         Map<String, List<Answer>> answerMap = Map.of(mapStableId, List.of(answer));
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap, 1);
         return valueMap;
+    }
+
+    private void assertAnswers(List<Answer> answers, Map<String, String> expectedValues) {
+        assertEquals(expectedValues.size(), answers.size());
+        for (Answer answer : answers) {
+            String expectedValue = expectedValues.get(answer.getQuestionStableId());
+            if (expectedValue == null) {
+                throw new IllegalStateException("no expected value for question stable id " + answer.getQuestionStableId());
+            }
+            assertThat(answer.getStringValue(), equalTo(expectedValue));
+        }
     }
 
 

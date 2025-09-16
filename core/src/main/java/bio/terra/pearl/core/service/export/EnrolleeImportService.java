@@ -576,7 +576,10 @@ public class EnrolleeImportService {
             }
         }
 
-        removeOldInProgressSurveys(enrollee, imported, auditInfo);
+        // remove any tasks/responses that are invalid, e.g.:
+        // 1. any in-progress tasks that are not the latest task
+        // 2. any new tasks w/ no answers when there are later valid response(s)
+        removeInvalidTasks(enrollee, imported, auditInfo);
 
         return imported;
     }
@@ -587,25 +590,42 @@ public class EnrolleeImportService {
      * Those in-progress surveys will cause edge cases that never happen with normal Juniper data,
      * so we remove them.
      */
-    private void removeOldInProgressSurveys(Enrollee enrollee, List<SurveyResponse> importedResponses, DataAuditInfo auditInfo) {
+    private void removeInvalidTasks(Enrollee enrollee, List<SurveyResponse> importedResponses, DataAuditInfo auditInfo) {
         List<ParticipantTask> tasks = participantTaskService.findTasksByEnrolleeAndSurveyResponse(enrollee.getId(), importedResponses.stream()
                 .map(SurveyResponse::getId)
                 .toList());
 
-        // only applies to tasks that are non-latest
+        // only applies to tasks that are longitudinal and have multiple responses
         if (tasks.isEmpty() || tasks.size() == 1) {
             return;
         }
 
         tasks.sort(Comparator.comparing(ParticipantTask::getCreatedAt).reversed());
 
-        // remove any task that isn't the latest and isn't complete
-        for (int i = 1; i < tasks.size(); i++) {
-            ParticipantTask task = tasks.get(i);
-            if (!task.getStatus().isTerminalStatus()) {
-                task.setStatus(TaskStatus.REMOVED);
+        boolean hasValidResponse = false;
 
+        // remove tasks that break juniper's assumptions
+        for (ParticipantTask task : tasks) {
+            SurveyResponse response = importedResponses
+                    .stream()
+                    .filter(r -> r.getId().equals(task.getSurveyResponseId()))
+                    .findFirst()
+                    .orElseThrow();
+
+            if (!hasValidResponse && response.getAnswers().isEmpty()
+                    && !task.getStatus().isTerminalStatus()
+                    && importedResponses.stream().anyMatch(r -> !r.getAnswers().isEmpty())) {
+                // remove any NEW tasks (i.e., no answers) that come BEFORE a later valid response.
+                // if imported participant needs a new response, it will be triggered by recurrence rules.
+                task.setStatus(TaskStatus.REMOVED);
                 participantTaskService.update(task, auditInfo);
+            } else if (!task.getStatus().isTerminalStatus() && hasValidResponse) {
+                // remove any incomplete tasks that come AFTER the latest task
+                // (should never happen, but DSM keeps lots of records like this)
+                task.setStatus(TaskStatus.REMOVED);
+                participantTaskService.update(task, auditInfo);
+            } else {
+                hasValidResponse = true;
             }
         }
     }
@@ -701,6 +721,7 @@ public class EnrolleeImportService {
             timeShiftDao.changeSurveyResponseCreationTime(surveyResponse.getId(), createdAt);
         }
         if (lastUpdatedAt != null) {
+            timeShiftDao.changeTaskLastUpdatedTime(relatedTask.getId(), lastUpdatedAt);
             timeShiftDao.changeSurveyResponseLastUpdatedTime(surveyResponse.getId(), lastUpdatedAt);
         }
     }

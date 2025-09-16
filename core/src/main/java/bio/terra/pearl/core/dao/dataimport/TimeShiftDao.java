@@ -79,6 +79,16 @@ public class TimeShiftDao {
         );
     }
 
+    public void changeTaskLastUpdatedTime(UUID taskId, Instant lastUpdatedTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update participant_task set last_updated_at = :lastUpdatedTime where id = :taskId;")
+                        .bind("taskId", taskId)
+                        .bind("lastUpdatedTime", lastUpdatedTime)
+                        .execute()
+        );
+    }
+
+
     public void changeSurveyResponseCreationTime(UUID surveyResponseId, Instant creationTime) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("update survey_response set created_at = :creationTime where id = :surveyResponseId;")

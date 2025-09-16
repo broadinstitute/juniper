@@ -270,7 +270,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 auditInfo);
 
         // now update the task status and response id
-        task = updateTaskToResponse(task, response, updatedAnswers, auditInfo);
+        task = updateTaskToResponse(operator, task, response, updatedAnswers, auditInfo);
 
         // we only want to publish the event if the survey is complete
         // eventually, we may add other types of events like SURVEY_RESPONSE_UPDATED, or something
@@ -302,10 +302,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         dao.update(response);
     }
 
-    protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,
+    protected ParticipantTask updateTaskToResponse(ResponsibleEntity operator, ParticipantTask task, SurveyResponse response,
                                                    List<Answer> updatedAnswers, DataAuditInfo auditInfo) {
-        task.setSurveyResponseId(response.getId());
-        TaskStatus updatedStatus = computeNewStatus(task, response, updatedAnswers);
+        TaskStatus updatedStatus = computeNewStatus(operator, task, response, updatedAnswers);
         if (task.getStatus() != updatedStatus || task.getSurveyResponseId() != response.getId()) {
             task.setStatus(updatedStatus);
             task.setSurveyResponseId(response.getId());
@@ -314,7 +313,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return task;
     }
 
-    protected static TaskStatus computeNewStatus(ParticipantTask task, SurveyResponse response, List<Answer> updatedAnswers) {
+    protected static TaskStatus computeNewStatus(ResponsibleEntity operator, ParticipantTask task, SurveyResponse response, List<Answer> updatedAnswers) {
         if (task.getStatus() == TaskStatus.COMPLETE) {
             // task statuses shouldn't ever change from complete to not
             return TaskStatus.COMPLETE;
@@ -328,8 +327,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
             } else {
                 return TaskStatus.COMPLETE;
             }
-        } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
+        } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0 && operator.getParticipantUser() != null) {
             // if the task is new and no answers we submitted, this is just indicating the survey was viewed
+            // (only if participant is the operator)
             return TaskStatus.VIEWED;
         } else if (updatedAnswers.size() > 0) {
             return TaskStatus.IN_PROGRESS;
