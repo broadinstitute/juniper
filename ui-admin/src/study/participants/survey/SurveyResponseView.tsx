@@ -9,6 +9,7 @@ import {
 } from 'api/api'
 
 import {
+  NavLink,
   useNavigate,
   useParams
 } from 'react-router-dom'
@@ -29,10 +30,10 @@ import {
 } from '@juniper/ui-core'
 import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
-import pluralize from 'pluralize'
 import {
   paramsFromContext,
-  StudyEnvContextT
+  StudyEnvContextT,
+  studyEnvSurveyPath
 } from 'study/StudyEnvironmentRouter'
 import {
   userHasPermission,
@@ -99,6 +100,7 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
     .sort((a, b) => a.status === 'REMOVED' ? 1 : b.status === 'REMOVED' ? -1 : 0)  // show removed tasks last
 
   const numNonRemoved = sortedTasks.filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED').length
+  const numRemoved = sortedTasks.filter(t => t.status === 'REMOVED' || t.status === 'REJECTED').length
 
   const formatSurveyVersionLabel = (t: ParticipantTask) => {
     const isLatest = t.id == sortedTasks[0].id
@@ -119,38 +121,65 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
     index: idx
   }))
 
+  const stableId = task?.targetStableId || surveyAndResponses.survey.survey.stableId
+  const version = task?.targetAssignedVersion || surveyAndResponses.survey.survey.version
 
   // key forces the component to be destroyed/remounted when different survey selected
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${surveyAndResponses.survey.survey.name}`}/>
     <div className="d-flex justify-content-between">
 
-      <h4>{surveyAndResponses.survey.survey.name}</h4>
-      {showVersionOptions && <div style={{ minWidth: '350px' }}>
-        <Select
-          className={'w-100'}
-          options={surveyResponseVersionOptions}
-          value={surveyResponseVersionOptions.find(o => o.value === taskId)}
-          formatOptionLabel={opt => {
-            return <div className="d-flex justify-content-between align-items-center">
-              {opt.label}
-              {(opt.task.status === 'REMOVED' || opt.task.status === 'REJECTED')
-                ? <span className="ms-2 badge bg-danger">
-                  <FontAwesomeIcon icon={faX}/>
-                </span>
-                : <span className="ms-2 badge bg-secondary">
-                  {opt.index + 1} of {numNonRemoved}
-                </span>}
-            </div>
-          }}
-          onChange={opt => {
-            if (!opt) {
-              return
-            }
-            navigate(surveyResponsePath(studyEnvContext.currentEnvPath, enrollee.shortcode, surveyStableId, opt.value))
-          }}
-        />
-      </div>}
+      <div>
+        <div className="d-flex align-items-center">
+          <h4 className="me-2">
+            {surveyAndResponses.survey.survey.name}
+          </h4>
+          <span className='fs-6 fst-italic'>
+            <NavLink to={studyEnvSurveyPath({
+              studyShortcode: studyEnvContext.study.shortcode,
+              portalShortcode: studyEnvContext.portal.shortcode,
+              envName: studyEnvContext.currentEnv.environmentName
+            }, stableId, version
+            )}
+            >
+              ({stableId} v{version})
+            </NavLink>
+          </span>
+
+        </div>
+      </div>
+      <div>
+        {showVersionOptions && <div style={{ minWidth: '350px' }}>
+          <Select
+            className={'w-100'}
+            options={surveyResponseVersionOptions}
+            value={surveyResponseVersionOptions.find(o => o.value === taskId)}
+            formatOptionLabel={opt => {
+              return <div className="d-flex justify-content-between align-items-center">
+                {opt.label}
+                {(opt.task.status === 'REMOVED' || opt.task.status === 'REJECTED')
+                  ? <span className="ms-2 badge bg-danger">
+                    <FontAwesomeIcon icon={faX}/>
+                  </span>
+                  : <span className="ms-2 badge bg-secondary">
+                    {opt.index + 1} of {numNonRemoved}
+                  </span>}
+              </div>
+            }}
+            onChange={opt => {
+              if (!opt) {
+                return
+              }
+              navigate(
+                surveyResponsePath(studyEnvContext.currentEnvPath, enrollee.shortcode, surveyStableId, opt.value)
+              )
+            }}
+          />
+        </div>}
+        {numRemoved > 0 && <span className="small fst-italic">
+          {numRemoved} removed response
+        </span>}
+      </div>
     </div>
 
     {!isAssigned && <div className="d-flex align-items-center">
@@ -205,8 +234,8 @@ export function RawEnrolleeSurveyView({
               <FontAwesomeIcon icon={faPencil}/>
             </Button>
           </div>
-          {surveyVersion(task, response)}
-          <div className="ms-2">
+          {surveyAnswerVersions(task, response)}
+          <div className="ms-1">
             <Button
               variant="secondary"
               onClick={() => setShowReassignModal(true)}
@@ -346,11 +375,11 @@ const taskStatusIndicators: Record<ParticipantTaskStatus, React.ReactNode> = {
     <FontAwesomeIcon icon={faMinus}/> Removed</span>
 }
 
-function surveyVersion(task: ParticipantTask, surveyResponse?: SurveyResponse) {
+function surveyAnswerVersions(task: ParticipantTask, surveyResponse?: SurveyResponse) {
   let versionString = ''
   if (surveyResponse && surveyResponse.answers.length) {
     const answerVersions = _uniq(surveyResponse.answers.map(ans => ans.surveyVersion))
-    versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
+    versionString = `(answered on ${answerVersions.map(version => `v${version}`).join(', ')})`
   }
 
   return <div className="ms-2">

@@ -1,10 +1,14 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import { RawEnrolleeSurveyView } from './SurveyResponseView'
 import {
   mockAnswer,
   mockConfiguredSurvey,
-  mockEnrollee, mockParticipantTask,
+  mockEnrollee,
+  mockParticipantTask,
   mockStudyEnvContext,
   mockSurveyResponse
 } from 'test-utils/mocking-utils'
@@ -27,7 +31,7 @@ describe('RawEnrolleeSurveyView', () => {
         onUpdate={jest.fn()}
         response={response}/>)
     render(RoutedComponent)
-    expect(screen.getByText('(version 2)', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('(answered on v2)', { exact: false })).toBeInTheDocument()
   })
 
   it('renders the multiple versions from the answers', async () => {
@@ -47,6 +51,6 @@ describe('RawEnrolleeSurveyView', () => {
         onUpdate={jest.fn()}
         response={response}/>)
     render(RoutedComponent)
-    expect(screen.getByText('(versions 2, 3)', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('(answered on v2, v3)', { exact: false })).toBeInTheDocument()
   })
 })

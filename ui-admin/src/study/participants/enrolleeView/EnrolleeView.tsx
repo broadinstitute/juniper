@@ -81,12 +81,16 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
    * without having to do full enrollee reloads when answers are submitted via the admin response editing UX */
   const generateResponseMap = () => {
     const updatedResponseMap: ResponseMapT = {}
+    const sortedTasks = enrollee
+      .participantTasks
+      .sort((a, b) => b.createdAt! - a.createdAt!)
+      .sort((a, b) => (a.status === 'REMOVED' || a.status === 'REJECTED' ? 1 : 0) - (b.status === 'REMOVED' || b.status === 'REJECTED' ? 1 : 0)) // put removed/rejected tasks at the end
+
     surveys.forEach(configSurvey => {
       // to match responses to surveys, filter using the tasks, since those have the stableIds
       // this is valid since it's currently enforced that all survey responses are done as part of a task,
-      const matchedTasks = enrollee.participantTasks
+      const matchedTasks = sortedTasks
         .filter(task => task.targetStableId === configSurvey.survey.stableId)
-        .sort((a, b) => b.createdAt! - a.createdAt!)
       const matchedTaskResponseIds = matchedTasks.map(task => task.surveyResponseId)
       const matchedResponses = enrollee.surveyResponses
         .filter(response => matchedTaskResponseIds.includes(response.id))
