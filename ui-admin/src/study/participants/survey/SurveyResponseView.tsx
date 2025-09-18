@@ -9,7 +9,7 @@ import {
 } from 'api/api'
 
 import {
-  NavLink,
+  useNavigate,
   useParams
 } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
@@ -48,7 +48,8 @@ import {
   faPencil,
   faPrint,
   faSave,
-  faWarning
+  faWarning,
+  faX
 } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -59,6 +60,7 @@ import { ParticipantDocumentListView } from './ParticipantDocumentListView'
 import SurveyAssignModal from './SurveyAssignModal'
 import TaskChangeModal from './TaskChangeModal'
 import PrintFormView from 'study/participants/survey/PrintFormView'
+import Select from 'react-select'
 
 
 type SurveyView = 'viewing' | 'editing' | 'printing'
@@ -72,6 +74,7 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
   const params = useParams<EnrolleeParams>()
   const [showAssignModal, setShowAssignModal] = useState(false)
   let { taskId } = useTaskIdParam()
+  const navigate = useNavigate()
 
   const surveyStableId: string | undefined = params.surveyStableId
 
@@ -86,11 +89,70 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
   }
   const task = surveyAndResponses.tasks.find(t => t.id === taskId)
   const response = surveyAndResponses.responses.find(r => task?.surveyResponseId === r.id)
-  const showTaskBar = surveyAndResponses.tasks.length > 1
+  const showVersionOptions = surveyAndResponses.tasks.length > 1
+
+  const sortedTasks = surveyAndResponses
+    .tasks
+    .sort(
+      (a, b) => b.createdAt - a.createdAt // show most recent first
+    )
+    .sort((a, b) => a.status === 'REMOVED' ? 1 : b.status === 'REMOVED' ? -1 : 0)  // show removed tasks last
+
+  const numNonRemoved = sortedTasks.filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED').length
+
+  const formatSurveyVersionLabel = (t: ParticipantTask) => {
+    const isLatest = t.id == sortedTasks[0].id
+
+    if (t.status === 'REMOVED' || t.status === 'REJECTED') {
+      return `Removed ${instantToDateString(t.createdAt)}`
+    }
+
+    return `${
+      t.completedAt ? `Completed ${instantToDateString(t.completedAt)}` : `Assigned ${instantToDateString(t.createdAt)}`
+    }${isLatest ? ' (latest)' : ''}`
+  }
+
+  const surveyResponseVersionOptions = sortedTasks.map((t, idx) => ({
+    value: t.id,
+    task: t,
+    label: formatSurveyVersionLabel(t),
+    index: idx
+  }))
+
+
   // key forces the component to be destroyed/remounted when different survey selected
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${surveyAndResponses.survey.survey.name}`}/>
-    <h4>{surveyAndResponses.survey.survey.name}</h4>
+    <div className="d-flex justify-content-between">
+
+      <h4>{surveyAndResponses.survey.survey.name}</h4>
+      {showVersionOptions && <div style={{ minWidth: '350px' }}>
+        <Select
+          className={'w-100'}
+          options={surveyResponseVersionOptions}
+          value={surveyResponseVersionOptions.find(o => o.value === taskId)}
+          formatOptionLabel={opt => {
+            return <div className="d-flex justify-content-between align-items-center">
+              {opt.label}
+              {(opt.task.status === 'REMOVED' || opt.task.status === 'REJECTED')
+                ? <span className="ms-2 badge bg-danger">
+                  <FontAwesomeIcon icon={faX}/>
+                </span>
+                : <span className="ms-2 badge bg-secondary">
+                  {opt.index + 1} of {numNonRemoved}
+                </span>}
+            </div>
+          }}
+          onChange={opt => {
+            if (!opt) {
+              return
+            }
+            navigate(surveyResponsePath(studyEnvContext.currentEnvPath, enrollee.shortcode, surveyStableId, opt.value))
+          }}
+        />
+      </div>}
+    </div>
+
     {!isAssigned && <div className="d-flex align-items-center">
       <span className="text-muted fst-italic me-4">Not assigned</span>
       <Button variant={'secondary'} outline={true}
@@ -99,17 +161,6 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
       </Button>
     </div>}
     {isAssigned && <>
-      {showTaskBar && <div className="d-flex">
-        {surveyAndResponses.tasks.map(task => <NavLink key={task.id}
-          style={({ isActive }: { isActive: boolean }) => ({
-            borderBottom: (isActive && task.id === taskId) ? '2px solid #708DBC' : '',
-            background: (isActive && task.id === taskId) ? '#E1E8F7' : ''
-          })}
-          className="p-2"
-          to={surveyResponsePath(studyEnvContext.currentEnvPath, enrollee.shortcode, surveyStableId, task.id)}>
-          {instantToDateString(task.completedAt ?? task.createdAt)}
-        </NavLink>)}
-      </div>}
       <RawEnrolleeSurveyView key={`${surveyStableId}${taskId}`} enrollee={enrollee} studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}
         task={task!}
@@ -143,6 +194,7 @@ export function RawEnrolleeSurveyView({
 
   return <div>
     <div>
+      {surveyDates(task, response)}
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex align-items-center">
           <div className="border rounded-3 p-0">
@@ -153,7 +205,7 @@ export function RawEnrolleeSurveyView({
               <FontAwesomeIcon icon={faPencil}/>
             </Button>
           </div>
-          {surveyTaskStatus(task, response)}
+          {surveyVersion(task, response)}
           <div className="ms-2">
             <Button
               variant="secondary"
@@ -163,7 +215,6 @@ export function RawEnrolleeSurveyView({
             </Button>
           </div>
         </div>
-
         <div className="d-flex align-items-center">
           <AutosaveStatusIndicator status={autosaveStatus}/>
           <div className="dropdown">
@@ -248,7 +299,8 @@ export function RawEnrolleeSurveyView({
         updateResponseMap={updateResponseMap}
         justification={justification}
         setAutosaveStatus={setAutosaveStatus}
-        survey={configSurvey.survey} response={response} adminUserId={user.id}
+        survey={configSurvey.survey} response={response}
+        adminUserId={user.id}
         enrollee={enrollee} onUpdate={onUpdate}/>}
       {showJustificationModal && <JustifyChangesModal
         saveWithJustification={justification => {
@@ -294,18 +346,33 @@ const taskStatusIndicators: Record<ParticipantTaskStatus, React.ReactNode> = {
     <FontAwesomeIcon icon={faMinus}/> Removed</span>
 }
 
-function surveyTaskStatus(task: ParticipantTask, surveyResponse?: SurveyResponse) {
+function surveyVersion(task: ParticipantTask, surveyResponse?: SurveyResponse) {
   let versionString = ''
   if (surveyResponse && surveyResponse.answers.length) {
     const answerVersions = _uniq(surveyResponse.answers.map(ans => ans.surveyVersion))
     versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
   }
 
-  return <div className="d-flex align-items-center">
-    {surveyResponse && <span className="ms-2">{surveyResponse.complete ?
-      'Completed' : 'Last Updated'} {instantToDefaultString(surveyResponse.createdAt)} ({versionString})
-    </span>}
+  return <div className="ms-2">
+    {versionString}
   </div>
+}
+
+function surveyDates(task: ParticipantTask, surveyResponse?: SurveyResponse) {
+  return <>
+    <div className="d-flex small m-0 p-0 mt-1">
+      <div className="me-4">
+        <span className="fst-italic">assigned {instantToDefaultString(task?.createdAt)}</span>
+      </div>
+      <div className="me-4">
+        <span className="fst-italic">completed {instantToDefaultString(task.completedAt) || 'n/a'}</span>
+      </div>
+      <div>
+        <span
+          className="fst-italic">last updated {instantToDefaultString(surveyResponse?.lastUpdatedAt) || 'n/a'}</span>
+      </div>
+    </div>
+  </>
 }
 
 type DropdownButtonProps = {

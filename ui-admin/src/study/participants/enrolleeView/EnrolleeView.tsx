@@ -302,8 +302,20 @@ const badgeForResponses = (responses: SurveyResponse[], tasks: ParticipantTask[]
   if (!tasks?.length) {
     return statusDisplayMap['UNASSIGNED']
   }
-  const lastTask = tasks.sort((a, b) => b.createdAt! - a.createdAt!)[0]
-  return statusDisplayMap[lastTask.status]
+  const sortedTasks = tasks
+    .sort((a, b) => b.createdAt! - a.createdAt!)
+    .filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED')
+  if (!sortedTasks.length) {
+    return statusDisplayMap['REMOVED']
+  }
+
+  const lastTask = sortedTasks[0]
+
+  const numResponses = sortedTasks.length
+  return <div className="d-flex align-items-center justify-content-end">
+    {statusDisplayMap[lastTask.status]}
+    {numResponses > 1 && <span className="ms-1">({numResponses})</span>}
+  </div>
 }
 
 /** gets classes to apply to nav links */
