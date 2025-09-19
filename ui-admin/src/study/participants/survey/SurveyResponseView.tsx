@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useMemo,
   useState
 } from 'react'
 import {
@@ -92,18 +93,20 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
   const response = surveyAndResponses.responses.find(r => task?.surveyResponseId === r.id)
   const showVersionOptions = surveyAndResponses.tasks.length > 1
 
-  const sortedTasks = surveyAndResponses
-    .tasks
-    .sort(
-      (a, b) => b.createdAt - a.createdAt // show most recent first
-    )
-    .sort((a, b) => a.status === 'REMOVED' ? 1 : b.status === 'REMOVED' ? -1 : 0)  // show removed tasks last
+  // already sorted by createdAt desc with removed tasks last
+  const tasks = surveyAndResponses.tasks
 
-  const numNonRemoved = sortedTasks.filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED').length
-  const numRemoved = sortedTasks.filter(t => t.status === 'REMOVED' || t.status === 'REJECTED').length
+  const numNonRemoved = useMemo(
+    () => tasks.filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED').length,
+    [tasks]
+  )
+  const numRemoved = useMemo(
+    () => tasks.filter(t => t.status === 'REMOVED' || t.status === 'REJECTED').length,
+    [tasks]
+  )
 
   const formatSurveyVersionLabel = (t: ParticipantTask) => {
-    const isLatest = t.id == sortedTasks[0].id
+    const isLatest = t.id == tasks[0].id
 
     if (t.status === 'REMOVED' || t.status === 'REJECTED') {
       return `Removed ${instantToDateString(t.createdAt)}`
@@ -114,12 +117,12 @@ export default function SurveyResponseView({ enrollee, responseMap, updateRespon
     }${isLatest ? ' (latest)' : ''}`
   }
 
-  const surveyResponseVersionOptions = sortedTasks.map((t, idx) => ({
+  const surveyResponseVersionOptions = useMemo(() => tasks.map((t, idx) => ({
     value: t.id,
     task: t,
     label: formatSurveyVersionLabel(t),
     index: idx
-  }))
+  })), [tasks])
 
   const stableId = task?.targetStableId || surveyAndResponses.survey.survey.stableId
   const version = task?.targetAssignedVersion || surveyAndResponses.survey.survey.version

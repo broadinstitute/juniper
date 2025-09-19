@@ -84,7 +84,13 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
     const sortedTasks = enrollee
       .participantTasks
       .sort((a, b) => b.createdAt! - a.createdAt!)
-      .sort((a, b) => (a.status === 'REMOVED' || a.status === 'REJECTED' ? 1 : 0) - (b.status === 'REMOVED' || b.status === 'REJECTED' ? 1 : 0)) // put removed/rejected tasks at the end
+      .sort(
+        (a, b) => (
+          a.status === 'REMOVED' || a.status === 'REJECTED' ? 1 : 0
+        ) - (
+          b.status === 'REMOVED' || b.status === 'REJECTED' ? 1 : 0
+        )
+      ) // put removed/rejected tasks at the end
 
     surveys.forEach(configSurvey => {
       // to match responses to surveys, filter using the tasks, since those have the stableIds
@@ -306,16 +312,15 @@ const badgeForResponses = (responses: SurveyResponse[], tasks: ParticipantTask[]
   if (!tasks?.length) {
     return statusDisplayMap['UNASSIGNED']
   }
-  const sortedTasks = tasks
-    .sort((a, b) => b.createdAt! - a.createdAt!)
+  const nonRemovedTasks = tasks
     .filter(t => t.status !== 'REMOVED' && t.status !== 'REJECTED')
-  if (!sortedTasks.length) {
+  if (!nonRemovedTasks.length) {
     return statusDisplayMap['REMOVED']
   }
 
-  const lastTask = sortedTasks[0]
+  const lastTask = nonRemovedTasks[0]
 
-  const numResponses = sortedTasks.length
+  const numResponses = nonRemovedTasks.length
   return <div className="d-flex align-items-center justify-content-end">
     {statusDisplayMap[lastTask.status]}
     {numResponses > 1 && <span className="ms-1">({numResponses})</span>}
