@@ -124,6 +124,11 @@ public class AdminEmailService {
             .filter(adminUser -> emails.contains(adminUser.getUsername()))
             .toList();
 
+    // nobody to send to; no point in attempting to send.
+    if (adminUsers.isEmpty()) {
+      return;
+    }
+
 
     EmailTemplate emailTemplate = emailTemplateService.find(trigger.getEmailTemplateId())
             .orElseThrow(() -> new NotFoundException("Email template not found"));

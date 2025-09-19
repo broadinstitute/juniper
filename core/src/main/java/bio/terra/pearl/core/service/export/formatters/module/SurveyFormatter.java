@@ -487,7 +487,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
 
             // even if we don't set any properties here, if any column for this response were present,
             // we want to return make sure we import it.
-            if (stringVal != null) {
+            if (!StringUtils.isEmpty(stringVal)) {
                 hasAnyColumn = true;
             }
 

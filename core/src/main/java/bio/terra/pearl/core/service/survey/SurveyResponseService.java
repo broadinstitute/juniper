@@ -230,6 +230,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 response = surveyTaskDispatcher.createPrepopulatedSurveyResponse(response);
                 newTask.setSurveyResponseId(response.getId());
                 task = participantTaskService.create(newTask, null);
+                responseDto.setComplete(false); // ensure new response is not marked complete
             }
         }
 

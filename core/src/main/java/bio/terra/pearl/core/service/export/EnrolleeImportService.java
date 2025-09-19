@@ -612,7 +612,8 @@ public class EnrolleeImportService {
                     .findFirst()
                     .orElseThrow();
 
-            if (!hasValidResponse && response.getAnswers().isEmpty()
+            if (!hasValidResponse
+                    && response.getAnswers().isEmpty()
                     && !task.getStatus().isTerminalStatus()
                     && importedResponses.stream().anyMatch(r -> !r.getAnswers().isEmpty())) {
                 // remove any NEW tasks (i.e., no answers) that come BEFORE a later valid response.
