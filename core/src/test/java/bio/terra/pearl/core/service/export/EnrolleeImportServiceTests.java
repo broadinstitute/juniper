@@ -657,7 +657,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(tasks, hasSize(1));
         assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.NEW));
         responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
-        assertThat(responses, hasSize(0));
+        assertThat(responses, hasSize(0)); // no response created, fully blank.
+        // no answers
+        assertEquals(0, answerService.findByEnrolleeAndSurvey(enrollee.getId(), "importTest1").size());
     }
 
     @Test
@@ -908,6 +910,54 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testImportSurveyResponsesMultipleColumnsOnlyOneResponse(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        String username = "test@test.com";
+
+        Map<String, String> enrolleeMap = Map.of(
+                "enrollee.subject", "true",
+                "account.username", username,
+                "importTest1.complete", "true",
+                "importTest1.importFirstName", "Jeff",
+                "importTest1.importFavColors", "[\"red\", \"blue\"]",
+                "importTest1.createdAt", "2023-08-21 05:17AM",
+                "importTest1[2].complete", "", // should just ignore this 2nd response since it's empty
+                "importTest1[2].importFirstName", "",
+                "importTest1[2].importFavColors", "",
+                "importTest1[2].createdAt", "");
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(responses, hasSize(1));
+
+        responses.sort(Comparator.comparing(SurveyResponse::getLastUpdatedAt));
+
+        SurveyResponse response = surveyResponseService.findOneWithAnswers(responses.get(0).getId()).orElseThrow();
+
+        assertThat(response.getSurveyId(), equalTo(survey.getId()));
+        assertThat(response.isComplete(), equalTo(true));
+        assertThat(response.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(response.getCreatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(response.getAnswers().stream().filter(answer -> answer.getQuestionStableId().equals("importFirstName"))
+                .findFirst().get().getStringValue(), equalTo("Jeff"));
+    }
+
+    @Test
+    @Transactional
     public void testImportAndReimportMultipleSurveyResponses(TestInfo info) {
         StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
@@ -1109,6 +1159,124 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertEquals(TaskStatus.IN_PROGRESS, survey2Tasks.get(0).getStatus());
         assertEquals(TaskStatus.COMPLETE, survey2Tasks.get(1).getStatus());
         assertEquals(TaskStatus.REMOVED, survey2Tasks.get(2).getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testImportAllowsAndRemovesEmptyInProgressResponses(TestInfo info) {
+        // we need to ensure that empty in-progress responses are removed & older complete responses are kept
+
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest2")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey2, bundle.getStudyEnv().getId(), true);
+        Survey survey3 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest3")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey3, bundle.getStudyEnv().getId(), true);
+        String username = "test@test.com";
+
+        Map<String, String> enrolleeMap = Map.ofEntries(
+                Map.entry("enrollee.subject", "true"),
+                Map.entry("account.username", username),
+
+                // survey1: 4 responses with latest complete, second complete but empty, third in progress but incomplete, oldest complete
+                Map.entry("importTest1.complete", "true"),
+                Map.entry("importTest1.importFirstName", "Jeff"),
+                Map.entry("importTest1.importFavColors", "[\"red\", \"blue\"]"),
+                Map.entry("importTest1.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest1[2].complete", "true"),
+                Map.entry("importTest1[2].createdAt", "2023-08-20 05:17AM"),
+                Map.entry("importTest1[3].complete", "false"),
+                Map.entry("importTest1[3].createdAt", "2023-08-19 05:17AM"),
+                Map.entry("importTest1[4].complete", "false"),
+                Map.entry("importTest1[4].importFirstName", "Jeffrey"),
+                Map.entry("importTest1[4].importFavColors", "[\"green\"]"),
+                Map.entry("importTest1[4].createdAt", "2023-08-17 05:17AM"),
+
+
+                // survey 2: 2 responses with latest in-progress, 1 old in-progress
+                Map.entry("importTest2.complete", "false"),
+                Map.entry("importTest2.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest2[2].complete", "false"),
+                Map.entry("importTest2[2].createdAt", "2023-07-20 05:17AM"),
+                Map.entry("importTest2[3].complete", "false"),
+                Map.entry("importTest2[3].importFirstName", "Alex"),
+                Map.entry("importTest2[3].importFavColors", "[\"orange\"]"),
+                Map.entry("importTest2[3].createdAt", "2023-06-19 05:17AM"),
+
+                // survey 3: empty / in-progress responses in quick succession, only the latest should be kept
+                Map.entry("importTest3.complete", "false"),
+                Map.entry("importTest3.createdAt", "2023-08-21 05:17AM"),
+                Map.entry("importTest3[2].complete", "false"),
+                Map.entry("importTest3[2].createdAt", "2023-08-21 05:16AM"),
+                Map.entry("importTest3[3].complete", "false"),
+                Map.entry("importTest3[3].importFirstName", "Alex"),
+                Map.entry("importTest3[3].importFavColors", "[\"orange\"]"),
+                Map.entry("importTest3[3].createdAt", "2023-08-21 05:15AM")
+
+        );
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+        assertThat(responses, hasSize(10));
+
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(tasks, hasSize(10));
+
+        List<ParticipantTask> survey1Tasks = tasks.stream()
+                .filter(task -> task.getTargetStableId().equals(survey.getStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(survey1Tasks, hasSize(4));
+        assertEquals(TaskStatus.COMPLETE, survey1Tasks.get(0).getStatus());
+        assertEquals(TaskStatus.COMPLETE, survey1Tasks.get(1).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey1Tasks.get(2).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey1Tasks.get(3).getStatus());
+
+
+        List<ParticipantTask> survey2Tasks = tasks.stream()
+                .filter(task -> task.getTargetStableId().equals(survey2.getStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(survey2Tasks, hasSize(3));
+
+        assertEquals(TaskStatus.REMOVED, survey2Tasks.get(0).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey2Tasks.get(1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, survey2Tasks.get(2).getStatus());
+
+        List<ParticipantTask> survey3Tasks = tasks.stream()
+                .filter(task -> task.getTargetStableId().equals(survey3.getStableId()))
+                .sorted(Comparator.comparing(ParticipantTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(survey3Tasks, hasSize(3));
+
+        assertEquals(TaskStatus.REMOVED, survey3Tasks.get(0).getStatus());
+        assertEquals(TaskStatus.REMOVED, survey3Tasks.get(1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, survey3Tasks.get(2).getStatus());
     }
 
     @Test

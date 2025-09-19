@@ -476,6 +476,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
     public SurveyResponseWithTaskDto fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap, int moduleRepeatNum) {
         SurveyResponseWithTaskDto response = new SurveyResponseWithTaskDto();
         boolean specifiedComplete = false;
+        boolean hasAnyColumn = false;
         for (ItemFormatter<SurveyResponseWithTaskDto> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, moduleRepeatNum);
             if (!enrolleeMap.containsKey(columnName)) {
@@ -483,6 +484,12 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
                 columnName = stripSurveyPrefix(columnName);
             }
             String stringVal = enrolleeMap.get(columnName);
+
+            // even if we don't set any properties here, if any column for this response were present,
+            // we want to return make sure we import it.
+            if (!StringUtils.isEmpty(stringVal)) {
+                hasAnyColumn = true;
+            }
 
             // track whether the complete field was explicitly set
             if (itemFormatter.getBaseColumnKey().equals("complete") && stringVal != null) {
@@ -503,6 +510,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
             response.setComplete(true);
         }
 
-        return (response.getAnswers().isEmpty() ? null : response);
+        // even if no answers, import if anything has been specified (e.g., status, created date, etc.).
+        // a complete or in progress survey response with no answers could technically be valid.
+        return (!hasAnyColumn ? null : response);
     }
 }
