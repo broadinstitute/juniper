@@ -326,6 +326,53 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void testFromStringMapLongitudinalMultipleResponseColumnsOnlyOneResponse() {
+        Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        SurveyQuestionDefinition question1 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question2 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q2")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyQuestionDefinition question3 = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q3")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(question1, question2, question3), List.of(), objectMapper);
+
+        List<SurveyResponseWithTaskDto> dtos = moduleFormatter.listFromStringMap(UUID.randomUUID(),
+                Map.of(
+                        "oh_surveyA.createdAt", "2023-08-22 05:17AM",
+                        "oh_surveyA.oh_surveyA_q1", "testValue1",
+                        "oh_surveyA.oh_surveyA_q2", "testValue2",
+                        "oh_surveyA[2].createdAt", "",
+                        "oh_surveyA[2].oh_surveyA_q1", "",
+                        "oh_surveyA[2].oh_surveyA_q2", "",
+                        "oh_surveyA[2].oh_surveyA_q3", ""
+
+                )
+        );
+
+        assertEquals(1, dtos.size());
+
+        SurveyResponseWithTaskDto first = dtos.getFirst();
+        assertEquals("2023-08-22T09:17:00Z", first.getCreatedAt().toString());
+        assertEquals(2, first.getAnswers().size());
+        assertAnswers(first.getAnswers(), Map.of(
+                "oh_surveyA_q1", "testValue1",
+                "oh_surveyA_q2", "testValue2"
+        ));
+    }
+
+    @Test
     public void testFromStringMapEmptyResponse() {
         Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
         SurveyQuestionDefinition question1 = SurveyQuestionDefinition.builder()

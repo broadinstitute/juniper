@@ -657,8 +657,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(tasks, hasSize(1));
         assertThat(tasks.get(0).getStatus(), equalTo(TaskStatus.NEW));
         responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
-        assertThat(responses, hasSize(1));
-        assertFalse(responses.get(0).isComplete());
+        assertThat(responses, hasSize(0)); // no response created, fully blank.
         // no answers
         assertEquals(0, answerService.findByEnrolleeAndSurvey(enrollee.getId(), "importTest1").size());
     }
@@ -906,6 +905,54 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(latestResponse.isComplete(), equalTo(true));
         assertThat(latestResponse.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
         assertThat(latestResponse.getAnswers().stream().filter(answer -> answer.getQuestionStableId().equals("importFirstName"))
+                .findFirst().get().getStringValue(), equalTo("Jeff"));
+    }
+
+    @Test
+    @Transactional
+    public void testImportSurveyResponsesMultipleColumnsOnlyOneResponse(TestInfo info) {
+        StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .stableId("importTest1")
+                .content(TWO_QUESTION_SURVEY_CONTENT)
+                .portalId(bundle.getPortal().getId())
+                .version(1)
+        );
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+        String username = "test@test.com";
+
+        Map<String, String> enrolleeMap = Map.of(
+                "enrollee.subject", "true",
+                "account.username", username,
+                "importTest1.complete", "true",
+                "importTest1.importFirstName", "Jeff",
+                "importTest1.importFavColors", "[\"red\", \"blue\"]",
+                "importTest1.createdAt", "2023-08-21 05:17AM",
+                "importTest1[2].complete", "", // should just ignore this 2nd response since it's empty
+                "importTest1[2].importFirstName", "",
+                "importTest1[2].importFavColors", "",
+                "importTest1[2].createdAt", "");
+
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions(), null);
+
+        List<SurveyResponse> responses = surveyResponseService.findByEnrolleeId(enrollee.getId());
+
+        assertThat(responses, hasSize(1));
+
+        responses.sort(Comparator.comparing(SurveyResponse::getLastUpdatedAt));
+
+        SurveyResponse response = surveyResponseService.findOneWithAnswers(responses.get(0).getId()).orElseThrow();
+
+        assertThat(response.getSurveyId(), equalTo(survey.getId()));
+        assertThat(response.isComplete(), equalTo(true));
+        assertThat(response.getLastUpdatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(response.getCreatedAt(), equalTo(instantFromZone("2023-08-21 05:17AM")));
+        assertThat(response.getAnswers().stream().filter(answer -> answer.getQuestionStableId().equals("importFirstName"))
                 .findFirst().get().getStringValue(), equalTo("Jeff"));
     }
 
