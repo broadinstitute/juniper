@@ -133,6 +133,64 @@ customer_urls = {
     dnssec = "off"
     additional_records = []
   }
+  atcp = {
+    url    = "atfamilies.org"
+    dnssec = "off"
+    additional_records = [
+      {
+        name = "mx_record"
+        domain_prefix = ""
+        type = "MX"
+        ttl = 3600
+        record_values = [
+          "1 aspmx.l.google.com.",
+          "5 alt1.aspmx.l.google.com.",
+          "5 alt2.aspmx.l.google.com.",
+          "10 aspmx2.googlemail.com.",
+          "10 aspmx3.googlemail.com."
+        ]
+      },
+      {
+        name = "gsuite_verification"
+        domain_prefix = ""
+        type = "TXT"
+        ttl = 3600
+        record_values = [
+          "google-site-verification=CeH80RLBV1kKpmgIrPmp_z8Wcpuj4010PuRjtXG2CQo",
+          "google-site-verification=-ITHj3d7lESwMh9-cKntUBYlAZ9nnXekIMpBBnvCWVU",
+          "v=spf1 include:_spf.google.com ~all"
+        ]
+      },
+      {
+        name="sendgrid"
+        domain_prefix="em1453"
+        type="CNAME"
+        ttl=3600
+        record_values=["u33588015.wl016.sendgrid.net."]
+      },
+      {
+        name="sendgrid_domainkey1"
+        domain_prefix="j._domainkey"
+        type="CNAME"
+        ttl=3600
+        record_values=["j.domainkey.u33588015.wl016.sendgrid.net."]
+      },
+      {
+        name="sendgrid_domainkey1"
+        domain_prefix="j2._domainkey"
+        type="CNAME"
+        ttl=3600
+        record_values=["j2.domainkey.u33588015.wl016.sendgrid.net."]
+      },
+      {
+        name="dmarc"
+        domain_prefix="_dmarc"
+        type="TXT"
+        ttl=3600
+        record_values=["v=DMARC1;p=none;"]
+      }
+    ]
+  }
 }
 
 slack_notification_channel = "projects/broad-juniper-prod/notificationChannels/9072110396476167224"
