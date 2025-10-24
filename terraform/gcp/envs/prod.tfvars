@@ -124,7 +124,37 @@ customer_urls = {
         domain_prefix = ""
         type = "TXT"
         ttl = 3600
-        record_values = ["google-site-verification=Vs56YsgRkHl4DxIqUfHYD69HbUUTQLLnPFWZbA3QVXM"]
+        record_values = [
+          "google-site-verification=Vs56YsgRkHl4DxIqUfHYD69HbUUTQLLnPFWZbA3QVXM",
+          "v=spf1 include:46085939.spf01.hubspotemail.net -all"
+        ]
+      },
+      {
+        name = "dmarc",
+        domain_prefix="_dmarc",
+        type="TXT",
+        ttl=3600,
+        record_values = [
+          "v=DMARC1;p=none;"
+        ]
+      },
+      {
+        name="domainkey1",
+        domain_prefix="hs1-46085939._domainkey",
+        type="CNAME",
+        ttl=3600,
+        record_values=[
+          "trccproject-org.hs16a.dkim.hubspotemail.net."
+        ]
+      },
+      {
+        name="domainkey2",
+        domain_prefix="hs2-46085939._domainkey",
+        type="CNAME",
+        ttl=3600,
+        record_values=[
+          "trccproject-org.hs16b.dkim.hubspotemail.net."
+        ]
       }
     ]
   }
@@ -176,7 +206,7 @@ customer_urls = {
         record_values=["j.domainkey.u33588015.wl016.sendgrid.net."]
       },
       {
-        name="sendgrid_domainkey1"
+        name="sendgrid_domainkey2"
         domain_prefix="j2._domainkey"
         type="CNAME"
         ttl=3600
