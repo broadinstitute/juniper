@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service.forms;
 
 import bio.terra.pearl.api.admin.service.auth.*;
 import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnvAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.BaseEntity;
@@ -78,22 +79,39 @@ public class SurveyExtService {
   }
 
   @EnforcePortalStudyPermission(permission = AuthUtilService.BASE_PERMISSION)
-  public List<StudyEnvironmentSurvey> findWithSurveyNoContent(
+  public List<StudyEnvironmentSurvey> findWithSurveyByStudyNoContent(
       PortalStudyAuthContext authContext,
       String stableId,
       EnvironmentName envName,
       Boolean active) {
     List<UUID> studyEnvIds =
-        studyEnvIds =
-            studyEnvironmentService
-                .findByStudy(authContext.getPortalStudy().getStudyId())
-                // if no envName is specified, include all environments, otherwise just include the
-                // specified one
-                .stream()
-                .filter(
-                    studyEnv -> envName == null || studyEnv.getEnvironmentName().equals(envName))
-                .map(StudyEnvironment::getId)
-                .toList();
+        studyEnvironmentService
+            .findByStudy(authContext.getPortalStudy().getStudyId())
+            // if no envName is specified, include all environments, otherwise just include the
+            // specified one
+            .stream()
+            .filter(studyEnv -> envName == null || studyEnv.getEnvironmentName().equals(envName))
+            .map(StudyEnvironment::getId)
+            .toList();
+    return studyEnvironmentSurveyService.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
+  }
+
+  @EnforcePortalEnvPermission(permission = AuthUtilService.BASE_PERMISSION)
+  public List<StudyEnvironmentSurvey> findWithSurveyNoContent(
+      PortalEnvAuthContext authContext, String stableId, Boolean active) {
+    List<UUID> studyEnvIds =
+        studyEnvironmentService
+            .findAllByPortalAndEnvironment(
+                authContext.getPortal().getId(), authContext.getEnvironmentName())
+            // if no envName is specified, include all environments, otherwise just include the
+            // specified one
+            .stream()
+            .filter(
+                studyEnv ->
+                    authContext.getEnvironmentName() == null
+                        || studyEnv.getEnvironmentName().equals(authContext.getEnvironmentName()))
+            .map(StudyEnvironment::getId)
+            .toList();
     return studyEnvironmentSurveyService.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
   }
 

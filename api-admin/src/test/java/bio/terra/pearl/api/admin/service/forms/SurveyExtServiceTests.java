@@ -47,27 +47,35 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
   public void assertAllMethods() {
     AuthTestUtils.assertAllMethodsAnnotated(
         surveyExtService,
-        Map.of(
-            "get",
-            AuthAnnotationSpec.withPortalPerm(AuthUtilService.BASE_PERMISSION),
-            "listVersions",
-            AuthAnnotationSpec.withPortalPerm(AuthUtilService.BASE_PERMISSION),
-            "findWithSurveyNoContent",
-            AuthAnnotationSpec.withPortalStudyPerm(AuthUtilService.BASE_PERMISSION),
-            "create",
-            AuthAnnotationSpec.withPortalPerm("survey_edit"),
-            "delete",
-            AuthAnnotationSpec.withPortalPerm("survey_edit"),
-            "createNewVersion",
-            AuthAnnotationSpec.withPortalPerm("survey_edit"),
-            "createConfiguredSurvey",
-            AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
-            "updateConfiguredSurveys",
-            AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
-            "removeConfiguredSurvey",
-            AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
-            "replace",
-            AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class))));
+        Map.ofEntries(
+            Map.entry("get", AuthAnnotationSpec.withPortalPerm(AuthUtilService.BASE_PERMISSION)),
+            Map.entry(
+                "listVersions", AuthAnnotationSpec.withPortalPerm(AuthUtilService.BASE_PERMISSION)),
+            Map.entry(
+                "findWithSurveyNoContent",
+                AuthAnnotationSpec.withPortalEnvPerm(AuthUtilService.BASE_PERMISSION)),
+            Map.entry(
+                "findWithSurveyByStudyNoContent",
+                AuthAnnotationSpec.withPortalStudyPerm(AuthUtilService.BASE_PERMISSION)),
+            Map.entry("create", AuthAnnotationSpec.withPortalPerm("survey_edit")),
+            Map.entry("delete", AuthAnnotationSpec.withPortalPerm("survey_edit")),
+            Map.entry("createNewVersion", AuthAnnotationSpec.withPortalPerm("survey_edit")),
+            Map.entry(
+                "createConfiguredSurvey",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class))),
+            Map.entry(
+                "updateConfiguredSurveys",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class))),
+            Map.entry(
+                "removeConfiguredSurvey",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class))),
+            Map.entry(
+                "replace",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class)))));
   }
 
   @Test

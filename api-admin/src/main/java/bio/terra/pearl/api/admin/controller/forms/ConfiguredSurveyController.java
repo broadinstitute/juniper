@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnvAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
@@ -39,7 +40,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
    * content)
    */
   @Override
-  public ResponseEntity<Object> findWithNoContent(
+  public ResponseEntity<Object> findWithNoContentByStudy(
       String portalShortcode,
       String studyShortcode,
       String envName,
@@ -50,10 +51,29 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
         envName != null ? EnvironmentName.valueOfCaseInsensitive(envName) : null;
     Boolean activeVal = active != null ? Boolean.valueOf(active) : null;
     List<StudyEnvironmentSurvey> studyEnvSurveys =
-        surveyExtService.findWithSurveyNoContent(
+        surveyExtService.findWithSurveyByStudyNoContent(
             PortalStudyAuthContext.of(operator, portalShortcode, studyShortcode),
             stableId,
             environmentName,
+            activeVal);
+    return ResponseEntity.ok(studyEnvSurveys);
+  }
+
+  /**
+   * gets all StudyEnvironmentSurveys for the given study, along with their associated Survey (minus
+   * content)
+   */
+  @Override
+  public ResponseEntity<Object> findWithNoContent(
+      String portalShortcode, String envName, String stableId, String active) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName =
+        envName != null ? EnvironmentName.valueOfCaseInsensitive(envName) : null;
+    Boolean activeVal = active != null ? Boolean.valueOf(active) : null;
+    List<StudyEnvironmentSurvey> studyEnvSurveys =
+        surveyExtService.findWithSurveyNoContent(
+            PortalEnvAuthContext.of(operator, portalShortcode, environmentName),
+            stableId,
             activeVal);
     return ResponseEntity.ok(studyEnvSurveys);
   }
