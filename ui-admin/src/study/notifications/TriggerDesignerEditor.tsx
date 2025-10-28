@@ -109,7 +109,8 @@ const TriggerTypeEditor = (
 
   const isTaskScopable = (trigger.triggerType === 'TASK_REMINDER') ||
     (trigger.triggerType === 'EVENT' && ['SURVEY_RESPONSE', 'KIT_RECEIVED', 'KIT_SENT'].includes(trigger.eventType))
-
+  const showMaxNotifications = (trigger.triggerType === 'TASK_REMINDER' || trigger.triggerType === 'EVENT')
+   && trigger.actionType !== 'TASK_STATUS_CHANGE'
   return <InfoCard>
     <InfoCardHeader>
       <InfoCardTitle title={'Condition'}/>
@@ -149,7 +150,7 @@ const TriggerTypeEditor = (
               <TaskReminderEditor trigger={trigger} updateTrigger={updateTrigger}/>
             </>}
 
-          {(trigger.triggerType === 'TASK_REMINDER' || trigger.triggerType === 'EVENT') &&
+          {showMaxNotifications &&
             <div>
               <label className="form-label">Max number of notifications
                 <input className="form-control" type="number" value={trigger.maxNumNotifications}
@@ -366,7 +367,7 @@ const TriggerActionEditor = (
             />}
 
           {trigger.actionType === 'TASK_STATUS_CHANGE'
-            && <TaskStatusEditor trigger={trigger} updateTrigger={updateTrigger}/>
+            && <TaskStatusEditor trigger={trigger} updateTrigger={updateTrigger} studyEnvContext={studyEnvContext}/>
           }
         </>
         }
@@ -510,10 +511,12 @@ const scopeOptions: {label: string, value: TriggerScope}[] = [
 const TaskStatusEditor = (
   {
     trigger,
-    updateTrigger
+    updateTrigger,
+    studyEnvContext
   } : {
     trigger: Trigger,
-    updateTrigger: (string: keyof Trigger, value: unknown) => void;
+    updateTrigger: (string: keyof Trigger, value: unknown) => void,
+    studyEnvContext: StudyEnvContextT
   }
 ) => {
   return <div>
@@ -535,16 +538,27 @@ const TaskStatusEditor = (
       />
     </div>
     <div>
-      <label className="form-label mt-3" htmlFor="updateTaskTargetStableIds">Target stable id </label>
-      <InfoPopup content={<span>
-            the stable id of the task to update. For survey tasks, this is the survey stable id.
-      </span>}/>
+      <TaskTargetStableIdsEditor studyEnvParams={paramsFromContext(studyEnvContext)}
+        stableIds={trigger.actionTargetStableIds}
+        setStableIds={newVals => updateTrigger('actionTargetStableIds', newVals)}
+        label={<>
+          Target surveys
+          <InfoPopup content={<span>
+            The surveys to update the status of.  This will update all tasks for the given survey(s)
+          </span>}/>
+        </>
+        }
+        isKitType={false} portalScope={true}/>
     </div>
   </div>
 }
 
-const TaskTargetStableIdsEditor = ({ studyEnvParams, stableIds, setStableIds, isKitType }:
-  {studyEnvParams: StudyEnvParams, stableIds: string[], setStableIds: (ids: string[]) => void, isKitType: boolean}) => {
+const TaskTargetStableIdsEditor = ({
+  studyEnvParams, stableIds, setStableIds, isKitType, label,
+  portalScope
+}:
+  {studyEnvParams: StudyEnvParams, stableIds: string[], setStableIds: (ids: string[]) => void, isKitType: boolean,
+  label?: React.ReactNode, portalScope?: boolean}) => {
   const [options, setOptions] = useState<{ label: string, value: string }[]>([])
   useLoadingEffect(async () => {
     if (isKitType) {
@@ -552,16 +566,19 @@ const TaskTargetStableIdsEditor = ({ studyEnvParams, stableIds, setStableIds, is
       setOptions(kitTypes.map(kitType => ({ label: kitType.displayName, value: kitType.name })))
     } else {
       const studyEnvSurveys = await Api.findConfiguredSurveys(studyEnvParams.portalShortcode,
-        studyEnvParams.studyShortcode, studyEnvParams.envName, true)
+        portalScope ? undefined : studyEnvParams.studyShortcode, studyEnvParams.envName, true)
       setOptions(studyEnvSurveys.map(ses => ({ label: ses.survey.name, value: ses.survey.stableId })))
     }
   }, [isKitType])
 
+  label = label ?? <>Limit to these {isKitType ? 'kit types' : 'surveys'}
+    <span className="fst-italic ms-2">(leave blank if automation applies to all)</span>
+  </>
+
   stableIds = stableIds ?? []
   const inputId = useId()
   return <div className="mt-3">
-    <label className="form-label" htmlFor={inputId}>Limit to these {isKitType ? 'kit types' : 'surveys'}
-      <span className="fst-italic ms-2">(leave blank if automation applies to all)</span></label>
+    <label className="form-label" htmlFor={inputId}>{label}</label>
     <Select options={options} inputId={inputId}
       value={stableIds.map(stableId => options.find(option => option.value === stableId))}
       isMulti={true}

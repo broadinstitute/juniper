@@ -205,11 +205,27 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/configuredSurveys/findWithNoContent:
+    get:
+      summary: Lists all the configured surveys for a portal
+      tags: [ configuredSurvey ]
+      operationId: findWithNoContent
+      parameters:
+        - *portalShortcodeParam
+        - { name: envName, in: query, required: false, schema: { type: string } }
+        - { name: stableId, in: query, required: false, schema: { type: string } }
+        - { name: active, in: query, required: false, schema: { type: string, format: boolean } }
+      responses:
+        '200':
+          description: list of all the configured surveys for a portal
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/configuredSurveys/findWithNoContent:
     get:
       summary: Lists all the configured surveys for a study
       tags: [ configuredSurvey ]
-      operationId: findWithNoContent
+      operationId: findWithNoContentByStudy
       parameters:
         - *portalShortcodeParam
         - *studyShortcodeParam
@@ -595,7 +611,7 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  
+
   /api/portals/v1/{portalShortcode}/env/{envName}/participantUsers/merge/plan:
     post:
       summary: gets a merge plan for the given participant users. This does not perform the merge.

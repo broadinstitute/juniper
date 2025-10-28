@@ -761,11 +761,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async findConfiguredSurveys(portalShortcode: string, studyShortcode: string,
+  async findConfiguredSurveys(portalShortcode: string, studyShortcode: string | undefined,
     envName?: EnvironmentName, active?: boolean, stableId?: string): Promise<StudyEnvironmentSurvey[]> {
     const params = queryString.stringify({ envName, active, stableId })
-    const url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}`
-      + `/configuredSurveys/findWithNoContent?${params}`
+    let url = `${basePortalUrl(portalShortcode)}/configuredSurveys/findWithNoContent?${params}`
+    if (studyShortcode) {
+      url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}/configuredSurveys/findWithNoContent?${params}`
+    }
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

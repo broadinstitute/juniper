@@ -4,7 +4,8 @@ export const triggerName = (trigger: Trigger) => {
   if (trigger.actionType === 'NOTIFICATION' || trigger.actionType === 'ADMIN_NOTIFICATION') {
     return trigger.emailTemplate.name
   } else if (trigger.actionType === 'TASK_STATUS_CHANGE') {
-    return `Mark ${trigger.actionTargetStableIds.join(',')} as ${trigger.statusToUpdateTo}`
+    const targets = trigger.actionTargetStableIds.length ? trigger.actionTargetStableIds.join(',') : '[task]'
+    return `Mark ${targets} as ${trigger.statusToUpdateTo ?? '[status]'}`
   } else if (trigger.triggerType === 'TASK_REMINDER') {
     return `Remind after ${minutesToDayString(trigger.afterMinutesIncomplete)}`
   }
