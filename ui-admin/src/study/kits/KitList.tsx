@@ -72,7 +72,7 @@ const defaultColumns: VisibilityState = {
   'returnTrackingNumber': false,
   'creatingAdminUserId': false,
   'collectingAdminUserId': false,
-  'kitLabel': false,
+  'kitLabel': true,
   'receivedAt': false,
   'status': false,
   'distributionMethod': false
@@ -147,10 +147,12 @@ const statusTabs: KitStatusTabConfig[] = [
  * Some columns are always relevant, i.e. enrollee shortcode, kit type, and created date, and are represented in
  * `defaultColumns`. Additional columns to display are listed in KitStatusTabConfig.additionalColumns.
  */
-const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
+const initialColumnVisibility = (additionalColumns?: string[]): VisibilityState => {
   return {
     ...defaultColumns,
-    ..._fromPairs(tab.additionalColumns?.map(c => { return [c, true] }))
+    ..._fromPairs(additionalColumns?.map(c => {
+      return [c, true]
+    }))
   }
 }
 
@@ -183,6 +185,11 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   return <LoadingSpinner isLoading={isLoading}>
     <div className="container-fluid p-0 mt-2">
       <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#F5F8FF' }}>
+        <NavLink key={'all'} to={'all'} style={tabLinkStyle}>
+          <div className="py-2 px-4">
+            {kits?.length} All
+          </div>
+        </NavLink>
         { statusTabs.map(tab => {
           const kits = kitsByTabKey[tab.key] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
@@ -199,14 +206,26 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
         </div>
       </div>
       <Routes>
-        <Route index element={<Navigate to={statusTabs[0].key} replace={true}/>}/>
+        <Route index element={<Navigate to={'all'} replace={true}/>}/>
+        <Route path={'all'} element={
+          <KitListView
+            studyEnvContext={studyEnvContext}
+            tab={'all'}
+            kits={kits}
+            initialColumnVisibility={initialColumnVisibility([
+              'labeledAt', 'trackingNumber',
+              'sentAt', 'returnTrackingNumber',
+              'receivedAt', 'distributionMethod',
+              'status'
+            ])}/>
+        }/>
         { statusTabs.map(tab => {
           return <Route key={tab.key} path={tab.key} element={
             <KitListView
               studyEnvContext={studyEnvContext}
               tab={tab.key}
               kits={kitsByTabKey[tab.key] || []}
-              initialColumnVisibility={initialColumnVisibility(tab)}/>
+              initialColumnVisibility={initialColumnVisibility(tab.additionalColumns)}/>
           }/>
         })}
       </Routes>
@@ -247,6 +266,11 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     accessorKey: 'kitType.displayName',
     enableColumnFilter: false
   }, {
+    header: 'Status',
+    accessorKey: 'status',
+    cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
+    enableColumnFilter: false
+  }, {
     header: 'Created',
     accessorKey: 'createdAt',
     meta: {
@@ -262,11 +286,11 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Tracking Number',
     accessorKey: 'trackingNumber',
-    enableColumnFilter: false
+    filterFn: 'includesString'
   }, {
     header: 'Kit Label',
     accessorKey: 'kitLabel',
-    enableColumnFilter: false
+    filterFn: 'includesString'
   }, {
     header: 'Distribution Method',
     accessorKey: 'distributionMethod',
@@ -293,7 +317,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Return Tracking Number',
     accessorKey: 'returnTrackingNumber',
-    enableColumnFilter: false
+    filterFn: 'includesString'
   }, {
     header: 'Returned',
     accessorKey: 'receivedAt',
@@ -301,11 +325,6 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
       columnType: 'instant'
     },
     cell: data => instantToDateString(Number(data.getValue())),
-    enableColumnFilter: false
-  }, {
-    header: 'Status',
-    accessorKey: 'status',
-    cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
     enableColumnFilter: false
   }, {
     header: 'Details',

@@ -1,7 +1,10 @@
 import React from 'react'
 import InfoPopup from 'components/forms/InfoPopup'
 import { Placement } from 'react-bootstrap/types'
-import { KitRequest } from '@juniper/ui-core'
+import {
+  KitRequest,
+  KitRequestStatus
+} from '@juniper/ui-core'
 import { prettifyString } from './KitRequests'
 
 /**
@@ -12,13 +15,16 @@ export default function KitStatusCell(
   { kitRequest, infoPlacement = 'top' }:
   { kitRequest: KitRequest, infoPlacement?: Placement }
 ) {
-  const infoTexts: Record<string, string> = {
+  const infoTexts: Record<KitRequestStatus, string> = {
+    'NEW': 'Kit request received, has not yet shipped',
     'CREATED': 'Kit request received, has not yet shipped',
-    'QUEUE': 'Shipping label has been printed',
+    'QUEUED': 'Shipping label has been printed',
     'SENT': 'Kit has been sent to the participant',
     'RECEIVED': 'Kit has been returned by the participant',
     'COLLECTED_BY_STAFF': 'Participant has returned kit to study staff in-person',
+    'SENT_BY_STAFF': 'Kit was manually sent to the participant by study staff',
     'ERRORED': 'There was a problem fulfilling this kit request',
+    'UNKNOWN': 'An unknown problem occurred.',
     'DEACTIVATED': 'Kit is deactivated - no further processing will be done'
   }
   const currentStatus = kitRequest.status
