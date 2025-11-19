@@ -196,8 +196,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
         }
         if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
-            portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
-            participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
+            try {
+                portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
+                participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
+            } catch (Exception e) {
+                logger.error("Failed to cascade delete participant user {} -- possibly they are in multiple studies", enrollee.getParticipantUserId(), e);
+            }
         }
     }
 
