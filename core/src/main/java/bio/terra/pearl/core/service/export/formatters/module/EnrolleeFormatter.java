@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
+import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.model.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class EnrolleeFormatter extends BeanModuleFormatter<Enrollee> {
     public static final List<String> INCLUDED_PROPERTIES = List.of(
-            "shortcode", "consented", "createdAt", "subject", "source"
+            "shortcode", "researchId", "consented", "createdAt", "subject", "source"
     );
 
     public EnrolleeFormatter(ExportOptions exportOptions) {

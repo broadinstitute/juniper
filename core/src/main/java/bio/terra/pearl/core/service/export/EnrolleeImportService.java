@@ -377,6 +377,7 @@ public class EnrolleeImportService {
         final RegistrationService.RegistrationResult regResult = registerIfNeeded(portalShortcode, studyEnv, participantUserInfo);
 
         Enrollee enrollee = createEnrolleeIfNeeded(studyShortcode, studyEnv, enrolleeMap, exportOptions, regResult, auditInfo, participantUserInfo);
+        enrollee = updateEnrolleeIfNeeded(studyEnv, enrolleeMap, exportOptions, enrollee, auditInfo);
 
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
@@ -460,6 +461,21 @@ public class EnrolleeImportService {
             }
             return newEnrollee;
         });
+    }
+
+    private @NotNull Enrollee updateEnrolleeIfNeeded(
+            StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, Enrollee enrollee, DataAuditInfo auditInfo
+    ) {
+        EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
+
+        Enrollee enrolleeInfo = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap, 1);
+
+        if (!StringUtils.isEmpty(enrolleeInfo.getResearchId()) && !enrolleeInfo.getResearchId().equals(enrollee.getResearchId())) {
+            enrollee.setResearchId(enrolleeInfo.getResearchId());
+            enrolleeService.update(enrollee);
+        }
+
+        return enrollee;
     }
 
     private @NotNull Enrollee createProxyEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, RegistrationService.RegistrationResult registration, String preferredLanguage, ExportOptions exportOptions, Map<String, String> data, DataAuditInfo auditInfo) {

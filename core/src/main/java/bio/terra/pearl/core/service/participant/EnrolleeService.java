@@ -151,10 +151,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      * (See loadForAdminView description for performance information)
      */
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
+        enrollee.setResearchId(null);
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         return enrollee;
+    }
+
+    public Optional<Enrollee> findOneByResearchId(String researchId) {
+        return dao.findOneByResearchId(researchId);
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {

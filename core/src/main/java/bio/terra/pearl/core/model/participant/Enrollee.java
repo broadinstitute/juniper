@@ -33,6 +33,7 @@ public class Enrollee extends BaseEntity implements StudyEnvAttached {
     private UUID preEnrollmentResponseId;
     private PreEnrollmentResponse preEnrollmentResponse;
     private String shortcode;
+    private String researchId;
     @Builder.Default
     private boolean subject = true; // whether this Enrollee is a primary subject of the study (as opposed to just a proxy or family member)
     private boolean consented;

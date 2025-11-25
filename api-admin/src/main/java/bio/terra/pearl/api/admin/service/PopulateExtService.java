@@ -16,14 +16,15 @@ import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.service.extract.PortalExtractService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipInputStream;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PopulateExtService {
@@ -198,6 +199,10 @@ public class PopulateExtService {
     }
     if ("CONVERT_CONSENTS".equals(command)) {
       throw new IllegalArgumentException("that command is no longer supported");
+    }
+    if ("GENERATE_RESEARCH_IDS".equals(command)) {
+      int numGenerated = enrolleePopulator.generateResearchIds();
+      return "Generated " + numGenerated + " research ids";
     }
     throw new IllegalArgumentException("unknown command");
   }

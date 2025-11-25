@@ -78,6 +78,15 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
             values={[participantUser?.username || '']}
           />}
         <InfoCardValue
+          title={'Research ID'}
+          condensed={true}
+          values={[enrollee.researchId || 'n/a']}
+          info={
+            'Research IDs are never sent to the participant. They are safe to use ' +
+            'in published research without risk of reidentification.'
+          }
+        />
+        <InfoCardValue
           title={'Last login'}
           condensed={true}
           values={[instantToDefaultString(participantUser?.portalParticipantUsers?.[0]?.lastLogin)]}

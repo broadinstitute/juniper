@@ -75,6 +75,12 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private String kitEligibilityRule = null;
 
     /**
+     * Use research IDs instead of shortcodes when creating kits for participants (lower risk of reidentification)
+     */
+    @Builder.Default
+    private boolean kitUseResearchId = false;
+
+    /**
      * the "home" timezone of the study (e.g. where the study staff is located).  For now, this only impacts export behavior
      * This is a ZoneId stored as a String
      */

@@ -115,9 +115,11 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     private String makeKitRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata) {
+        String participantId = studyEnvironmentConfig.isKitUseResearchId() ? enrollee.getResearchId() : enrollee.getShortcode();
+
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
-                .juniperParticipantId(enrollee.getShortcode())
+                .juniperParticipantId(participantId)
                 .skipAddressValidation(kitRequest.isSkipAddressValidation())
                 .sexAtBirth(metadata.getSexAtBirth())
                 .build();

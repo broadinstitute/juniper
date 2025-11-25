@@ -554,6 +554,37 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
 
+    public int generateResearchIds() {
+        // one study env at a time
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll();
+
+        int numGenerated = 0;
+        for (StudyEnvironment studyEnv : studyEnvs) {
+            numGenerated += generateResearchIdsInStudyEnv(studyEnv);
+        }
+        return numGenerated;
+
+    }
+
+
+    public int generateResearchIdsInStudyEnv(StudyEnvironment studyEnv) {
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnv.getId());
+
+        int numGenerated = 0;
+
+        for (Enrollee enrollee : enrollees) {
+            if (enrollee.getResearchId() != null) {
+                continue;
+            }
+            String uniqueResearchId = shortcodeService.generateResearchId("", enrolleeService::findOneByResearchId);
+            enrollee.setResearchId(uniqueResearchId);
+            enrolleeService.update(enrollee);
+            numGenerated++;
+        }
+        return numGenerated;
+    }
+
+
     private final EnrolleeService enrolleeService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;

@@ -1,6 +1,7 @@
 import React from 'react'
 import { isEmpty } from 'lodash'
 import classNames from 'classnames'
+import InfoPopup from 'components/forms/InfoPopup'
 
 
 /**
@@ -83,16 +84,25 @@ export function InfoCardBody({ children }: { children: React.ReactNode }) {
  * One row of data in the card, where the title is on the left-hand side and the values are on the right.
  */
 export function InfoCardRow(
-  { title, children, condensed }: {
-        title: string,
-        children: React.ReactNode,
-        condensed?: boolean
+  {
+    title,
+    children,
+    condensed,
+    info
+  }: {
+    title: string,
+    children: React.ReactNode,
+    condensed?: boolean,
+    info?: string
     }
 ) {
   const marginBottom = condensed ? 'mb-2' : 'mb-4'
   return <>
     <div className={classNames('w-25 fw-bold mt-2', marginBottom)} aria-label={title}>
       {title}
+      {info && (
+        <InfoPopup content={info}/>
+      )}
     </div>
     <div className={classNames('w-75', marginBottom)}>
       {children}
@@ -106,13 +116,19 @@ export function InfoCardRow(
  * If the value(s) provided are empty, then "None provided" is displayed.
  */
 export function InfoCardValue(
-  { title, values, condensed }: {
-        title: string,
-        values: React.ReactNode[],
-        condensed?: boolean
-    }
+  {
+    title,
+    values,
+    condensed,
+    info
+  }: {
+    title: string,
+    values: React.ReactNode[],
+    condensed?: boolean
+    info?: string
+  }
 ) {
-  return <InfoCardRow title={title} condensed={condensed}>
+  return <InfoCardRow title={title} condensed={condensed} info={info}>
     {(isEmpty(values) || values.every(isEmpty)) && <p className="fst-italic mb-0 mt-2 text-muted">None provided</p>}
     {
       values.filter(val => !isEmpty(val)).map((val, idx) => (

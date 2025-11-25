@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: "enrollee_research_id"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column:
+                  name: research_id
+                  type: text
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column:
+                  name: kit_use_research_ids
+                  type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
+
