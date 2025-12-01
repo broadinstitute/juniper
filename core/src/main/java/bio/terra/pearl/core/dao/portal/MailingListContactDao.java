@@ -31,4 +31,8 @@ public class MailingListContactDao extends BaseMutableJdbiDao<MailingListContact
     public void deleteByPortalEnvId(UUID portalEnvId) {
         deleteByProperty("portal_environment_id", portalEnvId);
     }
+
+    public void deleteByParticipantUserId(UUID participantUserId) {
+        deleteByProperty("participant_user_id", participantUserId);
+    }
 }
