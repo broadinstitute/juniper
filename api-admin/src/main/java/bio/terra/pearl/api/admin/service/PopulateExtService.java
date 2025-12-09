@@ -16,15 +16,14 @@ import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.service.extract.PortalExtractService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipInputStream;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PopulateExtService {
@@ -203,11 +202,10 @@ public class PopulateExtService {
     if ("GENERATE_RESEARCH_IDS".equals(command)) {
       int numGenerated = enrolleePopulator.generateResearchIds();
       return new PopulateCommandResult(
-              "GENERATE_RESEARCH_IDS", true, "Generated " + numGenerated + " research ids");
+          "GENERATE_RESEARCH_IDS", true, "Generated " + numGenerated + " research ids");
     }
     throw new IllegalArgumentException("unknown command");
   }
 
-  private record PopulateCommandResult(String command, Boolean successful, String result) {
-  }
+  private record PopulateCommandResult(String command, Boolean successful, String result) {}
 }

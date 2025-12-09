@@ -173,6 +173,7 @@ describe('Study Settings', () => {
         'useDevDsmRealm': false,
         'useStubDsm': false,
         'enableInPersonKits': false,
+        'kitUseResearchIds': false,
         timeZone: 'America/New_York',
         'includeSexAtBirthInKitMetadata': false
       }
