@@ -158,8 +158,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return enrollee;
     }
 
-    public Optional<Enrollee> findOneByResearchId(String researchId, UUID studyEnvId) {
-        return dao.findOneByResearchId(researchId, studyEnvId);
+    public Optional<Enrollee> findOneByResearchId(String researchId) {
+        return dao.findOneByResearchId(researchId);
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
@@ -223,7 +223,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
         }
         if (enrollee.getResearchId() == null) {
-            enrollee.setResearchId(shortcodeService.generateResearchId(null, (researchId) -> dao.findOneByResearchId(researchId, enrollee.getStudyEnvironmentId())));
+            enrollee.setResearchId(shortcodeService.generateResearchId(null, dao::findOneByResearchId));
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
@@ -241,7 +241,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public void updateResearchId(UUID enrolleeId, String researchId) {
         Optional<Enrollee> enrolleeOpt = dao.find(enrolleeId);
         if (enrolleeOpt.isPresent()) {
-            if (dao.findOneByResearchId(researchId, enrolleeOpt.get().getStudyEnvironmentId()).isPresent()) {
+            // make sure that new research ID is unique, but given that legacy IDs might follow similar formats
+            // across studies (e.g., simple counters), only check uniqueness within the study environment.
+            if (dao.findOneByResearchIdInStudyEnv(researchId, enrolleeOpt.get().getStudyEnvironmentId()).isPresent()) {
                 throw new IllegalArgumentException("Enrollee with research id already exists");
             }
         }

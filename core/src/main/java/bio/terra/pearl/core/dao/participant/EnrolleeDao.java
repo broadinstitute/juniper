@@ -30,7 +30,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
         return findByProperty("shortcode", shortcode);
     }
 
-    public Optional<Enrollee> findOneByResearchId(String researchId, UUID studyEnvId) {
+    public Optional<Enrollee> findOneByResearchId(String researchId) {
+        return findByProperty("research_id", researchId);
+    }
+
+    public Optional<Enrollee> findOneByResearchIdInStudyEnv(String researchId, UUID studyEnvId) {
         return findByTwoProperties("research_id", researchId, "study_environment_id", studyEnvId);
     }
 

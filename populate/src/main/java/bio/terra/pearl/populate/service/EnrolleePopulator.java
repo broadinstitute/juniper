@@ -576,7 +576,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             if (enrollee.getResearchId() != null) {
                 continue;
             }
-            String uniqueResearchId = shortcodeService.generateResearchId("", (researchId) -> enrolleeService.findOneByResearchId(researchId, studyEnv.getId()));
+            String uniqueResearchId = shortcodeService.generateResearchId("", enrolleeService::findOneByResearchId);
             enrollee.setResearchId(uniqueResearchId);
             enrolleeService.update(enrollee);
             numGenerated++;
