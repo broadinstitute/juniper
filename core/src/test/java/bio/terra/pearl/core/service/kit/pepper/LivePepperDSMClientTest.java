@@ -29,8 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class LivePepperDSMClientTest extends BaseSpringBootTest {
@@ -189,6 +188,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         PepperDSMKitRequest requestBody = objectMapper.readValue(requestBodyStr, PepperDSMKitRequest.class);
         assertNull(requestBody.getJuniperKitRequest().getSexAtBirth());
+        assertEquals(enrollee.getShortcode(), requestBody.getJuniperKitRequest().getJuniperParticipantId());
     }
 
     @Transactional
@@ -221,6 +221,38 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         PepperDSMKitRequest requestBody = objectMapper.readValue(requestBodyStr, PepperDSMKitRequest.class);
         assertThat(requestBody.getJuniperKitRequest().getSexAtBirth(), equalTo("M"));
+    }
+
+    @Transactional
+    @Test
+    public void testSendKitRequestWithResearchIds(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
+        PepperKit kitStatus = PepperKit.builder()
+                .juniperKitId(kitRequest.getId().toString())
+                .currentStatus(PepperKitStatus.CREATED.pepperString)
+                .build();
+        PepperKitStatusResponse mockResponse = PepperKitStatusResponse.builder()
+                .isError(false)
+                .kits(new PepperKit[]{kitStatus})
+                .build();
+
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
+
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", StudyEnvironmentConfig.builder().kitUseResearchIds(true).build(), enrollee, kitRequest, address, new PepperKitMetadata());
+
+        assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
+        RecordedRequest request = verifyRequestForPath("/shipKit");
+
+        assertThat(request.getMethod(), equalTo("POST"));
+
+
+        String requestBodyStr = request.getBody().readUtf8();
+
+        PepperDSMKitRequest requestBody = objectMapper.readValue(requestBodyStr, PepperDSMKitRequest.class);
+        assertEquals(enrollee.getResearchId(), requestBody.getJuniperKitRequest().getJuniperParticipantId());
     }
 
     @Transactional

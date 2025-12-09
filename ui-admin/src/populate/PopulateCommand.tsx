@@ -31,7 +31,7 @@ export default function PopulateCommand() {
     </label>
     { !isLoading && !!result && <div className="mt-5">
       <h5>Result</h5>
-      { JSON.stringify(result, null, 2) }
+      {<pre>{JSON.stringify(result, null, 2)}</pre>}
     </div> }
     <br/>
     <Button variant="primary" type="button" onClick={doCommand} disabled={isLoading}>

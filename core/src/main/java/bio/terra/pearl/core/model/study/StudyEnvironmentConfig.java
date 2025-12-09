@@ -78,7 +78,7 @@ public class StudyEnvironmentConfig extends BaseEntity {
      * Use research IDs instead of shortcodes when creating kits for participants (lower risk of reidentification)
      */
     @Builder.Default
-    private boolean kitUseResearchId = false;
+    private boolean kitUseResearchIds = false;
 
     /**
      * the "home" timezone of the study (e.g. where the study staff is located).  For now, this only impacts export behavior

@@ -134,6 +134,16 @@ export const KitSettings = (
             onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
         </label>
       </div>
+      <div>
+        <label className="form-label">
+          Use research IDs as participant kit identifier <InfoPopup content={
+            'If checked, kit request identifiers will use research ids ' +
+          'instead of shortcodes for this study environment.'
+          }/>
+          <input type="checkbox" checked={config.kitUseResearchIds}
+            onChange={e => updateConfig('kitUseResearchIds', e.target.checked)}/>
+        </label>
+      </div>
     </RequireUserPermission>
     <div>
       <label className="form-label">

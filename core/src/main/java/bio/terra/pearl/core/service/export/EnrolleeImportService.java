@@ -472,7 +472,7 @@ public class EnrolleeImportService {
 
         if (!StringUtils.isEmpty(enrolleeInfo.getResearchId()) && !enrolleeInfo.getResearchId().equals(enrollee.getResearchId())) {
             enrollee.setResearchId(enrolleeInfo.getResearchId());
-            enrolleeService.update(enrollee);
+            enrolleeService.updateResearchId(enrollee.getId(), enrolleeInfo.getResearchId());
         }
 
         return enrollee;

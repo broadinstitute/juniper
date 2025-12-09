@@ -30,6 +30,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
                         enrollee.study_environment_id as enrollee_study_environment_id, \
                         enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, \
                         enrollee.shortcode as enrollee_shortcode, \
+                        enrollee.research_id as enrollee_research_id, \
                         enrollee.subject as enrollee_subject, \
                         enrollee.consented as enrollee_consented, \
                         enrollee.source as enrollee_source, \

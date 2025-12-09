@@ -93,7 +93,7 @@ export function InfoCardRow(
     title: string,
     children: React.ReactNode,
     condensed?: boolean,
-    info?: string
+    info?: React.ReactNode
     }
 ) {
   const marginBottom = condensed ? 'mb-2' : 'mb-4'
@@ -125,7 +125,7 @@ export function InfoCardValue(
     title: string,
     values: React.ReactNode[],
     condensed?: boolean
-    info?: string
+    info?: React.ReactNode
   }
 ) {
   return <InfoCardRow title={title} condensed={condensed} info={info}>

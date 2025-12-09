@@ -48,6 +48,7 @@ export type StudyEnvironmentConfig = {
   timeZone: string
   studyEligibilityRule?: string
   kitEligibilityRule?: string
+  kitUseResearchIds: boolean
 }
 
 export type StudyEnvironmentSurvey = {

@@ -158,8 +158,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return enrollee;
     }
 
-    public Optional<Enrollee> findOneByResearchId(String researchId) {
-        return dao.findOneByResearchId(researchId);
+    public Optional<Enrollee> findOneByResearchId(String researchId, UUID studyEnvId) {
+        return dao.findOneByResearchId(researchId, studyEnvId);
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
@@ -222,6 +222,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         if (enrollee.getShortcode() == null) {
             enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
         }
+        if (enrollee.getResearchId() == null) {
+            enrollee.setResearchId(shortcodeService.generateResearchId(null, (researchId) -> dao.findOneByResearchId(researchId, enrollee.getStudyEnvironmentId())));
+        }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
                 savedEnrollee.getShortcode(), savedEnrollee.getParticipantUserId());
@@ -232,6 +235,17 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public void updateConsented(UUID enrolleeId, boolean consented) {
         dao.updateConsented(enrolleeId, consented);
         logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
+    }
+
+    @Transactional
+    public void updateResearchId(UUID enrolleeId, String researchId) {
+        Optional<Enrollee> enrolleeOpt = dao.find(enrolleeId);
+        if (enrolleeOpt.isPresent()) {
+            if (dao.findOneByResearchId(researchId, enrolleeOpt.get().getStudyEnvironmentId()).isPresent()) {
+                throw new IllegalArgumentException("Enrollee with research id already exists");
+            }
+        }
+        dao.updateResearchId(enrolleeId, researchId);
     }
 
     public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,

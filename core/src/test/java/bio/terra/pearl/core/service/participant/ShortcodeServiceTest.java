@@ -60,7 +60,7 @@ class ShortcodeServiceTest {
         Mockito.when(
                         randomUtilService.generateSecureRandomString(
                                 ShortcodeService.SHORTCODE_LENGTH,
-                                ShortcodeService.SHORTCODE_ALLOWED_CHARS))
+                                ShortcodeService.ALLOWED_CHARS))
                 .thenReturn("BANNED");
         ShortcodeService shortcodeService = Mockito.spy(new ShortcodeService(randomUtilService));
 
@@ -74,7 +74,7 @@ class ShortcodeServiceTest {
         Mockito.when(
                         randomUtilService.generateSecureRandomString(
                                 ShortcodeService.SHORTCODE_LENGTH,
-                                ShortcodeService.SHORTCODE_ALLOWED_CHARS))
+                                ShortcodeService.ALLOWED_CHARS))
                 .thenReturn("BANNED")
                 .thenReturn("ALLOWED");
         ShortcodeService shortcodeService = Mockito.spy(new ShortcodeService(randomUtilService));

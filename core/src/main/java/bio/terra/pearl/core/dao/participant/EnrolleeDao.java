@@ -30,8 +30,8 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
         return findByProperty("shortcode", shortcode);
     }
 
-    public Optional<Enrollee> findOneByResearchId(String researchId) {
-        return findByProperty("research_id", researchId);
+    public Optional<Enrollee> findOneByResearchId(String researchId, UUID studyEnvId) {
+        return findByTwoProperties("research_id", researchId, "study_environment_id", studyEnvId);
     }
 
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
@@ -82,6 +82,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
     public void updateConsented(UUID enrolleeId, boolean consented) {
         updateProperty(enrolleeId, "consented", consented);
     }
+
+    public void updateResearchId(UUID enrolleeId, String researchId) {
+        updateProperty(enrolleeId, "research_id", researchId);
+    }
+
 
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
         return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);

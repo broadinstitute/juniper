@@ -202,8 +202,12 @@ public class PopulateExtService {
     }
     if ("GENERATE_RESEARCH_IDS".equals(command)) {
       int numGenerated = enrolleePopulator.generateResearchIds();
-      return "Generated " + numGenerated + " research ids";
+      return new PopulateCommandResult(
+              "GENERATE_RESEARCH_IDS", true, "Generated " + numGenerated + " research ids");
     }
     throw new IllegalArgumentException("unknown command");
+  }
+
+  private record PopulateCommandResult(String command, Boolean successful, String result) {
   }
 }
