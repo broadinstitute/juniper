@@ -573,7 +573,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         int numGenerated = 0;
 
         for (Enrollee enrollee : enrollees) {
-            if (enrollee.getResearchId() != null) {
+            if (StringUtils.isNotEmpty(enrollee.getResearchId())) {
                 continue;
             }
             String uniqueResearchId = shortcodeService.generateResearchId("", enrolleeService::findOneByResearchId);

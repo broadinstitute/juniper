@@ -10,7 +10,7 @@ export enum DocsKey {
   WITHDRAWAL = 'WITHDRAWAL',
   DERIVED_VALUES = 'DERIVED_VALUES',
   EXPORT_FORMATS = 'EXPORT_FORMATS',
-  RESEARCH_IDS = 'RESEARCH_IDS',
+  PARTICIPANT_IDENTIFIERS = 'PARTICIPANT_IDENTIFIERS',
 }
 
 /** mapping of a docs key to a zendesk page */
@@ -24,7 +24,7 @@ const ZENDESK_PAGES: Record<DocsKey, string> = {
   WITHDRAWAL: 'https://broad-juniper.zendesk.com/hc/en-us/articles/20172265139995-How-to-withdraw-an-enrollee',
   DERIVED_VALUES: 'https://broad-juniper.zendesk.com/hc/en-us/articles/29123290381723-Derived-Values',
   EXPORT_FORMATS: 'https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123',
-  RESEARCH_IDS: '' // TODO
+  PARTICIPANT_IDENTIFIERS: 'https://broad-juniper.zendesk.com/hc/en-us/articles/26198602287771-Participant-identifiers'
 }
 
 /** gets the url for a given documentation key */

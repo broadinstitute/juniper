@@ -20,6 +20,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -219,10 +220,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     @Transactional
     public Enrollee create(Enrollee enrollee) {
-        if (enrollee.getShortcode() == null) {
+        if (StringUtils.isEmpty(enrollee.getShortcode())) {
             enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
         }
-        if (enrollee.getResearchId() == null) {
+        if (StringUtils.isEmpty(enrollee.getResearchId())) {
             enrollee.setResearchId(shortcodeService.generateResearchId(null, dao::findOneByResearchId));
         }
         Enrollee savedEnrollee = dao.create(enrollee);

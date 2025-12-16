@@ -88,7 +88,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
           info={
             <span>
               Research IDs should be used in place of Shortcodes when referring to participants in published research.
-              See <ZendeskLink doc={DocsKey.RESEARCH_IDS}>here</ZendeskLink> for more information.
+              See <ZendeskLink doc={DocsKey.PARTICIPANT_IDENTIFIERS}>here</ZendeskLink> for more information.
             </span>
           }
         />
