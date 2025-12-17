@@ -381,6 +381,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ParticipantUser user = participantUserService.findOne(username, bundle.getStudyEnv().getEnvironmentName()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
+        assertThat(enrollee.getShortcode(), notNullValue());
+        assertThat(enrollee.getResearchId(), notNullValue());
     }
 
     @Test
@@ -394,20 +396,22 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "profile.birthDate", "1998-05-14",
                 "profile.doNotEmailSolicit", "true",
                 "profile.mailingAddress.street1", "105 Broadway",
-                "profile.mailingAddress.postalCode", "45455");
+                "profile.mailingAddress.postalCode", "45455",
+                "enrollee.researchId", "12345");
 
-        Enrollee enrolle = enrolleeImportService.importEnrollee(
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
                 enrolleeMap,
                 new ExportOptions(), null);
-        Profile profile = profileService.loadWithMailingAddress(enrolle.getProfileId()).orElseThrow();
+        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow();
         assertThat(profile.getGivenName(), equalTo("Alex"));
         assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1998, 5, 14)));
         assertThat(profile.isDoNotEmailSolicit(), equalTo(true));
         assertThat(profile.getMailingAddress().getStreet1(), equalTo("105 Broadway"));
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
+        assertThat(enrollee.getResearchId(), equalTo("12345"));
     }
 
     @Test
@@ -502,7 +506,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         String username = enrolleeBundle.participantUser().getUsername();
         Map<String, String> enrolleeMap = Map.of(
                 "account.username", username,
-                "profile.familyName", "Smith");
+                "profile.familyName", "Smith",
+                "enrollee.researchId", "12ASDF");
 
         Enrollee importedEnrolle = enrolleeImportService.importEnrollee(
                 study2Bundle.getPortal().getShortcode(),
@@ -516,6 +521,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1989, 1, 1)));
         assertThat(profile.getMailingAddress().getStreet1(), equalTo("123 Main St"));
         assertThat(profile.getMailingAddress().getPostalCode(), equalTo("12345"));
+        assertThat(importedEnrolle.getResearchId(), equalTo("12ASDF"));
 
         Enrollee priorEnrollee = enrolleeService.find(enrolleeBundle.enrollee().getId()).orElseThrow();
         assertThat(priorEnrollee.getProfileId(), equalTo(importedEnrolle.getProfileId()));

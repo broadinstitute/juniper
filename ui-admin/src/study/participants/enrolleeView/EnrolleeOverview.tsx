@@ -28,6 +28,10 @@ import { studyEnvParticipantPath } from '../ParticipantsRouter'
 import { Link } from 'react-router-dom'
 import { useUser } from 'user/UserProvider'
 import { UsernameEditor } from 'study/participants/enrolleeView/UsernameEditor'
+import {
+  DocsKey,
+  ZendeskLink
+} from 'util/zendeskUtils'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
@@ -77,6 +81,17 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
             condensed={true}
             values={[participantUser?.username || '']}
           />}
+        <InfoCardValue
+          title={'Research ID'}
+          condensed={true}
+          values={[enrollee.researchId || 'n/a']}
+          info={
+            <span>
+              Research IDs should be used in place of Shortcodes when referring to participants in published research.
+              See <ZendeskLink doc={DocsKey.PARTICIPANT_IDENTIFIERS}>here</ZendeskLink> for more information.
+            </span>
+          }
+        />
         <InfoCardValue
           title={'Last login'}
           condensed={true}

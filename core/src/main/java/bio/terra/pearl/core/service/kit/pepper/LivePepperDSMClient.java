@@ -117,7 +117,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     private String makeKitRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address, PepperKitMetadata metadata) {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
-                .juniperParticipantId(enrollee.getShortcode())
+                .juniperParticipantId(getKitParticipantId(enrollee, studyEnvironmentConfig))
                 .skipAddressValidation(kitRequest.isSkipAddressValidation())
                 .sexAtBirth(metadata.getSexAtBirth())
                 .build();
@@ -139,7 +139,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     private String makeKitReturnOnlyRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitMetadata metadata) {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builder()
                 .juniperKitId(kitRequest.getId().toString())
-                .juniperParticipantId(enrollee.getShortcode())
+                .juniperParticipantId(getKitParticipantId(enrollee, studyEnvironmentConfig))
                 .skipAddressValidation(kitRequest.isSkipAddressValidation())
                 .kitLabel(kitRequest.getKitLabel())
                 .returnOnly(true)
@@ -158,6 +158,10 @@ public class LivePepperDSMClient implements PepperDSMClient {
             // so if it fails, something very unexpected is happening
             throw new InternalServerException("Error serializing PepperDSMKitRequest", e);
         }
+    }
+
+    private String getKitParticipantId(Enrollee enrollee, StudyEnvironmentConfig studyEnvironmentConfig) {
+        return studyEnvironmentConfig.isKitUseResearchIds() ? enrollee.getResearchId() : enrollee.getShortcode();
     }
 
     private WebClient.RequestHeadersSpec<?> buildAuthedGetRequest(String path) {

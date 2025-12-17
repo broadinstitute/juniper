@@ -2,11 +2,6 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.StudyEnvAttachedDao;
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
-import bio.terra.pearl.core.dao.kit.KitTypeDao;
-import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
-import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
-import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import org.jdbi.v3.core.Jdbi;
@@ -21,30 +16,9 @@ import java.util.stream.Stream;
 
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEnvAttachedDao<Enrollee> {
-    private final KitRequestDao kitRequestDao;
-    private final KitTypeDao kitTypeDao;
-    private final ParticipantTaskDao participantTaskDao;
-    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private final ProfileDao profileDao;
-    private final SurveyResponseDao surveyResponseDao;
-    private final ParticipantNoteDao participantNoteDao;
 
-    public EnrolleeDao(Jdbi jdbi,
-                       KitRequestDao kitRequestDao,
-                       KitTypeDao kitTypeDao,
-                       ParticipantTaskDao participantTaskDao,
-                       PreEnrollmentResponseDao preEnrollmentResponseDao,
-                       ProfileDao profileDao,
-                       SurveyResponseDao surveyResponseDao,
-                       ParticipantNoteDao participantNoteDao) {
+    public EnrolleeDao(Jdbi jdbi) {
         super(jdbi);
-        this.kitRequestDao = kitRequestDao;
-        this.kitTypeDao = kitTypeDao;
-        this.participantTaskDao = participantTaskDao;
-        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
-        this.profileDao = profileDao;
-        this.surveyResponseDao = surveyResponseDao;
-        this.participantNoteDao = participantNoteDao;
     }
 
     @Override
@@ -54,6 +28,14 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return findByProperty("shortcode", shortcode);
+    }
+
+    public Optional<Enrollee> findOneByResearchId(String researchId) {
+        return findByProperty("research_id", researchId);
+    }
+
+    public Optional<Enrollee> findOneByResearchIdInStudyEnv(String researchId, UUID studyEnvId) {
+        return findByTwoProperties("research_id", researchId, "study_environment_id", studyEnvId);
     }
 
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
@@ -104,6 +86,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
     public void updateConsented(UUID enrolleeId, boolean consented) {
         updateProperty(enrolleeId, "consented", consented);
     }
+
+    public void updateResearchId(UUID enrolleeId, String researchId) {
+        updateProperty(enrolleeId, "research_id", researchId);
+    }
+
 
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
         return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);

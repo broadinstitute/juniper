@@ -199,6 +199,13 @@ public class PopulateExtService {
     if ("CONVERT_CONSENTS".equals(command)) {
       throw new IllegalArgumentException("that command is no longer supported");
     }
+    if ("GENERATE_RESEARCH_IDS".equals(command)) {
+      int numGenerated = enrolleePopulator.generateResearchIds();
+      return new PopulateCommandResult(
+          "GENERATE_RESEARCH_IDS", true, "Generated " + numGenerated + " research ids");
+    }
     throw new IllegalArgumentException("unknown command");
   }
+
+  private record PopulateCommandResult(String command, Boolean successful, String result) {}
 }

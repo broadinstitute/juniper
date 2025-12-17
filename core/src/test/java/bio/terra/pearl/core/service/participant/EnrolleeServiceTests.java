@@ -13,6 +13,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EnrolleeServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -38,7 +40,11 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
         Enrollee enrollee = enrolleeFactory.builderWithDependencies(getTestName(info)).build();
         Enrollee savedEnrollee = enrolleeService.create(enrollee);
         DaoTestUtils.assertGeneratedProperties(savedEnrollee);
-        Assertions.assertNotNull(savedEnrollee.getShortcode());
+        assertTrue(StringUtils.isNotEmpty(savedEnrollee.getShortcode()));
+        assertTrue(StringUtils.isNotEmpty(savedEnrollee.getResearchId()));
+        assertTrue(savedEnrollee.getShortcode().matches("[A-Z]{6}"));
+        assertTrue(savedEnrollee.getResearchId().matches("[0-9]{2}[A-Z]{4}"));
+
         Assertions.assertEquals(enrollee.getParticipantUserId(), savedEnrollee.getParticipantUserId());
     }
 

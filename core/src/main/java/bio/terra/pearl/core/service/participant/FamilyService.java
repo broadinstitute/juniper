@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.FamilyEnrollee;
-import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.ParticipantDataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;

@@ -20,6 +20,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -151,10 +152,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      * (See loadForAdminView description for performance information)
      */
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
+        enrollee.setResearchId(null);
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         return enrollee;
+    }
+
+    public Optional<Enrollee> findOneByResearchId(String researchId) {
+        return dao.findOneByResearchId(researchId);
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
@@ -214,8 +220,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     @Transactional
     public Enrollee create(Enrollee enrollee) {
-        if (enrollee.getShortcode() == null) {
+        if (StringUtils.isEmpty(enrollee.getShortcode())) {
             enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
+        }
+        if (StringUtils.isEmpty(enrollee.getResearchId())) {
+            enrollee.setResearchId(shortcodeService.generateResearchId(null, dao::findOneByResearchId));
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
@@ -227,6 +236,19 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public void updateConsented(UUID enrolleeId, boolean consented) {
         dao.updateConsented(enrolleeId, consented);
         logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
+    }
+
+    @Transactional
+    public void updateResearchId(UUID enrolleeId, String researchId) {
+        Optional<Enrollee> enrolleeOpt = dao.find(enrolleeId);
+        if (enrolleeOpt.isPresent()) {
+            // make sure that new research ID is unique, but given that legacy IDs might follow similar formats
+            // across studies (e.g., simple counters), only check uniqueness within the study environment.
+            if (dao.findOneByResearchIdInStudyEnv(researchId, enrolleeOpt.get().getStudyEnvironmentId()).isPresent()) {
+                throw new IllegalArgumentException("Enrollee with research id already exists");
+            }
+        }
+        dao.updateResearchId(enrolleeId, researchId);
     }
 
     public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,

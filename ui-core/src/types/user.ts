@@ -53,6 +53,7 @@ export type Enrollee = {
     profile: Profile
     profileId: string
     shortcode: string
+    researchId?: string
     studyEnvironmentId: string
     surveyResponses: SurveyResponse[]
     familyEnrollees?: FamilyEnrollee[]
