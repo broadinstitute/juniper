@@ -450,6 +450,36 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                                         .shortcode("JSALK")
                                         .build())
                                 .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.shortcode} = 'JSALK'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .shortcode("OTHER")
+                                        .build())
+                                .build()));
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.researchId} = '12SALK'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .researchId("12SALK")
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.researchId} = '12SALK'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .researchId("12OTHER")
+                                        .build())
+                                .build()));
     }
 
     @Test

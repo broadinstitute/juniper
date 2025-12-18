@@ -232,6 +232,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("enrollee.subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("enrollee.researchId", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("enrollee.createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
                 Map.entry("portalUser.createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
                 Map.entry("portalUser.lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()),

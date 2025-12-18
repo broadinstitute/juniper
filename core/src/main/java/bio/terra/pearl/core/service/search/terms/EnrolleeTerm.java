@@ -65,6 +65,7 @@ public class EnrolleeTerm extends SearchTerm {
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry("shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("researchId", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
             Map.entry("consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
             Map.entry("createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()));

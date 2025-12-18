@@ -98,7 +98,8 @@ function ParticipantListTable({
     'givenName': false,
     'familyName': false,
     'contactEmail': false,
-    'subject': false
+    'subject': false,
+    'researchId': false
   })
 
 
@@ -133,6 +134,15 @@ function ParticipantListTable({
       )
     },
     enrolleeShortcodeColumn(currentEnvPath),
+    {
+      header: 'Research ID',
+      id: 'researchId',
+      accessorKey: 'enrollee.researchId',
+      enableColumnFilter: true,
+      meta: {
+        columnType: 'string'
+      }
+    },
     {
       header: 'Created',
       id: 'createdAt',
