@@ -43,4 +43,9 @@ public class MailingListContactService extends ParticipantDataAuditedService<Mai
     public void deleteByPortalEnvId(UUID portalEnvId) {
         dao.deleteByPortalEnvId(portalEnvId);
     }
+
+    @Transactional
+    public void deleteByParticipantUserId(UUID participantUserId) {
+        dao.deleteByParticipantUserId(participantUserId);
+    }
 }

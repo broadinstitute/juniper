@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
+import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
@@ -54,6 +55,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final ShortcodeService shortcodeService;
     private final FamilyEnrolleeService familyEnrolleeService;
     private final ParticipantFileService participantFileService;
+    private final MailingListContactService mailingListContactService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -73,7 +75,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
                            @Lazy PortalParticipantUserService portalParticipantUserService,
-                           FamilyService familyService, ShortcodeService shortcodeService, FamilyEnrolleeService familyEnrolleeService, ParticipantFileService participantFileService) {
+                           FamilyService familyService, ShortcodeService shortcodeService, FamilyEnrolleeService familyEnrolleeService, ParticipantFileService participantFileService, MailingListContactService mailingListContactService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -96,6 +98,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.shortcodeService = shortcodeService;
         this.familyEnrolleeService = familyEnrolleeService;
         this.participantFileService = participantFileService;
+        this.mailingListContactService = mailingListContactService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -203,6 +206,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         }
         if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
             try {
+                mailingListContactService.deleteByParticipantUserId(enrollee.getParticipantUserId());
                 portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
                 participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
             } catch (Exception e) {
