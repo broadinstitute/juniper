@@ -334,13 +334,11 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
             return (
               <button key={index} className="dropdown-item" aria-label={lang.languageName}
                 onClick={() => {
-                  //If the user selects a language from the dropdown, remove the lang query param from the URL
-                  if (langQueryParam) {
-                    searchParams.delete('lang')
-                    navigate({ search: searchParams.toString() })
-                  }
+                  // persist lang as a query param - makes it easier to share internationalized links
                   changeLanguage(lang.languageCode)
-                  reloadPortal()
+
+                  searchParams.set('lang', lang.languageCode)
+                  navigate({ search: searchParams.toString() })
                 }}>
                 {lang.languageName}
               </button>
