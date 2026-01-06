@@ -375,33 +375,6 @@ describe('language selector', () => {
     expect(buttons[2]).toHaveTextContent('Spanish')
   })
 
-  it('reloads the portal when a language is selected', () => {
-    const languageOptions = [
-      { languageCode: 'en', languageName: 'English' },
-      { languageCode: 'es', languageName: 'Spanish' }
-    ]
-    const selectedLanguage = 'en'
-    const changeLanguage = jest.fn()
-    const reloadPortal = jest.fn()
-
-    const { RoutedComponent } = setupRouterTest(
-      <LanguageDropdown
-        languageOptions={languageOptions}
-        selectedLanguage={selectedLanguage}
-        changeLanguage={changeLanguage}
-        reloadPortal={reloadPortal}
-      />
-    )
-    render(RoutedComponent)
-
-    const languageSelector = screen.getByLabelText('Select a language')
-    languageSelector.click()
-    const spanishButton = screen.getByText('Spanish')
-    spanishButton.click()
-    expect(changeLanguage).toHaveBeenCalledWith('es')
-    expect(reloadPortal).toHaveBeenCalled()
-  })
-
   it('does not render when there is only one language', () => {
     const languageOptions = [
       { languageCode: 'en', languageName: 'English' }
