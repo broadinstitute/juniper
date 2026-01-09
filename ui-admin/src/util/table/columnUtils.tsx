@@ -21,7 +21,7 @@ import Select from 'react-select'
 import { Link } from 'react-router-dom'
 import { checkboxColumnCell } from './tableUtils'
 import {
-  instantToDefaultString,
+  instantToDefaultString, dateDiff,
   ParticipantTaskStatusOptions
 } from '@juniper/ui-core'
 import _startCase from 'lodash/startCase'
@@ -202,6 +202,11 @@ const dynamicTaskColumn = <T extends EnrolleeSearchExpressionResult, >(facet: Ke
       const task = info.tasks.find(task => task.targetStableId === taskStableId)
       if (field === 'status') {
         return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
+      } else if (field === 'completedDaysAgo') {
+        if (!task?.completedAt) {
+          return ''
+        }
+        return dateDiff(new Date(), new Date(task.completedAt * 1000))
       }
 
       return get(task, field)

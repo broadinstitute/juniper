@@ -9,14 +9,15 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.BOOLEAN;
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
 import static org.jooq.impl.DSL.condition;
 
 /**
@@ -51,6 +52,15 @@ public class TaskTerm extends SearchTerm {
         if (field.equals("assigned")) {
             return new SearchValue(taskOpt.isPresent());
         }
+        if (field.equals("completedDaysAgo")) {
+            if (taskOpt.isPresent()) {
+                ParticipantTask task = taskOpt.get();
+                if (task.getCompletedAt() != null) {
+                    return new SearchValue((double) ChronoUnit.DAYS.between(task.getCompletedAt(), Instant.now()));
+                }
+            }
+            return new SearchValue(-1D);
+        }
 
         if (taskOpt.isEmpty()) {
             return new SearchValue();
@@ -81,8 +91,11 @@ public class TaskTerm extends SearchTerm {
 
     @Override
     public String termClause() {
-        if (field.equals("assigned"))
+        if (field.equals("assigned")) {
             return alias() + ".id IS NOT NULL";
+        } else if (field.equals("completedDaysAgo")) {
+            return "(case when %s.completed_at is not null then now()::date - %s.completed_at::date else -1 end)".formatted(alias(), alias());
+        }
         return alias() + "." + toSnakeCase(field);
     }
 
@@ -114,5 +127,7 @@ public class TaskTerm extends SearchTerm {
                                             .map(val -> new QuestionChoice(val.name(), val.name()))
                                             .toList()
                             ).build()),
-            Map.entry("assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()));
+            Map.entry("assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+            Map.entry("completedDaysAgo", SearchValueTypeDefinition.builder().type(NUMBER).build()));
+
 }
