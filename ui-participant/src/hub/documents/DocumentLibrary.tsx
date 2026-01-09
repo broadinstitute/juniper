@@ -66,7 +66,8 @@ export default function DocumentLibrary() {
                     studyShortcode: pStudy.study.shortcode,
                     envName: portalEnv.environmentName as EnvironmentName
                   }}
-                  enrollee={enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)!}
+                  enrollee={enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId &&
+                    enrollee.studyEnvironmentId === pStudy.study.studyEnvironments[0].id)!}
                 />
               )}
             </div>

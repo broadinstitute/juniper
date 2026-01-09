@@ -104,7 +104,11 @@ public class ParticipantFileController implements ParticipantFileApi {
 
     List<ScannedParticipantFileDto> participantFiles =
         participantFileExtService.list(
-            portalShortcode, EnvironmentName.valueOf(envName), participantUser, enrolleeShortcode);
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOf(envName),
+            participantUser,
+            enrolleeShortcode);
     return ResponseEntity.ok(participantFiles);
   }
 
