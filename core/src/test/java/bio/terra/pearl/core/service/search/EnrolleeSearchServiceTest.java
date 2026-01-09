@@ -226,8 +226,10 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                                                 new QuestionChoice("CA", "Canada"))
                                 ).build()),
                 Map.entry("task.another_survey.status", SearchValueTypeDefinition.builder().type(STRING).choices(taskStatusChoices).build()),
+                Map.entry("task.another_survey.completedDaysAgo", SearchValueTypeDefinition.builder().type(NUMBER).build()),
                 Map.entry("task.another_survey.assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("task.test_survey_1.assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+                Map.entry("task.test_survey_1.completedDaysAgo", SearchValueTypeDefinition.builder().type(NUMBER).build()),
                 Map.entry("task.test_survey_1.status", SearchValueTypeDefinition.builder().type(STRING).choices(taskStatusChoices).build()),
                 Map.entry("enrollee.subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
