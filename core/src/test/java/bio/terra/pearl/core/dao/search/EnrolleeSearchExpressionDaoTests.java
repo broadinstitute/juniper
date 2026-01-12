@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.participant.*;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -29,6 +30,7 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -64,6 +66,8 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     SurveyResponseFactory surveyResponseFactory;
     @Autowired
     ParticipantTaskFactory participantTaskFactory;
+    @Autowired
+    ParticipantTaskService participantTaskService;
     @Autowired
     KitRequestFactory kitRequestFactory;
     @Autowired
@@ -346,6 +350,13 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         EnrolleeSearchExpression inProgressExp = enrolleeSearchExpressionParser.parseRule(
                 "{task.demographic_survey.status} = 'IN_PROGRESS'"
         );
+        EnrolleeSearchExpression completed3DaysAgoExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.completed_task.completedDaysAgo} > 3"
+        );
+        EnrolleeSearchExpression completed5DaysAgoExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.completed_task.completedDaysAgo} > 5"
+        );
+
 
         // enrollee not assigned
         EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
@@ -365,6 +376,13 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         EnrolleeBundle eBundleInProgressWrongTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleInProgressWrongTask, "something_else", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
+        // completed task 4 days ago
+        EnrolleeBundle eBundleCompletedTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        ParticipantTask completedTask = participantTaskFactory.buildPersisted(eBundleCompletedTask, "completed_task", TaskStatus.COMPLETE, TaskType.SURVEY);
+        completedTask.setCompletedAt(Instant.now().minus(4, ChronoUnit.DAYS));
+        participantTaskService.update(completedTask, DataAuditInfo.builder().systemProcess(getTestName(info)).build());
+        Enrollee enrolleeCompletedTask = eBundleCompletedTask.enrollee();
+
         List<EnrolleeSearchExpressionResult> resultsAssigned = enrolleeSearchExpressionDao.executeSearch(assignedExp, studyEnvBundle.getStudyEnv().getId());
         List<EnrolleeSearchExpressionResult> resultsInProgress = enrolleeSearchExpressionDao.executeSearch(inProgressExp, studyEnvBundle.getStudyEnv().getId());
 
@@ -379,6 +397,14 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         // attaches the task to the enrollee search result
         assertTrue(resultsInProgress.stream().allMatch(r -> r.getTasks().size() == 1 && r.getTasks().get(0).getTargetStableId().equals("demographic_survey")));
         assertTrue(resultsAssigned.stream().allMatch(r -> r.getTasks().size() == 1 && r.getTasks().get(0).getTargetStableId().equals("demographic_survey")));
+
+        // check days ago expressions
+        List<EnrolleeSearchExpressionResult> completed3daysAgo = enrolleeSearchExpressionDao.executeSearch(completed3DaysAgoExp, studyEnvBundle.getStudyEnv().getId());
+        Assertions.assertEquals(1, completed3daysAgo.size());
+        assertTrue(completed3daysAgo.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeCompletedTask.getId())));
+
+        List<EnrolleeSearchExpressionResult> completed5daysAgo = enrolleeSearchExpressionDao.executeSearch(completed5DaysAgoExp, studyEnvBundle.getStudyEnv().getId());
+        Assertions.assertEquals(0, completed5daysAgo.size());
     }
 
     @Test
@@ -917,7 +943,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response and answer, but not 'answer1'
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // has survey response but no answer
         Enrollee enrollee4 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv); // no survey response
-        
+
         surveyResponseFactory.buildWithAnswers(enrollee1, survey, Map.of(
                 "testquestion", "answer1"
         ));

@@ -6,11 +6,13 @@ import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -26,14 +28,17 @@ public class ParticipantFileExtService {
   private final ParticipantFileService participantFileService;
   private final AuthUtilService authUtilService;
   private final FileStorageBackend fileStorageBackend;
+  private final StudyEnvironmentService studyEnvironmentService;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
       AuthUtilService authUtilService,
-      FileStorageBackendProvider fileStorageBackendProvider) {
+      FileStorageBackendProvider fileStorageBackendProvider,
+      StudyEnvironmentService studyEnvironmentService) {
     this.participantFileService = participantFileService;
     this.authUtilService = authUtilService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
+    this.studyEnvironmentService = studyEnvironmentService;
   }
 
   public ScannedParticipantFileDto get(
@@ -105,12 +110,17 @@ public class ParticipantFileExtService {
 
   public List<ScannedParticipantFileDto> list(
       String portalShortcode,
+      String studyShortcode,
       EnvironmentName envName,
       ParticipantUser participantUser,
       String enrolleeShortcode) {
     authUtilService.authParticipantToPortal(participantUser.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
+    StudyEnvironment studyEnv = studyEnvironmentService.verifyStudy(studyShortcode, envName);
+    if (!studyEnv.getId().equals(enrollee.getStudyEnvironmentId())) {
+      return List.of();
+    }
     return participantFileService.findByEnrolleeId(enrollee.getId()).stream()
         .map(participantFileService::attachVirusScanResult)
         .toList();

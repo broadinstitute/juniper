@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -16,6 +17,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
@@ -26,12 +28,15 @@ import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -60,6 +65,8 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     PortalParticipantUserService portalParticipantUserService;
     @Autowired
     ParticipantUserService participantUserService;
+    @Autowired
+    private ParticipantTaskService participantTaskService;
 
 
     @Test
@@ -369,6 +376,14 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 "{task.demographic_survey.status} = 'IN_PROGRESS'"
         );
 
+        EnrolleeSearchExpression completed3DaysAgoExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.completed_task.completedDaysAgo} > 3"
+        );
+        EnrolleeSearchExpression completed5DaysAgoExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.completed_task.completedDaysAgo} > 5"
+        );
+
+
         // enrollee not assigned
         EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee enrolleeNotAssigned = eBundleNotAssigned.enrollee();
@@ -388,6 +403,13 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         participantTaskFactory.buildPersisted(eBundleInProgressWrongTask, "something_else", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
         Enrollee enrolleeInProgressWrongTask = eBundleInProgressWrongTask.enrollee();
 
+        // completed task 4 days ago
+        EnrolleeBundle eBundleCompletedTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        ParticipantTask completedTask = participantTaskFactory.buildPersisted(eBundleCompletedTask, "completed_task", TaskStatus.COMPLETE, TaskType.SURVEY);
+        completedTask.setCompletedAt(Instant.now().minus(4, ChronoUnit.DAYS));
+        participantTaskService.update(completedTask, DataAuditInfo.builder().systemProcess(getTestName(info)).build());
+        Enrollee enrolleeCompletedTask = eBundleCompletedTask.enrollee();
+
         assertTrue(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotStarted).build()));
         assertTrue(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgress).build()));
         assertFalse(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotAssigned).build()));
@@ -397,6 +419,10 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotStarted).build()));
         assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotAssigned).build()));
         assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgressWrongTask).build()));
+
+        assertTrue(completed3DaysAgoExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeCompletedTask).build()));
+        assertFalse(completed5DaysAgoExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeCompletedTask).build()));
+        assertFalse(completed3DaysAgoExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgress).build()));
     }
 
     @Test

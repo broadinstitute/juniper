@@ -58,3 +58,11 @@ export function isoToInstant(isoDate?: string): number | undefined {
 export function dateMinusDays(date: Date, daysAgo: number) {
   return new Date(date.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 }
+
+export function dateDiff(date1: Date, date2: Date) {
+  const date2UTC = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate())
+  const date1ITC = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate())
+
+  const millisecondsDiff = date1ITC - date2UTC
+  return Math.floor(millisecondsDiff / (1000 * 60 * 60 * 24))
+}
