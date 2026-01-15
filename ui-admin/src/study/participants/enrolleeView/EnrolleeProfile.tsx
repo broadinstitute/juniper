@@ -38,6 +38,7 @@ import {
   InfoCardValue
 } from 'components/InfoCard'
 import { Button } from 'components/forms/Button'
+import Creatable from 'react-select/creatable'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -198,6 +199,26 @@ function EditableProfile(
             defaultValue={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
             placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
             onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
+        </div>
+        <div className="col"/>
+      </div>
+    </InfoCardRow>
+    <InfoCardRow title={'Sex At Birth'}>
+      <div className='row'>
+        <div className="col">
+          <Creatable
+            styles={{
+              control: baseStyles => ({
+                ...baseStyles,
+                borderColor: 'var(--bs-border-color)' // use same border color as all other components
+              })
+            }}
+            options={['Male', 'Female', 'Other', 'Unknown', 'Intersex'].map(val => {
+              return { label: val, value: val }
+            })}
+            value={{ value: profile.sexAtBirth, label: profile.sexAtBirth }}
+            onChange={newVal => onFieldChange('sexAtBirth', newVal?.value || '')}
+          />
         </div>
         <div className="col"/>
       </div>
