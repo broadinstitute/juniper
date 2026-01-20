@@ -69,8 +69,17 @@ public class ExportIntegrationService extends CrudService<ExportIntegration, Exp
 
     public void doAllExports(ResponsibleEntity operator) {
         List<ExportIntegration> integrations = dao.findAllActiveWithOptions();
-        for (ExportIntegration integration : integrations) {
+        for ( int i = 0; i < integrations.size(); i++ ) {
+            ExportIntegration integration = integrations.get(i);
             doExport(integration, operator);
+            if (i < integrations.size() - 1) {
+                try {
+                    // Wait three minutes so that if related studies are exporting to the same table, Airtable can finish indexing
+                    Thread.sleep(180 * 1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
 
