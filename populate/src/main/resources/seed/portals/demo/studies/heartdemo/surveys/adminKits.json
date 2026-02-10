@@ -47,6 +47,12 @@
             "isRequired": false,
             "name": "kitNotes",
             "title": "Notes"
+          },
+          {
+            "type": "documentrequest",
+            "isRequired": true,
+            "name": "kit_document_request",
+            "title": "Kit Record Request"
           }
         ]
       }
