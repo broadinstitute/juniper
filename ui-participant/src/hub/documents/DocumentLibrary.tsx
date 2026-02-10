@@ -168,13 +168,19 @@ const surveyResponseIdsToTaskNames = (
     <div className={'mt-2 text-muted'}>
       <span>{i18n('documentSharedInResponseTo')}:</span>
       <ul>
-        {associatedTasks.map(task =>
-          <li key={task.id}>
+        {associatedTasks.map(task => {
+          const linkText = i18n(`${task.targetStableId}:${task.targetAssignedVersion}`,
+            { defaultValue: task.targetName })
+          // don't use a link for study staff forms -- the participant can't see them
+          if (task.taskType === 'ADMIN_FORM') {
+            return <li key={task.id}>{linkText}</li>
+          }
+          return <li key={task.id}>
             <Link to={`../${getTaskPath(task, enrollee.shortcode, studyEnvParams.studyShortcode)}`}>
-              {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+              {linkText}
             </Link>
           </li>
-        )}
+        })}
       </ul>
     </div>
   )
