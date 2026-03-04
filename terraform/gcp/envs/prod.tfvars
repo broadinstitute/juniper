@@ -25,6 +25,13 @@ customer_urls = {
     url    = "thehearthive.org"
     dnssec = "on"
     additional_records = [
+        {
+        name = "_mx"
+        domain_prefix = ""
+        type = "MX"
+        ttl = 3600
+        record_values = ["thehearthive-org.mail.protection.outlook.com."]
+      },
       {
         name = "s1._domainkey"
         domain_prefix = "s1._domainkey"
@@ -54,12 +61,40 @@ customer_urls = {
         record_values = ["sendgrid.net."]
       },
       {
+          name = "autodiscover"
+          domain_prefix = "autodiscover"
+          type = "CNAME"
+          ttl = 3600
+          record_values = ["autodiscover.outlook.com."]
+      },
+        {
+            name = "selector1._domainkey"
+            domain_prefix = "selector1._domainkey"
+            type = "CNAME"
+            ttl = 3600
+            record_values = ["selector1-thehearthive-org._domainkey.ImperialLondon.r-v1.dkim.mail.microsoft."]
+          },
+       {
+          name = "selector2._domainkey"
+          domain_prefix = "selector2._domainkey"
+          type = "CNAME"
+          ttl = 3600
+          record_values = ["selector2-thehearthive-org._domainkey.ImperialLondon.r-v1.dkim.mail.microsoft."]
+        },
+      {
         name = "_dmarc"
         domain_prefix = "_dmarc"
         type = "TXT"
         ttl = 3600
-        record_values = ["v=DMARC1;p=none;"]
+        record_values = ["v=DMARC1;p=none;rua=mailto:dmarc_agg@vali.email;"]
       },
+      {
+          name = "_spf"
+          domain_prefix = ""
+          type = "TXT"
+          ttl = 3600
+          record_values = ["v=spf1 include:spf.protection.outlook.com -all;"]
+        },
       {
         name = "33588015"
         domain_prefix = "33588015"
