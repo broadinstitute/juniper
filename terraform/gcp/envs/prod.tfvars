@@ -30,7 +30,7 @@ customer_urls = {
         domain_prefix = ""
         type = "MX"
         ttl = 3600
-        record_values = ["thehearthive-org.mail.protection.outlook.com."]
+        record_values = ["1 thehearthive-org.mail.protection.outlook.com."]
       },
       {
         name = "s1._domainkey"
