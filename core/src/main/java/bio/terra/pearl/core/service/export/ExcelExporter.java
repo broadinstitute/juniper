@@ -21,6 +21,7 @@ public class ExcelExporter extends BaseExporter {
 
     protected final SXSSFSheet sheet;
     private static final String SHEET_NAME = "Participants";
+    public static final int EXCEL_CELL_MAX_CHARS = 30000; // it's really 32767, but we want some margin
 
     public ExcelExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps, List<String> columnSorting) {
         super(moduleFormatters, enrolleeMaps, columnSorting);
@@ -71,5 +72,16 @@ public class ExcelExporter extends BaseExporter {
 
     protected String getSheetName() {
         return SHEET_NAME;
+    }
+
+    /**
+     * Take a string value and sanitize it for export. E.g. For a TSV exporter, we need to escape double quotes.
+     */
+    protected String sanitizeValue(String value, String nullValueString) {
+        String sanitized = super.sanitizeValue(value, nullValueString);
+        if (sanitized != null && sanitized.length() > EXCEL_CELL_MAX_CHARS) {
+            return sanitized.substring(0, EXCEL_CELL_MAX_CHARS) + "... (truncated)";
+        }
+        return sanitized;
     }
 }
