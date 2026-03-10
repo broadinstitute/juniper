@@ -285,7 +285,7 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
 
     protected SXSSFCell addCellToRow(SXSSFRow row, int colNum, String value) {
         SXSSFCell cell = row.createCell(colNum);
-        cell.setCellValue(value);
+        cell.setCellValue(sanitizeValue(value, DEFAULT_EMPTY_STRING_VALUE));
         cell.setCellStyle(wrapStyle);
         return cell;
     }
