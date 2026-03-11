@@ -95,7 +95,8 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         spyMixpanelService.logEvent(events.toString());
 
         verify(spyMixpanelService, times(2)).buildEvent(any(), any());
-        verify(spyMixpanelService, times(1)).deliverEvents(any());
+        verify(spyMixpanelService, times(2)).deliverEvents(any());
+        verify(spyMixpanelService, times(1)).deliverEvents(notNull());
     }
 
     @Test
