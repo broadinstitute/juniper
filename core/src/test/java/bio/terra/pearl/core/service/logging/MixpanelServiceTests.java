@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class MixpanelServiceTests extends BaseSpringBootTest {
@@ -60,31 +62,35 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         verify(mockedMixpanelService, never()).buildEvent(any(), any());
     }
 
-    @Test
-    public void testEnableMixpanel() {
+    /** Creates a spy on a MixpanelService configured with Mixpanel enabled and token "test-token". */
+    private MixpanelService createEnabledMixpanelServiceSpy() {
         Environment env = mock(Environment.class);
         when(env.getProperty("env.mixpanel.enabled")).thenReturn("true");
         when(env.getProperty("env.mixpanel.token")).thenReturn("test-token");
         MixpanelService.MixpanelConfig mixpanelConfig = new MixpanelService.MixpanelConfig(env);
-        // Create a spy on the MixpanelService instance
-        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, loggingConfigCache);
-        MixpanelService spyMixpanelService = spy(mixpanelService);
+        return spy(new MixpanelService(mixpanelConfig, loggingConfigCache));
+    }
 
+    /** Builds a JSONObject event with the given name and properties. */
+    private JSONObject buildTestEvent(String eventName, String key, String value, String currentUrl) {
         JSONObject event = new JSONObject();
-        event.put("event", "test_event");
+        event.put("event", eventName);
         JSONObject properties = new JSONObject();
-        properties.put("key", "value");
+        properties.put(key, value);
+        if (currentUrl != null) {
+            properties.put("$current_url", currentUrl);
+        }
         event.put("properties", properties);
+        return event;
+    }
 
-        JSONObject event2 = new JSONObject();
-        event2.put("event", "test_event2");
-        JSONObject properties2 = new JSONObject();
-        properties2.put("key", "value2");
-        event2.put("properties", properties2);
+    @Test
+    public void testEnableMixpanel() {
+        MixpanelService spyMixpanelService = createEnabledMixpanelServiceSpy();
 
         JSONArray events = new JSONArray();
-        events.put(event);
-        events.put(event2);
+        events.put(buildTestEvent("test_event", "key", "value", null));
+        events.put(buildTestEvent("test_event2", "key", "value2", null));
 
         spyMixpanelService.logEvent(events.toString());
 
@@ -95,13 +101,7 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSendsToCustomProject(TestInfo info) {
-        Environment env = mock(Environment.class);
-        when(env.getProperty("env.mixpanel.enabled")).thenReturn("true");
-        when(env.getProperty("env.mixpanel.token")).thenReturn("test-token");
-        MixpanelService.MixpanelConfig mixpanelConfig = new MixpanelService.MixpanelConfig(env);
-        // Create a spy on the MixpanelService instance
-        MixpanelService mixpanelService = new MixpanelService(mixpanelConfig, loggingConfigCache);
-        MixpanelService spyMixpanelService = spy(mixpanelService);
+        MixpanelService spyMixpanelService = createEnabledMixpanelServiceSpy();
 
         PortalEnvironment portalEnv =  portalEnvironmentFactory.buildPersisted(getTestName(info));
         PortalEnvironmentConfig envConfig = portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
@@ -111,23 +111,9 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         loggingConfigCache.configCacheEvict();
 
 
-        JSONObject event = new JSONObject();
-        event.put("event", "test_event");
-        JSONObject properties = new JSONObject();
-        properties.put("key", "value");
-        properties.put("$current_url", "https://somedomain.org/page");
-        event.put("properties", properties);
-
-        JSONObject event2 = new JSONObject();
-        event2.put("event", "test_event2");
-        JSONObject properties2 = new JSONObject();
-        properties2.put("key", "value2");
-        properties2.put("$current_url", "https://anotherdomain.com");
-        event2.put("properties", properties2);
-
         JSONArray events = new JSONArray();
-        events.put(event);
-        events.put(event2);
+        events.put(buildTestEvent("test_event", "key", "value", "https://somedomain.org/page"));
+        events.put(buildTestEvent("test_event2", "key", "value2", "https://anotherdomain.com"));
 
         spyMixpanelService.logEvent(events.toString());
         ArgumentCaptor<JSONObject> objCaptor = ArgumentCaptor.forClass(JSONObject.class);
@@ -138,6 +124,39 @@ public class MixpanelServiceTests extends BaseSpringBootTest {
         assertThat(objCaptor.getAllValues().stream().map(obj ->
                 ((JSONObject) obj.get("properties")).get("$current_url")).toList(),
                 contains("https://somedomain.org/page", "https://somedomain.org/page", "https://anotherdomain.com"));
+    }
+
+    @Test
+    @Transactional
+    public void testEUEventsRoutedToEUEndpoint(TestInfo info) {
+        MixpanelService spyMixpanelService = createEnabledMixpanelServiceSpy();
+
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        PortalEnvironmentConfig envConfig = portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
+        envConfig.setParticipantHostname("thehearthive.org");
+        envConfig.setMixpanelToken("eu-token");
+        portalEnvironmentConfigService.update(envConfig);
+        loggingConfigCache.configCacheEvict();
+
+        spyMixpanelService.logEvent(new JSONArray()
+                .put(buildTestEvent("eu_event", "key", "value", "https://thehearthive.org/page"))
+                .put(buildTestEvent("global_event", "key", "value", "https://otherstudy.com/page"))
+                .toString());
+
+        // 3 buildEvent calls: (EU event + global token), (EU event + EU token), (non-EU event + global token)
+        // The EU event's global-token build result is discarded (not added to global delivery)
+        ArgumentCaptor<JSONObject> objCaptor = ArgumentCaptor.forClass(JSONObject.class);
+        ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
+        verify(spyMixpanelService, times(3)).buildEvent(objCaptor.capture(), tokenCaptor.capture());
+        assertThat(tokenCaptor.getAllValues(), contains("test-token", "eu-token", "test-token"));
+        assertThat(objCaptor.getAllValues().stream().map(obj ->
+                ((JSONObject) obj.get("properties")).get("$current_url")).toList(),
+                contains("https://thehearthive.org/page", "https://thehearthive.org/page", "https://otherstudy.com/page"));
+
+        // EU events must be delivered to the EU Mixpanel endpoint
+        verify(spyMixpanelService, times(1)).deliverEvents(any(), eq(true));
+        // Non-EU events must not be delivered via the EU endpoint (global delivery + null customDelivery)
+        verify(spyMixpanelService, times(2)).deliverEvents(any(), eq(false));
     }
 
     @Test

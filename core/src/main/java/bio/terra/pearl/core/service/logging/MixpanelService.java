@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -65,8 +64,7 @@ public class MixpanelService {
 
         //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
         JSONArray events = new JSONArray(filteredData);
-
-        ClientDelivery delivery = new ClientDelivery();
+        ClientDelivery delivery = null;
         ClientDelivery customDelivery = null;
         ClientDelivery euDelivery = null;
 
@@ -75,15 +73,15 @@ public class MixpanelService {
             JSONObject mixpanelEvent = buildEvent(event, mixpanelConfig.token);
             String eventDomain = getEventCurrentDomain(event);
 
-            // send all mixpanel events that aren't fron the EU to our general project
+            // send all mixpanel events that aren't from the EU to our general project
             if (!isEUProject(eventDomain)) {
+                delivery = delivery == null ? new ClientDelivery() : delivery;
                 delivery.addMessage(mixpanelEvent);
             }
 
             /** check if the event comes from a domain with a dedicated mixpanel token, if so, use that token to send the
              * event to that token in addition to the global mixpanel domain */
             if (eventDomain != null) {
-                customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
                 Map<String, PortalEnvironmentConfig> configMap = loggingConfigCache.getConfigsWithDomain();
                 PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
                 if (matchedConfig != null && matchedConfig.getMixpanelToken() != null) {
@@ -92,18 +90,15 @@ public class MixpanelService {
                         euDelivery = euDelivery == null ? new ClientDelivery() : euDelivery;
                         euDelivery.addMessage(domainEvent);
                     } else {
+                        customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
                         customDelivery.addMessage(domainEvent);
                     }
                 }
             }
         }
         deliverEvents(delivery);
-        if (customDelivery != null) {
-            deliverEvents(customDelivery);
-        }
-        if (euDelivery != null) {
-            deliverEvents(euDelivery, true);
-        }
+        deliverEvents(customDelivery);
+        deliverEvents(euDelivery, true);
     }
 
     protected JSONObject buildEvent(JSONObject event, String apiToken) {
@@ -123,6 +118,9 @@ public class MixpanelService {
     }
 
     protected void deliverEvents(ClientDelivery delivery, boolean isEUDomain) {
+        if (delivery == null) {
+            return;
+        }
         MixpanelAPI mixpanel = new MixpanelAPI();
         if (isEUDomain) {
             mixpanel = new MixpanelAPI( "https://api-eu.mixpanel.com/track",
