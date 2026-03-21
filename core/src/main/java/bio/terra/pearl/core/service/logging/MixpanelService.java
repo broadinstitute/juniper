@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class MixpanelService {
-    private static final String EU_DOMAIN_PROJECT = "thehearthive.org";  // if we get a second EU customer, add a useMixpanelEU boolean to PortalEnvironmentConfig
+    private static final String EU_DOMAIN_PROJECT = "thehearthive";  // if we get a second EU customer, add a useMixpanelEU boolean to PortalEnvironmentConfig
     private static final String MIXPANEL_TOKEN_ENV_VAR = "env.mixpanel.token";
     private static final String MIXPANEL_ENABLED_ENV_VAR = "env.mixpanel.enabled";
     private final MixpanelConfig mixpanelConfig;
@@ -147,7 +147,7 @@ public class MixpanelService {
     }
 
     protected boolean isEUProject(String eventDomain) {
-        return EU_DOMAIN_PROJECT.equals(eventDomain);
+        return eventDomain != null && eventDomain.contains(EU_DOMAIN_PROJECT);
     }
 
     public static String getDomainName(String url) {
