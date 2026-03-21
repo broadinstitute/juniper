@@ -7,10 +7,13 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -19,6 +22,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EventService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,7 @@ public class SurveyExtService {
   private PortalEnvironmentService portalEnvironmentService;
   private EventService eventService;
   private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+  private ParticipantTaskService participantTaskService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
@@ -41,7 +46,8 @@ public class SurveyExtService {
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
       EventService eventService,
-      EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
+      EnrolleeSearchExpressionParser enrolleeSearchExpressionParser,
+      ParticipantTaskService participantTaskService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
@@ -49,6 +55,7 @@ public class SurveyExtService {
     this.portalEnvironmentService = portalEnvironmentService;
     this.eventService = eventService;
     this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
+    this.participantTaskService = participantTaskService;
   }
 
   @EnforcePortalPermission(permission = AuthUtilService.BASE_PERMISSION)
@@ -203,6 +210,26 @@ public class SurveyExtService {
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
     authConfiguredSurveyRequest(authContext, configuredSurvey);
     studyEnvironmentSurveyService.deactivate(configuredSurveyId);
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
+  @Transactional
+  public void deactivateWithTasks(
+      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
+    StudyEnvironmentSurvey configuredSurvey =
+        studyEnvironmentSurveyService.find(configuredSurveyId).get();
+    SurveyAuthEntities surveyAuth = authConfiguredSurveyRequest(authContext, configuredSurvey);
+    studyEnvironmentSurveyService.deactivate(configuredSurveyId);
+
+    UUID studyEnvId = authContext.getStudyEnvironment().getId();
+    String stableId = surveyAuth.survey().getStableId();
+    List<ParticipantTask> tasks =
+        participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
+    DataAuditInfo auditInfo = authContext.dataAuditInfo();
+    for (ParticipantTask task : tasks) {
+      task.setStatus(TaskStatus.REMOVED);
+      participantTaskService.update(task, auditInfo);
+    }
   }
 
   @SandboxOnly
