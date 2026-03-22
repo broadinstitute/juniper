@@ -21,6 +21,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class MixpanelService {
+    private static final String EU_DOMAIN_PROJECT = "thehearthive";  // if we get a second EU customer, add a useMixpanelEU boolean to PortalEnvironmentConfig
     private static final String MIXPANEL_TOKEN_ENV_VAR = "env.mixpanel.token";
     private static final String MIXPANEL_ENABLED_ENV_VAR = "env.mixpanel.enabled";
     private final MixpanelConfig mixpanelConfig;
@@ -63,32 +64,41 @@ public class MixpanelService {
 
         //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
         JSONArray events = new JSONArray(filteredData);
-
-        ClientDelivery delivery = new ClientDelivery();
+        ClientDelivery delivery = null;
         ClientDelivery customDelivery = null;
+        ClientDelivery euDelivery = null;
 
         for (int i = 0; i < events.length(); i++) {
             JSONObject event = events.getJSONObject(i);
             JSONObject mixpanelEvent = buildEvent(event, mixpanelConfig.token);
-            delivery.addMessage(mixpanelEvent);
             String eventDomain = getEventCurrentDomain(event);
+
+            // send all mixpanel events that aren't from the EU to our general project
+            if (!isEUProject(eventDomain)) {
+                delivery = delivery == null ? new ClientDelivery() : delivery;
+                delivery.addMessage(mixpanelEvent);
+            }
 
             /** check if the event comes from a domain with a dedicated mixpanel token, if so, use that token to send the
              * event to that token in addition to the global mixpanel domain */
             if (eventDomain != null) {
-                customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
                 Map<String, PortalEnvironmentConfig> configMap = loggingConfigCache.getConfigsWithDomain();
                 PortalEnvironmentConfig matchedConfig = configMap.get(eventDomain);
                 if (matchedConfig != null && matchedConfig.getMixpanelToken() != null) {
                     JSONObject domainEvent = buildEvent(event, matchedConfig.getMixpanelToken());
-                    customDelivery.addMessage(domainEvent);
+                    if (isEUProject(eventDomain)) {
+                        euDelivery = euDelivery == null ? new ClientDelivery() : euDelivery;
+                        euDelivery.addMessage(domainEvent);
+                    } else {
+                        customDelivery = customDelivery == null ? new ClientDelivery() : customDelivery;
+                        customDelivery.addMessage(domainEvent);
+                    }
                 }
             }
         }
         deliverEvents(delivery);
-        if (customDelivery != null) {
-            deliverEvents(customDelivery);
-        }
+        deliverEvents(customDelivery);
+        deliverEvents(euDelivery, true);
     }
 
     protected JSONObject buildEvent(JSONObject event, String apiToken) {
@@ -104,7 +114,19 @@ public class MixpanelService {
     }
 
     protected void deliverEvents(ClientDelivery delivery) {
+        deliverEvents(delivery, false);
+    }
+
+    protected void deliverEvents(ClientDelivery delivery, boolean isEUDomain) {
+        if (delivery == null) {
+            return;
+        }
         MixpanelAPI mixpanel = new MixpanelAPI();
+        if (isEUDomain) {
+            mixpanel = new MixpanelAPI( "https://api-eu.mixpanel.com/track",
+                    "https://api-eu.mixpanel.com/engage",
+                    "https://api-eu.mixpanel.com/groups");
+        }
         try {
             mixpanel.deliver(delivery);
         } catch (IOException e) {
@@ -122,6 +144,10 @@ public class MixpanelService {
             }
         }
         return domain;
+    }
+
+    protected boolean isEUProject(String eventDomain) {
+        return eventDomain != null && eventDomain.contains(EU_DOMAIN_PROJECT);
     }
 
     public static String getDomainName(String url) {
