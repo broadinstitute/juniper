@@ -15,7 +15,7 @@ jobs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
       - name: Checkout current code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.BROADBOT_TOKEN }} # this allows the push to succeed later
       - name: Bump the tag to a new version
