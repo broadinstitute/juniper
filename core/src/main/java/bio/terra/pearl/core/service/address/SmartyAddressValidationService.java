@@ -43,7 +43,6 @@ public class SmartyAddressValidationService implements AddressValidationService 
         }
 
         return this.internationalClient.validate(address);
-
     }
 
     private List<AddressComponent> missingFields(MailingAddress address) {
