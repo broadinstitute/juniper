@@ -118,7 +118,13 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
                 .findActiveBySurvey(studyEnvId, stableId)
-                .stream().findFirst().orElseThrow(() -> new NotFoundException("no active survey found"));
+                .stream().findFirst()
+                .orElseGet(() -> studyEnvironmentSurveyService
+                        .findAllWithSurveyNoContent(List.of(studyEnvId), stableId, false)
+                        .stream()
+                        .max(Comparator.comparing(StudyEnvironmentSurvey::getCreatedAt))
+                        .orElseThrow(() -> new NotFoundException("no survey found for stableId: " + stableId)));
+
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
                 configSurvey, lastResponse, getReferencedAnswers(enrollee, form)

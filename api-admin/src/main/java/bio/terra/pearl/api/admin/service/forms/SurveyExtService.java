@@ -226,7 +226,9 @@ public class SurveyExtService {
           participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
       DataAuditInfo auditInfo = authContext.dataAuditInfo();
       for (ParticipantTask task : tasks) {
-        task.setStatus(TaskStatus.REMOVED);
+        if (!task.getStatus().isTerminalStatus()) {
+          task.setStatus(TaskStatus.REMOVED);
+        }
         participantTaskService.update(task, auditInfo);
       }
     }
