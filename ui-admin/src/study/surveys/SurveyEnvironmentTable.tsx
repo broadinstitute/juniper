@@ -142,8 +142,8 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
   const {
     configuredSurveys, studyEnvParams,
     setSelectedSurveyConfig, setShowDeleteSurveyModal,
-    showDeleteSurveyModal, showDeactivateSurveyModal, setShowDeactivateSurveyModal,
-    showActivateSurveyModal, setShowActivateSurveyModal, rowInfo, envName
+    showDeleteSurveyModal, setShowDeactivateSurveyModal,
+    setShowActivateSurveyModal, rowInfo, envName
   } = props
   if (!rowInfo.name) {
     return null
