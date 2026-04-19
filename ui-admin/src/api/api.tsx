@@ -786,7 +786,8 @@ export default {
 
   async activateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurveyId: string): Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurveyId}/activate`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/` +
+      `${configuredSurveyId}/activate`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -796,8 +797,8 @@ export default {
 
   async deactivateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurveyId: string, cancelTasks: boolean): Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}`
-      + `/configuredSurveys/${configuredSurveyId}/deactivate?${queryString.stringify({ cancelTasks })}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}` +
+      `/configuredSurveys/${configuredSurveyId}/deactivate?${queryString.stringify({ cancelTasks })}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
