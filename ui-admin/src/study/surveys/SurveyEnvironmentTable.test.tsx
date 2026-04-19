@@ -34,8 +34,10 @@ describe('SurveyEnvironmentTest', () => {
       setSelectedSurveyConfig={jest.fn()}
       showDeleteSurveyModal={false}
       setShowDeleteSurveyModal={jest.fn()}
-      showArchiveSurveyModal={false}
-      setShowArchiveSurveyModal={jest.fn()}
+      showDeactivateSurveyModal={false}
+      setShowDeactivateSurveyModal={jest.fn()}
+      showActivateSurveyModal={false}
+      setShowActivateSurveyModal={jest.fn()}
       updateConfiguredSurveys={jest.fn()}
     />)
 
@@ -65,8 +67,10 @@ describe('SurveyEnvironmentTest', () => {
       setSelectedSurveyConfig={jest.fn()}
       showDeleteSurveyModal={false}
       setShowDeleteSurveyModal={jest.fn()}
-      showArchiveSurveyModal={false}
-      setShowArchiveSurveyModal={jest.fn()}
+      showDeactivateSurveyModal={false}
+      setShowDeactivateSurveyModal={jest.fn()}
+      showActivateSurveyModal={false}
+      setShowActivateSurveyModal={jest.fn()}
       updateConfiguredSurveys={jest.fn()}
     />)
 

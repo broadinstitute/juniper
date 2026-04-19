@@ -56,9 +56,18 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
 
     @Transactional
     public StudyEnvironmentSurvey deactivate(UUID id) {
+        return setActive(id, false);
+    }
+
+    @Transactional
+    public StudyEnvironmentSurvey activate(UUID id) {
+        return setActive(id, true);
+    }
+
+    private StudyEnvironmentSurvey setActive(UUID id, boolean active) {
         StudyEnvironmentSurvey ses = dao.find(id).get();
-        ses.setActive(false);
-        return dao.update(ses);
+        ses.setActive(active);
+        return this.update(ses);
     }
 
     @Transactional

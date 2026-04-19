@@ -202,33 +202,33 @@ public class SurveyExtService {
     return studyEnvSurvey;
   }
 
-  @SandboxOnly
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
-  public void removeConfiguredSurvey(
-      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
+  public void activateSurvey(PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
     StudyEnvironmentSurvey configuredSurvey =
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
     authConfiguredSurveyRequest(authContext, configuredSurvey);
-    studyEnvironmentSurveyService.deactivate(configuredSurveyId);
+    studyEnvironmentSurveyService.activate(configuredSurveyId);
   }
 
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   @Transactional
-  public void deactivateWithTasks(
-      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
+  public void deactivateSurvey(
+      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId, boolean cancelTasks) {
     StudyEnvironmentSurvey configuredSurvey =
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
     SurveyAuthEntities surveyAuth = authConfiguredSurveyRequest(authContext, configuredSurvey);
     studyEnvironmentSurveyService.deactivate(configuredSurveyId);
 
-    UUID studyEnvId = authContext.getStudyEnvironment().getId();
-    String stableId = surveyAuth.survey().getStableId();
-    List<ParticipantTask> tasks =
-        participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
-    DataAuditInfo auditInfo = authContext.dataAuditInfo();
-    for (ParticipantTask task : tasks) {
-      task.setStatus(TaskStatus.REMOVED);
-      participantTaskService.update(task, auditInfo);
+    if (cancelTasks) {
+      UUID studyEnvId = authContext.getStudyEnvironment().getId();
+      String stableId = surveyAuth.survey().getStableId();
+      List<ParticipantTask> tasks =
+          participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
+      DataAuditInfo auditInfo = authContext.dataAuditInfo();
+      for (ParticipantTask task : tasks) {
+        task.setStatus(TaskStatus.REMOVED);
+        participantTaskService.update(task, auditInfo);
+      }
     }
   }
 

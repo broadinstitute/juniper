@@ -56,6 +56,7 @@ export type StudyEnvironmentSurvey = {
   surveyId: string
   survey: Survey
   surveyOrder: number
+  active: boolean
   studyEnvironmentId?: string
   lastUpdatedAt?: number
   createdAt?: number
