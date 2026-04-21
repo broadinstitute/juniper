@@ -312,7 +312,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
       changeLanguage(langQueryParam)
       reloadPortal()
     }
-  }, [langQueryParam])
+  }, [langQueryParam, selectedLanguage, languageOptions])
 
   return (
     languageOptions.length > 1 ? (
@@ -334,8 +334,6 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
             return (
               <button key={index} className="dropdown-item" aria-label={lang.languageName}
                 onClick={() => {
-                  changeLanguage(lang.languageCode)
-
                   // persist lang as a query param - makes it easier to share internationalized links
                   searchParams.set('lang', lang.languageCode)
                   // navigating with a new lang query param will also trigger a full refresh to ensure
