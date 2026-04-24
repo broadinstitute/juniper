@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.file;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerFormat;
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 @Component
 public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     private final AnswerDao answerDao;
+    private final DownloadRecordDao downloadRecordDao;
 
-    public ParticipantFileDao(Jdbi jdbi, AnswerDao answerDao) {
+    public ParticipantFileDao(Jdbi jdbi, AnswerDao answerDao, DownloadRecordDao downloadRecordDao) {
         super(jdbi);
         this.answerDao = answerDao;
+        this.downloadRecordDao = downloadRecordDao;
     }
 
     @Override
@@ -45,9 +48,15 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
 
         Map<String, List<Answer>> answersByFileName = answers.stream().collect(Collectors.groupingBy(Answer::getStringValue));
 
+        List<UUID> fileIds = participantFiles.stream().map(ParticipantFile::getId).toList();
+        Map<UUID, List<DownloadRecord>> downloadsByFileId = fileIds.isEmpty()
+                ? Map.of()
+                : downloadRecordDao.findByParticipantFileIds(fileIds).stream()
+                        .collect(Collectors.groupingBy(DownloadRecord::getParticipantFileId));
+
         for (ParticipantFile file : participantFiles) {
-            List<Answer> fileAnswers = answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>());
-            file.setAssociatedAnswers(fileAnswers);
+            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
+            file.setDownloads(downloadsByFileId.getOrDefault(file.getId(), new ArrayList<>()));
         }
 
         return participantFiles;
@@ -60,6 +69,7 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
             Map<String, List<Answer>> answersByFileName = answers.stream().collect(Collectors.groupingBy(Answer::getStringValue));
             List<Answer> answersForFile = answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>());
             file.setAssociatedAnswers(answersForFile);
+            file.setDownloads(downloadRecordDao.findByParticipantFileId(file.getId()));
         });
         return participantFile;
     }
@@ -69,6 +79,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
+        List<ParticipantFile> files = findByEnrolleeId(enrolleeId);
+        files.forEach(file -> downloadRecordDao.deleteByParticipantFileId(file.getId()));
         deleteByProperty("enrollee_id", enrolleeId);
     }
 

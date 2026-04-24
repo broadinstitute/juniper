@@ -17,7 +17,12 @@
     {
       "fileName": "medical_notes.txt",
       "fileType": "text/plain",
-      "fileContent": "Hi!"
+      "fileContent": "Hi!",
+      "downloadRecordPopDtos": [
+        {
+          "submittedHoursAgo": "15"
+        }
+      ]
     }
   ],
   "preEnrollmentResponseDto": {

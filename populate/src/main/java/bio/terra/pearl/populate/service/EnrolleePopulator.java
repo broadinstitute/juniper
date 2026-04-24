@@ -2,11 +2,13 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
+import bio.terra.pearl.core.dao.file.DownloadRecordDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -45,6 +47,7 @@ import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
+import bio.terra.pearl.populate.dto.fileupload.DownloadRecordPopDto;
 import bio.terra.pearl.populate.dto.fileupload.ParticipantFilePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
@@ -95,7 +98,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              ParticipantNotePopulator participantNotePopulator,
                              ParticipantUserPopulateDao participantUserPopulateDao, PortalParticipantUserPopulator portalParticipantUserPopulator, ObjectMapper objectMapper, PortalService portalService,
                              ShortcodeService shortcodeService, StudyEnvironmentSurveyService studyEnvironmentSurveyService, EnrolleeResponsePopulator enrolleeResponsePopulator, SurveyTaskDispatcher surveyTaskDispatcher,
-                             FileStorageBackendProvider fileStorageBackendProvider, ParticipantFileService participantFileService) {
+                             FileStorageBackendProvider fileStorageBackendProvider, ParticipantFileService participantFileService,
+                             DownloadRecordDao downloadRecordDao) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -125,6 +129,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.fileStorageBackend = fileStorageBackendProvider.get();
         this.participantFileService = participantFileService;
         this.surveyTaskDispatcher = surveyTaskDispatcher;
+        this.downloadRecordDao = downloadRecordDao;
     }
 
     private void populateTask(Enrollee enrollee, PortalParticipantUser ppUser, ParticipantTaskPopDto taskDto) {
@@ -170,7 +175,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return kitRequest;
     }
 
-    private ParticipantFile populateParticipantFile(Enrollee enrollee, ParticipantFilePopDto fileDto) {
+    private ParticipantFile populateParticipantFile(Enrollee enrollee, ParticipantFilePopDto fileDto, EnvironmentName environmentName) {
         InputStream fileContentStream = new ByteArrayInputStream(fileDto.getFileContent().getBytes());
 
         UUID uploadId = fileStorageBackend.uploadFile(fileContentStream);
@@ -184,7 +189,24 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .build();
 
-        return participantFileService.create(file);
+        file = participantFileService.create(file);
+
+        for (DownloadRecordPopDto downloadDto : fileDto.getDownloadRecordPopDtos()) {
+            UUID userId = downloadDto.getLinkedUsername() != null
+                    ? participantUserService.findOne(downloadDto.getLinkedUsername(), environmentName).orElseThrow().getId()
+                    : enrollee.getParticipantUserId();
+            DownloadRecord record = DownloadRecord.builder()
+                    .participantFileId(file.getId())
+                    .participantUserId(userId)
+                    .enrolleeId(enrollee.getId())
+                    .build();
+            record = downloadRecordDao.create(record);
+            if (downloadDto.isTimeShifted()) {
+                timeShiftDao.changeDownloadRecordCreationTime(record.getId(), downloadDto.shiftedInstant());
+            }
+        }
+
+        return file;
     }
 
     private String getTargetName(TaskType taskType, String stableId, UUID portalId, int version) {
@@ -345,7 +367,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
         List<ParticipantFile> participantFiles = new ArrayList<>();
         for (ParticipantFilePopDto fileDto : popDto.getParticipantFilePopDtos()) {
-            participantFiles.add(populateParticipantFile(enrollee, fileDto));
+            participantFiles.add(populateParticipantFile(enrollee, fileDto, attachedEnv.getEnvironmentName()));
         }
 
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
@@ -614,4 +636,5 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private final EnrolleeResponsePopulator enrolleeResponsePopulator;
     private final ParticipantFileService participantFileService;
     private final SurveyTaskDispatcher surveyTaskDispatcher;
+    private final DownloadRecordDao downloadRecordDao;
 }

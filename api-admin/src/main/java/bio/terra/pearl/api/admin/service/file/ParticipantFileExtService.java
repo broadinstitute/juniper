@@ -2,6 +2,8 @@ package bio.terra.pearl.api.admin.service.file;
 
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.core.dao.file.DownloadRecordDao;
+import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -20,19 +23,30 @@ public class ParticipantFileExtService {
 
   private final ParticipantFileService participantFileService;
   private final FileStorageBackend fileStorageBackend;
+  private final DownloadRecordDao downloadRecordDao;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
-      FileStorageBackendProvider fileStorageBackendProvider) {
+      FileStorageBackendProvider fileStorageBackendProvider,
+      DownloadRecordDao downloadRecordDao) {
     this.participantFileService = participantFileService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
+    this.downloadRecordDao = downloadRecordDao;
   }
 
+  @Transactional
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public InputStream downloadFile(PortalEnrolleeAuthContext authContext, String fileName) {
     ParticipantFile participantFile = get(authContext, fileName);
 
-    return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    InputStream fileStream = fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    downloadRecordDao.create(
+        DownloadRecord.builder()
+            .participantFileId(participantFile.getId())
+            .adminUserId(authContext.getOperator().getId())
+            .enrolleeId(authContext.getEnrollee().getId())
+            .build());
+    return fileStream;
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")

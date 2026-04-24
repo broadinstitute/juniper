@@ -34,5 +34,8 @@ public class ParticipantFile extends BaseEntity {
     private String notes;
 
     @Builder.Default
+    private List<DownloadRecord> downloads = new ArrayList<>();
+
+    @Builder.Default
     private List<Answer> associatedAnswers = new ArrayList<>(); //list of answers that are associated with this file
 }

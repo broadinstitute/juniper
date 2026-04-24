@@ -1,7 +1,9 @@
 package bio.terra.pearl.api.participant.service.file;
 
 import bio.terra.pearl.api.participant.service.AuthUtilService;
+import bio.terra.pearl.core.dao.file.DownloadRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -29,16 +32,19 @@ public class ParticipantFileExtService {
   private final AuthUtilService authUtilService;
   private final FileStorageBackend fileStorageBackend;
   private final StudyEnvironmentService studyEnvironmentService;
+  private final DownloadRecordDao downloadRecordDao;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
       AuthUtilService authUtilService,
       FileStorageBackendProvider fileStorageBackendProvider,
-      StudyEnvironmentService studyEnvironmentService) {
+      StudyEnvironmentService studyEnvironmentService,
+      DownloadRecordDao downloadRecordDao) {
     this.participantFileService = participantFileService;
     this.authUtilService = authUtilService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
     this.studyEnvironmentService = studyEnvironmentService;
+    this.downloadRecordDao = downloadRecordDao;
   }
 
   public ScannedParticipantFileDto get(
@@ -59,6 +65,7 @@ public class ParticipantFileExtService {
     return participantFileService.attachVirusScanResult(file);
   }
 
+  @Transactional
   public InputStream downloadFile(
       String portalShortcode,
       EnvironmentName envName,
@@ -80,7 +87,14 @@ public class ParticipantFileExtService {
       throw new IllegalArgumentException("Virus detected in file");
     }
 
-    return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    InputStream fileStream = fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    downloadRecordDao.create(
+        DownloadRecord.builder()
+            .participantFileId(participantFile.getId())
+            .participantUserId(participantUser.getId())
+            .enrolleeId(enrollee.getId())
+            .build());
+    return fileStream;
   }
 
   public ScannedParticipantFileDto uploadFile(
