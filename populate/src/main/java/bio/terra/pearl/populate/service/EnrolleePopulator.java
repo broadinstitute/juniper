@@ -189,24 +189,17 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .build();
 
-        file = participantFileService.create(file);
+        return participantFileService.create(file);
+    }
 
+    private void populateParticipantFileDownloads(ParticipantFile file, Enrollee enrollee, ParticipantFilePopDto fileDto, EnvironmentName environmentName) {
         for (DownloadRecordPopDto downloadDto : fileDto.getDownloadRecordPopDtos()) {
-            UUID userId = downloadDto.getLinkedUsername() != null
-                    ? participantUserService.findOne(downloadDto.getLinkedUsername(), environmentName).orElseThrow().getId()
-                    : enrollee.getParticipantUserId();
-            DownloadRecord record = DownloadRecord.builder()
-                    .participantFileId(file.getId())
-                    .participantUserId(userId)
-                    .enrolleeId(enrollee.getId())
-                    .build();
-            record = downloadRecordDao.create(record);
+            ParticipantUser pUser = participantUserService.findOne(downloadDto.getLinkedUsername(), environmentName).orElseThrow();
+            DownloadRecord record = participantFileService.createDownloadRecord(file, pUser, enrollee);
             if (downloadDto.isTimeShifted()) {
                 timeShiftDao.changeDownloadRecordCreationTime(record.getId(), downloadDto.shiftedInstant());
             }
         }
-
-        return file;
     }
 
     private String getTargetName(TaskType taskType, String stableId, UUID portalId, int version) {
@@ -373,6 +366,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
             enrolleeResponsePopulator.populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context, responsibleUser);
         }
+        for (int i = 0; i < popDto.getParticipantFilePopDtos().size(); i++) {
+            populateParticipantFileDownloads(participantFiles.get(i), enrollee, popDto.getParticipantFilePopDtos().get(i), attachedEnv.getEnvironmentName());
+        }
+
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
         }

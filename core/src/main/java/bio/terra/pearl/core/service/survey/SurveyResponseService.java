@@ -348,14 +348,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
-        // to confirm they were in fact associated with this user & response.  So it's easier to just ignore user-supplied ids and
-        // use the responseId (which we have already validated) and questionStableIds to get existing answers
-        List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getId(), updatedStableIds);
+            // to confirm they were in fact associated with this user & response.  So it's easier to just ignore user-supplied ids and
+            // use the responseId (which we have already validated) and questionStableIds to get existing answers
+            List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getId(), updatedStableIds);
 
-        // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
-        Map<String, Answer> existingAnswerMap = new HashMap<>();
-        for (Answer answer : existingAnswers) {
-            existingAnswerMap.put(answer.getQuestionStableId(), answer);
+            // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
+            Map<String, Answer> existingAnswerMap = new HashMap<>();
+            for (Answer answer : existingAnswers) {
+                existingAnswerMap.put(answer.getQuestionStableId(), answer);
         }
         List<ParticipantDataChange> changeRecords = new ArrayList<>();
         List<Answer> updatedAnswers = answers.stream().map(answer -> {

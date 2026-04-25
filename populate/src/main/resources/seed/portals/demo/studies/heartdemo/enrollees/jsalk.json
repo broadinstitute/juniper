@@ -20,7 +20,8 @@
       "fileContent": "Hi!",
       "downloadRecordPopDtos": [
         {
-          "submittedHoursAgo": "15"
+          "submittedHoursAgo": "15",
+          "linkedUsername": "jsalk@test.com"
         }
       ]
     }

@@ -3,7 +3,6 @@ package bio.terra.pearl.api.participant.service.file;
 import bio.terra.pearl.api.participant.service.AuthUtilService;
 import bio.terra.pearl.core.dao.file.DownloadRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -15,6 +14,7 @@ import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.survey.AnswerService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -33,18 +33,21 @@ public class ParticipantFileExtService {
   private final FileStorageBackend fileStorageBackend;
   private final StudyEnvironmentService studyEnvironmentService;
   private final DownloadRecordDao downloadRecordDao;
+  private final AnswerService answerService;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
       AuthUtilService authUtilService,
       FileStorageBackendProvider fileStorageBackendProvider,
       StudyEnvironmentService studyEnvironmentService,
-      DownloadRecordDao downloadRecordDao) {
+      DownloadRecordDao downloadRecordDao,
+      AnswerService answerService) {
     this.participantFileService = participantFileService;
     this.authUtilService = authUtilService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
     this.studyEnvironmentService = studyEnvironmentService;
     this.downloadRecordDao = downloadRecordDao;
+    this.answerService = answerService;
   }
 
   public ScannedParticipantFileDto get(
@@ -80,21 +83,7 @@ public class ParticipantFileExtService {
             .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
             .orElseThrow(() -> new NotFoundException("Could not find file"));
 
-    VirusScanResult virusScanResult =
-        participantFileService.getVirusScanResult(participantFile.getExternalFileId());
-
-    if (virusScanResult == VirusScanResult.QUARANTINED) {
-      throw new IllegalArgumentException("Virus detected in file");
-    }
-
-    InputStream fileStream = fileStorageBackend.downloadFile(participantFile.getExternalFileId());
-    downloadRecordDao.create(
-        DownloadRecord.builder()
-            .participantFileId(participantFile.getId())
-            .participantUserId(participantUser.getId())
-            .enrolleeId(enrollee.getId())
-            .build());
-    return fileStream;
+    return participantFileService.downloadFile(participantFile, participantUser, enrollee);
   }
 
   public ScannedParticipantFileDto uploadFile(

@@ -221,7 +221,8 @@ export const mockParticipantFile = (fileName: string, associatedAnswers?: Answer
     lastUpdatedAt: 0,
     associatedAnswers: associatedAnswers || [],
     virusScanResult: 'CLEAN',
-    externalFileId: 'externalId'
+    externalFileId: 'externalId',
+    downloads: []
   }
 }
 
