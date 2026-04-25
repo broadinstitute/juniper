@@ -51,17 +51,20 @@ public class ParticipantFileExtService {
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public ScannedParticipantFileDto get(PortalEnrolleeAuthContext authContext, String fileName) {
-    return participantFileService
-        .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
-        .map(participantFileService::attachVirusScanResult)
-        .orElseThrow(() -> new NotFoundException("File not found"));
+    ParticipantFile file =
+        participantFileService
+            .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+    participantFileService.attachDownloadRecords(List.of(file));
+    return participantFileService.attachVirusScanResult(file);
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public List<ScannedParticipantFileDto> list(PortalEnrolleeAuthContext authContext) {
-    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId()).stream()
-        .map(participantFileService::attachVirusScanResult)
-        .toList();
+    List<ParticipantFile> files =
+        participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
+    participantFileService.attachDownloadRecords(files);
+    return files.stream().map(participantFileService::attachVirusScanResult).toList();
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")

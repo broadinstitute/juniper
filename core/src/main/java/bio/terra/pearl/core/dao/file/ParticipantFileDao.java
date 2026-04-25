@@ -48,6 +48,15 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
 
         Map<String, List<Answer>> answersByFileName = answers.stream().collect(Collectors.groupingBy(Answer::getStringValue));
 
+        for (ParticipantFile file : participantFiles) {
+            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
+        }
+
+        return participantFiles;
+    }
+
+    // attaches records and returns the list for easy chaining
+    public List<ParticipantFile> attachDownloadRecords(List<ParticipantFile> participantFiles) {
         List<UUID> fileIds = participantFiles.stream().map(ParticipantFile::getId).toList();
         Map<UUID, List<DownloadRecord>> downloadsByFileId = fileIds.isEmpty()
                 ? Map.of()
@@ -55,10 +64,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
                         .collect(Collectors.groupingBy(DownloadRecord::getParticipantFileId));
 
         for (ParticipantFile file : participantFiles) {
-            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
             file.setDownloads(downloadsByFileId.getOrDefault(file.getId(), new ArrayList<>()));
         }
-
         return participantFiles;
     }
 

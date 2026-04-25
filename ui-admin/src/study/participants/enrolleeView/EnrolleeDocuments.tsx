@@ -18,7 +18,7 @@ export default function EnrolleeDocuments({ enrollee, studyEnvContext }: {
       enrolleeShortcode: enrollee.shortcode
     })
     setParticipantFiles(response)
-  }, [enrollee])
+  }, [enrollee.shortcode])
 
   return <LoadingSpinner isLoading={isLoading}>
     <ParticipantDocumentListView

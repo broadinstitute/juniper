@@ -71,6 +71,10 @@ public class ParticipantFileService extends CrudService<ParticipantFile, Partici
         return dao.findWithAnswers(id);
     }
 
+    public List<ParticipantFile> attachDownloadRecords(List<ParticipantFile> participantFiles) {
+        return dao.attachDownloadRecords(participantFiles);
+    }
+
     @Override
     public void delete(UUID id, Set<CascadeProperty> cascade) {
         ParticipantFile participantFile = findWithAnswers(id).orElseThrow(() -> new NotFoundException("File not found"));
