@@ -96,6 +96,7 @@ function ParticipantListTable({
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
     'givenName': false,
+    'participantUserShortcode': false,
     'familyName': false,
     'contactEmail': false,
     'subject': false,
@@ -134,6 +135,15 @@ function ParticipantListTable({
       )
     },
     enrolleeShortcodeColumn(currentEnvPath),
+    {
+      id: 'participantUserShortcode',
+      header: 'User shortcode',
+      enableColumnFilter: true,
+      meta: {
+        columnType: 'string'
+      },
+      accessorFn: (row: EnrolleeSearchExpressionResult) => row.participantUser?.shortcode
+    },
     {
       header: 'Research ID',
       id: 'researchId',
