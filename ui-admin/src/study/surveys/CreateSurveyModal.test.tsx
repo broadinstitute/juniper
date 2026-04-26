@@ -183,6 +183,7 @@ describe('CreateSurveyModal', () => {
 
         id: '',
         studyEnvironmentId: studyEnvContext.currentEnv.id,
+        active: true,
         survey: {
           ...defaultSurvey,
           content: '{}',
