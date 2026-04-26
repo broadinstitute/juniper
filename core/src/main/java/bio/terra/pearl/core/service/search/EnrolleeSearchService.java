@@ -31,6 +31,7 @@ public class EnrolleeSearchService {
 
     public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression, EnrolleeSearchOptions opts) {
         try {
+
             return enrolleeSearchExpressionDao.executeSearch(
                     enrolleeSearchExpressionParser.parseRule(expression),
                     studyEnvId,

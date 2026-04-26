@@ -159,6 +159,7 @@ export const toExpression = (searchState: ParticipantSearchState,
     expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
       + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
       + `or {enrollee.shortcode} contains '${searchState.keywordSearch}' `
+      + `or {user.shortcode} contains '${searchState.keywordSearch}' `
       + `or {family.shortcode} contains '${searchState.keywordSearch}')`)
   }
 

@@ -77,6 +77,7 @@ public class UserTerm extends SearchTerm {
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry("username", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("createdAt", SearchValueTypeDefinition.builder().type(INSTANT).build()),
             Map.entry("lastLogin", SearchValueTypeDefinition.builder().type(INSTANT).build()));
 
