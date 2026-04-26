@@ -37,7 +37,11 @@ public class ParticipantFileExtService {
   @Transactional
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public InputStream downloadFile(PortalEnrolleeAuthContext authContext, String fileName) {
-    ParticipantFile participantFile = get(authContext, fileName);
+    ScannedParticipantFileDto participantFile = get(authContext, fileName);
+
+    if (participantFile.getVirusScanResult() == VirusScanResult.QUARANTINED) {
+      throw new IllegalArgumentException("Virus detected in file");
+    }
 
     InputStream fileStream = fileStorageBackend.downloadFile(participantFile.getExternalFileId());
     downloadRecordDao.create(

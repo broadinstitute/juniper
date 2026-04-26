@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.participant.service.file;
 
 import bio.terra.pearl.api.participant.service.AuthUtilService;
-import bio.terra.pearl.core.dao.file.DownloadRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
@@ -14,7 +13,6 @@ import bio.terra.pearl.core.service.file.VirusScanResult;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackend;
 import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.survey.AnswerService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -32,22 +30,16 @@ public class ParticipantFileExtService {
   private final AuthUtilService authUtilService;
   private final FileStorageBackend fileStorageBackend;
   private final StudyEnvironmentService studyEnvironmentService;
-  private final DownloadRecordDao downloadRecordDao;
-  private final AnswerService answerService;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
       AuthUtilService authUtilService,
       FileStorageBackendProvider fileStorageBackendProvider,
-      StudyEnvironmentService studyEnvironmentService,
-      DownloadRecordDao downloadRecordDao,
-      AnswerService answerService) {
+      StudyEnvironmentService studyEnvironmentService) {
     this.participantFileService = participantFileService;
     this.authUtilService = authUtilService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
     this.studyEnvironmentService = studyEnvironmentService;
-    this.downloadRecordDao = downloadRecordDao;
-    this.answerService = answerService;
   }
 
   public ScannedParticipantFileDto get(

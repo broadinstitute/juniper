@@ -31,6 +31,8 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class ParticipantFileService extends CrudService<ParticipantFile, ParticipantFileDao> {
+    private static final String FILE_VIEWED_VALUE = "yes";
+
     private final FileStorageBackend fileStorageBackend;
     private final DownloadRecordDao downloadRecordDao;
     private final AnswerService answerService;
@@ -139,7 +141,7 @@ public class ParticipantFileService extends CrudService<ParticipantFile, Partici
                             .surveyVersion(associatedAnswer.getSurveyVersion())
                             .answerType(AnswerType.STRING)
                             .format(AnswerFormat.VIEW)
-                            .stringValue("yes")
+                            .stringValue(FILE_VIEWED_VALUE)
                             .creatingParticipantUserId(participantUser.getId())
                             .build());
         });

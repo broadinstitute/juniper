@@ -55,7 +55,6 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
         return participantFiles;
     }
 
-    // attaches records and returns the list for easy chaining
     public List<ParticipantFile> attachDownloadRecords(List<ParticipantFile> participantFiles) {
         List<UUID> fileIds = participantFiles.stream().map(ParticipantFile::getId).toList();
         Map<UUID, List<DownloadRecord>> downloadsByFileId = fileIds.isEmpty()
@@ -86,8 +85,10 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
-        List<ParticipantFile> files = findByEnrolleeId(enrolleeId);
-        files.forEach(file -> downloadRecordDao.deleteByParticipantFileId(file.getId()));
+        List<UUID> fileIds = findByEnrolleeId(enrolleeId).stream().map(ParticipantFile::getId).toList();
+        if (!fileIds.isEmpty()) {
+            downloadRecordDao.deleteByParticipantFileIds(fileIds);
+        }
         deleteByProperty("enrollee_id", enrolleeId);
     }
 
