@@ -11,11 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -96,7 +92,7 @@ public class SmartyUSAddressValidationService implements AddressValidationServic
         if (Objects.isNull(candidate.getAnalysis().getDpvMatchCode())) {
             return false;
         }
-        return candidate.getAnalysis().getDpvMatchCode().contains("Y");
+        return candidate.getAnalysis().getDpvMatchCode().contains("Y") || candidate.getAnalysis().getEnhancedMatch().contains("non-postal-match");
     }
 
     private MailingAddress suggestedAddress(Candidate candidate) {

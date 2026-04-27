@@ -264,6 +264,65 @@ class SmartyUSAddressValidationServiceTest extends BaseSpringBootTest {
         Assertions.assertFalse(result.getHasInferredComponents());
     }
 
+    @Test
+    public void testEnhancedMatch() throws SmartyException, IOException, InterruptedException {
+        mockResponse(
+                """
+                        {
+                            "input_index": 0,
+                            "candidate_index": 0,
+                            "delivery_line_1": "150 Ken Visage Ln",
+                            "last_line": "La Fayette GA 30728-4981",
+                            "delivery_point_barcode": "307284981503",
+                            "smarty_key": "2037752728",
+                            "components": {
+                                "primary_number": "150",
+                                "street_name": "Ken Visage",
+                                "street_suffix": "Ln",
+                                "city_name": "La Fayette",
+                                "default_city_name": "La Fayette",
+                                "state_abbreviation": "GA",
+                                "zipcode": "30728",
+                                "plus4_code": "4981",
+                                "delivery_point": "50",
+                                "delivery_point_check_digit": "3"
+                            },
+                            "metadata": {
+                                "record_type": "S",
+                                "zip_type": "Standard",
+                                "county_fips": "13295",
+                                "county_name": "Walker",
+                                "carrier_route": "R006",
+                                "congressional_district": "14",
+                                "rdi": "Residential",
+                                "elot_sequence": "0399",
+                                "elot_sort": "A",
+                                "latitude": 34.714897,
+                                "longitude": -85.218483,
+                                "coordinate_license": 1,
+                                "precision": "Rooftop",
+                                "time_zone": "Eastern",
+                                "utc_offset": -5,
+                                "dst": true
+                            },
+                            "analysis": {
+                                "dpv_match_code": "N",
+                                "dpv_footnotes": "AABB",
+                                "dpv_cmra": "N",
+                                "dpv_vacant": "N",
+                                "dpv_no_stat": "N",
+                                "active": "Y",
+                                "footnotes": "U#",
+                                "enhanced_match": "non-postal-match,missing-secondary"
+                            }
+                        }
+                        """
+        );
+        AddressValidationResultDto result = client.validate(new MailingAddress());
+
+        Assertions.assertTrue(result.isValid());
+    }
+
     void mockResponse(String jsonResponse) throws SmartyException, IOException, InterruptedException {
 
         SmartySerializer serializer = new SmartySerializer();
