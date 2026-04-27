@@ -110,6 +110,7 @@ describe('toExpression', () => {
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
       + 'or {enrollee.shortcode} contains \'test\' '
+      + 'or {user.shortcode} contains \'test\' '
       + 'or {family.shortcode} contains \'test\') '
       + 'and {enrollee.subject} = false and {enrollee.consented} = true '
       + 'and {age} >= 10 and {age} <= 20 and ({profile.sexAtBirth} = \'female\') '
