@@ -40,6 +40,6 @@ public class ParticipantTaskQueryService {
                                                                            List<String> targetStableIds,
                                                                            UUID triggerScopeId) {
         return findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation, timeSinceLastNotification,
-                List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS), targetStableIds, triggerScopeId);
+                List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS, TaskStatus.VIEWED), targetStableIds, triggerScopeId);
     }
 }
