@@ -51,7 +51,8 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
       id: 'numParticipants',
       header: '# participants currently assigned',
       cell: ({ row }) => participantTasks
-        .filter(task => task.targetAssignedVersion === row.original.survey.version).length
+        .filter(task => task.targetAssignedVersion === row.original.survey.version
+          && task.status !== 'REMOVED').length
     }, {
       id: 'actions',
       header: '',

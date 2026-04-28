@@ -85,7 +85,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
             studyEnvironmentId: studyEnvContext.currentEnv.id,
             survey: createdSurvey,
             surveyId: createdSurvey.id,
-            surveyOrder: studyEnvContext.currentEnv.configuredSurveys.length
+            surveyOrder: studyEnvContext.currentEnv.configuredSurveys.length,
+            active: true
           }
         )
       } catch (err) {

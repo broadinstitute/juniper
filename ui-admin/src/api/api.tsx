@@ -784,11 +784,34 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
+  async activateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurveyId: string): Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurveyId}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/` +
+      `${configuredSurveyId}/activate`
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
+  async deactivateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}` +
+      `/configuredSurveys/${configuredSurveyId}/deactivate`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
+  async cancelConfiguredSurveyTasks(portalShortcode: string, studyShortcode: string, envName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}` +
+      `/configuredSurveys/${configuredSurveyId}/cancelTasks`
+    const response = await fetch(url, {
+      method: 'POST',
       headers: this.getInitHeaders()
     })
     return await this.processResponse(response)

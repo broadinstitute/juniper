@@ -267,6 +267,7 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     allowParticipantStart: true,
     allowParticipantReedit: true,
     prepopulate: true,
+    active: true,
     survey: mockSurvey()
   }
 }

@@ -15,6 +15,9 @@ import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserBundle;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -22,11 +25,16 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import java.util.List;
 import java.util.Map;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -42,6 +50,9 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private PortalAdminUserFactory portalAdminUserFactory;
   @Autowired private PortalFactory portalFactory;
+  @Autowired private EnrolleeFactory enrolleeFactory;
+  @Autowired private ParticipantTaskFactory participantTaskFactory;
+  @Autowired private ParticipantTaskService participantTaskService;
 
   @Test
   public void assertAllMethods() {
@@ -68,10 +79,10 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
                 "updateConfiguredSurveys",
                 AuthAnnotationSpec.withPortalStudyEnvPerm(
                     "survey_edit", List.of(SandboxOnly.class))),
+            Map.entry("activateSurvey", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
+            Map.entry("deactivateSurvey", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
             Map.entry(
-                "removeConfiguredSurvey",
-                AuthAnnotationSpec.withPortalStudyEnvPerm(
-                    "survey_edit", List.of(SandboxOnly.class))),
+                "cancelSurveyTasks", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
             Map.entry(
                 "replace",
                 AuthAnnotationSpec.withPortalStudyEnvPerm(
@@ -182,5 +193,42 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
             .orElseThrow()
             .getSurveyId(),
         equalTo(survey1.getId()));
+  }
+
+  @Test
+  @Transactional
+  public void deactivateSurveyCancelsTasks(TestInfo testInfo) {
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+    StudyEnvironmentBundle bundle =
+        studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+    Survey survey = surveyFactory.buildPersisted(getTestName(testInfo), bundle.getPortal().getId());
+    StudyEnvironmentSurvey configuredSurvey =
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true, 1);
+
+    EnrolleeBundle enrolleeBundle1 =
+        enrolleeFactory.buildWithPortalUser(
+            getTestName(testInfo), bundle.getPortalEnv(), bundle.getStudyEnv());
+    EnrolleeBundle enrolleeBundle2 =
+        enrolleeFactory.buildWithPortalUser(
+            getTestName(testInfo), bundle.getPortalEnv(), bundle.getStudyEnv());
+
+    participantTaskFactory.buildPersisted(
+        enrolleeBundle1, survey.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+    participantTaskFactory.buildPersisted(
+        enrolleeBundle2, survey.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
+
+    surveyExtService.cancelSurveyTasks(
+        PortalStudyEnvAuthContext.of(
+            operator,
+            bundle.getPortal().getShortcode(),
+            bundle.getStudy().getShortcode(),
+            bundle.getStudyEnv().getEnvironmentName()),
+        configuredSurvey.getId());
+
+    List<ParticipantTask> tasks =
+        participantTaskService.findTasksByStudyAndTarget(
+            bundle.getStudyEnv().getId(), List.of(survey.getStableId()));
+    assertThat(tasks, Matchers.hasSize(2));
+    assertThat(tasks.stream().allMatch(t -> t.getStatus() == TaskStatus.REMOVED), equalTo(true));
   }
 }

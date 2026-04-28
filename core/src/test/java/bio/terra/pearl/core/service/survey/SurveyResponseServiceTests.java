@@ -20,6 +20,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.file.ParticipantFileService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -166,6 +167,51 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertEquals(answer.getSurveyStableId(), "survey1");
         assertEquals(answer.getQuestionStableId(), "diagnosis");
         assertEquals(answer.getStringValue(), "cancer");
+    }
+
+    @Test
+    @Transactional
+    public void testFindWithActiveResponseFallsBackToInactiveSurvey(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        List<Answer> answers = AnswerFactory.fromMap(Map.of("foo", "bar"));
+        SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
+                .answers(answers)
+                .build();
+        SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
+
+        Enrollee enrollee = enrolleeService.find(savedResponse.getEnrolleeId()).get();
+        Survey survey = surveyService.find(savedResponse.getSurveyId()).get();
+
+        // attach as inactive — no active survey exists
+        StudyEnvironmentSurvey inactiveSes = studyEnvironmentSurveyService.create(StudyEnvironmentSurvey.builder()
+                .surveyId(survey.getId())
+                .studyEnvironmentId(enrollee.getStudyEnvironmentId())
+                .active(false)
+                .surveyOrder(3)
+                .build());
+
+        SurveyWithResponse result = surveyResponseService.findWithActiveResponse(enrollee.getStudyEnvironmentId(),
+                survey.getPortalId(), survey.getStableId(), survey.getVersion(), enrollee, null);
+
+        assertThat(result, notNullValue());
+        assertThat(result.studyEnvironmentSurvey().getId(), equalTo(inactiveSes.getId()));
+        assertThat(result.studyEnvironmentSurvey().getSurveyOrder(), equalTo(3));
+    }
+
+    @Test
+    @Transactional
+    public void testFindWithActiveResponseThrowsWhenNoSurveysExist(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName).build();
+        SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
+
+        Enrollee enrollee = enrolleeService.find(savedResponse.getEnrolleeId()).get();
+        Survey survey = surveyService.find(savedResponse.getSurveyId()).get();
+
+        // no StudyEnvironmentSurvey created — neither active nor inactive
+        assertThrows(NotFoundException.class, () ->
+                surveyResponseService.findWithActiveResponse(enrollee.getStudyEnvironmentId(),
+                        survey.getPortalId(), survey.getStableId(), survey.getVersion(), enrollee, null));
     }
 
     @Test

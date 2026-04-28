@@ -126,12 +126,36 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   }
 
   @Override
-  public ResponseEntity<Void> remove(
+  public ResponseEntity<Void> activate(
       String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    surveyExtService.removeConfiguredSurvey(
+    surveyExtService.activateSurvey(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        configuredSurveyId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deactivate(
+      String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    surveyExtService.deactivateSurvey(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        configuredSurveyId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> cancelTasks(
+      String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    surveyExtService.cancelSurveyTasks(
         PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
         configuredSurveyId);
     return ResponseEntity.noContent().build();

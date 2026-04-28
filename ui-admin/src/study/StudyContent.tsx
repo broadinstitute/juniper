@@ -10,8 +10,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
-import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
+import DeactivateSurveyModal from './surveys/DeactivateSurveyModal'
+import CancelSurveyTasksModal from './surveys/CancelSurveyTasksModal'
+import ActivateSurveyModal from './surveys/ActivateSurveyModal'
 import {
   StudyEnvironmentSurvey,
   StudyEnvironmentSurveyNamed,
@@ -44,15 +46,17 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const portalContext = useContext(PortalContext) as PortalContextT
 
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurveyNamed[]>([])
-  const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
+  const [showDeactivateSurveyModal, setShowDeactivateSurveyModal] = useState(false)
+  const [showCancelTasksSurveyModal, setShowCancelTasksSurveyModal] = useState(false)
+  const [showActivateSurveyModal, setShowActivateSurveyModal] = useState(false)
   const [showCreatePreEnrollSurveyModal, setShowCreatePreEnrollModal] = useState(false)
-  const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
+  const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurveyNamed>()
   const [createSurveyType, setCreateSurveyType] = useState<SurveyType>()
 
   const { isLoading, setIsLoading } = useLoadingEffect(async () => {
     const response = await Api.findConfiguredSurveys(
-      studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode, undefined, true, undefined)
+      studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode, undefined, undefined, undefined)
     setConfiguredSurveys(response.map(config => ({
       ...config,
       envName: studyEnvContext.study.studyEnvironments
@@ -70,7 +74,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   function getUniqueStableIdsForType(configuredSurveys: StudyEnvironmentSurveyNamed[], surveyType: string) {
     return _uniq(configuredSurveys
       .filter(configSurvey => configSurvey.survey.surveyType === surveyType)
-      .sort((a, b) => a.surveyOrder - b.surveyOrder)
+      .sort((a, b) => (b.active ? 1 : 0) - (a.active ? 1 : 0) || a.surveyOrder - b.surveyOrder)
       .map(configSurvey => configSurvey.survey.stableId))
   }
 
@@ -97,9 +101,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                showArchiveSurveyModal={showArchiveSurveyModal}
                 showDeleteSurveyModal={showDeleteSurveyModal}
+                showDeactivateSurveyModal={showDeactivateSurveyModal}
+                setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                showActivateSurveyModal={showActivateSurveyModal}
+                setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
               <div>
                 <Button variant="secondary" data-testid={'addPreenrollSurvey'} onClick={() => {
@@ -121,9 +129,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                showArchiveSurveyModal={showArchiveSurveyModal}
                 showDeleteSurveyModal={showDeleteSurveyModal}
+                showDeactivateSurveyModal={showDeactivateSurveyModal}
+                setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                showActivateSurveyModal={showActivateSurveyModal}
+                setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
               <div>
                 <Button variant="secondary" data-testid={'addConsentSurvey'} onClick={() => {
@@ -145,9 +157,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                showArchiveSurveyModal={showArchiveSurveyModal}
                 showDeleteSurveyModal={showDeleteSurveyModal}
+                showDeactivateSurveyModal={showDeactivateSurveyModal}
+                setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                showActivateSurveyModal={showActivateSurveyModal}
+                setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
               <div>
                 <Button variant="secondary" data-testid={'addResearchSurvey'} onClick={() => {
@@ -169,9 +185,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                showArchiveSurveyModal={showArchiveSurveyModal}
                 showDeleteSurveyModal={showDeleteSurveyModal}
+                showDeactivateSurveyModal={showDeactivateSurveyModal}
+                setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                showActivateSurveyModal={showActivateSurveyModal}
+                setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
               <div>
                 <Button variant="secondary" data-testid={'addAdminForm'} onClick={() => {
@@ -194,9 +214,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   setSelectedSurveyConfig={setSelectedSurveyConfig}
                   updateConfiguredSurveys={updateConfiguredSurveys}
                   setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                  setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                  showArchiveSurveyModal={showArchiveSurveyModal}
                   showDeleteSurveyModal={showDeleteSurveyModal}
+                  showDeactivateSurveyModal={showDeactivateSurveyModal}
+                  setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                  showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                  setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                  showActivateSurveyModal={showActivateSurveyModal}
+                  setShowActivateSurveyModal={setShowActivateSurveyModal}
                 />
                 <div>
                   <Button variant="secondary" data-testid={'addDocumentRequest'} onClick={() => {
@@ -219,9 +243,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                showArchiveSurveyModal={showArchiveSurveyModal}
                 showDeleteSurveyModal={showDeleteSurveyModal}
+                showDeactivateSurveyModal={showDeactivateSurveyModal}
+                setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
+                showActivateSurveyModal={showActivateSurveyModal}
+                setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
               <div>
                 <Button variant="secondary" data-testid={'addOutreachSurvey'} onClick={() => {
@@ -235,12 +263,19 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         </ul>}
         {createSurveyType && <CreateSurveyModal studyEnvContext={studyEnvContext} type={createSurveyType}
           onDismiss={() => setCreateSurveyType(undefined)}/>}
-        {(showArchiveSurveyModal && selectedSurveyConfig) && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
-          selectedSurveyConfig={selectedSurveyConfig}
-          onDismiss={() => setShowArchiveSurveyModal(false)}/>}
         {(showDeleteSurveyModal && selectedSurveyConfig) && <DeleteSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowDeleteSurveyModal(false)}/>}
+        {(showDeactivateSurveyModal && selectedSurveyConfig) && <DeactivateSurveyModal studyEnvContext={studyEnvContext}
+          selectedSurveyConfig={selectedSurveyConfig}
+          onDismiss={() => setShowDeactivateSurveyModal(false)}/>}
+        {(showCancelTasksSurveyModal && selectedSurveyConfig) && <CancelSurveyTasksModal
+          studyEnvContext={studyEnvContext}
+          selectedSurveyConfig={selectedSurveyConfig}
+          onDismiss={() => setShowCancelTasksSurveyModal(false)}/>}
+        {(showActivateSurveyModal && selectedSurveyConfig) && <ActivateSurveyModal studyEnvContext={studyEnvContext}
+          selectedSurveyConfig={selectedSurveyConfig}
+          onDismiss={() => setShowActivateSurveyModal(false)}/>}
         {showCreatePreEnrollSurveyModal && <CreatePreEnrollSurveyModal studyEnvContext={studyEnvContext}
           onDismiss={() => setShowCreatePreEnrollModal(false)}/>}
         {!currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div>}

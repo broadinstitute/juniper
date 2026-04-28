@@ -170,7 +170,8 @@ export const mockConfiguredSurvey = (): StudyEnvironmentSurvey => {
     id: 'fakeGuid',
     surveyId: 'surveyId1',
     surveyOrder: 1,
-    survey: generateSurvey()
+    survey: generateSurvey(),
+    active: true
   }
 }
 
