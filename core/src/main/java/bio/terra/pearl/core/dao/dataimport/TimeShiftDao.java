@@ -164,4 +164,13 @@ public class TimeShiftDao {
         );
     }
 
+    public void changeDownloadRecordCreationTime(UUID downloadRecordId, Instant creationTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update download_record set created_at = :creationTime, last_updated_at = :creationTime where id = :downloadRecordId;")
+                        .bind("downloadRecordId", downloadRecordId)
+                        .bind("creationTime", creationTime)
+                        .execute()
+        );
+    }
+
 }

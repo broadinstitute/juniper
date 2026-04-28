@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -88,12 +89,10 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
     }
 
     public SurveyResponse attachParticipantFiles(SurveyResponse response) {
-        List<ScannedParticipantFileDto> participantFiles = participantFileService
-                .findBySurveyResponseId(response.getId())
-                .stream()
-                .map(participantFileService::attachVirusScanResult)
-                .toList();
-        response.setParticipantFiles(participantFiles);
+        List<ParticipantFile> participantFiles = participantFileService.findBySurveyResponseId(response.getId());
+        participantFileService.attachDownloadRecords(participantFiles);
+        List<ScannedParticipantFileDto> fileDtos = participantFiles.stream().map(participantFileService::attachVirusScanResult).toList();
+        response.setParticipantFiles(fileDtos);
         return response;
     }
 

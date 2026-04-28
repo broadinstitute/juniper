@@ -2,6 +2,8 @@ package bio.terra.pearl.api.admin.service.file;
 
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.core.dao.file.DownloadRecordDao;
+import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -20,34 +23,52 @@ public class ParticipantFileExtService {
 
   private final ParticipantFileService participantFileService;
   private final FileStorageBackend fileStorageBackend;
+  private final DownloadRecordDao downloadRecordDao;
 
   public ParticipantFileExtService(
       ParticipantFileService participantFileService,
-      FileStorageBackendProvider fileStorageBackendProvider) {
+      FileStorageBackendProvider fileStorageBackendProvider,
+      DownloadRecordDao downloadRecordDao) {
     this.participantFileService = participantFileService;
     this.fileStorageBackend = fileStorageBackendProvider.get();
+    this.downloadRecordDao = downloadRecordDao;
   }
 
+  @Transactional
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public InputStream downloadFile(PortalEnrolleeAuthContext authContext, String fileName) {
-    ParticipantFile participantFile = get(authContext, fileName);
+    ScannedParticipantFileDto participantFile = get(authContext, fileName);
 
-    return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    if (participantFile.getVirusScanResult() == VirusScanResult.QUARANTINED) {
+      throw new IllegalArgumentException("Virus detected in file");
+    }
+
+    InputStream fileStream = fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    downloadRecordDao.create(
+        DownloadRecord.builder()
+            .participantFileId(participantFile.getId())
+            .adminUserId(authContext.getOperator().getId())
+            .enrolleeId(authContext.getEnrollee().getId())
+            .build());
+    return fileStream;
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public ScannedParticipantFileDto get(PortalEnrolleeAuthContext authContext, String fileName) {
-    return participantFileService
-        .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
-        .map(participantFileService::attachVirusScanResult)
-        .orElseThrow(() -> new NotFoundException("File not found"));
+    ParticipantFile file =
+        participantFileService
+            .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+    participantFileService.attachDownloadRecords(List.of(file));
+    return participantFileService.attachVirusScanResult(file);
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_view")
   public List<ScannedParticipantFileDto> list(PortalEnrolleeAuthContext authContext) {
-    return participantFileService.findByEnrolleeId(authContext.getEnrollee().getId()).stream()
-        .map(participantFileService::attachVirusScanResult)
-        .toList();
+    List<ParticipantFile> files =
+        participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
+    participantFileService.attachDownloadRecords(files);
+    return files.stream().map(participantFileService::attachVirusScanResult).toList();
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")

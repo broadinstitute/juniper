@@ -30,7 +30,7 @@ describe('EnrolleeDocuments', () => {
     render(<EnrolleeDocuments enrollee={mockEnrollee()} studyEnvContext={mockStudyEnvContext()} />)
 
     await waitFor(() => {
-      expect(screen.getByText('This participant has not uploaded any documents')).toBeInTheDocument()
+      expect(screen.getByText('No uploaded documents')).toBeInTheDocument()
     })
   })
 })

@@ -6,7 +6,9 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import {
+  DownloadRecord,
   Enrollee,
+  instantToDefaultString,
   ParticipantFile,
   saveBlobAsDownload
 } from '@juniper/ui-core'
@@ -38,12 +40,16 @@ export const ParticipantDocumentListView = ({
   // @ts-ignore
   const columns: ColumnDef<ParticipantFile>[] = [
     {
+      header: 'File Name',
+      accessorKey: 'fileName'
+    },
+    {
       ...createdAtColumn(),
       header: 'Uploaded At'
     },
     {
-      header: 'File Name',
-      accessorKey: 'fileName'
+      header: 'Downloads',
+      cell: ({ row }) => <DownloadRecordList records={row.original.downloads ?? []}/>
     },
     ...(showAssociatedTasks ? [{
       header: 'Associated Tasks',
@@ -121,8 +127,25 @@ export const ParticipantDocumentListView = ({
       Document Uploads
     </span>
     {basicTableLayout(table)}
-    { renderEmptyMessage(documents, 'This participant has not uploaded any documents') }
+    { renderEmptyMessage(documents, 'No uploaded documents') }
   </>
+}
+
+const DownloadRecordList = ({ records }: { records: DownloadRecord[] }) => {
+  if (records.length === 0) {
+    return <span className='fst-italic text-muted'>none</span>
+  }
+  return (
+    <ul className='ps-3 mb-0'>
+      {records.map((record, i) => (
+        <li key={i}>
+          {instantToDefaultString(record.createdAt)}
+          {' — '}
+          {record.adminUserId ? 'Admin' : 'Participant'}
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 const surveyResponseIdsToTaskNames = (
@@ -133,7 +156,7 @@ const surveyResponseIdsToTaskNames = (
   }).filter(task => task !== undefined)
 
   if (associatedTasks.length === 0) {
-    return <div className={'fst-italic text-muted'}>This document is not associated with any tasks</div>
+    return <div className={'fst-italic text-muted'}>none</div>
   }
 
   return (

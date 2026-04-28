@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -59,6 +60,7 @@ public class ParticipantFileExtService {
     return participantFileService.attachVirusScanResult(file);
   }
 
+  @Transactional
   public InputStream downloadFile(
       String portalShortcode,
       EnvironmentName envName,
@@ -73,14 +75,7 @@ public class ParticipantFileExtService {
             .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
             .orElseThrow(() -> new NotFoundException("Could not find file"));
 
-    VirusScanResult virusScanResult =
-        participantFileService.getVirusScanResult(participantFile.getExternalFileId());
-
-    if (virusScanResult == VirusScanResult.QUARANTINED) {
-      throw new IllegalArgumentException("Virus detected in file");
-    }
-
-    return fileStorageBackend.downloadFile(participantFile.getExternalFileId());
+    return participantFileService.downloadFile(participantFile, participantUser, enrollee);
   }
 
   public ScannedParticipantFileDto uploadFile(
