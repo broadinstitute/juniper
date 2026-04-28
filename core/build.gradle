@@ -46,7 +46,7 @@ dependencies {
     implementation 'org.apache.poi:poi:5.4.1'
     implementation 'org.apache.poi:poi-ooxml:5.4.1'
     implementation 'com.azure:azure-storage-blob:12.31.1'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.16.1'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:6.0.0'
     implementation 'org.jooq:jooq:3.20.5'
     implementation 'com.mixpanel:mixpanel-java:1.5.3'
     implementation platform('com.google.cloud:libraries-bom:26.60.0')
