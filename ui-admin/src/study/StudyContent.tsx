@@ -269,7 +269,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         {(showDeactivateSurveyModal && selectedSurveyConfig) && <DeactivateSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowDeactivateSurveyModal(false)}/>}
-        {(showCancelTasksSurveyModal && selectedSurveyConfig) && <CancelSurveyTasksModal studyEnvContext={studyEnvContext}
+        {(showCancelTasksSurveyModal && selectedSurveyConfig) && <CancelSurveyTasksModal
+          studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowCancelTasksSurveyModal(false)}/>}
         {(showActivateSurveyModal && selectedSurveyConfig) && <ActivateSurveyModal studyEnvContext={studyEnvContext}
