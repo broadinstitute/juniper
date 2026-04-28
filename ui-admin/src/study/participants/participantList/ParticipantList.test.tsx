@@ -169,6 +169,7 @@ test('keyword search sends search api request', async () => {
     '({profile.name} contains \'foo\' ' +
     'or {profile.contactEmail} contains \'foo\' ' +
     'or {enrollee.shortcode} contains \'foo\' ' +
+    'or {user.shortcode} contains \'foo\' ' +
     'or {family.shortcode} contains \'foo\') ' +
     'and {enrollee.subject} = true ' +
     'and include({user.username}) and include({portalUser.lastLogin})')

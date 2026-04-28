@@ -1016,4 +1016,29 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         assertTrue(resultsIsNotNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle3.enrollee().getId())));
         assertTrue(resultsIsNotNull.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeBundle4.enrollee().getId())));
     }
+
+    @Test
+    @Transactional
+    public void testUserShortcodeSearch(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeBundle bundle1 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle bundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        String targetShortcode = bundle1.participantUser().getShortcode();
+
+        EnrolleeSearchExpression exactExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.shortcode} = '%s'".formatted(targetShortcode)
+        );
+        EnrolleeSearchExpression containsExp = enrolleeSearchExpressionParser.parseRule(
+                "{user.shortcode} contains '%s'".formatted(targetShortcode)
+        );
+
+        List<EnrolleeSearchExpressionResult> exactResults = enrolleeSearchExpressionDao.executeSearch(exactExp, studyEnvBundle.getStudyEnv().getId());
+        List<EnrolleeSearchExpressionResult> containsResults = enrolleeSearchExpressionDao.executeSearch(containsExp, studyEnvBundle.getStudyEnv().getId());
+
+        Assertions.assertEquals(1, exactResults.size());
+        Assertions.assertEquals(1, containsResults.size());
+        assertTrue(exactResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle1.enrollee().getId())));
+        assertTrue(containsResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle1.enrollee().getId())));
+    }
 }
