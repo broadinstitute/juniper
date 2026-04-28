@@ -24,6 +24,8 @@ export type SurveyTableProps = {
   setShowDeleteSurveyModal: (show: boolean) => void
   showDeactivateSurveyModal: boolean
   setShowDeactivateSurveyModal: (show: boolean) => void
+  showCancelTasksSurveyModal: boolean
+  setShowCancelTasksSurveyModal: (show: boolean) => void
   showActivateSurveyModal: boolean
   setShowActivateSurveyModal: (show: boolean) => void
   updateConfiguredSurveys: (surveyConfigs: StudyEnvironmentSurvey[]) => void
@@ -143,7 +145,8 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
     configuredSurveys, studyEnvParams,
     setSelectedSurveyConfig, setShowDeleteSurveyModal,
     showDeleteSurveyModal, setShowDeactivateSurveyModal,
-    setShowActivateSurveyModal, rowInfo, envName
+    setShowCancelTasksSurveyModal, setShowActivateSurveyModal,
+    rowInfo, envName
   } = props
   if (!rowInfo.name) {
     return null
@@ -199,6 +202,15 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
                   setShowDeactivateSurveyModal(true)
                 }}>
                     Deactivate
+              </button>
+            </li> }
+            { menuConfig && <li className="pt-2">
+              <button className="dropdown-item"
+                onClick={() => {
+                  setSelectedSurveyConfig(menuConfig)
+                  setShowCancelTasksSurveyModal(true)
+                }}>
+                    Cancel existing tasks
               </button>
             </li> }
             { inactiveConfig && <li className="pt-2">

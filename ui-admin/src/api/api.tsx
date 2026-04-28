@@ -796,9 +796,20 @@ export default {
   },
 
   async deactivateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
-    configuredSurveyId: string, cancelTasks: boolean): Promise<Response> {
+    configuredSurveyId: string): Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}` +
-      `/configuredSurveys/${configuredSurveyId}/deactivate?${queryString.stringify({ cancelTasks })}`
+      `/configuredSurveys/${configuredSurveyId}/deactivate`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
+  async cancelConfiguredSurveyTasks(portalShortcode: string, studyShortcode: string, envName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}` +
+      `/configuredSurveys/${configuredSurveyId}/cancelTasks`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()

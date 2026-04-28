@@ -139,18 +139,25 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
 
   @Override
   public ResponseEntity<Void> deactivate(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      UUID configuredSurveyId,
-      Boolean cancelTasks) {
+      String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     surveyExtService.deactivateSurvey(
         PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
-        configuredSurveyId,
-        Boolean.TRUE.equals(cancelTasks));
+        configuredSurveyId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> cancelTasks(
+      String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    surveyExtService.cancelSurveyTasks(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        configuredSurveyId);
     return ResponseEntity.noContent().build();
   }
 }

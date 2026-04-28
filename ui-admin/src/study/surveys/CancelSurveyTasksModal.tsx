@@ -8,8 +8,8 @@ import { failureNotification } from 'util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import { StudyEnvironmentSurveyNamed } from '@juniper/ui-core'
 
-/** renders a modal that allows deactivating a survey */
-const DeactivateSurveyModal = ({
+/** renders a modal that cancels existing participant tasks for a survey */
+const CancelSurveyTasksModal = ({
   studyEnvContext, selectedSurveyConfig, onDismiss
 }: {
   studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurveyNamed, onDismiss: () => void
@@ -17,15 +17,15 @@ const DeactivateSurveyModal = ({
   const [isLoading, setIsLoading] = useState(false)
   const portalContext = useContext(PortalContext) as PortalContextT
 
-  const deactivate = async () => {
+  const cancelTasks = async () => {
     setIsLoading(true)
-    await Api.deactivateConfiguredSurvey(
+    await Api.cancelConfiguredSurveyTasks(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       selectedSurveyConfig.envName,
       selectedSurveyConfig.id
     ).catch(() =>
-      Store.addNotification(failureNotification('Error deactivating survey'))
+      Store.addNotification(failureNotification('Error cancelling tasks'))
     )
     await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
     setIsLoading(false)
@@ -34,24 +34,25 @@ const DeactivateSurveyModal = ({
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>Deactivate Survey</Modal.Title>
+      <Modal.Title>Cancel Existing Tasks</Modal.Title>
       <div className="ms-4">
         {studyEnvContext.study.name}: {selectedSurveyConfig.envName}
       </div>
     </Modal.Header>
     <Modal.Body>
       <p>
-        Are you sure you want to deactivate the <strong>{selectedSurveyConfig.survey.name}</strong> survey
-        from the {selectedSurveyConfig.envName} environment?
+        Are you sure you want to cancel all outstanding participant tasks for
+        the <strong>{selectedSurveyConfig.survey.name}</strong> survey
+        in the {selectedSurveyConfig.envName} environment?
       </p>
       <p>
-        Existing participant responses and tasks will be preserved.
+        Existing participant responses will be preserved.
       </p>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className="btn btn-warning" onClick={deactivate}>
-          Deactivate
+        <button className="btn btn-danger" onClick={cancelTasks}>
+          Cancel existing tasks
         </button>
         <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
       </LoadingSpinner>
@@ -59,4 +60,4 @@ const DeactivateSurveyModal = ({
   </Modal>
 }
 
-export default DeactivateSurveyModal
+export default CancelSurveyTasksModal

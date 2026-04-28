@@ -308,7 +308,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}/deactivate:
     post:
-      summary: Deactivates a configured survey, optionally cancelling existing participant tasks
+      summary: Deactivates a configured survey
       tags: [ configuredSurvey ]
       operationId: deactivate
       parameters:
@@ -316,7 +316,21 @@ paths:
         - *studyShortcodeParam
         - *envNameParam
         - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
-        - { name: cancelTasks, in: query, required: false, schema: { type: boolean } }
+      responses:
+        '204':
+          description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}/cancelTasks:
+    post:
+      summary: Cancels existing participant tasks for a configured survey
+      tags: [ configuredSurvey ]
+      operationId: cancelTasks
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '204':
           description: No Content

@@ -12,6 +12,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import DeactivateSurveyModal from './surveys/DeactivateSurveyModal'
+import CancelSurveyTasksModal from './surveys/CancelSurveyTasksModal'
 import ActivateSurveyModal from './surveys/ActivateSurveyModal'
 import {
   StudyEnvironmentSurvey,
@@ -47,6 +48,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurveyNamed[]>([])
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
   const [showDeactivateSurveyModal, setShowDeactivateSurveyModal] = useState(false)
+  const [showCancelTasksSurveyModal, setShowCancelTasksSurveyModal] = useState(false)
   const [showActivateSurveyModal, setShowActivateSurveyModal] = useState(false)
   const [showCreatePreEnrollSurveyModal, setShowCreatePreEnrollModal] = useState(false)
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurveyNamed>()
@@ -102,6 +104,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
                 showDeactivateSurveyModal={showDeactivateSurveyModal}
                 setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                 showActivateSurveyModal={showActivateSurveyModal}
                 setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
@@ -128,6 +132,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
                 showDeactivateSurveyModal={showDeactivateSurveyModal}
                 setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                 showActivateSurveyModal={showActivateSurveyModal}
                 setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
@@ -154,6 +160,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
                 showDeactivateSurveyModal={showDeactivateSurveyModal}
                 setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                 showActivateSurveyModal={showActivateSurveyModal}
                 setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
@@ -180,6 +188,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
                 showDeactivateSurveyModal={showDeactivateSurveyModal}
                 setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                 showActivateSurveyModal={showActivateSurveyModal}
                 setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
@@ -207,6 +217,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   showDeleteSurveyModal={showDeleteSurveyModal}
                   showDeactivateSurveyModal={showDeactivateSurveyModal}
                   setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                  showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                  setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                   showActivateSurveyModal={showActivateSurveyModal}
                   setShowActivateSurveyModal={setShowActivateSurveyModal}
                 />
@@ -234,6 +246,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
                 showDeactivateSurveyModal={showDeactivateSurveyModal}
                 setShowDeactivateSurveyModal={setShowDeactivateSurveyModal}
+                showCancelTasksSurveyModal={showCancelTasksSurveyModal}
+                setShowCancelTasksSurveyModal={setShowCancelTasksSurveyModal}
                 showActivateSurveyModal={showActivateSurveyModal}
                 setShowActivateSurveyModal={setShowActivateSurveyModal}
               />
@@ -255,6 +269,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         {(showDeactivateSurveyModal && selectedSurveyConfig) && <DeactivateSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowDeactivateSurveyModal(false)}/>}
+        {(showCancelTasksSurveyModal && selectedSurveyConfig) && <CancelSurveyTasksModal studyEnvContext={studyEnvContext}
+          selectedSurveyConfig={selectedSurveyConfig}
+          onDismiss={() => setShowCancelTasksSurveyModal(false)}/>}
         {(showActivateSurveyModal && selectedSurveyConfig) && <ActivateSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowActivateSurveyModal(false)}/>}

@@ -82,6 +82,8 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
             Map.entry("activateSurvey", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
             Map.entry("deactivateSurvey", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
             Map.entry(
+                "cancelSurveyTasks", AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit")),
+            Map.entry(
                 "replace",
                 AuthAnnotationSpec.withPortalStudyEnvPerm(
                     "survey_edit", List.of(SandboxOnly.class)))));
@@ -215,14 +217,13 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
     participantTaskFactory.buildPersisted(
         enrolleeBundle2, survey.getStableId(), TaskStatus.NEW, TaskType.SURVEY);
 
-    surveyExtService.deactivateSurvey(
+    surveyExtService.cancelSurveyTasks(
         PortalStudyEnvAuthContext.of(
             operator,
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getStudyEnv().getEnvironmentName()),
-        configuredSurvey.getId(),
-        true);
+        configuredSurvey.getId());
 
     List<ParticipantTask> tasks =
         participantTaskService.findTasksByStudyAndTarget(

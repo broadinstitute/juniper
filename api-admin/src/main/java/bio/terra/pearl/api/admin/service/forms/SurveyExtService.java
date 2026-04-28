@@ -211,26 +211,29 @@ public class SurveyExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
+  public void deactivateSurvey(PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
+    StudyEnvironmentSurvey configuredSurvey =
+        studyEnvironmentSurveyService.find(configuredSurveyId).get();
+    authConfiguredSurveyRequest(authContext, configuredSurvey);
+    studyEnvironmentSurveyService.deactivate(configuredSurveyId);
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   @Transactional
-  public void deactivateSurvey(
-      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId, boolean cancelTasks) {
+  public void cancelSurveyTasks(PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
     StudyEnvironmentSurvey configuredSurvey =
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
     SurveyAuthEntities surveyAuth = authConfiguredSurveyRequest(authContext, configuredSurvey);
-    studyEnvironmentSurveyService.deactivate(configuredSurveyId);
-
-    if (cancelTasks) {
-      UUID studyEnvId = authContext.getStudyEnvironment().getId();
-      String stableId = surveyAuth.survey().getStableId();
-      List<ParticipantTask> tasks =
-          participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
-      DataAuditInfo auditInfo = authContext.dataAuditInfo();
-      for (ParticipantTask task : tasks) {
-        if (!task.getStatus().isTerminalStatus()) {
-          task.setStatus(TaskStatus.REMOVED);
-        }
-        participantTaskService.update(task, auditInfo);
+    UUID studyEnvId = authContext.getStudyEnvironment().getId();
+    String stableId = surveyAuth.survey().getStableId();
+    List<ParticipantTask> tasks =
+        participantTaskService.findTasksByStudyAndTarget(studyEnvId, List.of(stableId));
+    DataAuditInfo auditInfo = authContext.dataAuditInfo();
+    for (ParticipantTask task : tasks) {
+      if (!task.getStatus().isTerminalStatus()) {
+        task.setStatus(TaskStatus.REMOVED);
       }
+      participantTaskService.update(task, auditInfo);
     }
   }
 
