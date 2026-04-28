@@ -7,12 +7,10 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEnvAttachedDao<Enrollee> {
@@ -46,11 +44,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
         return findAllByTwoPropertiesSorted("study_environment_id", studyEnvironmentId,
                 "subject", isSubject,
                 sortProperty, sortDir);
-    }
-
-    @Transactional
-    public Stream<Enrollee> streamByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return streamAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public List<Enrollee> findAllByShortcodes(List<String> shortcodes) {

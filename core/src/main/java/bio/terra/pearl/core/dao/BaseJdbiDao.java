@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public abstract class BaseJdbiDao<T extends BaseEntity> implements JdbiDao<T> {
     protected Jdbi jdbi;
@@ -438,15 +437,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> implements JdbiDao<T> {
             }
             return query.mapTo(clazz).list();
         });
-    }
-
-    protected Stream<T> streamAllByProperty(String columnName, Object columnValue) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
-                        .bind("columnValue", columnValue)
-                        .mapTo(clazz)
-                        .stream()
-        );
     }
 
     protected List<T> findAllByPropertyCollection(String columnName, Collection<?> columnValues) {
