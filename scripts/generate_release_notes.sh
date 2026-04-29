@@ -27,8 +27,8 @@ messages=$(echo $commits | jq -r '.[].message')
 # Generate the release notes markdown. This can be pasted directly into a Jira ticket
 # or a Google Doc (if you have markdown enabled)
 while IFS= read -r message; do
-  if echo "$message" | grep -q -E 'JN-\d+'; then
-    ticket=$(echo "$message" | grep -o -E 'JN-\d+')
+  if echo "$message" | grep -q -E '(JN|SIDRB)-\d+'; then
+    ticket=$(echo "$message" | grep -o -E '(JN|SIDRB)-\d+')
     pr=$(echo "$message" | grep -o -E '#\d+' | tr -d '#')
     message=$(echo "$message" | tr -d '[]')
     echo "[${message}](https://broadworkbench.atlassian.net/browse/$ticket) [(GitHub PR)](https://github.com/broadinstitute/juniper/pull/$pr)"
