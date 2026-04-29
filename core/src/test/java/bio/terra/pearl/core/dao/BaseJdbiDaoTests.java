@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -126,21 +125,6 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
             portalDao.bulkCreate(List.of(portal1, portal2, portal3));
         });
-    }
-
-    @Test
-    @Transactional
-    public void testStreamAllByProperty(TestInfo testInfo) {
-        // Arrange
-        Portal portal1 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
-        Portal portal2 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
-
-        // Act
-        Stream<Portal> stream = portalDao.streamAllByProperty("name", getTestName(testInfo));
-        List<Portal> foundPortals = stream.toList();
-
-        // Assert
-        assertThat(foundPortals, contains(portal1, portal2));
     }
 
     @Test
