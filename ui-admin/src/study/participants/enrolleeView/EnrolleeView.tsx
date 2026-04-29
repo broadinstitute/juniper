@@ -44,7 +44,6 @@ import {
   navDivStyle,
   navListItemStyle
 } from 'util/subNavStyles'
-import { RequireUserPermission } from 'util/RequireUserPermission'
 import EnrolleeDocuments from './EnrolleeDocuments'
 import { KitRequestFullDetails } from '../../kits/KitRequestFullDetails'
 
@@ -184,22 +183,20 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                     responseMap={responseMap} emptyText={'No study staff forms'}/>}
                   />
                 </li>
-                <RequireUserPermission superuser>
-                  <li style={navListItemStyle}>
-                    <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
-                      <>
-                        <SurveyList surveys={surveys
-                          .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
-                        responseMap={responseMap} emptyText={'No document requests'}
-                        />
-                        <NavLink to="documents" className={getLinkCssClasses}>
-                          <FontAwesomeIcon className="me-2" icon={faList}/>
-                          <span className={'fst-italic'}>View all documents</span>
-                        </NavLink>
-                      </>}
-                    />
-                  </li>
-                </RequireUserPermission>
+                <li style={navListItemStyle}>
+                  <CollapsableMenu header={'Document Requests'} headerClass="text-black" content={
+                    <>
+                      <SurveyList surveys={surveys
+                        .filter(survey => survey.survey.surveyType === 'DOCUMENT_REQUEST')}
+                      responseMap={responseMap} emptyText={'No document requests'}
+                      />
+                      <NavLink to="documents" className={getLinkCssClasses}>
+                        <FontAwesomeIcon className="me-2" icon={faList}/>
+                        <span className={'fst-italic'}>View all documents</span>
+                      </NavLink>
+                    </>}
+                  />
+                </li>
                 <li style={navListItemStyle}>
                   <CollapsableMenu header={'Outreach'} headerClass="text-black" content={
                     <SurveyList surveys={surveys
