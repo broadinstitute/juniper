@@ -224,10 +224,19 @@ const dynamicAnswerColumn = <T extends EnrolleeSearchExpressionResult, >(facet: 
     id: facet.key,
     header,
     accessorFn: info => {
-      const answer = info.answers.find(ans =>
-        ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
-      // we can add code here at a later time to map answer stableId string values to choice labels
-      return answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? ''
+      const matching = info.answers
+        .filter(ans => ans.surveyStableId === surveyStableId && ans.questionStableId === questionStableId)
+        .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
+      const answer = matching[0]
+      return {
+        value: answer?.stringValue ?? answer?.booleanValue ?? answer?.numberValue ?? answer?.objectValue ?? '',
+        extra: matching.length - 1
+      }
+    },
+    // we can add code here at a later time to map answer stableId string values to choice labels
+    cell: info => {
+      const { value, extra } = info.getValue() as { value: unknown, extra: number }
+      return <>{value}{extra > 0 && <span className="detail"> (...)</span>}</>
     },
     meta: {
       columnType: facet.type.toLowerCase()

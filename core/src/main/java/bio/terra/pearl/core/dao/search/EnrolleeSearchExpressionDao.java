@@ -159,8 +159,8 @@ public class EnrolleeSearchExpressionDao {
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
 
             if (!isFirstRow) {
-                // Accumulate answers from additional rows produced by a multi-answer join.
-                // Deduplicate by ID so that rows caused by other joins (e.g. family) don't add duplicates.
+                // Accumulate answers and tasks from additional rows produced by multi-value joins.
+                // Deduplicate by ID so that cross-join fan-out doesn't add duplicates.
                 EnrolleeSearchExpressionResult rowResult = rowView.getRow(EnrolleeSearchExpressionResult.class);
                 Set<UUID> existingAnswerIds = searchResult.getAnswers().stream()
                         .map(Answer::getId)
@@ -168,11 +168,22 @@ public class EnrolleeSearchExpressionDao {
                 rowResult.getAnswers().stream()
                         .filter(a -> !existingAnswerIds.contains(a.getId()))
                         .forEach(searchResult.getAnswers()::add);
+                Set<UUID> existingTaskIds = searchResult.getTasks().stream()
+                        .map(ParticipantTask::getId)
+                        .collect(Collectors.toSet());
+                rowResult.getTasks().stream()
+                        .filter(t -> !existingTaskIds.contains(t.getId()))
+                        .forEach(searchResult.getTasks()::add);
             }
 
-            // Add family to enrollee
+            // Add family to enrollee, deduplicating by ID across rows caused by multi-answer fan-out
             if (isColumnPresent(rowView, "family_id", UUID.class)) {
-                searchResult.getFamilies().add(rowView.getRow(Family.class));
+                Family family = rowView.getRow(Family.class);
+                boolean alreadyPresent = searchResult.getFamilies().stream()
+                        .anyMatch(f -> f.getId().equals(family.getId()));
+                if (!alreadyPresent) {
+                    searchResult.getFamilies().add(family);
+                }
             }
         }
 
