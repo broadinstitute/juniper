@@ -35,8 +35,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -150,8 +152,23 @@ public class EnrolleeSearchExpressionDao {
     public static class EnrolleeSearchResultReducer implements LinkedHashMapRowReducer<UUID, EnrolleeSearchExpressionResult> {
         @Override
         public void accumulate(Map<UUID, EnrolleeSearchExpressionResult> map, RowView rowView) {
-            final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
+            UUID enrolleeId = rowView.getColumn("enrollee_id", UUID.class);
+            boolean isFirstRow = !map.containsKey(enrolleeId);
+
+            final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(enrolleeId,
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
+
+            if (!isFirstRow) {
+                // Accumulate answers from additional rows produced by a multi-answer join.
+                // Deduplicate by ID so that rows caused by other joins (e.g. family) don't add duplicates.
+                EnrolleeSearchExpressionResult rowResult = rowView.getRow(EnrolleeSearchExpressionResult.class);
+                Set<UUID> existingAnswerIds = searchResult.getAnswers().stream()
+                        .map(Answer::getId)
+                        .collect(Collectors.toSet());
+                rowResult.getAnswers().stream()
+                        .filter(a -> !existingAnswerIds.contains(a.getId()))
+                        .forEach(searchResult.getAnswers()::add);
+            }
 
             // Add family to enrollee
             if (isColumnPresent(rowView, "family_id", UUID.class)) {
