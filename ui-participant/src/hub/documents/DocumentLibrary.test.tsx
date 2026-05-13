@@ -100,7 +100,7 @@ describe('DocumentLibrary', () => {
   it('renders associated tasks', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
       mockParticipantFile('file1.pdf', [{
-        format: 'FILE_NAME',
+        format: 'FILE_UPLOAD',
         surveyVersion: 1,
         stringValue: 'file1.pdf',
         questionStableId: 'question1',
@@ -162,7 +162,7 @@ describe('DocumentLibrary', () => {
   it('shows warning modal when trying to delete a document that has associated answers', async () => {
     asMockedFn(Api.listParticipantFiles).mockResolvedValue([
       mockParticipantFile('file1.pdf', [{
-        format: 'FILE_NAME',
+        format: 'FILE_UPLOAD',
         surveyVersion: 1,
         stringValue: 'file1.pdf',
         questionStableId: 'question1',

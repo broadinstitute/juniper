@@ -8,6 +8,7 @@ import Select from 'react-select'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { ParticipantTaskStatusOptions } from '@juniper/ui-core'
+import { ExpressionSearchFacets } from 'api/api'
 
 /**
  * Renders the facets that you can search upon in the participant list.
@@ -16,13 +17,19 @@ export default function EnrolleeSearchFacets({
   studyEnvContext,
   searchState,
   updateSearchState,
-  reset
+  reset,
+  facets
 }: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
-  reset: () => void
+  reset: () => void,
+  facets?: ExpressionSearchFacets
 }) {
+  const fileDownloadNames = Object.keys(facets ?? {})
+    .filter(k => k.startsWith('fileDownload.'))
+    .map(k => k.slice('fileDownload.'.length))
+
   return <div>
     <button className="btn btn-secondary float-end" onClick={reset}>Clear all</button>
     <Accordion alwaysOpen flush>
@@ -65,6 +72,13 @@ export default function EnrolleeSearchFacets({
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
+      {fileDownloadNames.length > 0 && <Accordion.Item eventKey={'fileDownloads'} key={'fileDownloads'}>
+        <Accordion.Header>File downloads</Accordion.Header>
+        <Accordion.Body>
+          <FileDownloadFacet fileNames={fileDownloadNames} searchState={searchState}
+            updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>}
       <Accordion.Item eventKey={'custom'} key={'custom'}>
         <Accordion.Header>Custom Search Expression</Accordion.Header>
         <Accordion.Body>
@@ -256,5 +270,41 @@ const CustomFacet = ({ studyEnvContext, searchState, updateSearchState }: {
       studyEnvContext={studyEnvContext}
       onSearchExpressionChange={val => updateSearchState('custom', val)}
       searchExpression={searchState.custom}/>
+  </div>
+}
+
+const downloadStatusOptions = [
+  { label: 'Downloaded', value: true },
+  { label: 'Not downloaded', value: false }
+]
+
+const FileDownloadFacet = ({ fileNames, searchState, updateSearchState }: {
+  fileNames: string[],
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  return <div>
+    {fileNames.map(questionStableId => {
+      const selected = searchState.fileDownloads.find(fd => fd.questionStableId === questionStableId)
+      const selectedOption = downloadStatusOptions.find(o => o.value === selected?.downloaded)
+      return <div className={'mb-2'} key={questionStableId}>
+        <label>{questionStableId}</label>
+        <Select
+          options={downloadStatusOptions}
+          isClearable={true}
+          value={selectedOption ?? null}
+          onChange={selectedOption => {
+            if (selectedOption != null) {
+              updateSearchState('fileDownloads', [
+                ...searchState.fileDownloads.filter(fd => fd.questionStableId !== questionStableId),
+                { questionStableId, downloaded: selectedOption.value }
+              ])
+            } else {
+              updateSearchState('fileDownloads', searchState.fileDownloads.filter(fd => fd.questionStableId !== questionStableId))
+            }
+          }}
+        />
+      </div>
+    })}
   </div>
 }

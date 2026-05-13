@@ -51,6 +51,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
         updateSearchState={updateSearchState}
         setSearchState={setSearchState}
         disabled={false}
+        facets={facets}
       />
     </div>
     <LoadingSpinner isLoading={isLoading}>

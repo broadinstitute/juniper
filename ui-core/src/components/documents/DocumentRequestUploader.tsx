@@ -32,13 +32,13 @@ export const DocumentRequestUploader = (
     studyEnvParams,
     enrolleeShortcode,
     selectedFileNames,
-    setSelectedFileNames,
+    onSelectedFilesChanged,
     ModalComponent = Modal
   } : {
         studyEnvParams: StudyEnvParams,
         enrolleeShortcode: string,
         selectedFileNames: string[]
-    setSelectedFileNames: (fileNames: string[]) => void,
+    onSelectedFilesChanged: (files: ParticipantFile[]) => void,
     ModalComponent?: React.ElementType<ModalProps>
     }) => {
   const [files, setFiles] = useState<ParticipantFile[]>([])
@@ -58,16 +58,17 @@ export const DocumentRequestUploader = (
 
   const selectFile = (newFile: ParticipantFile) => {
     if (!selectedFiles.find(f => f.id === newFile.id)) {
-      setSelectedFiles(oldSelected => [...oldSelected.filter(old => old.fileName !== newFile.fileName), newFile])
-      setSelectedFileNames([...selectedFileNames.filter(old => old !== newFile.fileName), newFile.fileName])
+      const newSelectedFiles = [...selectedFiles.filter(old => old.fileName !== newFile.fileName), newFile]
+      setSelectedFiles(newSelectedFiles)
+      onSelectedFilesChanged(newSelectedFiles)
     }
   }
 
   const unselectFile = (file: ParticipantFile) => {
-    setSelectedFiles(oldFiles => oldFiles.filter(f => f.id !== file.id))
-    setSelectedFileNames(selectedFileNames.filter(f => f !== file.fileName))
+    const newSelectedFiles = selectedFiles.filter(f => f.id !== file.id)
+    setSelectedFiles(newSelectedFiles)
+    onSelectedFilesChanged(newSelectedFiles)
   }
-
 
   const uploadAndSelectFile = async (fileData: File) => {
     setUploadingFile(fileData.name)
@@ -75,7 +76,9 @@ export const DocumentRequestUploader = (
     setUploadingFile(undefined)
 
     setFiles(oldFiles => [newFile, ...oldFiles.filter(f => f.fileName !== newFile.fileName)])
-    selectFile(newFile)
+    const newSelectedFiles = [...selectedFiles.filter(old => old.fileName !== newFile.fileName), newFile]
+    setSelectedFiles(newSelectedFiles)
+    onSelectedFilesChanged(newSelectedFiles)
   }
 
   const downloadFile = async (file: ParticipantFile) => {

@@ -24,6 +24,7 @@ export type ParticipantSearchState = {
   sexAtBirth: string[],
   tasks: { task: string, status: string }[],
   latestKitStatus: string[],
+  fileDownloads: { questionStableId: string, downloaded: boolean }[],
   custom: string,
   includeFacetKeys: string[]
 }
@@ -41,6 +42,7 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
   sexAtBirth: [],
   tasks: [],
   latestKitStatus: [],
+  fileDownloads: [],
   custom: '',
   includeFacetKeys: []
 }
@@ -55,6 +57,7 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
   sexAtBirth: 'Sex at birth',
   tasks: 'Tasks',
   latestKitStatus: 'Latest Kit',
+  fileDownloads: 'File downloads',
   custom: 'Expression',
   includeFacetKeys: 'include'
 }
@@ -214,6 +217,15 @@ export const toExpression = (searchState: ParticipantSearchState,
     expressions.push(latestKitStatusExpression)
   }
 
+  if (searchState.fileDownloads.length > 0) {
+    const fileDownloadExpressions = concatSearchExpressions(
+      searchState.fileDownloads.map(({ questionStableId, downloaded }) =>
+        `{fileDownload.${questionStableId}} = ${downloaded}`
+      )
+    )
+    expressions.push(`(${fileDownloadExpressions})`)
+  }
+
   if (!isEmpty(searchState.custom)) {
     expressions.push(`(${searchState.custom})`)
   }
@@ -251,6 +263,10 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: {
       if (key === 'tasks') {
         for (const task of value as { task: string, status: string }[]) {
           facets.push({ label: task.task, value: task.status })
+        }
+      } else if (key === 'fileDownloads') {
+        for (const { questionStableId, downloaded } of value as { questionStableId: string, downloaded: boolean }[]) {
+          facets.push({ label: `File: ${questionStableId}`, value: downloaded ? 'Downloaded' : 'Not downloaded' })
         }
       } else if (['includeFacets', 'queryFacets', 'includeFacetKeys'].includes(key)) {
         // skip -- not shown directly to users

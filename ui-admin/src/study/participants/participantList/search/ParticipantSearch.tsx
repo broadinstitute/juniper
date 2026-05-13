@@ -7,6 +7,7 @@ import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilter } from '@fortawesome/free-solid-svg-icons'
+import { ExpressionSearchFacets } from 'api/api'
 
 
 /** Participant search component for participant list page */
@@ -16,14 +17,16 @@ function ParticipantSearch({
   updateSearchState,
   setSearchState,
   disabled = false,
-  customLabels = {}
+  customLabels = {},
+  facets
 }: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
   setSearchState: (searchState: ParticipantSearchState) => void,
   disabled?: boolean,
-  customLabels?: { [index: string]: string }
+  customLabels?: { [index: string]: string },
+  facets?: ExpressionSearchFacets
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
@@ -33,7 +36,8 @@ function ParticipantSearch({
         studyEnvContext={studyEnvContext}
         onDismiss={() => setAdvancedSearch(false)}
         searchState={searchState}
-        setSearchState={setSearchState}/>}
+        setSearchState={setSearchState}
+        facets={facets}/>}
       <div className="align-items-center">
         <BasicSearch
           disabled={disabled}

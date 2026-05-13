@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -27,4 +28,5 @@ public class EnrolleeExportData {
     private List<EnrolleeRelation> enrolleeRelations;
     private List<Family> families;
     private List<ParticipantUser> proxyUsers;
+    private List<ParticipantFile> participantFiles;
 }

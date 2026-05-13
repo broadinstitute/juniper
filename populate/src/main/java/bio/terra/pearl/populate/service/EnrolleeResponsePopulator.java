@@ -152,6 +152,13 @@ public class EnrolleeResponsePopulator {
     public Answer convertAnswerPopDto(AnswerPopDto popDto) throws JsonProcessingException {
         if (popDto.getObjectJsonValue() != null) {
             popDto.setObjectValue(objectMapper.writeValueAsString(popDto.getObjectJsonValue()));
+        } else if (popDto.getFileNames() != null && !popDto.getFileNames().isEmpty()) {
+            List<Map<String, String>> fileAnswers = popDto.getFileNames().stream()
+                    .map(name -> Map.of("fileName", name))
+                    .toList();
+            popDto.setObjectValue(objectMapper.writeValueAsString(fileAnswers));
+            popDto.setAnswerType(bio.terra.pearl.core.model.survey.AnswerType.OBJECT);
+            popDto.setFormat(bio.terra.pearl.core.model.survey.AnswerFormat.FILE_UPLOAD);
         }
         return popDto;
     }

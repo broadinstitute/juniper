@@ -70,6 +70,21 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "format", answerFormat);
     }
 
+    public List<Answer> findFileUploadAnswersByEnrolleeAndFileName(UUID enrolleeId, String fileName) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                SELECT * FROM %s
+                                WHERE enrollee_id = :enrolleeId
+                                  AND format = 'FILE_UPLOAD'
+                                  AND object_value::jsonb @> json_build_array(json_build_object('fileName', :fileName))::jsonb
+                                """.formatted(tableName))
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("fileName", fileName)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     /**
      * Returns the most recent answer for a given enrollee, survey, and question.
      */

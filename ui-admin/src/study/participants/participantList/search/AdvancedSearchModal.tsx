@@ -6,15 +6,17 @@ import {
   DefaultParticipantSearchState,
   ParticipantSearchState
 } from 'util/participantSearchUtils'
+import { ExpressionSearchFacets } from 'api/api'
 
 /**
  * Implements a modal dialog for specifying specific search criteria for the participant list.
  */
-const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onDismiss }: {
+const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onDismiss, facets }: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   setSearchState: (searchState: ParticipantSearchState) => void,
-  onDismiss: () => void
+  onDismiss: () => void,
+  facets?: ExpressionSearchFacets
 }) => {
   const [localSearchState, setLocalSearchState] = useState<ParticipantSearchState>(searchState)
 
@@ -45,6 +47,7 @@ const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onD
           searchState={localSearchState}
           updateSearchState={updateLocalSearchState}
           reset={reset}
+          facets={facets}
         />
       </form>
     </Modal.Body>

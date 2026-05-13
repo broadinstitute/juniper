@@ -35,4 +35,8 @@ public class DownloadRecordDao extends BaseMutableJdbiDao<DownloadRecord> {
     public void deleteByParticipantFileIds(List<UUID> participantFileIds) {
         deleteByProperty("participant_file_id", participantFileIds);
     }
+
+    public List<DownloadRecord> findByEnrolleeId(UUID enrolleeId) {
+        return findAllByProperty("enrollee_id", enrolleeId);
+    }
 }

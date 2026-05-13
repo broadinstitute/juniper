@@ -85,7 +85,7 @@ export type Answer = {
   surveyResponseId?: string
 }
 
-export type AnswerFormat = 'NONE' | 'FILE_NAME'
+export type AnswerFormat = 'NONE' | 'FILE_NAME' | 'FILE_UPLOAD'
 
 export type FormResponse = {
   id?: string

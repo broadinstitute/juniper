@@ -215,9 +215,17 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
 
 
   return Object.entries(surveyJSModel.data)
-    // don't make answers for the descriptive sections
+    // don't make answers for descriptive sections, legacy file [N] index keys, or html questions
     .filter(([key]) => {
-      return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
+      if (key.endsWith(SURVEY_JS_OTHER_SUFFIX)) return false
+      if (surveyJSModel.getQuestionByName(key)?.getType() === 'html') return false
+      // filter out legacy [N]-suffixed file question keys emitted by older widget versions
+      const fileIndexMatch = key.match(/^(.+)\[\d+\]$/)
+      if (fileIndexMatch) {
+        const baseName = fileIndexMatch[1]
+        if (surveyJSModel.getQuestionByName(baseName)?.getType() === 'documentrequest') return false
+      }
+      return true
     })
     .map(([key, value]) =>
       makeAnswer(surveyJSModel, value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
@@ -254,26 +262,10 @@ export function makeAnswer(
 }
 
 const getFormat = (model: SurveyModel, questionStableId: string): AnswerFormat => {
-  if (isFileQuestion(model, questionStableId)) {
-    return 'FILE_NAME'
+  if (model?.getQuestionByName(questionStableId)?.getType() === 'documentrequest') {
+    return 'FILE_UPLOAD'
   }
   return 'NONE'
-}
-
-const isFileQuestion = (model: SurveyModel, questionStableId: string): boolean => {
-  // will have format 'questionName[idx]'
-  // need to strip [idx] and check if original question is a file question
-
-  const endRegex = /\[\d+\]$/
-
-  if (!endRegex.test(questionStableId)) {
-    return false
-  }
-
-  const questionName = questionStableId.replace(endRegex, '')
-  const question = model?.getQuestionByName(questionName)
-
-  return question?.getType() === 'documentrequest'
 }
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
