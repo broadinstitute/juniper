@@ -43,7 +43,7 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
 
   get selectedFileNames(): string[] {
     const value = this.question.value
-    if (!value || !Array.isArray(value)) return []
+    if (!value || !Array.isArray(value)) { return [] }
     return (value as { fileName: string }[]).map(f => f.fileName)
   }
 

@@ -217,13 +217,13 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
   return Object.entries(surveyJSModel.data)
     // don't make answers for descriptive sections, legacy file [N] index keys, or html questions
     .filter(([key]) => {
-      if (key.endsWith(SURVEY_JS_OTHER_SUFFIX)) return false
-      if (surveyJSModel.getQuestionByName(key)?.getType() === 'html') return false
+      if (key.endsWith(SURVEY_JS_OTHER_SUFFIX)) { return false }
+      if (surveyJSModel.getQuestionByName(key)?.getType() === 'html') { return false }
       // filter out legacy [N]-suffixed file question keys emitted by older widget versions
       const fileIndexMatch = key.match(/^(.+)\[\d+\]$/)
       if (fileIndexMatch) {
         const baseName = fileIndexMatch[1]
-        if (surveyJSModel.getQuestionByName(baseName)?.getType() === 'documentrequest') return false
+        if (surveyJSModel.getQuestionByName(baseName)?.getType() === 'documentrequest') { return false }
       }
       return true
     })

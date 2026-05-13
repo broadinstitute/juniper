@@ -36,7 +36,6 @@ public class FileUploadFormatter extends BeanListModuleFormatter<FileUploadForma
     public List<FileUploadExportDto> getBeans(EnrolleeExportData enrolleeExportData) {
         return enrolleeExportData.getParticipantFiles().stream()
                 .map(FileUploadExportDto::from)
-                .sorted(Comparator.comparing(FileUploadExportDto::getUploadedAt, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
     }
 

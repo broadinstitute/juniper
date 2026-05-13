@@ -76,9 +76,7 @@ export const DocumentRequestUploader = (
     setUploadingFile(undefined)
 
     setFiles(oldFiles => [newFile, ...oldFiles.filter(f => f.fileName !== newFile.fileName)])
-    const newSelectedFiles = [...selectedFiles.filter(old => old.fileName !== newFile.fileName), newFile]
-    setSelectedFiles(newSelectedFiles)
-    onSelectedFilesChanged(newSelectedFiles)
+    selectFile(newFile)
   }
 
   const downloadFile = async (file: ParticipantFile) => {

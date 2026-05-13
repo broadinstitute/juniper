@@ -82,13 +82,31 @@ export default function EnrolleeSearchFacets({
           <Accordion.Body>
             {fileUploadNames.length > 0 && <>
               <h6 className="text-muted mb-2">Uploads</h6>
-              <FileUploadFacet fileNames={fileUploadNames} searchState={searchState}
-                updateSearchState={updateSearchState}/>
+              <FileFacet
+                fileNames={fileUploadNames}
+                statusOptions={[{ label: 'Uploaded', value: true }, { label: 'Not uploaded', value: false }]}
+                getValue={qid => searchState.fileUploads.find(fu => fu.questionStableId === qid)?.uploaded}
+                onSelect={(qid, value) => updateSearchState('fileUploads', [
+                  ...searchState.fileUploads.filter(fu => fu.questionStableId !== qid),
+                  { questionStableId: qid, uploaded: value }
+                ])}
+                onClear={qid => updateSearchState('fileUploads',
+                  searchState.fileUploads.filter(fu => fu.questionStableId !== qid))}
+              />
             </>}
             {fileDownloadNames.length > 0 && <>
               <h6 className="text-muted mb-2 mt-3">Downloads</h6>
-              <FileDownloadFacet fileNames={fileDownloadNames} searchState={searchState}
-                updateSearchState={updateSearchState}/>
+              <FileFacet
+                fileNames={fileDownloadNames}
+                statusOptions={[{ label: 'Downloaded', value: true }, { label: 'Not downloaded', value: false }]}
+                getValue={qid => searchState.fileDownloads.find(fd => fd.questionStableId === qid)?.downloaded}
+                onSelect={(qid, value) => updateSearchState('fileDownloads', [
+                  ...searchState.fileDownloads.filter(fd => fd.questionStableId !== qid),
+                  { questionStableId: qid, downloaded: value }
+                ])}
+                onClear={qid => updateSearchState('fileDownloads',
+                  searchState.fileDownloads.filter(fd => fd.questionStableId !== qid))}
+              />
             </>}
           </Accordion.Body>
         </Accordion.Item>}
@@ -286,72 +304,23 @@ const CustomFacet = ({ studyEnvContext, searchState, updateSearchState }: {
   </div>
 }
 
-const uploadStatusOptions = [
-  { label: 'Uploaded', value: true },
-  { label: 'Not uploaded', value: false }
-]
-
-const FileUploadFacet = ({ fileNames, searchState, updateSearchState }: {
+const FileFacet = ({ fileNames, statusOptions, getValue, onSelect, onClear }: {
   fileNames: string[],
-  searchState: ParticipantSearchState,
-  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+  statusOptions: { label: string, value: boolean }[],
+  getValue: (questionStableId: string) => boolean | undefined,
+  onSelect: (questionStableId: string, value: boolean) => void,
+  onClear: (questionStableId: string) => void,
 }) => {
   return <div>
     {fileNames.map(questionStableId => {
-      const selected = searchState.fileUploads.find(fu => fu.questionStableId === questionStableId)
-      const selectedOption = uploadStatusOptions.find(o => o.value === selected?.uploaded)
+      const selectedOption = statusOptions.find(o => o.value === getValue(questionStableId))
       return <div className={'mb-2'} key={questionStableId}>
         <label>{questionStableId}</label>
         <Select
-          options={uploadStatusOptions}
+          options={statusOptions}
           isClearable={true}
           value={selectedOption ?? null}
-          onChange={selectedOption => {
-            if (selectedOption != null) {
-              updateSearchState('fileUploads', [
-                ...searchState.fileUploads.filter(fu => fu.questionStableId !== questionStableId),
-                { questionStableId, uploaded: selectedOption.value }
-              ])
-            } else {
-              updateSearchState('fileUploads', searchState.fileUploads.filter(fu => fu.questionStableId !== questionStableId))
-            }
-          }}
-        />
-      </div>
-    })}
-  </div>
-}
-
-const downloadStatusOptions = [
-  { label: 'Downloaded', value: true },
-  { label: 'Not downloaded', value: false }
-]
-
-const FileDownloadFacet = ({ fileNames, searchState, updateSearchState }: {
-  fileNames: string[],
-  searchState: ParticipantSearchState,
-  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
-}) => {
-  return <div>
-    {fileNames.map(questionStableId => {
-      const selected = searchState.fileDownloads.find(fd => fd.questionStableId === questionStableId)
-      const selectedOption = downloadStatusOptions.find(o => o.value === selected?.downloaded)
-      return <div className={'mb-2'} key={questionStableId}>
-        <label>{questionStableId}</label>
-        <Select
-          options={downloadStatusOptions}
-          isClearable={true}
-          value={selectedOption ?? null}
-          onChange={selectedOption => {
-            if (selectedOption != null) {
-              updateSearchState('fileDownloads', [
-                ...searchState.fileDownloads.filter(fd => fd.questionStableId !== questionStableId),
-                { questionStableId, downloaded: selectedOption.value }
-              ])
-            } else {
-              updateSearchState('fileDownloads', searchState.fileDownloads.filter(fd => fd.questionStableId !== questionStableId))
-            }
-          }}
+          onChange={opt => opt != null ? onSelect(questionStableId, opt.value) : onClear(questionStableId)}
         />
       </div>
     })}

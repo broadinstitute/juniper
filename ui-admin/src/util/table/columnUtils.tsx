@@ -255,8 +255,8 @@ const dynamicFileColumn = <T extends EnrolleeSearchExpressionResult, >(facet: Ke
     accessorFn: info => {
       const filesForQuestion = (info.participantFiles ?? [])
         .filter(f => f.associatedAnswers.some(a => a.questionStableId === questionStableId))
-      if (filesForQuestion.length === 0) return false
-      if (!isDownload) return true
+      if (filesForQuestion.length === 0) { return false }
+      if (!isDownload) { return true }
       return filesForQuestion.some(f => f.downloads.some(d => d.participantUserId != null))
     },
     cell: (info: CellContext<T, unknown>) => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : '',

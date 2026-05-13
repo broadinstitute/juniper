@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Searches whether an enrollee has downloaded a file uploaded in response to a particular
@@ -26,12 +27,11 @@ public class FileDownloadTerm extends FileTerm {
     public SearchValue extract(EnrolleeSearchContext context) {
         List<ParticipantFile> files = participantFileDao.findByEnrolleeIdAndQuestionStableId(
                 context.getEnrollee().getId(), questionStableId);
-        for (ParticipantFile file : files) {
-            if (!downloadRecordDao.findByParticipantFileId(file.getId()).isEmpty()) {
-                return new SearchValue(true);
-            }
+        if (files.isEmpty()) {
+            return new SearchValue(false);
         }
-        return new SearchValue(false);
+        List<UUID> fileIds = files.stream().map(ParticipantFile::getId).toList();
+        return new SearchValue(!downloadRecordDao.findByParticipantFileIds(fileIds).isEmpty());
     }
 
     @Override
