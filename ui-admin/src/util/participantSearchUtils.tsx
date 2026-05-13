@@ -25,6 +25,7 @@ export type ParticipantSearchState = {
   tasks: { task: string, status: string }[],
   latestKitStatus: string[],
   fileDownloads: { questionStableId: string, downloaded: boolean }[],
+  fileUploads: { questionStableId: string, uploaded: boolean }[],
   custom: string,
   includeFacetKeys: string[]
 }
@@ -43,6 +44,7 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
   tasks: [],
   latestKitStatus: [],
   fileDownloads: [],
+  fileUploads: [],
   custom: '',
   includeFacetKeys: []
 }
@@ -58,6 +60,7 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
   tasks: 'Tasks',
   latestKitStatus: 'Latest Kit',
   fileDownloads: 'File downloads',
+  fileUploads: 'File uploads',
   custom: 'Expression',
   includeFacetKeys: 'include'
 }
@@ -226,6 +229,15 @@ export const toExpression = (searchState: ParticipantSearchState,
     expressions.push(`(${fileDownloadExpressions})`)
   }
 
+  if (searchState.fileUploads.length > 0) {
+    const fileUploadExpressions = concatSearchExpressions(
+      searchState.fileUploads.map(({ questionStableId, uploaded }) =>
+        `{fileUpload.${questionStableId}} = ${uploaded}`
+      )
+    )
+    expressions.push(`(${fileUploadExpressions})`)
+  }
+
   if (!isEmpty(searchState.custom)) {
     expressions.push(`(${searchState.custom})`)
   }
@@ -268,6 +280,10 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: {
         for (const { questionStableId, downloaded } of value as { questionStableId: string, downloaded: boolean }[]) {
           facets.push({ label: `File: ${questionStableId}`, value: downloaded ? 'Downloaded' : 'Not downloaded' })
         }
+      } else if (key === 'fileUploads') {
+        for (const { questionStableId, uploaded } of value as { questionStableId: string, uploaded: boolean }[]) {
+          facets.push({ label: `File: ${questionStableId}`, value: uploaded ? 'Uploaded' : 'Not uploaded' })
+        }
       } else if (['includeFacets', 'queryFacets', 'includeFacetKeys'].includes(key)) {
         // skip -- not shown directly to users
       } else {
@@ -306,10 +322,14 @@ const getValueAsString = (key: keyof ParticipantSearchState, value: string | num
   return value.toString()
 }
 
-/** extracts any fields from the custom search expression (e.g. 'answer.surveyA.question1' */
+/** extracts facet keys implied by the current search state, for auto-adding as columns */
 export const getQueryFields = (searchState: ParticipantSearchState):
   string[] => {
   const facetStrings = searchState.custom.match(/\{[^}]*}/g) ?? []
-  // chop the leading and trailing {}, and trim whitespace
-  return facetStrings.map(facetString => facetString.slice(1, -1).trim())
+  const customFields = facetStrings.map(facetString => facetString.slice(1, -1).trim())
+  const fileFields = [
+    ...searchState.fileDownloads.map(fd => `fileDownload.${fd.questionStableId}`),
+    ...searchState.fileUploads.map(fu => `fileUpload.${fu.questionStableId}`)
+  ]
+  return [...customFields, ...fileFields]
 }

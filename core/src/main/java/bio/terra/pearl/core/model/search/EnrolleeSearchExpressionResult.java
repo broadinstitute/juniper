@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.search;
 
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -34,4 +35,6 @@ public class EnrolleeSearchExpressionResult {
     private KitRequest latestKit;
     @Builder.Default
     private final List<KitRequestDto> kitRequests = new ArrayList<>();
+    @Builder.Default
+    private final List<ParticipantFile> participantFiles = new ArrayList<>();
 }

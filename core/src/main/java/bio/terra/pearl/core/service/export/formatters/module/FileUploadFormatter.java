@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FileUploadFormatter extends BeanListModuleFormatter<FileUploadFormatter.FileUploadExportDto> {
 
     private static final List<String> EXPORT_PROPERTIES =
-            List.of("fileName", "fileType", "uploadedAt", "downloadCount", "firstDownloadedAt");
+            List.of("fileName", "fileType", "uploadedAt", "downloadCount", "firstParticipantDownloadAt");
 
     public FileUploadFormatter(ExportOptions options) {
         super(options, "file_upload", "File uploads");
@@ -51,10 +51,11 @@ public class FileUploadFormatter extends BeanListModuleFormatter<FileUploadForma
         private String fileType;
         private Instant uploadedAt;
         private int downloadCount;
-        private Instant firstDownloadedAt;
+        private Instant firstParticipantDownloadAt;
 
         public static FileUploadExportDto from(ParticipantFile file) {
-            Instant firstDownload = file.getDownloads().stream()
+            Instant firstParticipantDownload = file.getDownloads().stream()
+                    .filter(r -> r.getParticipantUserId() != null)
                     .map(DownloadRecord::getCreatedAt)
                     .min(Comparator.naturalOrder())
                     .orElse(null);
@@ -63,7 +64,7 @@ public class FileUploadFormatter extends BeanListModuleFormatter<FileUploadForma
                     .fileType(file.getFileType())
                     .uploadedAt(file.getCreatedAt())
                     .downloadCount(file.getDownloads().size())
-                    .firstDownloadedAt(firstDownload)
+                    .firstParticipantDownloadAt(firstParticipantDownload)
                     .build();
         }
     }

@@ -88,6 +88,7 @@ export type EnrolleeSearchExpressionResult = {
   portalParticipantUser?: PortalParticipantUser
   tasks: ParticipantTask[]
   kitRequests: KitRequest[]
+  participantFiles: ParticipantFile[]
 }
 
 export type ParticipantUsersAndEnrollees = {
@@ -944,7 +945,7 @@ export default {
     studyShortcode: string,
     envName: string,
     expression: string,
-    opts: { limit?: number, includes?: ('kitRequests' | 'tasks')[] } = {}):
+    opts: { limit?: number, includes?: ('kitRequests' | 'tasks' | 'participantFiles')[] } = {}):
     Promise<EnrolleeSearchExpressionResult[]> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2`
     url += `?${queryString.stringify({ ...opts, expression })}`

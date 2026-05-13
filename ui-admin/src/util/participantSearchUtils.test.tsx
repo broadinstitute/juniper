@@ -104,6 +104,7 @@ describe('toExpression', () => {
       custom: '{age} != 15',
       latestKitStatus: ['ERRORED'],
       fileDownloads: [],
+      fileUploads: [],
       includeFacetKeys: []
     }
 

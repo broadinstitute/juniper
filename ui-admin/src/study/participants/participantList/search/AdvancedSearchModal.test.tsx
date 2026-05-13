@@ -29,6 +29,7 @@ describe('AdvanceSearchModal', () => {
           tasks: [],
           latestKitStatus: [],
           fileDownloads: [],
+          fileUploads: [],
           custom: '',
           includeFacetKeys: []
         }}
@@ -59,6 +60,7 @@ describe('AdvanceSearchModal', () => {
       custom: '',
       latestKitStatus: [],
       fileDownloads: [],
+      fileUploads: [],
       minAge: undefined,
       maxAge: undefined,
       sexAtBirth: ['female'],

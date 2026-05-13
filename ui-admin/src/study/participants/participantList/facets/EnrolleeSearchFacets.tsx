@@ -30,6 +30,10 @@ export default function EnrolleeSearchFacets({
     .filter(k => k.startsWith('fileDownload.'))
     .map(k => k.slice('fileDownload.'.length))
 
+  const fileUploadNames = Object.keys(facets ?? {})
+    .filter(k => k.startsWith('fileUpload.'))
+    .map(k => k.slice('fileUpload.'.length))
+
   return <div>
     <button className="btn btn-secondary float-end" onClick={reset}>Clear all</button>
     <Accordion alwaysOpen flush>
@@ -72,13 +76,22 @@ export default function EnrolleeSearchFacets({
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
-      {fileDownloadNames.length > 0 && <Accordion.Item eventKey={'fileDownloads'} key={'fileDownloads'}>
-        <Accordion.Header>File downloads</Accordion.Header>
-        <Accordion.Body>
-          <FileDownloadFacet fileNames={fileDownloadNames} searchState={searchState}
-            updateSearchState={updateSearchState}/>
-        </Accordion.Body>
-      </Accordion.Item>}
+      {(fileDownloadNames.length > 0 || fileUploadNames.length > 0) &&
+        <Accordion.Item eventKey={'files'} key={'files'}>
+          <Accordion.Header>Files</Accordion.Header>
+          <Accordion.Body>
+            {fileUploadNames.length > 0 && <>
+              <h6 className="text-muted mb-2">Uploads</h6>
+              <FileUploadFacet fileNames={fileUploadNames} searchState={searchState}
+                updateSearchState={updateSearchState}/>
+            </>}
+            {fileDownloadNames.length > 0 && <>
+              <h6 className="text-muted mb-2 mt-3">Downloads</h6>
+              <FileDownloadFacet fileNames={fileDownloadNames} searchState={searchState}
+                updateSearchState={updateSearchState}/>
+            </>}
+          </Accordion.Body>
+        </Accordion.Item>}
       <Accordion.Item eventKey={'custom'} key={'custom'}>
         <Accordion.Header>Custom Search Expression</Accordion.Header>
         <Accordion.Body>
@@ -270,6 +283,42 @@ const CustomFacet = ({ studyEnvContext, searchState, updateSearchState }: {
       studyEnvContext={studyEnvContext}
       onSearchExpressionChange={val => updateSearchState('custom', val)}
       searchExpression={searchState.custom}/>
+  </div>
+}
+
+const uploadStatusOptions = [
+  { label: 'Uploaded', value: true },
+  { label: 'Not uploaded', value: false }
+]
+
+const FileUploadFacet = ({ fileNames, searchState, updateSearchState }: {
+  fileNames: string[],
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  return <div>
+    {fileNames.map(questionStableId => {
+      const selected = searchState.fileUploads.find(fu => fu.questionStableId === questionStableId)
+      const selectedOption = uploadStatusOptions.find(o => o.value === selected?.uploaded)
+      return <div className={'mb-2'} key={questionStableId}>
+        <label>{questionStableId}</label>
+        <Select
+          options={uploadStatusOptions}
+          isClearable={true}
+          value={selectedOption ?? null}
+          onChange={selectedOption => {
+            if (selectedOption != null) {
+              updateSearchState('fileUploads', [
+                ...searchState.fileUploads.filter(fu => fu.questionStableId !== questionStableId),
+                { questionStableId, uploaded: selectedOption.value }
+              ])
+            } else {
+              updateSearchState('fileUploads', searchState.fileUploads.filter(fu => fu.questionStableId !== questionStableId))
+            }
+          }}
+        />
+      </div>
+    })}
   </div>
 }
 

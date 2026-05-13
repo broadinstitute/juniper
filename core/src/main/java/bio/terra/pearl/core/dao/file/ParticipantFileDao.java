@@ -120,6 +120,40 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
         return findAllByPropertyCollection("enrollee_id", enrolleeIds);
     }
 
+    public List<ParticipantFile> findByEnrolleeIdsWithAnswersAndDownloads(List<UUID> enrolleeIds) {
+        if (enrolleeIds.isEmpty()) {
+            return List.of();
+        }
+        List<ParticipantFile> files = findByEnrolleeIds(enrolleeIds);
+        attachDownloadRecords(files);
+
+        Map<UUID, List<Answer>> fileUploadAnswersByEnrolleeId = new HashMap<>();
+        answerDao.findByEnrolleeIds(enrolleeIds).forEach((enrolleeId, answers) ->
+                fileUploadAnswersByEnrolleeId.put(enrolleeId,
+                        answers.stream().filter(a -> AnswerFormat.FILE_UPLOAD.equals(a.getFormat())).toList()));
+
+        for (ParticipantFile file : files) {
+            List<Answer> enrolleeAnswers = fileUploadAnswersByEnrolleeId.getOrDefault(file.getEnrolleeId(), List.of());
+            List<Answer> matchingAnswers = new ArrayList<>();
+            for (Answer answer : enrolleeAnswers) {
+                if (answer.getObjectValue() == null) continue;
+                try {
+                    FileAnswer[] fileAnswers = objectMapper.readValue(answer.getObjectValue(), FileAnswer[].class);
+                    for (FileAnswer fa : fileAnswers) {
+                        if (file.getFileName().equals(fa.getFileName())) {
+                            matchingAnswers.add(answer);
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // skip malformed answers
+                }
+            }
+            file.setAssociatedAnswers(matchingAnswers);
+        }
+        return files;
+    }
+
     public Map<UUID, List<ParticipantFile>> findByEnrolleeIdsWithDownloads(List<UUID> enrolleeIds) {
         List<ParticipantFile> files = findByEnrolleeIds(enrolleeIds);
         attachDownloadRecords(files);
