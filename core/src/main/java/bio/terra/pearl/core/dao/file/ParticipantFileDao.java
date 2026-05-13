@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     private final AnswerDao answerDao;
     private final DownloadRecordDao downloadRecordDao;
@@ -51,7 +53,15 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     public List<ParticipantFile> findByEnrolleeIdWithAnswers(UUID enrolleeId) {
         List<ParticipantFile> participantFiles = findByEnrolleeId(enrolleeId);
         List<Answer> answers = answerDao.findByEnrolleeIdAndAnswerFormat(enrolleeId, AnswerFormat.FILE_UPLOAD);
+        Map<String, List<Answer>> answersByFileName = buildFileNameToAnswerMap(answers);
+        for (ParticipantFile file : participantFiles) {
+            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
+        }
+        return participantFiles;
+    }
 
+    /** Indexes a list of FILE_UPLOAD answers by the file names they reference. */
+    private Map<String, List<Answer>> buildFileNameToAnswerMap(List<Answer> answers) {
         Map<String, List<Answer>> answersByFileName = new HashMap<>();
         for (Answer answer : answers) {
             if (answer.getObjectValue() == null) continue;
@@ -63,15 +73,10 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
                     }
                 }
             } catch (Exception e) {
-                // skip malformed answers
+                log.warn("Skipping malformed FILE_UPLOAD answer {}: {}", answer.getId(), e.getMessage());
             }
         }
-
-        for (ParticipantFile file : participantFiles) {
-            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
-        }
-
-        return participantFiles;
+        return answersByFileName;
     }
 
     public List<ParticipantFile> attachDownloadRecords(List<ParticipantFile> participantFiles) {
@@ -134,22 +139,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
 
         for (ParticipantFile file : files) {
             List<Answer> enrolleeAnswers = fileUploadAnswersByEnrolleeId.getOrDefault(file.getEnrolleeId(), List.of());
-            List<Answer> matchingAnswers = new ArrayList<>();
-            for (Answer answer : enrolleeAnswers) {
-                if (answer.getObjectValue() == null) continue;
-                try {
-                    FileAnswer[] fileAnswers = objectMapper.readValue(answer.getObjectValue(), FileAnswer[].class);
-                    for (FileAnswer fa : fileAnswers) {
-                        if (file.getFileName().equals(fa.getFileName())) {
-                            matchingAnswers.add(answer);
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    // skip malformed answers
-                }
-            }
-            file.setAssociatedAnswers(matchingAnswers);
+            Map<String, List<Answer>> answersByFileName = buildFileNameToAnswerMap(enrolleeAnswers);
+            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
         }
         return files;
     }

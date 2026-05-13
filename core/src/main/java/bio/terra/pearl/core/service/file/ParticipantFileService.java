@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.file;
 
 import bio.terra.pearl.core.dao.file.DownloadRecordDao;
 import bio.terra.pearl.core.dao.file.ParticipantFileDao;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import bio.terra.pearl.core.model.file.DownloadRecord;
 import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.file.ScannedParticipantFileDto;
@@ -35,12 +36,17 @@ public class ParticipantFileService extends CrudService<ParticipantFile, Partici
     }
 
     public ParticipantFile uploadFileAndCreate(ParticipantFile participantFile, InputStream file) {
-        if (dao.findByEnrolleeIdAndFileName(participantFile.getEnrolleeId(), participantFile.getFileName()).isPresent()) {
-            throw new IllegalArgumentException("A file with the name '%s' already exists for this enrollee".formatted(participantFile.getFileName()));
-        }
         UUID fileId = fileStorageBackend.uploadFile(file);
         participantFile.setExternalFileId(fileId);
-        return dao.create(participantFile);
+        try {
+            return dao.create(participantFile);
+        } catch (UnableToExecuteStatementException e) {
+            if (e.getMessage() != null && e.getMessage().contains("uq_participant_file_enrollee_file_name")) {
+                throw new IllegalArgumentException(
+                        "A file with the name '%s' already exists for this enrollee".formatted(participantFile.getFileName()));
+            }
+            throw e;
+        }
     }
 
     public List<ParticipantFile> findBySurveyResponseId(UUID surveyResponseId) {

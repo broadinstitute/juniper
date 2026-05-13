@@ -25,6 +25,8 @@ describe('keywordSearch', () => {
         'sexAtBirth': [],
         'subject': true,
         'tasks': [],
+        'fileDownloads': [],
+        'fileUploads': [],
         'includeFacetKeys': []
       })
     )
@@ -38,6 +40,8 @@ describe('keywordSearch', () => {
         'sexAtBirth': [],
         'subject': true,
         'tasks': [],
+        'fileDownloads': [],
+        'fileUploads': [],
         'includeFacetKeys': []
       })
     )

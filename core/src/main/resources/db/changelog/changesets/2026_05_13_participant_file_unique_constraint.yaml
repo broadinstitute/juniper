@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "participant_file_unique_enrollee_file_name"
+      author: dbush
+      changes:
+        - addUniqueConstraint:
+            tableName: participant_file
+            columnNames: enrollee_id, file_name
+            constraintName: uq_participant_file_enrollee_file_name
