@@ -45,7 +45,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .stringValue("easyValue")
                 .build();
         EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null, null,
-                List.of(answer), null, List.of(testResponse), null, null, null, null);
+                List.of(answer), null, List.of(testResponse), null, null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("easyValue"));
@@ -82,7 +82,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .build();
 
         EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null, null, null,
-                List.of(answer1, answer2), null, List.of(testResponse1, testResponse2), null, null, null, null);
+                List.of(answer1, answer2), null, List.of(testResponse1, testResponse2), null, null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("value1"));

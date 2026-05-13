@@ -41,7 +41,10 @@ public class AnswerFactory {
                     .surveyStableId(survey.getStableId())
                     .surveyVersion(survey.getVersion())
                     .build();
-            if (entry.getValue() instanceof JsonNode) {
+            if (entry.getValue() instanceof Answer partial) {
+                answer.copyValuesFrom(partial);
+                if (partial.getFormat() != null) answer.setFormat(partial.getFormat());
+            } else if (entry.getValue() instanceof JsonNode) {
                 answer.setObjectValue(entry.getValue().toString());
             } else {
                 answer.setValueAndType(entry.getValue());

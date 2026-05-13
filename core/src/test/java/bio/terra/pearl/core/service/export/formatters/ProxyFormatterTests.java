@@ -24,7 +24,7 @@ public class ProxyFormatterTests {
                 .username("proxy2@test.com")
                 .build();
         ProxyFormatter proxyFormatter = new ProxyFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null,  null,null, null, null, null, null, null, List.of(user1, user2));
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null,  null,null, null, null, null, null, null, List.of(user1, user2), null);
         Map<String, String> enrolleeMap = proxyFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.size(), equalTo(2));

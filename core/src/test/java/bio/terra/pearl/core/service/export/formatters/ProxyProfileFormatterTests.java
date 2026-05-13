@@ -40,7 +40,7 @@ public class ProxyProfileFormatterTests {
                         .build())
                 .build();
         ProxyProfileFormatter moduleFormatter = new ProxyProfileFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, List.of(proxy1, proxy2), null, null, null, null, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, List.of(proxy1, proxy2), null, null, null, null, null, null, null, null);
         Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         // gets most recent first (e.g., proxy2)
@@ -64,7 +64,7 @@ public class ProxyProfileFormatterTests {
                 .familyName("Tester")
                 .build();
         ProxyProfileFormatter moduleFormatter = new ProxyProfileFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, List.of(profile), null, null, null, null, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, List.of(profile), null, null, null, null, null, null, null, null);
         Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.get("proxyProfile.familyName"), equalTo("Tester"));

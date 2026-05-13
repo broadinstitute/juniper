@@ -35,7 +35,6 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
-import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -90,10 +89,6 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     ParticipantFileFactory participantFileFactory;
     @Autowired
     DownloadRecordFactory downloadRecordFactory;
-    @Autowired
-    AnswerService answerService;
-
-
     @Test
     @Transactional
     public void testExecuteAnswerSearch(TestInfo info) {
@@ -417,6 +412,29 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         List<EnrolleeSearchExpressionResult> completed5daysAgo = enrolleeSearchExpressionDao.executeSearch(completed5DaysAgoExp, studyEnvBundle.getStudyEnv().getId());
         Assertions.assertEquals(0, completed5daysAgo.size());
+    }
+
+    /** include({task.*}) should add the column without filtering enrollees who don't have the task */
+    @Test
+    @Transactional
+    public void testIncludeTaskFacetDoesNotFilter(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        EnrolleeBundle withTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(withTask, "demographic_survey", TaskStatus.NEW, TaskType.SURVEY);
+
+        EnrolleeBundle withoutTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({task.demographic_survey.assigned})"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(includeExp, studyEnvBundle.getStudyEnv().getId());
+
+        // both enrollees should be returned — include() must not filter
+        Assertions.assertEquals(2, results.size());
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(withTask.enrollee().getId())));
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(withoutTask.enrollee().getId())));
     }
 
     @Test
@@ -1063,25 +1081,25 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         EnrolleeSearchExpression uploadedExp = enrolleeSearchExpressionParser.parseRule("{fileUpload.my_question} = true");
         EnrolleeSearchExpression notUploadedExp = enrolleeSearchExpressionParser.parseRule("{fileUpload.my_question} = false");
 
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+
         // enrollee with a file uploaded in response to my_question
         Enrollee withFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
         ParticipantFile file = participantFileFactory.buildPersisted(withFile);
-        answerService.create(Answer.builder()
-                .enrolleeId(withFile.getId())
-                .questionStableId("my_question")
-                .format(AnswerFormat.FILE_UPLOAD)
-                .objectValue("[{\"fileName\":\"%s\"}]".formatted(file.getFileName()))
-                .build());
+        surveyResponseFactory.buildWithAnswers(withFile, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(file.getFileName()))
+                        .build()));
 
         // enrollee with a file uploaded for a different question
         Enrollee wrongQuestion = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
         ParticipantFile wrongFile = participantFileFactory.buildPersisted(wrongQuestion);
-        answerService.create(Answer.builder()
-                .enrolleeId(wrongQuestion.getId())
-                .questionStableId("other_question")
-                .format(AnswerFormat.FILE_UPLOAD)
-                .objectValue("[{\"fileName\":\"%s\"}]".formatted(wrongFile.getFileName()))
-                .build());
+        surveyResponseFactory.buildWithAnswers(wrongQuestion, survey, Map.of(
+                "other_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(wrongFile.getFileName()))
+                        .build()));
 
         // enrollee with no file
         Enrollee noFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
@@ -1106,26 +1124,26 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         EnrolleeSearchExpression downloadedExp = enrolleeSearchExpressionParser.parseRule("{fileDownload.my_question} = true");
         EnrolleeSearchExpression notDownloadedExp = enrolleeSearchExpressionParser.parseRule("{fileDownload.my_question} = false");
 
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+
         // enrollee with a file that has been downloaded
         Enrollee withDownload = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
         ParticipantFile downloadedFile = participantFileFactory.buildPersisted(withDownload);
-        answerService.create(Answer.builder()
-                .enrolleeId(withDownload.getId())
-                .questionStableId("my_question")
-                .format(AnswerFormat.FILE_UPLOAD)
-                .objectValue("[{\"fileName\":\"%s\"}]".formatted(downloadedFile.getFileName()))
-                .build());
+        surveyResponseFactory.buildWithAnswers(withDownload, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(downloadedFile.getFileName()))
+                        .build()));
         downloadRecordFactory.buildPersisted(downloadedFile);
 
         // enrollee with a file that has not been downloaded
         Enrollee noDownload = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
         ParticipantFile undownloadedFile = participantFileFactory.buildPersisted(noDownload);
-        answerService.create(Answer.builder()
-                .enrolleeId(noDownload.getId())
-                .questionStableId("my_question")
-                .format(AnswerFormat.FILE_UPLOAD)
-                .objectValue("[{\"fileName\":\"%s\"}]".formatted(undownloadedFile.getFileName()))
-                .build());
+        surveyResponseFactory.buildWithAnswers(noDownload, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(undownloadedFile.getFileName()))
+                        .build()));
 
         // enrollee with no file at all
         Enrollee noFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
