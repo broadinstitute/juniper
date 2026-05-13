@@ -776,6 +776,32 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testIncludeAnswerMultipleResponses(TestInfo info) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
+
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+
+        surveyResponseFactory.buildWithAnswers(enrollee, survey, Map.of("testquestion", "yes"));
+        surveyResponseFactory.buildWithAnswers(enrollee, survey, Map.of("testquestion", "no"));
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({answer.%s.testquestion})".formatted(survey.getStableId())
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(includeExp, studyEnv.getId());
+
+        assertEquals(1, results.size());
+        EnrolleeSearchExpressionResult result = results.get(0);
+        assertEquals(enrollee.getId(), result.getEnrollee().getId());
+        assertEquals(2, result.getAnswers().size());
+        assertTrue(result.getAnswers().stream().anyMatch(a -> "yes".equals(a.getStringValue())));
+        assertTrue(result.getAnswers().stream().anyMatch(a -> "no".equals(a.getStringValue())));
+    }
+
+    @Test
+    @Transactional
     public void testIncludeUserData(TestInfo info) {
         EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         Instant loginTime = Instant.now();
