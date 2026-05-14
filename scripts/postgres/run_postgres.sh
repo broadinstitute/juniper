@@ -35,7 +35,13 @@ stop() {
 
 CONTAINER=postgres
 COMMAND=$1
-POSTGRES_PORT=${2:-"5432"}
+
+REPO_ROOT=$(git -C "$(dirname "$0")" rev-parse --show-toplevel 2>/dev/null)
+if [ -f "$REPO_ROOT/.env.local" ]; then
+    set -a; source "$REPO_ROOT/.env.local"; set +a
+fi
+
+POSTGRES_PORT=${DATABASE_PORT:-${2:-5432}}
 
 if [ ${#@} == 0 ]; then
     echo "Usage: $0 stop|start"

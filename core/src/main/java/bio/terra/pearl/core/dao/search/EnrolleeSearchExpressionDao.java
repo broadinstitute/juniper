@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -168,12 +169,38 @@ public class EnrolleeSearchExpressionDao {
     public static class EnrolleeSearchResultReducer implements LinkedHashMapRowReducer<UUID, EnrolleeSearchExpressionResult> {
         @Override
         public void accumulate(Map<UUID, EnrolleeSearchExpressionResult> map, RowView rowView) {
-            final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
+            UUID enrolleeId = rowView.getColumn("enrollee_id", UUID.class);
+            boolean isFirstRow = !map.containsKey(enrolleeId);
+
+            final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(enrolleeId,
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
 
-            // Add family to enrollee
+            if (!isFirstRow) {
+                // Accumulate answers and tasks from additional rows produced by multi-value joins.
+                // Deduplicate by ID so that cross-join fan-out doesn't add duplicates.
+                EnrolleeSearchExpressionResult rowResult = rowView.getRow(EnrolleeSearchExpressionResult.class);
+                Set<UUID> existingAnswerIds = searchResult.getAnswers().stream()
+                        .map(Answer::getId)
+                        .collect(Collectors.toSet());
+                rowResult.getAnswers().stream()
+                        .filter(a -> !existingAnswerIds.contains(a.getId()))
+                        .forEach(searchResult.getAnswers()::add);
+                Set<UUID> existingTaskIds = searchResult.getTasks().stream()
+                        .map(ParticipantTask::getId)
+                        .collect(Collectors.toSet());
+                rowResult.getTasks().stream()
+                        .filter(t -> !existingTaskIds.contains(t.getId()))
+                        .forEach(searchResult.getTasks()::add);
+            }
+
+            // Add family to enrollee, deduplicating by ID across rows caused by multi-answer fan-out
             if (isColumnPresent(rowView, "family_id", UUID.class)) {
-                searchResult.getFamilies().add(rowView.getRow(Family.class));
+                Family family = rowView.getRow(Family.class);
+                boolean alreadyPresent = searchResult.getFamilies().stream()
+                        .anyMatch(f -> f.getId().equals(family.getId()));
+                if (!alreadyPresent) {
+                    searchResult.getFamilies().add(family);
+                }
             }
         }
 
