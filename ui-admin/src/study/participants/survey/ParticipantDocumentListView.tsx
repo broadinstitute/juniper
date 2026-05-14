@@ -127,7 +127,9 @@ export const ParticipantDocumentListView = ({
 
 
   const deleteFile = async (file: ParticipantFile) => {
-    if (!confirm(`Delete "${file.fileName}"? This cannot be undone.`)) return
+    if (!confirm(`Delete "${file.fileName}"? This cannot be undone.`)) {
+      return
+    }
     try {
       await Api.deleteParticipantFile(
         studyEnvContext.portal.shortcode,

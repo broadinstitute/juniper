@@ -144,6 +144,7 @@ public class ParticipantFileExtService {
             .findByEnrolleeIdAndFileName(enrollee.getId(), fileName)
             .orElseThrow(() -> new NotFoundException("Could not find file"));
 
-    participantFileService.delete(participantFile.getId(), Set.of(ParticipantFileService.AllowedCascades.ANSWER));
+    participantFileService.delete(
+        participantFile.getId(), Set.of(ParticipantFileService.AllowedCascades.ANSWER));
   }
 }
