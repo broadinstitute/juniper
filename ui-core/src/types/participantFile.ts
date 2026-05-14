@@ -16,8 +16,13 @@ export type ParticipantFile = {
   createdAt: number
   lastUpdatedAt: number
   externalFileId: string
+  creatingParticipantUserId?: string
+  creatingAdminUserId?: string
   associatedAnswers: Answer[]
   downloads: DownloadRecord[]
-
   virusScanResult: VirusScanResult
+}
+
+export type FileAnswer = {
+  participantFileId: string
 }

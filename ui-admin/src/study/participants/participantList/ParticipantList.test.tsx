@@ -172,7 +172,8 @@ test('keyword search sends search api request', async () => {
     'or {user.shortcode} contains \'foo\' ' +
     'or {family.shortcode} contains \'foo\') ' +
     'and {enrollee.subject} = true ' +
-    'and include({user.username}) and include({portalUser.lastLogin})')
+    'and include({user.username}) and include({portalUser.lastLogin})',
+    { includes: [] })
 })
 
 test('allows the user to cycle pages', async () => {

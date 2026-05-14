@@ -8,6 +8,7 @@ import Select from 'react-select'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { ParticipantTaskStatusOptions } from '@juniper/ui-core'
+import { ExpressionSearchFacets } from 'api/api'
 
 /**
  * Renders the facets that you can search upon in the participant list.
@@ -16,13 +17,23 @@ export default function EnrolleeSearchFacets({
   studyEnvContext,
   searchState,
   updateSearchState,
-  reset
+  reset,
+  facets
 }: {
   studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
-  reset: () => void
+  reset: () => void,
+  facets?: ExpressionSearchFacets
 }) {
+  const fileDownloadNames = Object.keys(facets ?? {})
+    .filter(k => k.startsWith('fileDownload.'))
+    .map(k => k.slice('fileDownload.'.length))
+
+  const fileUploadNames = Object.keys(facets ?? {})
+    .filter(k => k.startsWith('fileUpload.'))
+    .map(k => k.slice('fileUpload.'.length))
+
   return <div>
     <button className="btn btn-secondary float-end" onClick={reset}>Clear all</button>
     <Accordion alwaysOpen flush>
@@ -65,6 +76,40 @@ export default function EnrolleeSearchFacets({
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
+      {(fileDownloadNames.length > 0 || fileUploadNames.length > 0) &&
+        <Accordion.Item eventKey={'files'} key={'files'}>
+          <Accordion.Header>Files</Accordion.Header>
+          <Accordion.Body>
+            {fileUploadNames.length > 0 && <>
+              <h6 className="text-muted mb-2">Uploads</h6>
+              <FileFacet
+                fileNames={fileUploadNames}
+                statusOptions={[{ label: 'Uploaded', value: true }, { label: 'Not uploaded', value: false }]}
+                getValue={qid => searchState.fileUploads.find(fu => fu.questionStableId === qid)?.uploaded}
+                onSelect={(qid, value) => updateSearchState('fileUploads', [
+                  ...searchState.fileUploads.filter(fu => fu.questionStableId !== qid),
+                  { questionStableId: qid, uploaded: value }
+                ])}
+                onClear={qid => updateSearchState('fileUploads',
+                  searchState.fileUploads.filter(fu => fu.questionStableId !== qid))}
+              />
+            </>}
+            {fileDownloadNames.length > 0 && <>
+              <h6 className="text-muted mb-2 mt-3">Downloads</h6>
+              <FileFacet
+                fileNames={fileDownloadNames}
+                statusOptions={[{ label: 'Downloaded', value: true }, { label: 'Not downloaded', value: false }]}
+                getValue={qid => searchState.fileDownloads.find(fd => fd.questionStableId === qid)?.downloaded}
+                onSelect={(qid, value) => updateSearchState('fileDownloads', [
+                  ...searchState.fileDownloads.filter(fd => fd.questionStableId !== qid),
+                  { questionStableId: qid, downloaded: value }
+                ])}
+                onClear={qid => updateSearchState('fileDownloads',
+                  searchState.fileDownloads.filter(fd => fd.questionStableId !== qid))}
+              />
+            </>}
+          </Accordion.Body>
+        </Accordion.Item>}
       <Accordion.Item eventKey={'custom'} key={'custom'}>
         <Accordion.Header>Custom Search Expression</Accordion.Header>
         <Accordion.Body>
@@ -256,5 +301,28 @@ const CustomFacet = ({ studyEnvContext, searchState, updateSearchState }: {
       studyEnvContext={studyEnvContext}
       onSearchExpressionChange={val => updateSearchState('custom', val)}
       searchExpression={searchState.custom}/>
+  </div>
+}
+
+const FileFacet = ({ fileNames, statusOptions, getValue, onSelect, onClear }: {
+  fileNames: string[],
+  statusOptions: { label: string, value: boolean }[],
+  getValue: (questionStableId: string) => boolean | undefined,
+  onSelect: (questionStableId: string, value: boolean) => void,
+  onClear: (questionStableId: string) => void,
+}) => {
+  return <div>
+    {fileNames.map(questionStableId => {
+      const selectedOption = statusOptions.find(o => o.value === getValue(questionStableId))
+      return <div className={'mb-2'} key={questionStableId}>
+        <label>{questionStableId}</label>
+        <Select
+          options={statusOptions}
+          isClearable={true}
+          value={selectedOption ?? null}
+          onChange={opt => opt != null ? onSelect(questionStableId, opt.value) : onClear(questionStableId)}
+        />
+      </div>
+    })}
   </div>
 }

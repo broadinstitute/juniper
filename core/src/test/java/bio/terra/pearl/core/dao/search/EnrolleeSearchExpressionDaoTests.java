@@ -5,11 +5,14 @@ import bio.terra.pearl.core.dao.dataimport.TimeShiftDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
+import bio.terra.pearl.core.factory.fileupload.DownloadRecordFactory;
+import bio.terra.pearl.core.factory.fileupload.ParticipantFileFactory;
 import bio.terra.pearl.core.factory.participant.*;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -19,6 +22,8 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerFormat;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -80,8 +85,10 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     TimeShiftDao timeShiftDao;
     @Autowired
     ParticipantUserService participantUserService;
-
-
+    @Autowired
+    ParticipantFileFactory participantFileFactory;
+    @Autowired
+    DownloadRecordFactory downloadRecordFactory;
     @Test
     @Transactional
     public void testExecuteAnswerSearch(TestInfo info) {
@@ -405,6 +412,29 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         List<EnrolleeSearchExpressionResult> completed5daysAgo = enrolleeSearchExpressionDao.executeSearch(completed5DaysAgoExp, studyEnvBundle.getStudyEnv().getId());
         Assertions.assertEquals(0, completed5daysAgo.size());
+    }
+
+    /** include({task.*}) should add the column without filtering enrollees who don't have the task */
+    @Test
+    @Transactional
+    public void testIncludeTaskFacetDoesNotFilter(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        EnrolleeBundle withTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(withTask, "demographic_survey", TaskStatus.NEW, TaskType.SURVEY);
+
+        EnrolleeBundle withoutTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({task.demographic_survey.assigned})"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(includeExp, studyEnvBundle.getStudyEnv().getId());
+
+        // both enrollees should be returned — include() must not filter
+        Assertions.assertEquals(2, results.size());
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(withTask.enrollee().getId())));
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(withoutTask.enrollee().getId())));
     }
 
     @Test
@@ -1066,5 +1096,104 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         Assertions.assertEquals(1, containsResults.size());
         assertTrue(exactResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle1.enrollee().getId())));
         assertTrue(containsResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle1.enrollee().getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testFileUploadSearch(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        UUID studyEnvId = studyEnvBundle.getStudyEnv().getId();
+
+        EnrolleeSearchExpression uploadedExp = enrolleeSearchExpressionParser.parseRule("{fileUpload.my_question} = true");
+        EnrolleeSearchExpression notUploadedExp = enrolleeSearchExpressionParser.parseRule("{fileUpload.my_question} = false");
+
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+
+        // enrollee with a file uploaded in response to my_question
+        Enrollee withFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+        ParticipantFile file = participantFileFactory.buildPersisted(withFile);
+        surveyResponseFactory.buildWithAnswers(withFile, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(file.getId()))
+                        .build()));
+
+        // enrollee with a file uploaded for a different question
+        Enrollee wrongQuestion = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+        ParticipantFile wrongFile = participantFileFactory.buildPersisted(wrongQuestion);
+        surveyResponseFactory.buildWithAnswers(wrongQuestion, survey, Map.of(
+                "other_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(wrongFile.getId()))
+                        .build()));
+
+        // enrollee with no file
+        Enrollee noFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+
+        List<EnrolleeSearchExpressionResult> uploadedResults = enrolleeSearchExpressionDao.executeSearch(uploadedExp, studyEnvId);
+        List<EnrolleeSearchExpressionResult> notUploadedResults = enrolleeSearchExpressionDao.executeSearch(notUploadedExp, studyEnvId);
+
+        assertEquals(1, uploadedResults.size());
+        assertTrue(uploadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(withFile.getId())));
+
+        assertEquals(2, notUploadedResults.size());
+        assertTrue(notUploadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(wrongQuestion.getId())));
+        assertTrue(notUploadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(noFile.getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testFileDownloadSearch(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        UUID studyEnvId = studyEnvBundle.getStudyEnv().getId();
+
+        EnrolleeSearchExpression downloadedExp = enrolleeSearchExpressionParser.parseRule("{fileDownload.my_question} = true");
+        EnrolleeSearchExpression notDownloadedExp = enrolleeSearchExpressionParser.parseRule("{fileDownload.my_question} = false");
+
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+
+        // enrollee with a file that has been downloaded
+        Enrollee withDownload = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+        ParticipantFile downloadedFile = participantFileFactory.buildPersisted(withDownload);
+        surveyResponseFactory.buildWithAnswers(withDownload, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(downloadedFile.getId()))
+                        .build()));
+        downloadRecordFactory.buildPersisted(downloadedFile);
+
+        // enrollee with a file that has not been downloaded
+        Enrollee noDownload = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+        ParticipantFile undownloadedFile = participantFileFactory.buildPersisted(noDownload);
+        surveyResponseFactory.buildWithAnswers(noDownload, survey, Map.of(
+                "my_question", Answer.builder()
+                        .format(AnswerFormat.FILE_UPLOAD)
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(undownloadedFile.getId()))
+                        .build()));
+
+        // enrollee with no file at all
+        Enrollee noFile = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle.getStudyEnv());
+
+        List<EnrolleeSearchExpressionResult> downloadedResults = enrolleeSearchExpressionDao.executeSearch(downloadedExp, studyEnvId);
+        List<EnrolleeSearchExpressionResult> notDownloadedResults = enrolleeSearchExpressionDao.executeSearch(notDownloadedExp, studyEnvId);
+
+        assertEquals(1, downloadedResults.size());
+        assertTrue(downloadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(withDownload.getId())));
+
+        assertEquals(2, notDownloadedResults.size());
+        assertTrue(notDownloadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(noDownload.getId())));
+        assertTrue(notDownloadedResults.stream().anyMatch(r -> r.getEnrollee().getId().equals(noFile.getId())));
+
+        // Include.participantFiles attaches files with answers and downloads to each result
+        List<EnrolleeSearchExpressionResult> withFilesIncluded = enrolleeSearchExpressionDao.executeSearch(
+                downloadedExp, studyEnvId,
+                EnrolleeSearchOptions.builder().includes(List.of(EnrolleeSearchOptions.Include.participantFiles)).build());
+        assertEquals(1, withFilesIncluded.size());
+        EnrolleeSearchExpressionResult result = withFilesIncluded.get(0);
+        assertEquals(1, result.getParticipantFiles().size());
+        assertEquals(downloadedFile.getFileName(), result.getParticipantFiles().get(0).getFileName());
+        assertEquals(1, result.getParticipantFiles().get(0).getAssociatedAnswers().size());
+        assertEquals("my_question", result.getParticipantFiles().get(0).getAssociatedAnswers().get(0).getQuestionStableId());
+        assertEquals(1, result.getParticipantFiles().get(0).getDownloads().size());
     }
 }

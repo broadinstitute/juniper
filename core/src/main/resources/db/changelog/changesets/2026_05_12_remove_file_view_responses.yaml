@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "remove_file_view_answers"
+      author: dbush
+      comment: "Remove survey responses that were auto-created when participants downloaded files. These are identified by answers with format='VIEW', which was only written by ParticipantFileService."
+      changes:
+        - sql:
+            sql: >
+              WITH deleted_answers AS (
+                DELETE FROM answer WHERE format = 'VIEW'
+                RETURNING survey_response_id
+              )
+              DELETE FROM survey_response
+              WHERE id IN (SELECT survey_response_id FROM deleted_answers);

@@ -91,6 +91,26 @@ public class ParticipantFileController implements ParticipantFileApi {
   }
 
   @Override
+  public ResponseEntity<Void> deleteFile(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      String fileName) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    PortalEnrolleeAuthContext authContext =
+        PortalEnrolleeAuthContext.of(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOf(envName),
+            enrolleeShortcode);
+
+    participantFileExtService.deleteFile(authContext, fileName);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
   public ResponseEntity<Object> upload(
       String portalShortcode,
       String envName,

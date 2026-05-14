@@ -103,6 +103,8 @@ describe('toExpression', () => {
       tasks: [{ task: 'my_task', status: 'COMPLETE' }],
       custom: '{age} != 15',
       latestKitStatus: ['ERRORED'],
+      fileDownloads: [],
+      fileUploads: [],
       includeFacetKeys: []
     }
 

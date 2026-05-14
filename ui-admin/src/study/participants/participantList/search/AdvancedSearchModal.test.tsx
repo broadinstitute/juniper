@@ -28,6 +28,8 @@ describe('AdvanceSearchModal', () => {
           sexAtBirth: [],
           tasks: [],
           latestKitStatus: [],
+          fileDownloads: [],
+          fileUploads: [],
           custom: '',
           includeFacetKeys: []
         }}
@@ -57,6 +59,8 @@ describe('AdvanceSearchModal', () => {
       keywordSearch: '',
       custom: '',
       latestKitStatus: [],
+      fileDownloads: [],
+      fileUploads: [],
       minAge: undefined,
       maxAge: undefined,
       sexAtBirth: ['female'],

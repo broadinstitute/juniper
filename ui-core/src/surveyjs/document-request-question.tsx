@@ -7,14 +7,11 @@ import {
 } from 'survey-core'
 import { SurveyQuestionElementBase } from 'survey-react-ui'
 import { StudyEnvParams } from 'src/types/study'
-import {
-  isEmpty,
-  isNil,
-  join
-} from 'lodash'
+import { isEmpty } from 'lodash'
 import Modal from 'react-bootstrap/Modal'
 import { ModalProps } from 'react-bootstrap'
 import { DocumentRequestUploader } from '../components/documents/DocumentRequestUploader'
+import { FileAnswer, ParticipantFile } from '../types/participantFile'
 
 const DOCUMENT_REQUEST_TYPE = 'documentrequest'
 
@@ -44,18 +41,10 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
     return this.questionBase
   }
 
-  get fileNames() {
-    const fileNames = []
-
-    let index = 0
-    const survey = this.question.survey as SurveyModel
-    while (!isNil(survey.getValue(formatFileIndex(this.question.name, index)))) {
-      const value = survey.getValue(formatFileIndex(this.question.name, index))
-      fileNames.push(value)
-      index++
-    }
-
-    return fileNames
+  get selectedFileIds(): string[] {
+    const value = this.question.value
+    if (!value || !Array.isArray(value)) { return [] }
+    return (value as FileAnswer[]).map(f => f.participantFileId)
   }
 
   get baseModal(): React.ElementType<ModalProps> {
@@ -75,29 +64,13 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
     return <DocumentRequestUploader
       studyEnvParams={studyEnvParams}
       enrolleeShortcode={enrolleeShortcode}
-      selectedFileNames={this.fileNames}
-      setSelectedFileNames={fileNames => {
-        // clear files
-        const numOldFiles = this.fileNames.length
-        const numNewFiles = fileNames.length
-
-        const numFiles = Math.max(numOldFiles, numNewFiles)
-
-        for (let i = 0; i < numFiles; i++) {
-          if (i < fileNames.length) {
-            survey.setValue(formatFileIndex(this.question.name, i), fileNames[i])
-          } else {
-            survey.setValue(formatFileIndex(this.question.name, i), undefined)
-          }
-        }
-
-        this.question.value = join(fileNames, ',')
+      selectedFileIds={this.selectedFileIds}
+      onSelectedFilesChanged={files => {
+        this.question.value = files.map((f: ParticipantFile): FileAnswer => ({
+          participantFileId: f.id!
+        }))
       }}
       ModalComponent={this.baseModal}
     />
   }
-}
-
-const formatFileIndex = (stableId: string, index: number) => {
-  return `${stableId}[${index}]`
 }

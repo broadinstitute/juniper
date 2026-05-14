@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.dao.search;
 
+import bio.terra.pearl.core.dao.file.ParticipantFileDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -48,6 +50,7 @@ public class EnrolleeSearchExpressionDao {
     private final ProfileDao profileDao;
     private final KitRequestService kitRequestService;
     private final ParticipantTaskDao participantTaskDao;
+    private final ParticipantFileDao participantFileDao;
 
     /** list of mappers for the various modules that can be included in a search result */
     protected static final List<SearchModuleMapper<? extends BaseEntity>> moduleMappers = List.of(
@@ -61,12 +64,13 @@ public class EnrolleeSearchExpressionDao {
             new SearchModuleCollectionMapper<>("task", ParticipantTask.class, (result, task) -> result.getTasks().add(task)));
 
 
-    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao, KitRequestService kitRequestService, ParticipantTaskDao participantTaskDao) {
+    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao, KitRequestService kitRequestService, ParticipantTaskDao participantTaskDao, ParticipantFileDao participantFileDao) {
         this.jdbi = jdbi;
         this.enrolleeDao = enrolleeDao;
         this.profileDao = profileDao;
         this.kitRequestService = kitRequestService;
         this.participantTaskDao = participantTaskDao;
+        this.participantFileDao = participantFileDao;
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId) {
@@ -100,6 +104,8 @@ public class EnrolleeSearchExpressionDao {
                     attachKitRequests(searchResult);
                 } else if (include == EnrolleeSearchOptions.Include.tasks) {
                     attachTasks(searchResult);
+                } else if (include == EnrolleeSearchOptions.Include.participantFiles) {
+                    attachParticipantFiles(searchResult);
                 }
             }
         }
@@ -111,6 +117,17 @@ public class EnrolleeSearchExpressionDao {
         Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(result.stream().map(EnrolleeSearchExpressionResult::getEnrollee).toList());
         for (EnrolleeSearchExpressionResult enrolleeResult : result) {
             enrolleeResult.getKitRequests().addAll(kitsByEnrolleeId.getOrDefault(enrolleeResult.getEnrollee().getId(), List.of()));
+        }
+    }
+
+    private void attachParticipantFiles(List<EnrolleeSearchExpressionResult> result) {
+        List<UUID> enrolleeIds = result.stream().map(r -> r.getEnrollee().getId()).toList();
+        Map<UUID, List<ParticipantFile>> filesByEnrolleeId = participantFileDao
+                .findByEnrolleeIdsWithAnswersAndDownloads(enrolleeIds).stream()
+                .collect(Collectors.groupingBy(ParticipantFile::getEnrolleeId));
+        for (EnrolleeSearchExpressionResult enrolleeResult : result) {
+            enrolleeResult.getParticipantFiles().addAll(
+                    filesByEnrolleeId.getOrDefault(enrolleeResult.getEnrollee().getId(), List.of()));
         }
     }
 

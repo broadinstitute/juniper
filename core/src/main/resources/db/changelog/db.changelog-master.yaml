@@ -428,6 +428,15 @@ databaseChangeLog:
   - include:
       file: changesets/2026_04_24_participant_file_downloads.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2026_05_12_remove_file_view_responses.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2026_05_13_file_upload_answer_format.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2026_05_13_participant_file_unique_constraint.yaml
+      relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

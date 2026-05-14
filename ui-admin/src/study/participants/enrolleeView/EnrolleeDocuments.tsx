@@ -12,7 +12,7 @@ export default function EnrolleeDocuments({ enrollee, studyEnvContext }: {
 }) {
   const [participantFiles, setParticipantFiles] = useState<ParticipantFile[]>([])
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const response = await Api.listParticipantFiles({
       studyEnvParams: paramsFromContext(studyEnvContext),
       enrolleeShortcode: enrollee.shortcode
@@ -25,6 +25,7 @@ export default function EnrolleeDocuments({ enrollee, studyEnvContext }: {
       studyEnvContext={studyEnvContext}
       showAssociatedTasks={true}
       enrollee={enrollee}
-      documents={participantFiles}/>
+      documents={participantFiles}
+      onDocumentDeleted={reload}/>
   </LoadingSpinner>
 }

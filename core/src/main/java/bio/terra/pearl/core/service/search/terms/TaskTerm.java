@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
-import static org.jooq.impl.DSL.condition;
 
 /**
  * Allows searching on an enrollee's task status.
@@ -71,7 +70,9 @@ public class TaskTerm extends SearchTerm {
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
-        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("participant_task", alias(), "enrollee.id = %s.enrollee_id".formatted(alias())));
+        // SAFE: targetStableId validated as alphanumeric+underscore in constructor
+        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("participant_task", alias(),
+                "enrollee.id = %s.enrollee_id and %s.target_stable_id = '%s'".formatted(alias(), alias(), targetStableId)));
     }
 
     @Override
@@ -83,10 +84,7 @@ public class TaskTerm extends SearchTerm {
 
     @Override
     public Optional<Condition> requiredConditions() {
-        return Optional.of(
-                condition(
-                        alias() + ".target_stable_id = ?",
-                        targetStableId));
+        return Optional.empty();
     }
 
     @Override

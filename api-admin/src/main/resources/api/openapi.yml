@@ -2149,6 +2149,21 @@ paths:
                 format: binary
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes the given file
+      tags: [ participantFile ]
+      operationId: deleteFile
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
+        - { name: fileName, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: file deleted
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/file:
     get:
       summary: Gets metadata about all of the participants files

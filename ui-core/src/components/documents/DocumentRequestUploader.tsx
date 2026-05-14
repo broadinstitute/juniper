@@ -31,14 +31,14 @@ export const DocumentRequestUploader = (
   {
     studyEnvParams,
     enrolleeShortcode,
-    selectedFileNames,
-    setSelectedFileNames,
+    selectedFileIds,
+    onSelectedFilesChanged,
     ModalComponent = Modal
   } : {
         studyEnvParams: StudyEnvParams,
         enrolleeShortcode: string,
-        selectedFileNames: string[]
-    setSelectedFileNames: (fileNames: string[]) => void,
+        selectedFileIds: string[]
+    onSelectedFilesChanged: (files: ParticipantFile[]) => void,
     ModalComponent?: React.ElementType<ModalProps>
     }) => {
   const [files, setFiles] = useState<ParticipantFile[]>([])
@@ -52,22 +52,23 @@ export const DocumentRequestUploader = (
   useEffect(() => {
     Api.listParticipantFiles({ studyEnvParams, enrolleeShortcode }).then(files => {
       setFiles(files)
-      setSelectedFiles(files.filter(f => selectedFileNames.includes(f.fileName)))
+      setSelectedFiles(files.filter(f => f.id && selectedFileIds.includes(f.id)))
     })
   }, [studyEnvParams])
 
   const selectFile = (newFile: ParticipantFile) => {
     if (!selectedFiles.find(f => f.id === newFile.id)) {
-      setSelectedFiles(oldSelected => [...oldSelected.filter(old => old.fileName !== newFile.fileName), newFile])
-      setSelectedFileNames([...selectedFileNames.filter(old => old !== newFile.fileName), newFile.fileName])
+      const newSelectedFiles = [...selectedFiles.filter(old => old.fileName !== newFile.fileName), newFile]
+      setSelectedFiles(newSelectedFiles)
+      onSelectedFilesChanged(newSelectedFiles)
     }
   }
 
   const unselectFile = (file: ParticipantFile) => {
-    setSelectedFiles(oldFiles => oldFiles.filter(f => f.id !== file.id))
-    setSelectedFileNames(selectedFileNames.filter(f => f !== file.fileName))
+    const newSelectedFiles = selectedFiles.filter(f => f.id !== file.id)
+    setSelectedFiles(newSelectedFiles)
+    onSelectedFilesChanged(newSelectedFiles)
   }
-
 
   const uploadAndSelectFile = async (fileData: File) => {
     setUploadingFile(fileData.name)

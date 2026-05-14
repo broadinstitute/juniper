@@ -15,6 +15,13 @@
       {"questionStableId":"qualified", "booleanValue": true}
     ]
   },
+  "participantFilePopDtos": [
+    {
+      "fileName": "medical_history.pdf",
+      "fileType": "application/pdf",
+      "fileContent": "not_a_real_pdf"
+    }
+  ],
   "surveyResponseDtos": [
     {
       "surveyStableId": "hd_hd_basicInfo",
@@ -64,6 +71,14 @@
       "answerPopDtos": [
         {"questionStableId": "alreadySequenced", "stringValue": "yes"},
         {"questionStableId": "kitNotes", "stringValue": "Sequenced prior to study beginning, kit label 3524511"}
+      ]
+    },
+    {
+      "surveyStableId": "med_record_request",
+      "surveyVersion": 1,
+      "complete": true,
+      "answerPopDtos": [
+        {"questionStableId": "medical_record_document_request", "fileNames": ["medical_history.pdf"]}
       ]
     }]
 }

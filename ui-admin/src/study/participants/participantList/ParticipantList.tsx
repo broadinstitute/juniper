@@ -27,12 +27,22 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
   } = useParticipantSearchState(['user.username', 'portalUser.lastLogin'],
     familyLinkageEnabled, paramsFromContext(studyEnvContext))
 
+  const allFacetKeys = [
+    ...(searchState.queryFacets ?? []).map(f => f.key),
+    ...(searchState.includeFacets ?? []).map(f => f.key)
+  ]
+  const includes: ('kitRequests' | 'tasks' | 'participantFiles')[] = []
+  if (allFacetKeys.some(k => k.startsWith('fileUpload.') || k.startsWith('fileDownload.'))) {
+    includes.push('participantFiles')
+  }
+
   const { isLoading, reload } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      searchExpression)
+      searchExpression,
+      { includes })
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
@@ -51,6 +61,7 @@ function ParticipantList({ studyEnvContext, groupByFamily }:
         updateSearchState={updateSearchState}
         setSearchState={setSearchState}
         disabled={false}
+        facets={facets}
       />
     </div>
     <LoadingSpinner isLoading={isLoading}>

@@ -88,6 +88,7 @@ export type EnrolleeSearchExpressionResult = {
   portalParticipantUser?: PortalParticipantUser
   tasks: ParticipantTask[]
   kitRequests: KitRequest[]
+  participantFiles: ParticipantFile[]
 }
 
 export type ParticipantUsersAndEnrollees = {
@@ -616,6 +617,22 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteParticipantFile(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    fileName: string): Promise<Response> {
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/file/${fileName}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file }: {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, file: File
   }): Promise<ParticipantFile> {
@@ -944,7 +961,7 @@ export default {
     studyShortcode: string,
     envName: string,
     expression: string,
-    opts: { limit?: number, includes?: ('kitRequests' | 'tasks')[] } = {}):
+    opts: { limit?: number, includes?: ('kitRequests' | 'tasks' | 'participantFiles')[] } = {}):
     Promise<EnrolleeSearchExpressionResult[]> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2`
     url += `?${queryString.stringify({ ...opts, expression })}`

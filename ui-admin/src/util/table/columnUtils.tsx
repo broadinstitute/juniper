@@ -175,6 +175,8 @@ export const getDynamicColumn = <T extends EnrolleeSearchExpressionResult, >(fac
     return dynamicAnswerColumn(facet)
   } else if (field.startsWith('task')) {
     return dynamicTaskColumn(facet)
+  } else if (field.startsWith('fileUpload.') || field.startsWith('fileDownload.')) {
+    return dynamicFileColumn(facet)
   } else {
     const colDef: ColumnDef<T> = {
       id: field,
@@ -195,12 +197,14 @@ const dynamicTaskColumn = <T extends EnrolleeSearchExpressionResult, >(facet: Ke
   ColumnDef<T> => {
   const { taskStableId, field, header } = parseTaskFacet(facet)
 
-  return {
+  const colDef: ColumnDef<T> = {
     id: facet.key,
     header,
     accessorFn: info => {
       const task = info.tasks.find(task => task.targetStableId === taskStableId)
-      if (field === 'status') {
+      if (field === 'assigned') {
+        return task != null && task.status !== 'REMOVED'
+      } else if (field === 'status') {
         return ParticipantTaskStatusOptions.find(opt => opt.value === task?.status)?.label || task?.status || ''
       } else if (field === 'completedDaysAgo') {
         if (!task?.completedAt) {
@@ -215,6 +219,10 @@ const dynamicTaskColumn = <T extends EnrolleeSearchExpressionResult, >(facet: Ke
       columnType: facet.type.toLowerCase()
     }
   }
+  if (field === 'assigned') {
+    colDef.cell = (info: CellContext<T, unknown>) => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+  }
+  return colDef
 }
 
 const dynamicAnswerColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
@@ -241,6 +249,27 @@ const dynamicAnswerColumn = <T extends EnrolleeSearchExpressionResult, >(facet: 
     meta: {
       columnType: facet.type.toLowerCase()
     }
+  }
+}
+
+const dynamicFileColumn = <T extends EnrolleeSearchExpressionResult, >(facet: KeyedSearchValueTypeDefinition):
+  ColumnDef<T> => {
+  const isDownload = facet.key.startsWith('fileDownload.')
+  const questionStableId = facet.key.split('.')[1]
+  const header = _startCase(`${questionStableId} ${isDownload ? 'downloaded' : 'uploaded'}`)
+
+  return {
+    id: facet.key,
+    header,
+    accessorFn: info => {
+      const filesForQuestion = (info.participantFiles ?? [])
+        .filter(f => f.associatedAnswers.some(a => a.questionStableId === questionStableId))
+      if (filesForQuestion.length === 0) { return false }
+      if (!isDownload) { return true }
+      return filesForQuestion.some(f => f.downloads.some(d => d.participantUserId != null))
+    },
+    cell: (info: CellContext<T, unknown>) => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : '',
+    meta: { columnType: 'boolean' }
   }
 }
 

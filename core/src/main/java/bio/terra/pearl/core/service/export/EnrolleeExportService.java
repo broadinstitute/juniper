@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.dao.file.ParticipantFileDao;
 import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.export.ExportOptions;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.Study;
@@ -55,6 +57,7 @@ public class EnrolleeExportService {
     private final EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final StudyService studyService;
+    private final ParticipantFileDao participantFileDao;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
@@ -69,7 +72,8 @@ public class EnrolleeExportService {
                                  FamilyService familyService,
                                  EnrolleeSearchExpressionDao enrolleeSearchExpressionDao,
                                  StudyEnvironmentConfigService studyEnvironmentConfigService,
-                                 StudyService studyService) {
+                                 StudyService studyService,
+                                 ParticipantFileDao participantFileDao) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
@@ -86,6 +90,7 @@ public class EnrolleeExportService {
         this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyService = studyService;
+        this.participantFileDao = participantFileDao;
     }
 
     /**
@@ -154,12 +159,14 @@ public class EnrolleeExportService {
                 new ProxyFormatter(exportOptions),
                 new ProxyProfileFormatter(exportOptions));
 
+
         List<ModuleFormatter> moduleFormatters = allSimpleFormatters.stream().filter(
                 moduleFormatter -> !exportOptions.getExcludeModules().contains(moduleFormatter.getModuleName())
         ).collect(Collectors.toList());
         if (!exportOptions.getExcludeModules().contains("surveys")) {
             moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId, enrolleeExportData));
         }
+        moduleFormatters.add(new FileUploadFormatter(exportOptions));
         return moduleFormatters;
     }
 
@@ -219,16 +226,19 @@ public class EnrolleeExportService {
                         tasks,
                         surveyResponseService.findByEnrolleeIdsNotRemoved(enrolleeIds, exportOptions.isOnlyIncludeCompleted()));
         Map<UUID, List<KitRequestDto>> kitRequests = kitRequestService.findByEnrollees(enrollees);
+        Map<UUID, List<ParticipantFile>> participantFiles = participantFileDao.findByEnrolleeIdsWithDownloads(enrolleeIds);
 
         return enrollees.stream()
-                .map(enrollee -> loadEnrolleeData(study, studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId), enrollee, profiles, participantUsers, answers, tasks, surveyResponses, kitRequests))
+                .map(enrollee -> loadEnrolleeData(study, studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId), enrollee, profiles, participantUsers, answers, tasks, surveyResponses, kitRequests, participantFiles))
                 .toList();
     }
 
     protected EnrolleeExportData loadEnrolleeData(Study study, StudyEnvironmentConfig config, Enrollee enrollee,
                                                   Map<UUID, Profile> profiles, Map<UUID, ParticipantUser> participantUsers,
                                                   Map<UUID, List<Answer>> answers, Map<UUID, List<ParticipantTask>> tasks,
-                                                  Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses, Map<UUID, List<KitRequestDto>> kitRequests) {
+                                                  Map<UUID, List<SurveyResponseWithTaskDto>> surveyResponses,
+                                                  Map<UUID, List<KitRequestDto>> kitRequests,
+                                                  Map<UUID, List<ParticipantFile>> participantFiles) {
 
         List<EnrolleeRelation> enrolleeRelations = loadRelations(config, enrollee);
         List<ParticipantUser> proxies = loadProxyUsers(config, enrolleeRelations, enrollee);
@@ -251,7 +261,8 @@ public class EnrolleeExportService {
                 kitRequests.getOrDefault(enrollee.getId(), Collections.emptyList()),
                 enrolleeRelations,
                 config.isEnableFamilyLinkage() ? familyService.findByEnrolleeIdWithProband(enrollee.getId()) : Collections.emptyList(),
-                proxies
+                proxies,
+                participantFiles.getOrDefault(enrollee.getId(), Collections.emptyList())
         );
     }
 

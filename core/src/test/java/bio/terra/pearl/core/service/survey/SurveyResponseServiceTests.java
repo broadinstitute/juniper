@@ -350,7 +350,12 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .surveyId(survey.getId())
                 .complete(false)
                 .answers(List.of(
-                        Answer.builder().stringValue(file.getFileName()).format(AnswerFormat.FILE_NAME).questionStableId("my_file_question").build())
+                        Answer.builder()
+                                .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(file.getId()))
+                                .answerType(AnswerType.OBJECT)
+                                .format(AnswerFormat.FILE_UPLOAD)
+                                .questionStableId("my_file_question")
+                                .build())
                 )
                 .build();
 

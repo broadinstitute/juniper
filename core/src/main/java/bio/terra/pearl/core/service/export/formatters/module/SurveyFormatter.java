@@ -346,6 +346,9 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
             answer = extractChildAnswer(itemFormatter, answer, choices, stableIdForOptions, objectMapper);
         }
 
+        if (AnswerFormat.FILE_UPLOAD.equals(answer.getFormat()) && answer.getObjectValue() != null) {
+            return formatFileUploadValue(answer, objectMapper);
+        }
         if (answer.getStringValue() != null) {
             return formatStringValue(answer.getStringValue(), choices, stableIdForOptions, answer);
         } else if (answer.getBooleanValue() != null) {
@@ -443,6 +446,14 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponseWithTaskDto, 
             return value;
         }
         return matchedChoice.text();
+    }
+
+    protected static String formatFileUploadValue(Answer answer, ObjectMapper objectMapper) {
+        try {
+            return String.valueOf(objectMapper.readTree(answer.getObjectValue()).size());
+        } catch (Exception e) {
+            return answer.getObjectValue();
+        }
     }
 
     protected static String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {

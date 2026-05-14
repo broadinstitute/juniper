@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: "migrate_file_name_answers_to_file_upload"
+      author: dbush
+      comment: "Convert FILE_NAME answers (one per file with [N]-suffixed stableIds) to a single FILE_UPLOAD answer per question storing participantFileId UUIDs as a JSON array in object_value."
+      changes:
+        - sql:
+            sql: >
+              WITH file_name_groups AS (
+                SELECT
+                  a.survey_response_id,
+                  a.enrollee_id,
+                  a.creating_admin_user_id,
+                  a.creating_participant_user_id,
+                  a.survey_stable_id,
+                  a.survey_version,
+                  a.viewed_language,
+                  regexp_replace(a.question_stable_id, '\[.*\]$', '') AS base_question_stable_id,
+                  json_agg(json_build_object(
+                    'participantFileId', pf.id::text
+                  ) ORDER BY a.question_stable_id)::text AS file_answers_json
+                FROM answer a
+                INNER JOIN participant_file pf
+                  ON pf.enrollee_id = a.enrollee_id AND pf.file_name = a.string_value
+                WHERE a.format = 'FILE_NAME'
+                GROUP BY
+                  a.survey_response_id, a.enrollee_id,
+                  a.creating_admin_user_id, a.creating_participant_user_id,
+                  a.survey_stable_id, a.survey_version, a.viewed_language,
+                  regexp_replace(a.question_stable_id, '\[.*\]$', '')
+              ),
+              inserted AS (
+                INSERT INTO answer (
+                  id, created_at, last_updated_at,
+                  survey_response_id, enrollee_id,
+                  creating_admin_user_id, creating_participant_user_id,
+                  question_stable_id, survey_stable_id, survey_version,
+                  viewed_language, answer_type, format, object_value
+                )
+                SELECT
+                  gen_random_uuid(), now(), now(),
+                  survey_response_id, enrollee_id,
+                  creating_admin_user_id, creating_participant_user_id,
+                  base_question_stable_id, survey_stable_id, survey_version,
+                  viewed_language, 'OBJECT', 'FILE_UPLOAD', file_answers_json
+                FROM file_name_groups
+                RETURNING id
+              ),
+              deleted_none AS (
+                DELETE FROM answer base_ans
+                WHERE base_ans.format = 'NONE'
+                  AND EXISTS (
+                    SELECT 1 FROM answer fn
+                    WHERE fn.enrollee_id = base_ans.enrollee_id
+                      AND fn.survey_response_id = base_ans.survey_response_id
+                      AND fn.format = 'FILE_NAME'
+                      AND fn.question_stable_id LIKE (base_ans.question_stable_id || '[%')
+                  )
+                RETURNING id
+              )
+              DELETE FROM answer WHERE format = 'FILE_NAME';

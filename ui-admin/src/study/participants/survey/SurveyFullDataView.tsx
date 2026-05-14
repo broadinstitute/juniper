@@ -11,6 +11,7 @@ import {
 import {
   createAddressValidator,
   Enrollee,
+  FileAnswer,
   PortalEnvironment,
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
@@ -204,6 +205,15 @@ export const getDisplayValue = (answer: Answer,
   if (answer.objectValue !== undefined) {
     try {
       JSON.parse(answer.objectValue)
+    } catch (e) {
+      displayValue = renderParseError(answer.objectValue)
+    }
+  }
+  if (answer.format === 'FILE_UPLOAD' && answer.objectValue) {
+    try {
+      const fileAnswers: FileAnswer[] = JSON.parse(answer.objectValue)
+      const ids = fileAnswers.map(f => f.participantFileId).join(', ')
+      displayValue = <>{fileAnswers.length} file(s) <span className="detail">({ids})</span></>
     } catch (e) {
       displayValue = renderParseError(answer.objectValue)
     }

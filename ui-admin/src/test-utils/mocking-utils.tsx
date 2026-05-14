@@ -359,7 +359,8 @@ export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionR
     profile: mockEnrollee().profile,
     families: [mockFamily(), mockFamily()],
     kitRequests: [],
-    tasks: []
+    tasks: [],
+    participantFiles: []
   }
 }
 

@@ -24,6 +24,7 @@ public class EnrolleeSearchOptions {
 
     public enum Include {
         kitRequests,
-        tasks
+        tasks,
+        participantFiles
     }
 }
