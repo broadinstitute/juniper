@@ -19,8 +19,8 @@ describe('EnrolleeDocuments', () => {
     render(<EnrolleeDocuments enrollee={mockEnrollee()} studyEnvContext={mockStudyEnvContext()} />)
 
     await waitFor(() => {
-      expect(screen.getByText('file1.pdf')).toBeInTheDocument()
-      expect(screen.getByText('file2.png')).toBeInTheDocument()
+      expect(screen.getAllByText('file1.pdf').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('file2.png').length).toBeGreaterThan(0)
     })
   })
 

@@ -325,7 +325,8 @@ export function RawEnrolleeSurveyView({
             studyEnvContext={studyEnvContext}
             enrollee={enrollee}
             showAssociatedTasks={false}
-            documents={response.participantFiles || []}/>
+            documents={response.participantFiles || []}
+            onDocumentDeleted={onUpdate}/>
       }
       {view === 'editing' && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}

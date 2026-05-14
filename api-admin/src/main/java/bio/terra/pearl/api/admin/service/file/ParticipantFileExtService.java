@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.file.backends.FileStorageBackendProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,6 +70,17 @@ public class ParticipantFileExtService {
         participantFileService.findByEnrolleeId(authContext.getEnrollee().getId());
     participantFileService.attachDownloadRecords(files);
     return files.stream().map(participantFileService::attachVirusScanResult).toList();
+  }
+
+  @Transactional
+  @EnforcePortalEnrolleePermission(permission = "participant_data_edit")
+  public void deleteFile(PortalEnrolleeAuthContext authContext, String fileName) {
+    ParticipantFile file =
+        participantFileService
+            .findByEnrolleeIdAndFileName(authContext.getEnrollee().getId(), fileName)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+    participantFileService.delete(
+        file.getId(), Set.of(ParticipantFileService.AllowedCascades.ANSWER));
   }
 
   @EnforcePortalEnrolleePermission(permission = "participant_data_edit")

@@ -617,6 +617,22 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteParticipantFile(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    fileName: string): Promise<Response> {
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/file/${fileName}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async uploadParticipantFile({ studyEnvParams, enrolleeShortcode, file }: {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, file: File
   }): Promise<ParticipantFile> {

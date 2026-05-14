@@ -18,22 +18,26 @@ import {
 } from 'util/table/tableUtils'
 import { createdAtColumn } from 'util/table/tableColumnUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { NavLink } from 'react-router-dom'
 import { useUser } from 'user/UserProvider'
+import { Store } from 'react-notifications-component'
+import { failureNotification, successNotification } from 'util/notifications'
 
 export const ParticipantDocumentListView = ({
   studyEnvContext,
   enrollee,
   showAssociatedTasks,
-  documents
+  documents,
+  onDocumentDeleted
 }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee,
   showAssociatedTasks: boolean,
-  documents: ParticipantFile[]
+  documents: ParticipantFile[],
+  onDocumentDeleted: () => void
 }) => {
   const { user } = useUser()
 
@@ -87,13 +91,21 @@ export const ParticipantDocumentListView = ({
     {
       header: 'Actions',
       cell: ({ row }) => {
-        return <button
-          className='btn btn-secondary'
-          onClick={() => download(row.original)}
-          disabled={row.original.virusScanResult === 'QUARANTINED'}
-        >
-          <FontAwesomeIcon icon={faDownload}/>
-        </button>
+        return <div className='d-flex gap-2'>
+          <button
+            className='btn btn-secondary'
+            onClick={() => download(row.original)}
+            disabled={row.original.virusScanResult === 'QUARANTINED'}
+          >
+            <FontAwesomeIcon icon={faDownload}/>
+          </button>
+          <button
+            className='btn btn-outline-danger border-0'
+            onClick={() => deleteFile(row.original)}
+          >
+            <FontAwesomeIcon icon={faTrash}/>
+          </button>
+        </div>
       }
     }
   ]
@@ -113,6 +125,23 @@ export const ParticipantDocumentListView = ({
     getCoreRowModel: getCoreRowModel()
   })
 
+
+  const deleteFile = async (file: ParticipantFile) => {
+    if (!confirm(`Delete "${file.fileName}"? This cannot be undone.`)) return
+    try {
+      await Api.deleteParticipantFile(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        enrollee.shortcode,
+        file.fileName
+      )
+      Store.addNotification(successNotification(`"${file.fileName}" deleted`))
+      onDocumentDeleted()
+    } catch (e) {
+      Store.addNotification(failureNotification(`Failed to delete "${file.fileName}"`))
+    }
+  }
 
   const download = async (file: ParticipantFile) => {
     const response = await Api.downloadParticipantFile(

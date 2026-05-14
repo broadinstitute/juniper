@@ -2,7 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: "migrate_file_name_answers_to_file_upload"
       author: dbush
-      comment: "Convert FILE_NAME answers (one per file with [N]-suffixed stableIds) to a single FILE_UPLOAD answer per question with file metadata stored as a JSON array in object_value."
+      comment: "Convert FILE_NAME answers (one per file with [N]-suffixed stableIds) to a single FILE_UPLOAD answer per question storing participantFileId UUIDs as a JSON array in object_value."
       changes:
         - sql:
             sql: >
@@ -17,13 +17,10 @@ databaseChangeLog:
                   a.viewed_language,
                   regexp_replace(a.question_stable_id, '\[.*\]$', '') AS base_question_stable_id,
                   json_agg(json_build_object(
-                    'fileName', a.string_value,
-                    'uploadedAt', COALESCE(pf.created_at, a.created_at),
-                    'uploadingParticipantUserId', pf.creating_participant_user_id,
-                    'uploadingAdminUserId', pf.creating_admin_user_id
+                    'participantFileId', pf.id::text
                   ) ORDER BY a.question_stable_id)::text AS file_answers_json
                 FROM answer a
-                LEFT JOIN participant_file pf
+                INNER JOIN participant_file pf
                   ON pf.enrollee_id = a.enrollee_id AND pf.file_name = a.string_value
                 WHERE a.format = 'FILE_NAME'
                 GROUP BY

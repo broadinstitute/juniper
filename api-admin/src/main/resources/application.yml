@@ -3,7 +3,7 @@
 env:
   deploymentZone: ${DEPLOYMENT_ZONE:local}
   db:
-    host: ${DATABASE_HOSTNAME:127.0.0.1}:5439
+    host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}
     name: ${DATABASE_NAME:pearl}
     password: ${DATABASE_USER_PASSWORD:dbpwd}

@@ -31,7 +31,8 @@ public class FileAnswerDownloadTerm extends BaseFileAnswerTerm {
             return new SearchValue(false);
         }
         List<UUID> fileIds = files.stream().map(ParticipantFile::getId).toList();
-        return new SearchValue(!downloadRecordDao.findByParticipantFileIds(fileIds).isEmpty());
+        return new SearchValue(downloadRecordDao.findByParticipantFileIds(fileIds).stream()
+                .anyMatch(dr -> dr.getParticipantUserId() != null));
     }
 
     @Override
@@ -40,7 +41,7 @@ public class FileAnswerDownloadTerm extends BaseFileAnswerTerm {
                 answerJoinClause(),
                 participantFileJoinClause(),
                 new EnrolleeSearchQueryBuilder.JoinClause("download_record", drAlias(),
-                        "%s.id = %s.participant_file_id".formatted(pfAlias(), drAlias()))
+                        "%s.id = %s.participant_file_id AND %s.participant_user_id IS NOT NULL".formatted(pfAlias(), drAlias(), drAlias()))
         );
     }
 
