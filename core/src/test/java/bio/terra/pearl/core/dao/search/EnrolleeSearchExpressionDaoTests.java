@@ -1124,7 +1124,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         surveyResponseFactory.buildWithAnswers(wrongQuestion, survey, Map.of(
                 "other_question", Answer.builder()
                         .format(AnswerFormat.FILE_UPLOAD)
-                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(wrongFile.getFileName()))
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(wrongFile.getId()))
                         .build()));
 
         // enrollee with no file
@@ -1158,7 +1158,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         surveyResponseFactory.buildWithAnswers(withDownload, survey, Map.of(
                 "my_question", Answer.builder()
                         .format(AnswerFormat.FILE_UPLOAD)
-                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(downloadedFile.getFileName()))
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(downloadedFile.getId()))
                         .build()));
         downloadRecordFactory.buildPersisted(downloadedFile);
 
@@ -1168,7 +1168,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         surveyResponseFactory.buildWithAnswers(noDownload, survey, Map.of(
                 "my_question", Answer.builder()
                         .format(AnswerFormat.FILE_UPLOAD)
-                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(undownloadedFile.getFileName()))
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(undownloadedFile.getId()))
                         .build()));
 
         // enrollee with no file at all

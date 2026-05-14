@@ -28,7 +28,8 @@ public class ParticipantFileFactory {
 
     public ParticipantFile.ParticipantFileBuilder builderWithDependencies(Enrollee enrollee) {
         return builder()
-                .enrolleeId(enrollee.getId());
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId());
     }
 
     public ParticipantFile.ParticipantFileBuilder builderWithDependencies(String testName) {
