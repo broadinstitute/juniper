@@ -10,7 +10,7 @@ import java.util.UUID;
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.BOOLEAN;
 
 /** Base parser for file-related search terms. Provides getFacets() over FILE_UPLOAD question stable IDs. */
-public abstract class FileTermParser<T extends FileTerm> extends SearchTermParser<T> {
+public abstract class FileTermParser<T extends BaseFileAnswerTerm> extends SearchTermParser<T> {
     protected final ParticipantFileDao participantFileDao;
 
     protected FileTermParser(ParticipantFileDao participantFileDao) {

@@ -5,17 +5,17 @@ import bio.terra.pearl.core.dao.file.ParticipantFileDao;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileDownloadTermParser extends FileTermParser<FileDownloadTerm> {
+public class FileAnswerDownloadTermParser extends FileTermParser<FileAnswerDownloadTerm> {
     private final DownloadRecordDao downloadRecordDao;
 
-    public FileDownloadTermParser(ParticipantFileDao participantFileDao, DownloadRecordDao downloadRecordDao) {
+    public FileAnswerDownloadTermParser(ParticipantFileDao participantFileDao, DownloadRecordDao downloadRecordDao) {
         super(participantFileDao);
         this.downloadRecordDao = downloadRecordDao;
     }
 
     @Override
-    protected FileDownloadTerm parse(String arguments) {
-        return new FileDownloadTerm(arguments, participantFileDao, downloadRecordDao);
+    protected FileAnswerDownloadTerm parse(String arguments) {
+        return new FileAnswerDownloadTerm(arguments, participantFileDao, downloadRecordDao);
     }
 
     @Override

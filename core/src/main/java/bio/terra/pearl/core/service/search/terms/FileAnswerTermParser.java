@@ -4,14 +4,14 @@ import bio.terra.pearl.core.dao.file.ParticipantFileDao;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileUploadTermParser extends FileTermParser<FileUploadTerm> {
-    public FileUploadTermParser(ParticipantFileDao participantFileDao) {
+public class FileAnswerTermParser extends FileTermParser<FileAnswerTerm> {
+    public FileAnswerTermParser(ParticipantFileDao participantFileDao) {
         super(participantFileDao);
     }
 
     @Override
-    protected FileUploadTerm parse(String arguments) {
-        return new FileUploadTerm(arguments, participantFileDao);
+    protected FileAnswerTerm parse(String arguments) {
+        return new FileAnswerTerm(arguments, participantFileDao);
     }
 
     @Override

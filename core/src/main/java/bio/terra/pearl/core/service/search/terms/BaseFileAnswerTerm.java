@@ -17,11 +17,11 @@ import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueT
  * <p>The questionStableId is validated as alphanumeric+underscore so it can be safely
  * embedded in SQL JOIN ON clauses (same approach as AnswerTerm).
  */
-public abstract class FileTerm extends SearchTerm {
+public abstract class BaseFileAnswerTerm extends SearchTerm {
     protected final String questionStableId;
     private final String aliasPrefix;
 
-    protected FileTerm(String questionStableId, String aliasPrefix) {
+    protected BaseFileAnswerTerm(String questionStableId, String aliasPrefix) {
         if (!isAlphaNumeric(questionStableId)) {
             throw new IllegalArgumentException("Invalid question stable id: must be alphanumeric and underscore only");
         }

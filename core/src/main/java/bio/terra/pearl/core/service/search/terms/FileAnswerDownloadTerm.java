@@ -13,11 +13,11 @@ import java.util.UUID;
  * Searches whether an enrollee has downloaded a file uploaded in response to a particular
  * survey question. Expression: {fileDownload.questionStableId} = true/false
  */
-public class FileDownloadTerm extends FileTerm {
+public class FileAnswerDownloadTerm extends BaseFileAnswerTerm {
     private final ParticipantFileDao participantFileDao;
     private final DownloadRecordDao downloadRecordDao;
 
-    public FileDownloadTerm(String questionStableId, ParticipantFileDao participantFileDao, DownloadRecordDao downloadRecordDao) {
+    public FileAnswerDownloadTerm(String questionStableId, ParticipantFileDao participantFileDao, DownloadRecordDao downloadRecordDao) {
         super(questionStableId, "dl");
         this.participantFileDao = participantFileDao;
         this.downloadRecordDao = downloadRecordDao;

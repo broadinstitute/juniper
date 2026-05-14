@@ -8,10 +8,10 @@ import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import java.util.List;
 
 /** Expression: {fileUpload.questionStableId} = true/false */
-public class FileUploadTerm extends FileTerm {
+public class FileAnswerTerm extends BaseFileAnswerTerm {
     private final ParticipantFileDao participantFileDao;
 
-    public FileUploadTerm(String questionStableId, ParticipantFileDao participantFileDao) {
+    public FileAnswerTerm(String questionStableId, ParticipantFileDao participantFileDao) {
         super(questionStableId, "ul");
         this.participantFileDao = participantFileDao;
     }
