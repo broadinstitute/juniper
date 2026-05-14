@@ -351,7 +351,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .complete(false)
                 .answers(List.of(
                         Answer.builder()
-                                .objectValue("[{\"fileName\":\"%s\"}]".formatted(file.getFileName()))
+                                .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(file.getId()))
                                 .answerType(AnswerType.OBJECT)
                                 .format(AnswerFormat.FILE_UPLOAD)
                                 .questionStableId("my_file_question")

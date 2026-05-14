@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.file.ParticipantFile;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -17,6 +18,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -47,7 +49,7 @@ import java.util.UUID;
 public class EnrolleeResponsePopulator {
 
 
-    public EnrolleeResponsePopulator(PreEnrollmentResponseDao preEnrollmentResponseDao, ObjectMapper objectMapper, SurveyService surveyService, SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, TimeShiftDao timeShiftDao, AdminUserDao adminUserDao, PortalService portalService, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao) {
+    public EnrolleeResponsePopulator(PreEnrollmentResponseDao preEnrollmentResponseDao, ObjectMapper objectMapper, SurveyService surveyService, SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, TimeShiftDao timeShiftDao, AdminUserDao adminUserDao, PortalService portalService, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, ParticipantFileService participantFileService) {
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.objectMapper = objectMapper;
         this.surveyService = surveyService;
@@ -57,6 +59,7 @@ public class EnrolleeResponsePopulator {
         this.adminUserDao = adminUserDao;
         this.portalService = portalService;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.participantFileService = participantFileService;
     }
 
     public void populateResponse(Enrollee enrollee,
@@ -84,7 +87,7 @@ public class EnrolleeResponsePopulator {
                 .build();
 
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
-            Answer answer = convertAnswerPopDto(answerPopDto);
+            Answer answer = convertAnswerPopDto(answerPopDto, enrollee.getId());
             response.getAnswers().add(answer);
         }
         DataAuditInfo auditInfo = DataAuditInfo.builder()
@@ -149,12 +152,16 @@ public class EnrolleeResponsePopulator {
         return null;
     }
 
-    public Answer convertAnswerPopDto(AnswerPopDto popDto) throws JsonProcessingException {
+    public Answer convertAnswerPopDto(AnswerPopDto popDto, UUID enrolleeId) throws JsonProcessingException {
         if (popDto.getObjectJsonValue() != null) {
             popDto.setObjectValue(objectMapper.writeValueAsString(popDto.getObjectJsonValue()));
         } else if (popDto.getFileNames() != null && !popDto.getFileNames().isEmpty()) {
             List<Map<String, String>> fileAnswers = popDto.getFileNames().stream()
-                    .map(name -> Map.of("fileName", name))
+                    .map(name -> {
+                        ParticipantFile file = participantFileService.findByEnrolleeIdAndFileName(enrolleeId, name)
+                                .orElseThrow(() -> new NotFoundException("Participant file not found: " + name));
+                        return Map.of("participantFileId", file.getId().toString());
+                    })
                     .toList();
             popDto.setObjectValue(objectMapper.writeValueAsString(fileAnswers));
             popDto.setAnswerType(bio.terra.pearl.core.model.survey.AnswerType.OBJECT);
@@ -261,4 +268,5 @@ public class EnrolleeResponsePopulator {
     private final AdminUserDao adminUserDao;
     private final PortalService portalService;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final ParticipantFileService participantFileService;
 }

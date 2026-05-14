@@ -40,9 +40,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
                                 SELECT DISTINCT file.* FROM %s file
                                 INNER JOIN answer a ON a.survey_response_id = :surveyResponseId
                                   AND a.format = 'FILE_UPLOAD'
-                                  AND a.enrollee_id = file.enrollee_id
                                 INNER JOIN LATERAL jsonb_array_elements(a.object_value::jsonb) AS fa
-                                  ON fa->>'fileName' = file.file_name
+                                  ON fa->>'participantFileId' = file.id::text
                                 """.formatted(tableName))
                         .bind("surveyResponseId", surveyResponseId)
                         .mapTo(clazz)
@@ -53,30 +52,30 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     public List<ParticipantFile> findByEnrolleeIdWithAnswers(UUID enrolleeId) {
         List<ParticipantFile> participantFiles = findByEnrolleeId(enrolleeId);
         List<Answer> answers = answerDao.findByEnrolleeIdAndAnswerFormat(enrolleeId, AnswerFormat.FILE_UPLOAD);
-        Map<String, List<Answer>> answersByFileName = buildFileNameToAnswerMap(answers);
+        Map<UUID, List<Answer>> answersByFileId = buildParticipantFileIdToAnswerMap(answers);
         for (ParticipantFile file : participantFiles) {
-            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
+            file.setAssociatedAnswers(answersByFileId.getOrDefault(file.getId(), new ArrayList<>()));
         }
         return participantFiles;
     }
 
-    /** Indexes a list of FILE_UPLOAD answers by the file names they reference. */
-    private Map<String, List<Answer>> buildFileNameToAnswerMap(List<Answer> answers) {
-        Map<String, List<Answer>> answersByFileName = new HashMap<>();
+    /** Indexes a list of FILE_UPLOAD answers by the participantFileId they reference. */
+    private Map<UUID, List<Answer>> buildParticipantFileIdToAnswerMap(List<Answer> answers) {
+        Map<UUID, List<Answer>> answersByFileId = new HashMap<>();
         for (Answer answer : answers) {
             if (answer.getObjectValue() == null) continue;
             try {
                 FileAnswer[] fileAnswers = objectMapper.readValue(answer.getObjectValue(), FileAnswer[].class);
                 for (FileAnswer fa : fileAnswers) {
-                    if (fa.getFileName() != null) {
-                        answersByFileName.computeIfAbsent(fa.getFileName(), k -> new ArrayList<>()).add(answer);
+                    if (fa.getParticipantFileId() != null) {
+                        answersByFileId.computeIfAbsent(fa.getParticipantFileId(), k -> new ArrayList<>()).add(answer);
                     }
                 }
             } catch (Exception e) {
                 log.warn("Skipping malformed FILE_UPLOAD answer {}: {}", answer.getId(), e.getMessage());
             }
         }
-        return answersByFileName;
+        return answersByFileId;
     }
 
     public List<ParticipantFile> attachDownloadRecords(List<ParticipantFile> participantFiles) {
@@ -95,8 +94,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
     public Optional<ParticipantFile> findWithAnswers(UUID id) {
         Optional<ParticipantFile> participantFile = find(id);
         participantFile.ifPresent(file -> {
-            file.setAssociatedAnswers(answerDao.findFileUploadAnswersByEnrolleeAndFileName(
-                    file.getEnrolleeId(), file.getFileName()));
+            file.setAssociatedAnswers(answerDao.findFileUploadAnswersByParticipantFileId(
+                    file.getEnrolleeId(), file.getId()));
             file.setDownloads(downloadRecordDao.findByParticipantFileId(file.getId()));
         });
         return participantFile;
@@ -116,6 +115,10 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
 
     public Optional<ParticipantFile> findByEnrolleeIdAndFileName(UUID enrolleeId, String fileName) {
         return findByTwoProperties("enrollee_id", enrolleeId, "file_name", fileName);
+    }
+
+    public Optional<ParticipantFile> findByEnrolleeIdAndId(UUID enrolleeId, UUID id) {
+        return findByTwoProperties("enrollee_id", enrolleeId, "id", id);
     }
 
     public List<ParticipantFile> findByEnrolleeIds(List<UUID> enrolleeIds) {
@@ -139,8 +142,8 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
 
         for (ParticipantFile file : files) {
             List<Answer> enrolleeAnswers = fileUploadAnswersByEnrolleeId.getOrDefault(file.getEnrolleeId(), List.of());
-            Map<String, List<Answer>> answersByFileName = buildFileNameToAnswerMap(enrolleeAnswers);
-            file.setAssociatedAnswers(answersByFileName.getOrDefault(file.getFileName(), new ArrayList<>()));
+            Map<UUID, List<Answer>> answersByFileId = buildParticipantFileIdToAnswerMap(enrolleeAnswers);
+            file.setAssociatedAnswers(answersByFileId.getOrDefault(file.getId(), new ArrayList<>()));
         }
         return files;
     }
@@ -161,7 +164,7 @@ public class ParticipantFileDao extends BaseMutableJdbiDao<ParticipantFile> {
                                     WHERE a.enrollee_id = pf.enrollee_id
                                       AND a.question_stable_id = :questionStableId
                                       AND a.format = 'FILE_UPLOAD'
-                                      AND a.object_value::jsonb @> json_build_array(json_build_object('fileName', pf.file_name))::jsonb
+                                      AND a.object_value::jsonb @> json_build_array(json_build_object('participantFileId', pf.id::text))::jsonb
                                   )
                                 """)
                         .bind("enrolleeId", enrolleeId)

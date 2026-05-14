@@ -65,6 +65,10 @@ public class ParticipantFileService extends CrudService<ParticipantFile, Partici
         return dao.findByEnrolleeIdAndFileName(enrolleeId, fileName);
     }
 
+    public Optional<ParticipantFile> findByEnrolleeAndId(UUID enrolleeId, UUID fileId) {
+        return dao.findByEnrolleeIdAndId(enrolleeId, fileId);
+    }
+
     public Optional<ParticipantFile> findWithAnswers(UUID id) {
         return dao.findWithAnswers(id);
     }

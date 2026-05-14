@@ -38,7 +38,7 @@ public abstract class BaseFileAnswerTerm extends SearchTerm {
 
     protected EnrolleeSearchQueryBuilder.JoinClause participantFileJoinClause() {
         return new EnrolleeSearchQueryBuilder.JoinClause("participant_file", pfAlias(),
-                "enrollee.id = %s.enrollee_id AND %s.object_value::jsonb @> json_build_array(json_build_object('fileName', %s.file_name))::jsonb"
+                "enrollee.id = %s.enrollee_id AND %s.object_value::jsonb @> json_build_array(json_build_object('participantFileId', %s.id::text))::jsonb"
                         .formatted(pfAlias(), answerAlias(), pfAlias()));
     }
 

@@ -41,10 +41,10 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
     return this.questionBase
   }
 
-  get selectedFileNames(): string[] {
+  get selectedFileIds(): string[] {
     const value = this.question.value
     if (!value || !Array.isArray(value)) { return [] }
-    return (value as { fileName: string }[]).map(f => f.fileName)
+    return (value as FileAnswer[]).map(f => f.participantFileId)
   }
 
   get baseModal(): React.ElementType<ModalProps> {
@@ -64,13 +64,10 @@ export class SurveyQuestionDocumentRequest extends SurveyQuestionElementBase {
     return <DocumentRequestUploader
       studyEnvParams={studyEnvParams}
       enrolleeShortcode={enrolleeShortcode}
-      selectedFileNames={this.selectedFileNames}
+      selectedFileIds={this.selectedFileIds}
       onSelectedFilesChanged={files => {
         this.question.value = files.map((f: ParticipantFile): FileAnswer => ({
-          fileName: f.fileName,
-          uploadedAt: f.createdAt,
-          uploadingParticipantUserId: f.creatingParticipantUserId,
-          uploadingAdminUserId: f.creatingAdminUserId
+          participantFileId: f.id!
         }))
       }}
       ModalComponent={this.baseModal}

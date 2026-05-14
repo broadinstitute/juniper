@@ -31,13 +31,13 @@ export const DocumentRequestUploader = (
   {
     studyEnvParams,
     enrolleeShortcode,
-    selectedFileNames,
+    selectedFileIds,
     onSelectedFilesChanged,
     ModalComponent = Modal
   } : {
         studyEnvParams: StudyEnvParams,
         enrolleeShortcode: string,
-        selectedFileNames: string[]
+        selectedFileIds: string[]
     onSelectedFilesChanged: (files: ParticipantFile[]) => void,
     ModalComponent?: React.ElementType<ModalProps>
     }) => {
@@ -52,7 +52,7 @@ export const DocumentRequestUploader = (
   useEffect(() => {
     Api.listParticipantFiles({ studyEnvParams, enrolleeShortcode }).then(files => {
       setFiles(files)
-      setSelectedFiles(files.filter(f => selectedFileNames.includes(f.fileName)))
+      setSelectedFiles(files.filter(f => f.id && selectedFileIds.includes(f.id)))
     })
   }, [studyEnvParams])
 

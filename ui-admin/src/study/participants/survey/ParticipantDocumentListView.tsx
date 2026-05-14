@@ -81,6 +81,10 @@ export const ParticipantDocumentListView = ({
       }
     },
     {
+      header: 'ID',
+      accessorKey: 'id'
+    },
+    {
       header: 'Actions',
       cell: ({ row }) => {
         return <button

@@ -70,16 +70,16 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "format", answerFormat);
     }
 
-    public List<Answer> findFileUploadAnswersByEnrolleeAndFileName(UUID enrolleeId, String fileName) {
+    public List<Answer> findFileUploadAnswersByParticipantFileId(UUID enrolleeId, UUID participantFileId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 SELECT * FROM %s
                                 WHERE enrollee_id = :enrolleeId
                                   AND format = 'FILE_UPLOAD'
-                                  AND object_value::jsonb @> json_build_array(json_build_object('fileName', :fileName))::jsonb
+                                  AND object_value::jsonb @> json_build_array(json_build_object('participantFileId', :participantFileId::text))::jsonb
                                 """.formatted(tableName))
                         .bind("enrolleeId", enrolleeId)
-                        .bind("fileName", fileName)
+                        .bind("participantFileId", participantFileId)
                         .mapTo(clazz)
                         .list()
         );

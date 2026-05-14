@@ -24,9 +24,5 @@ export type ParticipantFile = {
 }
 
 export type FileAnswer = {
-  fileName: string
-  uploadedAt?: number
-  uploadingAdminUserId?: string
-  uploadingParticipantUserId?: string
-  downloads?: DownloadRecord[]
+  participantFileId: string
 }

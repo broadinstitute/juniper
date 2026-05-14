@@ -31,7 +31,7 @@ const renderDocumentRequestUpload = () => {
       <DocumentRequestUploader
         studyEnvParams={studyEnvParams}
         enrolleeShortcode={'HDSALK'}
-        selectedFileNames={[]}
+        selectedFileIds={[]}
         onSelectedFilesChanged={jest.fn()}
       />
     </MockI18nProvider>

@@ -1089,7 +1089,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         surveyResponseFactory.buildWithAnswers(withFile, survey, Map.of(
                 "my_question", Answer.builder()
                         .format(AnswerFormat.FILE_UPLOAD)
-                        .objectValue("[{\"fileName\":\"%s\"}]".formatted(file.getFileName()))
+                        .objectValue("[{\"participantFileId\":\"%s\"}]".formatted(file.getId()))
                         .build()));
 
         // enrollee with a file uploaded for a different question

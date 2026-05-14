@@ -86,10 +86,10 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
             try {
                 FileAnswer[] fileAnswers = objectMapper.readValue(answer.getObjectValue(), FileAnswer[].class);
                 for (FileAnswer fileAnswer : fileAnswers) {
-                    if (fileAnswer.getFileName() != null) {
-                        participantFileService.findByEnrolleeIdAndFileName(answer.getEnrolleeId(), fileAnswer.getFileName())
+                    if (fileAnswer.getParticipantFileId() != null) {
+                        participantFileService.findByEnrolleeAndId(answer.getEnrolleeId(), fileAnswer.getParticipantFileId())
                                 .orElseThrow(() -> new IllegalArgumentException(
-                                        "File (%s) not found for answer".formatted(fileAnswer.getFileName())));
+                                        "File (%s) not found for answer".formatted(fileAnswer.getParticipantFileId())));
                     }
                 }
             } catch (JsonProcessingException e) {
