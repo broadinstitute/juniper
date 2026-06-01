@@ -7,6 +7,7 @@ import React, {
 import { useApiContext } from './ApiProvider'
 import { SUPPORT_EMAIL_ADDRESS } from '../util/supportUtils'
 import { EnvironmentName } from 'src/types/study'
+import { PortalEnvironmentLanguage } from 'src/types/portal'
 
 export const I18nContext = createContext<I18nContextT | null>(null)
 
@@ -46,8 +47,20 @@ const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
 /**
  * Provider for the current users i18n context.
  */
-export function I18nProvider({ defaultLanguage, portalShortcode, environmentName, children }: {
-  defaultLanguage: string, portalShortcode?: string, environmentName: EnvironmentName, children: React.ReactNode
+export function I18nProvider({
+  defaultLanguage,
+  portalShortcode,
+  environmentName,
+  loadedPortalContentLang,
+  reloadPortalContent,
+  children
+}: {
+  defaultLanguage: string,
+  portalShortcode?: string,
+  environmentName: EnvironmentName,
+  children: React.ReactNode,
+  loadedPortalContentLang?: string,
+  reloadPortalContent?: (language: string) => void
 }) {
   const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
@@ -60,6 +73,12 @@ export function I18nProvider({ defaultLanguage, portalShortcode, environmentName
     setSelectedLanguage(language)
     localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
   }
+
+  useEffect(() => {
+    if (loadedPortalContentLang !== selectedLanguage) {
+      reloadPortalContent && reloadPortalContent(selectedLanguage)
+    }
+  }, [selectedLanguage, loadedPortalContentLang])
 
   useEffect(() => {
     reloadLanguageTexts(selectedLanguage)
@@ -129,4 +148,22 @@ const JUNIPER_TO_B2C_LOCALE_MAP: Record<string, string> = {
 //The user can always use in-browser translations if needed, and English is our most reliable language.
 export const getB2CLocale = (key: string): string => {
   return JUNIPER_TO_B2C_LOCALE_MAP[key] || 'en'
+}
+
+
+export const inferBrowserDefaultLanguageCode = (languageOptions: PortalEnvironmentLanguage[]) => {
+  const preferredLanguages = [
+    navigator.language || '',
+    ...(navigator.languages || [])
+  ]
+
+  for (const preferred of preferredLanguages) {
+    const langCode = preferred.split('-')[0]
+
+    if (languageOptions.find(opt => opt.languageCode === langCode)) {
+      return langCode
+    }
+  }
+
+  return 'en'// fallback
 }

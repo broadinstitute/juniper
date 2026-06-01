@@ -17,7 +17,8 @@ const PortalContext = React.createContext<PortalEnvContextT | null>(null)
 export type PortalEnvContextT = {
   portal: Portal,
   portalEnv: PortalEnvironment,
-  reloadPortal: () => void,
+  loadedLanguage: string | null,
+  reloadPortal: (languageCode?: string) => void,
   localContent: LocalSiteContent
 }
 
@@ -32,7 +33,13 @@ export function usePortalEnv(): PortalEnvContextT {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const localContent = portalEnv.siteContent!.localizedSiteContents[0]
 
-  return { portal: portalContext.portal, portalEnv, reloadPortal: portalContext.reloadPortal, localContent }
+  return {
+    portal: portalContext.portal,
+    portalEnv,
+    reloadPortal: portalContext.reloadPortal,
+    localContent,
+    loadedLanguage: portalContext.loadedLanguage
+  }
 }
 
 /**
@@ -68,9 +75,9 @@ export default function PortalProvider({ children }: { children: React.ReactNode
     document.querySelector('#juniper-manifest')?.setAttribute('href', manifestURL)
   }
 
-  const reloadPortal = () => {
+  const reloadPortal = (languageCode?: string) => {
     const savedLanguage = localStorage.getItem('selectedLanguage')
-    const selectedLanguage = savedLanguage === null ? undefined : savedLanguage
+    const selectedLanguage = languageCode || (savedLanguage === null ? undefined : savedLanguage)
     setIsLoading(true)
     // the ! below is unnecessary and wrong, but Vite ts validation insists on it?
     Api.getPortal(selectedLanguage!).then(result => {
@@ -88,7 +95,8 @@ export default function PortalProvider({ children }: { children: React.ReactNode
     portal: envState,
     portalEnv: envState.portalEnvironments[0],
     reloadPortal,
-    localContent: envState.portalEnvironments[0].siteContent!.localizedSiteContents[0]
+    localContent: envState.portalEnvironments[0].siteContent!.localizedSiteContents[0],
+    loadedLanguage: envState.portalEnvironments[0].siteContent!.localizedSiteContents[0].language
   }
 
   return <>

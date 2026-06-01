@@ -33,6 +33,7 @@ import {
   ApiProvider,
   EnvironmentName,
   I18nProvider,
+  inferBrowserDefaultLanguageCode,
   initializeMixpanel,
   MaintenanceMode
 } from '@juniper/ui-core'
@@ -71,7 +72,7 @@ mixpanel.register({ application: 'PARTICIPANT_UI' })
  */
 function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
-  const { localContent, portal, portalEnv } = usePortalEnv()
+  const { localContent, portal, portalEnv, loadedLanguage, reloadPortal } = usePortalEnv()
 
   useEffect(() => {
     const isCompatible = isBrowserCompatible()
@@ -145,9 +146,12 @@ function App() {
                       <UserProvider>
                         <ActiveUserProvider>
                           <I18nProvider
-                            defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
+                            defaultLanguage={inferBrowserDefaultLanguageCode(portalEnv.supportedLanguages)}
                             portalShortcode={portal.shortcode}
-                            environmentName={portalEnv.environmentName as EnvironmentName}>
+                            environmentName={portalEnv.environmentName as EnvironmentName}
+                            loadedPortalContentLang={loadedLanguage}
+                            reloadPortalContent={reloadPortal}
+                          >
                             <DocumentTitle/>
 
                             <Suspense fallback={<PageLoadingIndicator/>}>

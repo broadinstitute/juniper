@@ -194,6 +194,17 @@ export function ParticipantNavbar(props: NavbarProps) {
         </ul>
       </div>
     </div>
+    {portalEnv.supportedLanguages.length > 1 &&
+        <div className="d-flex d-lg-none justify-content-end w-100 mx-4 my-0 mt-2">
+          <div>
+            <LanguageDropdown
+              languageOptions={portalEnv.supportedLanguages}
+              selectedLanguage={selectedLanguage}
+              changeLanguage={changeLanguageAndUpdate}
+              reloadPortal={reloadPortal}
+            />
+          </div>
+        </div>}
   </nav>
 }
 
