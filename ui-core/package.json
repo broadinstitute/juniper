@@ -4,18 +4,18 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "@types/diff": "^7.0.1",
     "classnames": "^2.5.1",
     "diff": "^9.0.0",
     "downshift": "^7.6.0",
     "inputmask": "3.3.10",
+    "lodash": "^4.18.1",
     "micromark": "3.1.0",
-    "react-select": "^5.10.1",
-    "lodash": "^4.18.1"
+    "react-select": "^5.10.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.5",
@@ -31,7 +31,7 @@
     "bootstrap": "^5.2.1",
     "react": "^18.2.0",
     "react-markdown": "^8.0.3",
-    "react-router-dom": "^6.4.0",
+    "react-router-dom": "^6.30.4",
     "survey-core": "1.12.4",
     "survey-react-ui": "1.12.4",
     "surveyjs-widgets": "1.12.4"
