@@ -10,7 +10,9 @@ public record ParticipantTaskAssignDto (
         String targetStableId,
         // if null, the latest version will be used
         Integer targetAssignedVersion,
+        // can specify one of: enrolleeIds, enrolleeShortcodes, or assignAllAssigned
         List<UUID> enrolleeIds,
+        List<String> enrolleeShortcodes,
         // if true, the enrolleeIds list will be ignored and tasks will be assigned to all enrollees
         // not already having the task in the duplicate window
         boolean assignAllUnassigned,

@@ -676,6 +676,7 @@ public class EnrolleeImportService {
                     formatter.getModuleName(),
                     null, // latest
                     List.of(enrollee.getId()),
+                    null,
                     false,
                     true,
                     "Imported");

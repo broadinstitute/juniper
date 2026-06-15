@@ -340,8 +340,9 @@ export type ParticipantTaskUpdateDto = {
 export type ParticipantTaskAssignDto = {
   taskType: ParticipantTaskType
   targetStableId: string
-  targetAssignedVersion: number
+  targetAssignedVersion: number | null
   enrolleeIds?: string[]
+  enrolleeShortcodes?: string[]
   // if true, the enrolleeIds list will be ignored and tasks will be assigned to all enrollees
   // not already having the task in the duplicate window
   assignAllUnassigned: boolean

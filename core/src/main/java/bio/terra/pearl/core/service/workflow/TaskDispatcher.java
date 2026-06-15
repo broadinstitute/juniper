@@ -162,6 +162,7 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
                     newTaskConfig.getStableId(),
                     newTaskConfig.getVersion(),
                     null,
+                    null,
                     true,
                     false,
                     newTaskConfig.getName() + " published");
@@ -313,11 +314,14 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
     private List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
                                                    UUID studyEnvironmentId) {
         if (assignDto.assignAllUnassigned()
-                && (Objects.isNull(assignDto.enrolleeIds()) || assignDto.enrolleeIds().isEmpty())) {
+                && (Objects.isNull(assignDto.enrolleeIds()) || assignDto.enrolleeIds().isEmpty())
+                && (Objects.isNull(assignDto.enrolleeShortcodes()) || assignDto.enrolleeShortcodes().isEmpty())) {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
                     assignDto.targetStableId(), null);
-        } else {
+        } else if (!Objects.isNull(assignDto.enrolleeIds()) && !assignDto.enrolleeIds().isEmpty()) {
             return enrolleeService.findAll(assignDto.enrolleeIds());
+        } else {
+            return enrolleeService.findAllByShortcodes(assignDto.enrolleeShortcodes());
         }
     }
 
