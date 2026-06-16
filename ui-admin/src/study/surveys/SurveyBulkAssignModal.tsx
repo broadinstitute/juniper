@@ -16,14 +16,8 @@ import { uniq } from 'lodash/fp'
 import { Textarea } from 'components/forms/Textarea'
 import InfoPopup from 'components/forms/InfoPopup'
 
-export type SurveyEnvironmentDetailModalProps = {
-  studyEnvParams: StudyEnvParams
-  onDismiss: () => void
-  stableId: string
-}
-
 /**
- * Shows details for a given environment's survey history
+ * Allows bulk assigning tasks to a list of enrollee shortcodes.
  */
 export default function SurveyBulkAssignModal({
   studyEnvParams,
