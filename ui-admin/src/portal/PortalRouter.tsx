@@ -150,7 +150,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
     </NavBreadcrumb>
     <ApiProvider api={previewApi(portal.shortcode, portalEnv.environmentName)}>
       <I18nProvider
-        defaultLanguage={'en'}
+        defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
         portalShortcode={portal.shortcode}
         environmentName={portalEnv.environmentName as EnvironmentName}>
         <Routes>

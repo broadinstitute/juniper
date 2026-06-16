@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import Api, {
   EligibilityResult,
   PreEnrollmentResponse,
@@ -19,7 +22,10 @@ import { useUser } from '../../providers/UserProvider'
 import { useActiveUser } from '../../providers/ActiveUserProvider'
 import { useEnrollmentParams } from './useEnrollmentParams'
 import { LoadingSpinner } from '../../util/LoadingSpinner'
-import { ApiErrorResponse, defaultApiErrorHandle } from '../../util/error-utils'
+import {
+  ApiErrorResponse,
+  defaultApiErrorHandle
+} from '../../util/error-utils'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -160,7 +166,7 @@ export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult
   }, [])
 
   return (
-    <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
+    <div style={{ background: '#f3f3f3' }} className="flex-grow-1" translate={'no'}>
       <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnv.environmentName}/>
       <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnv.environmentName}/>
       <div className="mb-2">{SurveyComponent}</div>

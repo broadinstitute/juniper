@@ -22,7 +22,8 @@ import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import {
   Enrollee,
-  HubResponse, ParticipantUser,
+  HubResponse,
+  ParticipantUser,
   Profile
 } from 'src/types/user'
 import classNames from 'classnames'
@@ -255,7 +256,7 @@ export function PagedSurveyView({
     <>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className={classNames('flex-grow-1',
-        isOutreach ? 'survey-hide-complete' : '')}>
+        isOutreach ? 'survey-hide-complete' : '')} translate={'no'}>
         <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">

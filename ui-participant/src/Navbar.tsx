@@ -12,14 +12,12 @@ import { UserManager } from 'oidc-client-ts'
 import { getOidcConfig } from 'authConfig'
 import mixpanel from 'mixpanel-browser'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { useActiveUser } from 'providers/ActiveUserProvider'
 
 type NavbarProps = JSX.IntrinsicElements['nav']
 
 /** renders the navbar for participants */
 export default function Navbar(props: NavbarProps) {
-  const { user, logoutUser, proxyRelations } = useUser()
-  const { profile, ppUser } = useActiveUser()
+  const { user, logoutUser, proxyRelations, profile, ppUsers } = useUser()
   const { selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
   const envSpec = getEnvSpec()
@@ -42,6 +40,7 @@ export default function Navbar(props: NavbarProps) {
   async function updatePreferredLanguage(selectedLanguage: string) {
     //track the language change
     mixpanel.track('languageUpdated', { language: selectedLanguage, source: 'navbar' })
+    const ppUser = ppUsers.find(ppUser => ppUser.profileId === profile?.id)
     if (profile && ppUser) {
       await Api.updateProfile({
         profile: { ...profile, preferredLanguage: selectedLanguage },

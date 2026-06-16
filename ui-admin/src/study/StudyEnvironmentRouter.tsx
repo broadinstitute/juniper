@@ -120,7 +120,9 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
       />
     </NavBreadcrumb>
     <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
-      <I18nProvider defaultLanguage={'en'} portalShortcode={portal.shortcode}
+      <I18nProvider
+        defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
+        portalShortcode={portal.shortcode}
         environmentName={portalEnv.environmentName as EnvironmentName}>
         <Routes>
           <Route path="triggers/*" element={<TriggerList studyEnvContext={studyEnvContext}
