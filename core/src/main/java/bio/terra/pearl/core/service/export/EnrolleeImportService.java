@@ -671,15 +671,14 @@ public class EnrolleeImportService {
         ParticipantTask relatedTask = findTask(ppUser, studyEnv, formatter, enrolleeMap, repeatNum, zoneId);
 
         if (relatedTask == null) {
-            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
-                    TaskType.SURVEY,
-                    formatter.getModuleName(),
-                    null, // latest
-                    List.of(enrollee.getId()),
-                    null,
-                    false,
-                    true,
-                    "Imported");
+            ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                    .taskType(TaskType.SURVEY)
+                    .targetStableId(formatter.getModuleName())
+                    .targetAssignedVersion(null) // latest
+                    .enrolleeIds(List.of(enrollee.getId()))
+                    .overrideEligibility(true)
+                    .justification("Imported")
+                    .build();
 
             List<ParticipantTask> tasks = surveyTaskDispatcher.assign(
                     assignDto,

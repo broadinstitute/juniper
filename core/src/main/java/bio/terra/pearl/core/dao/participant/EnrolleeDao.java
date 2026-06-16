@@ -8,6 +8,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,6 +49,20 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> implements StudyEn
 
     public List<Enrollee> findAllByShortcodes(List<String> shortcodes) {
         return findAllByPropertyCollection("shortcode", shortcodes);
+    }
+
+    public List<Enrollee> findAllByShortcodes(List<String> shortcodes, UUID studyEnvironmentId) {
+        if (shortcodes.isEmpty()) {
+            // short circuit because bindList errors on an empty list
+            return new ArrayList<>();
+        }
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from enrollee where shortcode IN (<shortcodes>) "
+                                + "and study_environment_id = :studyEnvironmentId")
+                        .bindList("shortcodes", shortcodes)
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .mapTo(Enrollee.class)
+                        .list());
     }
 
     public List<Enrollee> findByParticipantUserId(UUID userId) {

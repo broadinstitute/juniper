@@ -157,15 +157,13 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             );
         }
         if (newTaskConfig.isAssignToExistingEnrollees()) {
-            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
-                    getTaskType(newTaskConfig),
-                    newTaskConfig.getStableId(),
-                    newTaskConfig.getVersion(),
-                    null,
-                    null,
-                    true,
-                    false,
-                    newTaskConfig.getName() + " published");
+            ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                    .taskType(getTaskType(newTaskConfig))
+                    .targetStableId(newTaskConfig.getStableId())
+                    .targetAssignedVersion(newTaskConfig.getVersion())
+                    .assignAllUnassigned(true)
+                    .justification(newTaskConfig.getName() + " published")
+                    .build();
 
             assign(assignDto, newTaskConfig.getStudyEnvironmentId(),
                     new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleNewAssignableTask.assignToExistingEnrollees")));
@@ -319,9 +317,21 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
                     assignDto.targetStableId(), null);
         } else if (!Objects.isNull(assignDto.enrolleeIds()) && !assignDto.enrolleeIds().isEmpty()) {
-            return enrolleeService.findAll(assignDto.enrolleeIds());
+            // defensive: only assign to enrollees that actually belong to this study environment
+            return enrolleeService.findAll(assignDto.enrolleeIds()).stream()
+                    .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(studyEnvironmentId))
+                    .toList();
         } else {
-            return enrolleeService.findAllByShortcodes(assignDto.enrolleeShortcodes());
+            List<String> requestedShortcodes = assignDto.enrolleeShortcodes();
+            List<Enrollee> found = enrolleeService.findAllByShortcodes(requestedShortcodes, studyEnvironmentId);
+            if (found.size() != requestedShortcodes.stream().distinct().count()) {
+                Set<String> foundShortcodes = new HashSet<>(found.stream().map(Enrollee::getShortcode).toList());
+                List<String> unknown = requestedShortcodes.stream().distinct()
+                        .filter(shortcode -> !foundShortcodes.contains(shortcode)).toList();
+                throw new IllegalArgumentException(
+                        "The following shortcodes do not belong to this study environment: " + unknown);
+            }
+            return found;
         }
     }
 

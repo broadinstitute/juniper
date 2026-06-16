@@ -115,6 +115,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findAllByShortcodes(shortcodes);
     }
 
+    public List<Enrollee> findAllByShortcodes(List<String> shortcodes, UUID studyEnvironmentId) {
+        return dao.findAllByShortcodes(shortcodes, studyEnvironmentId);
+    }
+
     public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }

@@ -41,7 +41,7 @@ export default function SurveyBulkAssignModal({
   const { FileChooser } = useFileUploadButton(file => {
     const reader = new FileReader()
     reader.onload = () => {
-      const shortcodes: string[] = uniq(parseShortcodeCsv(reader.result as string))
+      const shortcodes: string[] = parseShortcodeCsv(reader.result as string)
       setShortcodes(shortcodes)
       setShortcodeInput(shortcodes.join(','))
     }
@@ -86,7 +86,7 @@ export default function SurveyBulkAssignModal({
         value={shortcodeInput}
         onChange={val => {
           setShortcodeInput(val)
-          setShortcodes(val.split(',').filter(shortcode => shortcode.trim().length === 6))
+          setShortcodes(parseShortcodes(val))
         }}
       />
       <div className={'d-flex flex-column align-items-start my-2'}>
@@ -138,15 +138,25 @@ export default function SurveyBulkAssignModal({
   </Modal>
 }
 
+/** shortcodes are 6 characters and case-insensitive on input; normalize to uppercase */
+const SHORTCODE_LENGTH = 6
+
+function normalizeShortcode(raw: string): string {
+  const trimmed = raw.trim().toUpperCase()
+  return trimmed.length === SHORTCODE_LENGTH ? trimmed : ''
+}
+
 /**
- * Parses a CSV assuming first row is the shortcode
+ * Parses a comma- or newline-separated list of shortcodes, trimming, uppercasing,
+ * and dropping anything that isn't a valid shortcode. Returns a deduped list.
+ */
+export function parseShortcodes(input: string): string[] {
+  return uniq(input.split(/[\n,]/).map(normalizeShortcode).filter(s => !isEmpty(s)))
+}
+
+/**
+ * Parses a CSV assuming the first column of each row is the shortcode
  */
 export function parseShortcodeCsv(csv: string): string[] {
-  return csv.split('\n').map(line => {
-    const [shortcode] = line.split(',')
-    if (shortcode.length === 6 && shortcode.toUpperCase() === shortcode) {
-      return shortcode
-    }
-    return ''
-  }).filter(s => !isEmpty(s))
+  return uniq(csv.split('\n').map(line => normalizeShortcode(line.split(',')[0])).filter(s => !isEmpty(s)))
 }
