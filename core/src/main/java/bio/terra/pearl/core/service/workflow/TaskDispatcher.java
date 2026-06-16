@@ -317,19 +317,25 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
                     assignDto.targetStableId(), null);
         } else if (!Objects.isNull(assignDto.enrolleeIds()) && !assignDto.enrolleeIds().isEmpty()) {
-            // defensive: only assign to enrollees that actually belong to this study environment
-            return enrolleeService.findAll(assignDto.enrolleeIds()).stream()
-                    .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(studyEnvironmentId))
-                    .toList();
+            List<Enrollee> found = enrolleeService.findAll(assignDto.enrolleeIds()).stream().filter(enrollee -> enrollee.getStudyEnvironmentId().equals(studyEnvironmentId)).toList();
+
+            if (found.size() != assignDto.enrolleeIds().size()) {
+                Set<UUID> foundShortcodes = new HashSet<>(found.stream().map(Enrollee::getId).toList());
+                List<UUID> missing = assignDto.enrolleeIds().stream().distinct()
+                        .filter(shortcode -> !foundShortcodes.contains(shortcode)).toList();
+
+                throw new IllegalArgumentException("Could not find enrollees: " + missing);
+            }
+
+            return found;
         } else {
             List<String> requestedShortcodes = assignDto.enrolleeShortcodes();
             List<Enrollee> found = enrolleeService.findAllByShortcodes(requestedShortcodes, studyEnvironmentId);
             if (found.size() != requestedShortcodes.stream().distinct().count()) {
                 Set<String> foundShortcodes = new HashSet<>(found.stream().map(Enrollee::getShortcode).toList());
-                List<String> unknown = requestedShortcodes.stream().distinct()
+                List<String> missing = requestedShortcodes.stream().distinct()
                         .filter(shortcode -> !foundShortcodes.contains(shortcode)).toList();
-                throw new IllegalArgumentException(
-                        "The following shortcodes do not belong to this study environment: " + unknown);
+                throw new IllegalArgumentException("Could not find enrollees: " + missing);
             }
             return found;
         }
