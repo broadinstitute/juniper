@@ -12,12 +12,14 @@ import { UserManager } from 'oidc-client-ts'
 import { getOidcConfig } from 'authConfig'
 import mixpanel from 'mixpanel-browser'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 
 type NavbarProps = JSX.IntrinsicElements['nav']
 
 /** renders the navbar for participants */
 export default function Navbar(props: NavbarProps) {
   const { user, logoutUser, proxyRelations, profile, ppUsers } = useUser()
+  const { profile: governedProfile, ppUser: governedPpUser } = useActiveUser()
   const { selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
   const envSpec = getEnvSpec()
@@ -46,6 +48,14 @@ export default function Navbar(props: NavbarProps) {
         profile: { ...profile, preferredLanguage: selectedLanguage },
         ppUserId: ppUser.id
       })
+
+      // if in proxy scenario, also update the governed user
+      if (governedPpUser && governedProfile && governedProfile.id != profile.id) {
+        await Api.updateProfile({
+          profile: { ...governedProfile, preferredLanguage: selectedLanguage },
+          ppUserId: governedPpUser.id
+        })
+      }
     }
   }
 

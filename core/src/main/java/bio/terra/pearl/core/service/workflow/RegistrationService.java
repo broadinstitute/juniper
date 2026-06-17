@@ -166,6 +166,7 @@ public class RegistrationService {
         Profile governedProfile =  Profile.builder()
                 .contactEmail(proxyProfile.getContactEmail())
                 .doNotEmail(proxyProfile.isDoNotEmail())
+                .preferredLanguage(proxyProfile.getPreferredLanguage())
                 .givenName(null)
                 .familyName(null)
                 .build();

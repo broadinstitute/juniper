@@ -9,6 +9,7 @@ import Api, {
   PortalEnvironment
 } from 'api/api'
 import { SUPPORT_EMAIL_ADDRESS } from '@juniper/ui-core'
+import { useReturnToLanguage } from 'browserPersistentState'
 
 
 /** current portal object context */
@@ -50,6 +51,7 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   const [envState, setEnvState] = useState<Portal | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
+  const [returnToLanguage] = useReturnToLanguage()
 
   useEffect(() => {
     reloadPortal()
@@ -76,7 +78,7 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   }
 
   const reloadPortal = (languageCode?: string) => {
-    const savedLanguage = localStorage.getItem('selectedLanguage')
+    const savedLanguage = localStorage.getItem('selectedLanguage') || returnToLanguage
     const selectedLanguage = languageCode || (savedLanguage === null ? undefined : savedLanguage)
     setIsLoading(true)
     // the ! below is unnecessary and wrong, but Vite ts validation insists on it?
