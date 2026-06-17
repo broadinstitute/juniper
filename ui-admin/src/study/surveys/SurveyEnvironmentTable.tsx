@@ -2,17 +2,34 @@ import {
   ENVIRONMENT_NAMES,
   EnvironmentName,
   StudyEnvironmentSurvey,
-  StudyEnvironmentSurveyNamed, StudyEnvParams
+  StudyEnvironmentSurveyNamed,
+  StudyEnvParams
 } from '@juniper/ui-core'
-import React, { useMemo, useState } from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import { Link } from 'react-router-dom'
-import { Button, EllipsisDropdownButton } from 'components/forms/Button'
+import {
+  Button,
+  EllipsisDropdownButton
+} from 'components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, Row, useReactTable } from '@tanstack/react-table'
-import { RowDragHandleCell, useDraggableTableLayout } from 'util/table/tableDragDropUtils'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  Row,
+  useReactTable
+} from '@tanstack/react-table'
+import {
+  RowDragHandleCell,
+  useDraggableTableLayout
+} from 'util/table/tableDragDropUtils'
 import SurveyPublishModal from './SurveyPublishModal'
 
 import { UniqueIdentifier } from '@dnd-kit/core'
+import SurveyBulkAssignModal from 'study/surveys/SurveyBulkAssignModal'
 
 
 export type SurveyTableProps = {
@@ -140,6 +157,7 @@ type PublishCommand = {
 /** show a survey and the version in each environment */
 const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTableRow, envName: EnvironmentName}) => {
   const [showEnvDetail, setShowEnvDetail] = useState(false)
+  const [showBulkAssignModal, setShowBulkAssignModal] = useState(false)
   const [publishCommand, setPublishCommand] = useState<PublishCommand>()
   const {
     configuredSurveys, studyEnvParams,
@@ -178,6 +196,12 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
               <button className="dropdown-item"
                 onClick={() => setShowEnvDetail(true)}>
                   See participant assignment
+              </button>
+            </li>
+            <li className="pt-2">
+              <button className="dropdown-item"
+                onClick={() => setShowBulkAssignModal(true)}>
+                      Bulk Assign
               </button>
             </li>
             { envConfig && ENVIRONMENT_NAMES.map(destinationEnv => {
@@ -244,6 +268,11 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
       stableId={rowInfo.stableId}
       studyEnvParams={{ ...studyEnvParams, envName }}
       onDismiss={() => setShowEnvDetail(false)}
+    />}
+    {showBulkAssignModal && <SurveyBulkAssignModal
+      studyEnvParams={studyEnvParams}
+      onDismiss={() => setShowBulkAssignModal(false)}
+      stableId={rowInfo.stableId}
     />}
     { publishCommand && <SurveyPublishModal
       surveyName={rowInfo.name}

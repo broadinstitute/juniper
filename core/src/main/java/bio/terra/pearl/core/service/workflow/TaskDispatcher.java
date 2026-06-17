@@ -157,14 +157,13 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
             );
         }
         if (newTaskConfig.isAssignToExistingEnrollees()) {
-            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
-                    getTaskType(newTaskConfig),
-                    newTaskConfig.getStableId(),
-                    newTaskConfig.getVersion(),
-                    null,
-                    true,
-                    false,
-                    newTaskConfig.getName() + " published");
+            ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                    .taskType(getTaskType(newTaskConfig))
+                    .targetStableId(newTaskConfig.getStableId())
+                    .targetAssignedVersion(newTaskConfig.getVersion())
+                    .assignAllUnassigned(true)
+                    .justification(newTaskConfig.getName() + " published")
+                    .build();
 
             assign(assignDto, newTaskConfig.getStudyEnvironmentId(),
                     new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleNewAssignableTask.assignToExistingEnrollees")));
@@ -313,11 +312,32 @@ public abstract class TaskDispatcher<T extends TaskConfig> {
     private List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
                                                    UUID studyEnvironmentId) {
         if (assignDto.assignAllUnassigned()
-                && (Objects.isNull(assignDto.enrolleeIds()) || assignDto.enrolleeIds().isEmpty())) {
+                && (Objects.isNull(assignDto.enrolleeIds()) || assignDto.enrolleeIds().isEmpty())
+                && (Objects.isNull(assignDto.enrolleeShortcodes()) || assignDto.enrolleeShortcodes().isEmpty())) {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
                     assignDto.targetStableId(), null);
+        } else if (!Objects.isNull(assignDto.enrolleeIds()) && !assignDto.enrolleeIds().isEmpty()) {
+            List<Enrollee> found = enrolleeService.findAll(assignDto.enrolleeIds()).stream().filter(enrollee -> enrollee.getStudyEnvironmentId().equals(studyEnvironmentId)).toList();
+
+            if (found.size() != assignDto.enrolleeIds().size()) {
+                Set<UUID> foundShortcodes = new HashSet<>(found.stream().map(Enrollee::getId).toList());
+                List<UUID> missing = assignDto.enrolleeIds().stream().distinct()
+                        .filter(shortcode -> !foundShortcodes.contains(shortcode)).toList();
+
+                throw new IllegalArgumentException("Could not find enrollees: " + missing);
+            }
+
+            return found;
         } else {
-            return enrolleeService.findAll(assignDto.enrolleeIds());
+            List<String> requestedShortcodes = assignDto.enrolleeShortcodes();
+            List<Enrollee> found = enrolleeService.findAllByShortcodes(requestedShortcodes, studyEnvironmentId);
+            if (found.size() != requestedShortcodes.stream().distinct().count()) {
+                Set<String> foundShortcodes = new HashSet<>(found.stream().map(Enrollee::getShortcode).toList());
+                List<String> missing = requestedShortcodes.stream().distinct()
+                        .filter(shortcode -> !foundShortcodes.contains(shortcode)).toList();
+                throw new IllegalArgumentException("Could not find enrollees: " + missing);
+            }
+            return found;
         }
     }
 

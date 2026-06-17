@@ -36,6 +36,7 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SurveyTaskDispatcherTest extends BaseSpringBootTest {
@@ -166,10 +167,51 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
-        ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true, "reason" );
+        ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build();
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(2));
+    }
+
+    @Test
+    @Transactional
+    public void testAssignByShortcode(TestInfo testInfo) {
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        EnrolleeBundle sandbox1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeBundle sandbox2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .enrolleeShortcodes(List.of(sandbox1.enrollee().getShortcode())).overrideEligibility(true).justification("reason").build();
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+
+        assertThat(participantTaskService.findByEnrolleeId(sandbox1.enrollee().getId()), hasSize(1));
+        assertThat(participantTaskService.findByEnrolleeId(sandbox2.enrollee().getId()), hasSize(0));
+    }
+
+    @Test
+    @Transactional
+    public void testAssignByShortcodeRejectsOtherStudyEnv(TestInfo testInfo) {
+        StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        StudyEnvironmentBundle otherBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo) + "other", EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        EnrolleeBundle otherEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), otherBundle.getPortalEnv(), otherBundle.getStudyEnv());
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        // a shortcode belonging to a different study environment must be rejected, not silently assigned
+        ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .enrolleeShortcodes(List.of(otherEnrollee.enrollee().getShortcode())).overrideEligibility(true).justification("reason").build();
+        assertThrows(IllegalArgumentException.class, () ->
+                surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator)));
+
+        assertThat(participantTaskService.findByEnrolleeId(otherEnrollee.enrollee().getId()), hasSize(0));
     }
 
     @Test
@@ -185,19 +227,25 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion()));
 
         // shouldn't create a duplicate task if directed to assign to all unassigned
-        ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false, "reason" );
+        ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .assignAllUnassigned(true).justification("reason").build();
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(1));
 
         // shouldn't create a duplicate task even if the enrolleeId is provided manually, since eligibility override is false
-        assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox1.enrollee().getId()), false, false, "reason" );
+        assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .enrolleeIds(List.of(sandbox1.enrollee().getId())).justification("reason").build();
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(1));
 
         // if overriding eligibility is specified, then a duplicate task should be created
-        assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox1.enrollee().getId()), false, true, "reason" );
+        assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .enrolleeIds(List.of(sandbox1.enrollee().getId())).overrideEligibility(true).justification("reason").build();
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(2));
@@ -218,7 +266,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         EnrolleeBundle e2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Smith").build());
 
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                        .assignAllUnassigned(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
 
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
@@ -239,7 +289,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         EnrolleeBundle normalEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
 
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                        .assignAllUnassigned(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
 
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
@@ -514,10 +566,16 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         // assign some new versions of the task
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox.enrollee().getId()), true, true, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                        .enrolleeIds(List.of(sandbox.enrollee().getId()))
+                        .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox.enrollee().getId()), true, true, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                        .enrolleeIds(List.of(sandbox.enrollee().getId()))
+                        .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
 
         tasks = participantTaskService
@@ -592,7 +650,10 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         // assign some new versions of the task
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox.enrollee().getId()), true, true, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                        .enrolleeIds(List.of(sandbox.enrollee().getId()))
+                        .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
 
 
@@ -684,7 +745,10 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         // assign new version of survey1
         surveyTaskDispatcher.assign(
-                new ParticipantTaskAssignDto(TaskType.SURVEY, survey1V2.getStableId(), survey1V2.getVersion(), List.of(enrollee1.enrollee().getId()), true, true, "reason"),
+                ParticipantTaskAssignDto.builder()
+                        .taskType(TaskType.SURVEY).targetStableId(survey1V2.getStableId()).targetAssignedVersion(survey1V2.getVersion())
+                        .enrolleeIds(List.of(enrollee1.enrollee().getId()))
+                        .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build(),
                 sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(adminUserFactory.buildPersisted(getTestName(testInfo), true)));
 
         List<ParticipantTask> tasks = participantTaskService.findByStudyEnvironmentId(sandboxBundle.getStudyEnv().getId());
@@ -740,7 +804,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .recurrenceIntervalDays(7)
                 .prepopulate(true));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
-        ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true, "reason" );
+        ParticipantTaskAssignDto assignDto = ParticipantTaskAssignDto.builder()
+                .taskType(TaskType.SURVEY).targetStableId(survey.getStableId()).targetAssignedVersion(survey.getVersion())
+                .assignAllUnassigned(true).overrideEligibility(true).justification("reason").build();
         surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> initialParticipantTasks = participantTaskService.findByEnrolleeId(enrollee.enrollee().getId());
 

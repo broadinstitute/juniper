@@ -19,9 +19,7 @@ import {
   StudyEnvironmentSurveyNamed,
   SurveyType
 } from '@juniper/ui-core'
-import {
-  Button
-} from 'components/forms/Button'
+import { Button } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 import { renderPageHeader } from 'util/pageUtils'
 
