@@ -48,12 +48,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@f9c9c575b8b21b6485636a91ffecd10e558c62f6
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v6
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
-        with:
-          arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
+        run: ./gradlew build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: Upload test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
