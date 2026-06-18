@@ -56,6 +56,7 @@ export const RedirectFromOAuth = () => {
       }
 
       if (auth.error) {
+        console.error(auth.error)
         logError({ message: auth.error.message || 'error' }, auth.error.stack || 'stack', 'oauth-error')
         navigate('/redirect-from-oauth/error')
         return

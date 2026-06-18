@@ -59,7 +59,7 @@ export function I18nProvider({
   portalShortcode?: string,
   environmentName: EnvironmentName,
   children: React.ReactNode,
-  loadedPortalContentLang?: string,
+  loadedPortalContentLang?: string | null,
   reloadPortalContent?: (language: string) => void
 }) {
   const Api = useApiContext()
