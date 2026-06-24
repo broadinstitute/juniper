@@ -205,6 +205,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("profile.contactEmail", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("profile.phoneNumber", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("profile.birthDate", SearchValueTypeDefinition.builder().type(DATE).build()),
+                Map.entry("profile.preferredLanguage", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("profile.sexAtBirth", SearchValueTypeDefinition.builder().type(STRING).build()),
                 Map.entry("profile.doNotEmail", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("profile.doNotEmailSolicit", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
