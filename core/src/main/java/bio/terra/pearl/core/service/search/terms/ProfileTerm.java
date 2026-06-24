@@ -99,6 +99,7 @@ public class ProfileTerm extends SearchTerm {
             Map.entry("name", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("contactEmail", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("phoneNumber", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("preferredLanguage", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("birthDate", SearchValueTypeDefinition.builder().type(DATE).build()),
             Map.entry("sexAtBirth", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("doNotEmail", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),

@@ -8,6 +8,7 @@ import { useApiContext } from './ApiProvider'
 import { SUPPORT_EMAIL_ADDRESS } from '../util/supportUtils'
 import { EnvironmentName } from 'src/types/study'
 import { PortalEnvironmentLanguage } from 'src/types/portal'
+import { useLocation } from 'react-router-dom'
 
 export const I18nContext = createContext<I18nContextT | null>(null)
 
@@ -69,16 +70,18 @@ export function I18nProvider({
   const [selectedLanguage, setSelectedLanguage] = useState(
     localStorage.getItem(SELECTED_LANGUAGE_KEY) || defaultLanguage)
 
+  const { pathname } = useLocation()
+
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
     localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
   }
 
   useEffect(() => {
-    if (loadedPortalContentLang !== selectedLanguage) {
+    if (loadedPortalContentLang !== selectedLanguage && !pathname.includes('oauth')) {
       reloadPortalContent && reloadPortalContent(selectedLanguage)
     }
-  }, [selectedLanguage, loadedPortalContentLang])
+  }, [selectedLanguage, loadedPortalContentLang, pathname])
 
   useEffect(() => {
     reloadLanguageTexts(selectedLanguage)
