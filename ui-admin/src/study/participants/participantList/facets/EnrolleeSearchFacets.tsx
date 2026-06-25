@@ -250,7 +250,7 @@ const PreferredLanguageFacet = ({ searchState, updateSearchState, studyEnvContex
     }
   })
 
-  return <div data-testid='select-sex-at-birth'>
+  return <div>
     <Select
       options={options}
       value={options.find(o => o.value === searchState.preferredLanguage)}
