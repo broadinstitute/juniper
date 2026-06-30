@@ -21,6 +21,7 @@ export type ParticipantSearchState = {
   consented?: boolean,
   minAge?: number,
   maxAge?: number,
+  preferredLanguage?: string;
   sexAtBirth: string[],
   tasks: { task: string, status: string }[],
   latestKitStatus: string[],
@@ -61,6 +62,7 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
   latestKitStatus: 'Latest Kit',
   fileDownloads: 'File downloads',
   fileUploads: 'File uploads',
+  preferredLanguage: 'Preferred Language',
   custom: 'Expression',
   includeFacetKeys: 'include'
 }
@@ -183,6 +185,10 @@ export const toExpression = (searchState: ParticipantSearchState,
 
   if (searchState.maxAge) {
     expressions.push(`{age} <= ${searchState.maxAge}`)
+  }
+
+  if (searchState.preferredLanguage) {
+    expressions.push(`{profile.preferredLanguage} = '${searchState.preferredLanguage}'`)
   }
 
   if (searchState.sexAtBirth.length > 0) {

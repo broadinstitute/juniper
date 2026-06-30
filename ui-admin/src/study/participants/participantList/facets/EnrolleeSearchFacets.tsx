@@ -50,6 +50,13 @@ export default function EnrolleeSearchFacets({
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
+      <Accordion.Item eventKey={'preferredLanguage'} key={'preferredLanguage'}>
+        <Accordion.Header>Preferred Language</Accordion.Header>
+        <Accordion.Body>
+          <PreferredLanguageFacet searchState={searchState} updateSearchState={updateSearchState}
+            studyEnvContext={studyEnvContext}/>
+        </Accordion.Body>
+      </Accordion.Item>
       <Accordion.Item eventKey={'age'} key={'age'}>
         <Accordion.Header>Age</Accordion.Header>
         <Accordion.Body>
@@ -219,6 +226,36 @@ const SexAssignedAtBirthFacet = ({ searchState, updateSearchState }: {
       value={searchState.sexAtBirth.map(s => ({ label: s, value: s }))}
       onChange={selectedOptions => {
         updateSearchState('sexAtBirth', selectedOptions.map(o => o.value))
+      }}
+    />
+  </div>
+}
+
+const PreferredLanguageFacet = ({ searchState, updateSearchState, studyEnvContext }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
+  studyEnvContext: StudyEnvContextT
+}) => {
+  const languages = (
+    studyEnvContext
+      .portal
+      .portalEnvironments
+      ?.find(portalEnv => portalEnv.environmentName === studyEnvContext.currentEnv.environmentName)
+      ?.supportedLanguages || []
+  )
+  const options = languages.map(l => {
+    return {
+      label: l.languageName,
+      value: l.languageCode
+    }
+  })
+
+  return <div>
+    <Select
+      options={options}
+      value={options.find(o => o.value === searchState.preferredLanguage)}
+      onChange={opt => {
+        updateSearchState('preferredLanguage', opt?.value)
       }}
     />
   </div>
