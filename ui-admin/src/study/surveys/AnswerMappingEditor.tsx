@@ -235,12 +235,14 @@ export default function AnswerMappingEditor(
         const value = row.original.formatString
         if (isEditable(row.original)) {
           return row.original.isEditing && row.original.mapType === 'STRING_TO_LOCAL_DATE' ?
-            <Select
+            <Creatable
               aria-label={'New Answer Mapping Format'}
-              options={[{
-                value: 'MM/dd/yyyy',
-                label: 'MM/dd/yyyy'
-              }]}
+              options={[
+                {
+                  value: 'MM/dd/yyyy',
+                  label: 'MM/dd/yyyy'
+                }
+              ]}
               value={row.original.formatString && {
                 value: row.original.formatString,
                 label: row.original.formatString
