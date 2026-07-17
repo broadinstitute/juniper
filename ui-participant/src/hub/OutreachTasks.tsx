@@ -19,6 +19,7 @@ import {
   Enrollee,
   EnvironmentName,
   getTaskPath,
+  isTaskVisible,
   useI18n,
   useTaskIdParam
 } from '@juniper/ui-core'
@@ -54,7 +55,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
 
   const sortedOutreachTasks = outreachTasks.sort((a, b) => {
     return a.task.createdAt - b.task.createdAt
-  }).filter(({ task }) => task.status !== 'COMPLETE')
+  }).filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     const studyEnvParams = {
       portalShortcode: portalEnvContext.portal.shortcode,
