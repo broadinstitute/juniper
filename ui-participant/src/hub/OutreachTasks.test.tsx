@@ -1,16 +1,34 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-participant-factory'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import {
+  mockEnrollee,
+  mockParticipantTask,
+  mockSurvey
+} from 'test-utils/test-participant-factory'
 import OutreachTasks from './OutreachTasks'
-import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
+import {
+  mockStudy,
+  mockStudyEnv
+} from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
-import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import {
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
 describe('OutreachTasks', () => {
   it('show tasks with blurbs', async () => {
-    const enrollee = mockEnrollee()
+    const enrollee = {
+      ...mockEnrollee(),
+      id: 'enrollee1',
+      studyEnv: 'studyEnv1'
+    }
     const study = {
       ...mockStudy(),
       studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
@@ -20,6 +38,7 @@ describe('OutreachTasks', () => {
         task: {
           ...mockParticipantTask('OUTREACH', 'NEW'),
           targetStableId: 'outreach1',
+          enrolleeId: 'enrollee1',
           studyEnvironmentId: 'studyEnv1'
         },
         survey: {
@@ -32,6 +51,7 @@ describe('OutreachTasks', () => {
         task: {
           ...mockParticipantTask('OUTREACH', 'NEW'),
           targetStableId: 'outreach2',
+          enrolleeId: 'enrollee1',
           studyEnvironmentId: 'studyEnv1'
         },
         survey: {
@@ -52,19 +72,23 @@ describe('OutreachTasks', () => {
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
   })
 
-  it('excludes completed tasks', async () => {
-    const enrollee = mockEnrollee()
+  it('excludes tasks that should not be shown', async () => {
+    const enrollee = {
+      ...mockEnrollee(),
+      id: 'enrollee1'
+    }
     const study = {
       ...mockStudy(),
       studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
     }
     const tasksWithSurvey: TaskWithSurvey[] = [
+      // hide: COMPLETE
       {
         task: {
-          ...mockParticipantTask('OUTREACH', 'NEW'),
+          ...mockParticipantTask('OUTREACH', 'COMPLETE'),
           targetStableId: 'outreach1',
-          studyEnvironmentId: 'studyEnv1',
-          status: 'COMPLETE'
+          enrolleeId: 'enrollee1',
+          studyEnvironmentId: 'studyEnv1'
         },
         survey: {
           ...mockSurvey('outreach1'),
@@ -72,16 +96,47 @@ describe('OutreachTasks', () => {
           blurb: 'Survey 1 blurb'
         }
       },
+      // show
       {
         task: {
           ...mockParticipantTask('OUTREACH', 'NEW'),
           targetStableId: 'outreach2',
+          enrolleeId: 'enrollee1',
           studyEnvironmentId: 'studyEnv1'
         },
         survey: {
           ...mockSurvey('outreach2'),
           surveyType: 'OUTREACH',
           blurb: 'Survey 2 blurb'
+        }
+      },
+
+      // hide: wrong enrollee
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'NEW'),
+          targetStableId: 'outreach3',
+          enrolleeId: 'enrollee2',
+          studyEnvironmentId: 'studyEnv2'
+        },
+        survey: {
+          ...mockSurvey('outreach3'),
+          surveyType: 'OUTREACH',
+          blurb: 'Survey 3 blurb'
+        }
+      },
+      // hide: REMOVED
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'REMOVED'),
+          targetStableId: 'outreach4',
+          enrolleeId: 'enrollee1',
+          studyEnvironmentId: 'studyEnv1'
+        },
+        survey: {
+          ...mockSurvey('outreach4'),
+          surveyType: 'OUTREACH',
+          blurb: 'Survey 4 blurb'
         }
       }
     ]
@@ -93,6 +148,8 @@ describe('OutreachTasks', () => {
     )
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
-    expect(screen.queryByText('Survey 1 blurb')).toBeNull()
+    expect(screen.queryByText('Survey 1 blurb')).not.toBeInTheDocument()
+    expect(screen.queryByText('Survey 3 blurb')).not.toBeInTheDocument()
+    expect(screen.queryByText('Survey 4 blurb')).not.toBeInTheDocument()
   })
 })

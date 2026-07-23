@@ -19,6 +19,7 @@ import {
   Enrollee,
   EnvironmentName,
   getTaskPath,
+  isTaskVisible,
   useI18n,
   useTaskIdParam
 } from '@juniper/ui-core'
@@ -54,7 +55,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
 
   const sortedOutreachTasks = outreachTasks.sort((a, b) => {
     return a.task.createdAt - b.task.createdAt
-  }).filter(({ task }) => task.status !== 'COMPLETE')
+  }).filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     const studyEnvParams = {
       portalShortcode: portalEnvContext.portal.shortcode,
@@ -87,6 +88,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }
 
   useEffect(() => {
+    setOutreachActivities([])
     if (enrollees.length) {
       // the component may get rendered with zero enrollees during login/logout, don't bother fetching tasks then
       loadOutreachActivities()
@@ -98,7 +100,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     if (outreachParams.stableId && matchedTask && matchedTask.status === 'NEW') {
       const taskStudy = studyForTask(matchedTask, studies)
       const taskEnrollee = enrolleeForTask(matchedTask, enrollees)
-      markTaskAsViewed(matchedTask, taskEnrollee, taskStudy)
+      if (taskEnrollee) {
+        markTaskAsViewed(matchedTask, taskEnrollee, taskStudy)
+      }
     }
   }, [outreachParams.stableId])
 
@@ -107,6 +111,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       {sortedOutreachTasks.map(({ task, survey }) => {
         const taskStudy = studyForTask(task, studies)
         const taskEnrollee = enrolleeForTask(task, enrollees)
+        if (!taskEnrollee) {
+          return null
+        }
         const taskUrl = getTaskPath(task, taskEnrollee.shortcode, taskStudy.shortcode)
         // Gutters seem not to work??  So I had to add margins manually
         return <div className="col-md-6 col-sm-12" key={task.id}>
@@ -138,5 +145,5 @@ const studyForTask = (task: ParticipantTask, studies: Study[]) => {
 
 /** finds the enrollee that corresponds to the given task */
 const enrolleeForTask = (task: ParticipantTask, enrollees: Enrollee[]) => {
-  return enrollees.find(enrollee => enrollee.studyEnvironmentId === task.studyEnvironmentId)!
+  return enrollees.find(enrollee => enrollee.id === task.enrolleeId)
 }
