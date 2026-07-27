@@ -2,6 +2,7 @@ package bio.terra.pearl.core.util;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -458,6 +459,51 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
                         "schoolsBuDetail",
                         "schoolsOtherDetail"),
                 stableIds);
+    }
+
+    @Test
+    public void testQuestionReferenceRoundTripsSameStudy() {
+        SurveyParseUtils.QuestionReference reference = SurveyParseUtils.QuestionReference.fromString("survey1.diagnosis");
+        assertEquals("survey1", reference.surveyStableId());
+        assertEquals("diagnosis", reference.questionStableId());
+        assertEquals(null, reference.studyShortcode());
+        assertEquals("survey1.diagnosis", reference.toString());
+    }
+
+    @Test
+    public void testQuestionReferenceRoundTripsCrossStudy() {
+        SurveyParseUtils.QuestionReference reference = SurveyParseUtils.QuestionReference.fromString("survey1['otherStudy'].diagnosis");
+        assertEquals("survey1", reference.surveyStableId());
+        assertEquals("diagnosis", reference.questionStableId());
+        assertEquals("otherStudy", reference.studyShortcode());
+        assertEquals("survey1['otherStudy'].diagnosis", reference.toString());
+    }
+
+    @Test
+    public void testParseReferencedSurveyQuestionsHandlesCrossStudy() throws JsonProcessingException {
+        String form = """
+                {
+                  "pages": [
+                    {
+                      "elements": [
+                        {
+                          "name": "q1",
+                          "type": "text",
+                          "title": "Value is {survey1['otherStudy'].diagnosis}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+                """;
+        Survey survey = Survey.builder().content(form).build();
+
+        List<SurveyParseUtils.QuestionReference> references = SurveyParseUtils.parseReferencedSurveyQuestions(survey);
+
+        assertThat(references, hasSize(1));
+        assertEquals("survey1", references.get(0).surveyStableId());
+        assertEquals("otherStudy", references.get(0).studyShortcode());
+        assertEquals("diagnosis", references.get(0).questionStableId());
     }
 
 }

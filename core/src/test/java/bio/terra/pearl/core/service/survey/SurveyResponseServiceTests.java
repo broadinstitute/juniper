@@ -162,7 +162,49 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
         assertEquals(1, surveyWithResponse.referencedAnswers().size());
 
-        Answer answer = surveyWithResponse.referencedAnswers().get(0);
+        Answer answer = surveyWithResponse.referencedAnswers().get("survey1.diagnosis");
+
+        assertEquals(answer.getSurveyStableId(), "survey1");
+        assertEquals(answer.getQuestionStableId(), "diagnosis");
+        assertEquals(answer.getStringValue(), "cancer");
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyResponseWithAnswersAttachesReferencedAnswersCrossStudy(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox,
+                studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle1.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}"));
+        surveyFactory.attachToEnv(survey1, studyEnvBundle1.getStudyEnv().getId(), true);
+
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle2.getPortal().getId())
+                .stableId("survey2")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"Tell me more about {survey1['"
+                        + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis}\"}]}]}"));
+        surveyFactory.attachToEnv(survey2, studyEnvBundle2.getStudyEnv().getId(), true);
+
+        assertEquals(1, survey2.getReferencedQuestions().size());
+        assertEquals("survey1['" + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis", survey2.getReferencedQuestions().getFirst());
+
+        Enrollee enrolleeInStudy1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle1.getStudyEnv());
+        Enrollee enrolleeInStudy2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle2.getStudyEnv().getId(),
+                enrolleeInStudy1.getParticipantUserId(), enrolleeInStudy1.getProfileId());
+
+        surveyResponseFactory.buildWithAnswers(enrolleeInStudy1, survey1, Map.of("diagnosis", "cancer"));
+
+        SurveyWithResponse surveyWithResponse = surveyResponseService.findWithActiveResponse(studyEnvBundle2.getStudyEnv().getId(),
+                studyEnvBundle2.getPortal().getId(), survey2.getStableId(), survey2.getVersion(), enrolleeInStudy2, null);
+
+        assertEquals(1, surveyWithResponse.referencedAnswers().size());
+
+        Answer answer = surveyWithResponse.referencedAnswers().get(
+                "survey1['" + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis");
 
         assertEquals(answer.getSurveyStableId(), "survey1");
         assertEquals(answer.getQuestionStableId(), "diagnosis");

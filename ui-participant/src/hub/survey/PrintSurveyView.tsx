@@ -90,7 +90,7 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
           portalShortcode: portal.shortcode
         },
         enrolleeShortcode: enrollee.shortcode,
-        referencedAnswers: [],
+        referencedAnswers: {},
         extraVariables: {}
       })
 

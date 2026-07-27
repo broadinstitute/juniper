@@ -110,7 +110,7 @@ export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult
       proxyProfile,
       studyEnvParams: { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
       enrolleeShortcode: enrollee?.shortcode || '',
-      referencedAnswers: [],
+      referencedAnswers: {},
       extraVariables: {
         isProxyEnrollment, isSubjectEnrollment, user,
         eligibilityResult

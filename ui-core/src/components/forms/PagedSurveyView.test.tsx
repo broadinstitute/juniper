@@ -74,14 +74,42 @@ describe('PagedSurveyView', () => {
       }`
     },
     undefined,
-    [{
-      format: 'NONE',
-      surveyStableId: 'otherSurvey',
-      questionStableId: 'question1',
-      stringValue: 'my custom response'
-    }])
+    {
+      'otherSurvey.question1': {
+        format: 'NONE',
+        surveyStableId: 'otherSurvey',
+        questionStableId: 'question1',
+        stringValue: 'my custom response'
+      }
+    })
 
     expect(screen.getByText('test my custom response')).toBeInTheDocument()
+  })
+
+  it('passes down cross-study referenced answers as variables', async () => {
+    setupSurveyTest({
+      ...generateSurvey(),
+      content: `{
+      "pages":[
+        {"elements":[
+          {"type":"html","html":"You are on page1"},
+          {"type":"text","name":"test","title":"test {otherSurvey['otherStudy'].question1}"}
+        ]},
+        {"elements":[{"type":"text","name":"otherPage","title":"otherpage"}]}
+      ]
+      }`
+    },
+    undefined,
+    {
+      "otherSurvey['otherStudy'].question1": {
+        format: 'NONE',
+        surveyStableId: 'otherSurvey',
+        questionStableId: 'question1',
+        stringValue: 'my custom cross-study response'
+      }
+    })
+
+    expect(screen.getByText('test my custom cross-study response')).toBeInTheDocument()
   })
   //
   it('autosaves question and page progress', async () => {
@@ -435,7 +463,7 @@ describe('PagedSurveyView', () => {
 /**
  *
  */
-const setupSurveyTest = (survey: Survey, profile?: Profile, referencedAnswers?: Answer[]) => {
+const setupSurveyTest = (survey: Survey, profile?: Profile, referencedAnswers?: Record<string, Answer>) => {
   const mockUpdateSurveyResponse = jest.fn().mockResolvedValue(mockHubResponse())
 
   const mockApi: ApiContextT = {
@@ -467,7 +495,7 @@ const setupSurveyTest = (survey: Survey, profile?: Profile, referencedAnswers?: 
       <MockI18nProvider>
         <PagedSurveyView enrollee={enrollee} form={configuredSurvey.survey} response={mockHubResponse().response}
           studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
-          updateResponseMap={jest.fn()} referencedAnswers={referencedAnswers || []}
+          updateResponseMap={jest.fn()} referencedAnswers={referencedAnswers || {}}
           selectedLanguage={'en'} updateProfile={jest.fn()} setAutosaveStatus={jest.fn()} setTaskId={jest.fn()}
           taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
       </MockI18nProvider>

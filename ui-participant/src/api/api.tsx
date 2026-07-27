@@ -81,7 +81,8 @@ export type RegistrationResponse = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
-  referencedAnswers: Answer[]
+  // keyed by the full variable name (e.g. "survey1.question1" or "survey1['otherStudy'].question1")
+  referencedAnswers: Record<string, Answer>
 }
 
 export type TaskWithSurvey = {

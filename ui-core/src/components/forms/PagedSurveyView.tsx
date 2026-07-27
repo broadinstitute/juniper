@@ -40,7 +40,7 @@ export function PagedSurveyView({
   studyEnvParams,
   form,
   response,
-  referencedAnswers = [],
+  referencedAnswers = {},
   updateEnrollee,
   updateProfile,
   taskId,
@@ -59,7 +59,7 @@ export function PagedSurveyView({
   studyEnvParams: StudyEnvParams,
   form: Survey,
   response: SurveyResponse,
-  referencedAnswers?: Answer[],
+  referencedAnswers?: Record<string, Answer>,
   updateResponseMap: (stableId: string, response: SurveyResponse) => void
   onSuccess: () => void, onFailure: () => void,
   selectedLanguage: string,

@@ -41,7 +41,7 @@ export const FormPreview = (props: FormPreviewProps) => {
       profile: {} as Profile,
       studyEnvParams: useStudyEnvParamsFromPath(),
       enrolleeShortcode: '',
-      referencedAnswers: [],
+      referencedAnswers: {},
       extraVariables: {}
     })
     model.ignoreValidation = true
