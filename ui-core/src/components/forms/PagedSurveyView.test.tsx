@@ -101,7 +101,7 @@ describe('PagedSurveyView', () => {
     },
     undefined,
     {
-      "otherSurvey['otherStudy'].question1": {
+      'otherSurvey[\'otherStudy\'].question1': {
         format: 'NONE',
         surveyStableId: 'otherSurvey',
         questionStableId: 'question1',

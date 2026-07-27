@@ -280,6 +280,19 @@ export default {
   },
 
   /**
+   * gets any answers from other studies' surveys that a pre-enrollment survey references, for the
+   * signed-in user. Should only be called if the user is logged in (e.g. enrolling in a second study
+   * within a portal), since the endpoint requires authentication.
+   */
+  async getPreEnrollReferencedAnswers({ surveyStableId, surveyVersion }:
+                                        { surveyStableId: string, surveyVersion: number }):
+    Promise<Record<string, Answer>> {
+    const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}/referencedAnswers`
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
+  /**
    * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
    * page while on registration
    */

@@ -272,6 +272,24 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}/referencedAnswers:
+    get:
+      summary:
+        Gets any answers from other studies' surveys that this pre-enrollment survey references, for the
+        signed-in user. Requires authentication.
+      tags: [ preEnrollment ]
+      operationId: getReferencedAnswers
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: surveyStableId, in: path, required: true, schema: { type: string } }
+        - { name: surveyVersion, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: map of variable name to referenced Answer
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/checkEligible:
     get:
       summary: Checks whether the signed-in user is eligible for the given study

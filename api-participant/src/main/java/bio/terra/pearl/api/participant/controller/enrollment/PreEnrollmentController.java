@@ -2,19 +2,27 @@ package bio.terra.pearl.api.participant.controller.enrollment;
 
 import bio.terra.pearl.api.participant.api.PreEnrollmentApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.NotFoundException;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class PreEnrollmentController implements PreEnrollmentApi {
@@ -23,18 +31,24 @@ public class PreEnrollmentController implements PreEnrollmentApi {
   private final RequestUtilService requestUtilService;
   private final HttpServletRequest request;
   private final PortalService portalService;
+  private final SurveyService surveyService;
+  private final SurveyResponseService surveyResponseService;
 
   public PreEnrollmentController(
       ObjectMapper objectMapper,
       EnrollmentService enrollmentService,
       RequestUtilService requestUtilService,
       PortalService portalService,
+      SurveyService surveyService,
+      SurveyResponseService surveyResponseService,
       HttpServletRequest request) {
     this.objectMapper = objectMapper;
     this.enrollmentService = enrollmentService;
     this.requestUtilService = requestUtilService;
     this.request = request;
     this.portalService = portalService;
+    this.surveyService = surveyService;
+    this.surveyResponseService = surveyResponseService;
   }
 
   @Override
@@ -60,6 +74,27 @@ public class PreEnrollmentController implements PreEnrollmentApi {
     } catch (JsonProcessingException e) {
       throw new IllegalArgumentException("malformatted response data", e);
     }
+  }
+
+  /**
+   * Gets any answers from other studies' surveys that this pre-enrollment survey references, for
+   * the signed-in user. This is needed for e.g. a participant who is already enrolled in one study
+   * within a portal and is now pre-enrolling in a second study within the same portal.
+   */
+  @Override
+  public ResponseEntity<Object> getReferencedAnswers(
+          String portalShortcode, String envName, String surveyStableId, Integer surveyVersion) {
+    ParticipantUser user = requestUtilService.requireUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    Survey survey =
+            surveyService
+                    .findByStableIdAndPortalShortcodeWithMappings(
+                            surveyStableId, surveyVersion, portalShortcode)
+                    .orElseThrow(NotFoundException::new);
+    Map<String, Answer> referencedAnswers =
+            surveyResponseService.getReferencedAnswersForPreEnroll(
+                    user.getId(), environmentName, survey);
+    return ResponseEntity.ok(referencedAnswers);
   }
 
   /**

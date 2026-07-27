@@ -10,6 +10,7 @@ import Api, {
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import {
+  Answer,
   getResumeData,
   getSurveyJsAnswerList,
   makeSurveyJsData,
@@ -36,46 +37,59 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 export default function PreEnrollView({ enrollContext, survey }:
   { enrollContext: StudyEnrollContext, survey: Survey }) {
   const eligibleRule = enrollContext.studyEnv.studyEnvironmentConfig.studyEligibilityRule
+  const { user } = useUser()
 
-  // if there's an eligibility rule, we need to check eligibility before showing the survey
-  const [isLoading, setIsLoading] = useState(!!eligibleRule)
+  // if there's an eligibility rule to check, or the user is already logged in (and so may have answers
+  // in another study's survey that this one references), we need to load that before showing the survey
+  const [isLoading, setIsLoading] = useState(!!eligibleRule || !!user)
   const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult>({ eligible: !!eligibleRule })
+  const [referencedAnswers, setReferencedAnswers] = useState<Record<string, Answer>>({})
 
-  const checkEligibility = async () => {
-    if (eligibleRule) {
-      setIsLoading(true)
-      try {
+  const loadPreEnrollData = async () => {
+    if (!eligibleRule && !user) {
+      return
+    }
+    setIsLoading(true)
+    try {
+      if (eligibleRule) {
         const response = await Api.checkEligible(enrollContext.studyShortcode)
         setEligibilityResult(response)
+      }
+      if (user) {
+        const answers = await Api.getPreEnrollReferencedAnswers({
+          surveyStableId: survey.stableId, surveyVersion: survey.version
+        })
+        setReferencedAnswers(answers)
+      }
+      setIsLoading(false)
+    } catch (e: unknown) {
+      const statusCode = (e as ApiErrorResponse).statusCode
+      if (statusCode === 403 || statusCode === 401) {
         setIsLoading(false)
-      } catch (e: unknown) {
-        const statusCode = (e as ApiErrorResponse).statusCode
-        // ignore 401/403s -- not being logged in is handled by the survey content
-        if (statusCode === 403 || statusCode === 401) {
-          setIsLoading(false)
-        } else {
-          defaultApiErrorHandle(e as ApiErrorResponse)
-        }
+      } else {
+        defaultApiErrorHandle(e as ApiErrorResponse)
       }
     }
   }
 
   useEffect(() => {
-    checkEligibility()
-  }, [eligibleRule])
+    loadPreEnrollData()
+  }, [eligibleRule, user?.id])
   return <>
     { !isLoading && <EligiblePreEnrollView enrollContext={enrollContext}
-      eligibilityResult={eligibilityResult} survey={survey}/> }
+      eligibilityResult={eligibilityResult} referencedAnswers={referencedAnswers}
+      survey={survey}/>}
     { isLoading && <LoadingSpinner/>}
   </>
 }
 
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult }:
+export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult, referencedAnswers }:
                                         { enrollContext: StudyEnrollContext,
                                           survey: Survey,
-                                          eligibilityResult: EligibilityResult
+                                          eligibilityResult: EligibilityResult,
+                                          referencedAnswers: Record<string, Answer>
                                         }) {
   const {
     studyEnv,
@@ -110,7 +124,7 @@ export function EligiblePreEnrollView({ enrollContext, survey, eligibilityResult
       proxyProfile,
       studyEnvParams: { envName: studyEnv.environmentName, studyShortcode, portalShortcode },
       enrolleeShortcode: enrollee?.shortcode || '',
-      referencedAnswers: {},
+      referencedAnswers,
       extraVariables: {
         isProxyEnrollment, isSubjectEnrollment, user,
         eligibilityResult

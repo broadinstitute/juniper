@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
@@ -140,6 +141,23 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     private Map<String, Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
+        StudyEnvironment currentStudyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId())
+                .orElseThrow(() -> new NotFoundException("Study environment not found: " + enrollee.getStudyEnvironmentId()));
+        return resolveReferencedAnswers(enrollee, enrollee.getParticipantUserId(), currentStudyEnv.getEnvironmentName(), survey);
+    }
+
+    /**
+     * during pre-enroll, no enrollee for current study, but may be signed up in other studies.
+     */
+    public Map<String, Answer> getReferencedAnswersForPreEnroll(UUID participantUserId, EnvironmentName envName, Survey survey) {
+        return resolveReferencedAnswers(null, participantUserId, envName, survey);
+    }
+
+    /**
+     * if enrollee is null (e.g., pre-enroll), same-study ({otherSurvey.question}) references are ignored.
+     * cross-study references ({otherSurvey['otherStudy'].question}) fetched via user id + env name
+     */
+    private Map<String, Answer> resolveReferencedAnswers(Enrollee enrollee, UUID participantUserId, EnvironmentName envName, Survey survey) {
         Map<String, Answer> answers = new HashMap<>();
 
         List<SurveyParseUtils.QuestionReference> referencedQuestions = survey.getReferencedQuestions().stream().map(SurveyParseUtils.QuestionReference::fromString).toList();
@@ -147,24 +165,15 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         for (SurveyParseUtils.QuestionReference referencedQuestion : referencedQuestions) {
             Enrollee sourceEnrollee = referencedQuestion.studyShortcode() == null
                     ? enrollee
-                    : findEnrolleeInOtherStudy(enrollee, referencedQuestion.studyShortcode()).orElse(null);
+                    : enrolleeService.findByParticipantUserIdAndStudyEnv(participantUserId, referencedQuestion.studyShortcode(), envName).orElse(null);
             if (sourceEnrollee == null) {
                 continue;
             }
-            answerService
-                    .findForEnrolleeByQuestion(sourceEnrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
+            answerService.findForEnrolleeByQuestion(sourceEnrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
                     .ifPresent(answer -> answers.put(referencedQuestion.toString(), answer));
         }
 
         return answers;
-    }
-
-    /** finds the enrollee for the same participant user, but in a different study within the same environment */
-    private Optional<Enrollee> findEnrolleeInOtherStudy(Enrollee enrollee, String otherStudyShortcode) {
-        StudyEnvironment currentStudyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId())
-                .orElseThrow(() -> new NotFoundException("Study environment not found: " + enrollee.getStudyEnvironmentId()));
-        return enrolleeService.findByParticipantUserIdAndStudyEnv(
-                enrollee.getParticipantUserId(), otherStudyShortcode, currentStudyEnv.getEnvironmentName());
     }
 
     //if the cutoff time has passed, create a new task and response
