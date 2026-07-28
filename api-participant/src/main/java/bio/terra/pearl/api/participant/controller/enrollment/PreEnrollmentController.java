@@ -17,12 +17,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.NotFoundException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 
 @Controller
 public class PreEnrollmentController implements PreEnrollmentApi {
@@ -83,17 +82,17 @@ public class PreEnrollmentController implements PreEnrollmentApi {
    */
   @Override
   public ResponseEntity<Object> getReferencedAnswers(
-          String portalShortcode, String envName, String surveyStableId, Integer surveyVersion) {
+      String portalShortcode, String envName, String surveyStableId, Integer surveyVersion) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     Survey survey =
-            surveyService
-                    .findByStableIdAndPortalShortcodeWithMappings(
-                            surveyStableId, surveyVersion, portalShortcode)
-                    .orElseThrow(NotFoundException::new);
+        surveyService
+            .findByStableIdAndPortalShortcodeWithMappings(
+                surveyStableId, surveyVersion, portalShortcode)
+            .orElseThrow(NotFoundException::new);
     Map<String, Answer> referencedAnswers =
-            surveyResponseService.getReferencedAnswersForPreEnroll(
-                    user.getId(), environmentName, survey);
+        surveyResponseService.getReferencedAnswersForPreEnroll(
+            user.getId(), environmentName, survey);
     return ResponseEntity.ok(referencedAnswers);
   }
 
