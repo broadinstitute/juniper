@@ -1,18 +1,22 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ParticipantDataChange;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.rule.EnrolleeContextService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -38,6 +42,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final EventService eventService;
     private final EnrolleeContextService enrolleeContextService;
+    private final EnrolleeService enrolleeService;
+    private final StudyEnvironmentService studyEnvironmentService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
 
     public SurveyResponseService(SurveyResponseDao dao,
@@ -47,7 +53,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
                                  EnrolleeContextService enrolleeContextService,
-                                 ParticipantDataChangeService participantDataChangeService, @Lazy SurveyTaskDispatcher surveyTaskDispatcher, EventService eventService) {
+                                 ParticipantDataChangeService participantDataChangeService, @Lazy SurveyTaskDispatcher surveyTaskDispatcher, EventService eventService,
+                                 EnrolleeService enrolleeService, StudyEnvironmentService studyEnvironmentService) {
         super(dao);
         this.answerService = answerService;
         this.surveyService = surveyService;
@@ -58,6 +65,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         this.surveyTaskDispatcher = surveyTaskDispatcher;
         this.eventService = eventService;
         this.enrolleeContextService = enrolleeContextService;
+        this.enrolleeService = enrolleeService;
+        this.studyEnvironmentService = studyEnvironmentService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -131,15 +140,37 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         );
     }
 
-    private List<Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
-        List<Answer> answers = new ArrayList<>();
+    private Map<String, Answer> getReferencedAnswers(Enrollee enrollee, Survey survey) {
+        StudyEnvironment currentStudyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId())
+                .orElseThrow(() -> new NotFoundException("Study environment not found: " + enrollee.getStudyEnvironmentId()));
+        return resolveReferencedAnswers(enrollee, enrollee.getParticipantUserId(), currentStudyEnv.getEnvironmentName(), survey);
+    }
+
+    /**
+     * during pre-enroll, no enrollee for current study, but may be signed up in other studies.
+     */
+    public Map<String, Answer> getReferencedAnswersForPreEnroll(UUID participantUserId, EnvironmentName envName, Survey survey) {
+        return resolveReferencedAnswers(null, participantUserId, envName, survey);
+    }
+
+    /**
+     * if enrollee is null (e.g., pre-enroll), same-study ({otherSurvey.question}) references are ignored.
+     * cross-study references ({otherSurvey['otherStudy'].question}) fetched via user id + env name
+     */
+    private Map<String, Answer> resolveReferencedAnswers(Enrollee enrollee, UUID participantUserId, EnvironmentName envName, Survey survey) {
+        Map<String, Answer> answers = new HashMap<>();
 
         List<SurveyParseUtils.QuestionReference> referencedQuestions = survey.getReferencedQuestions().stream().map(SurveyParseUtils.QuestionReference::fromString).toList();
 
         for (SurveyParseUtils.QuestionReference referencedQuestion : referencedQuestions) {
-            answerService
-                    .findForEnrolleeByQuestion(enrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
-                    .ifPresent(answers::add);
+            Enrollee sourceEnrollee = referencedQuestion.studyShortcode() == null
+                    ? enrollee
+                    : enrolleeService.findByParticipantUserIdAndStudyEnv(participantUserId, referencedQuestion.studyShortcode(), envName).orElse(null);
+            if (sourceEnrollee == null) {
+                continue;
+            }
+            answerService.findForEnrolleeByQuestion(sourceEnrollee.getId(), referencedQuestion.surveyStableId(), referencedQuestion.questionStableId())
+                    .ifPresent(answer -> answers.put(referencedQuestion.toString(), answer));
         }
 
         return answers;

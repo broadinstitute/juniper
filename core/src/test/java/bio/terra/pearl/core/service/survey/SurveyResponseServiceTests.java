@@ -18,9 +18,12 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.*;
-import bio.terra.pearl.core.service.file.ParticipantFileService;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.RecurrenceType;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.file.ParticipantFileService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -36,8 +39,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -162,11 +163,117 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
         assertEquals(1, surveyWithResponse.referencedAnswers().size());
 
-        Answer answer = surveyWithResponse.referencedAnswers().get(0);
+        Answer answer = surveyWithResponse.referencedAnswers().get("survey1.diagnosis");
 
         assertEquals(answer.getSurveyStableId(), "survey1");
         assertEquals(answer.getQuestionStableId(), "diagnosis");
         assertEquals(answer.getStringValue(), "cancer");
+    }
+
+    @Test
+    @Transactional
+    public void testSurveyResponseWithAnswersAttachesReferencedAnswersCrossStudy(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox,
+                studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle1.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}"));
+        surveyFactory.attachToEnv(survey1, studyEnvBundle1.getStudyEnv().getId(), true);
+
+        Survey survey2 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle2.getPortal().getId())
+                .stableId("survey2")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"Tell me more about {survey1['"
+                        + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis}\"}]}]}"));
+        surveyFactory.attachToEnv(survey2, studyEnvBundle2.getStudyEnv().getId(), true);
+
+        assertEquals(1, survey2.getReferencedQuestions().size());
+        assertEquals("survey1['" + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis", survey2.getReferencedQuestions().getFirst());
+
+        Enrollee enrolleeInStudy1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle1.getStudyEnv());
+        Enrollee enrolleeInStudy2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle2.getStudyEnv().getId(),
+                enrolleeInStudy1.getParticipantUserId(), enrolleeInStudy1.getProfileId());
+
+        surveyResponseFactory.buildWithAnswers(enrolleeInStudy1, survey1, Map.of("diagnosis", "cancer"));
+
+        SurveyWithResponse surveyWithResponse = surveyResponseService.findWithActiveResponse(studyEnvBundle2.getStudyEnv().getId(),
+                studyEnvBundle2.getPortal().getId(), survey2.getStableId(), survey2.getVersion(), enrolleeInStudy2, null);
+
+        assertEquals(1, surveyWithResponse.referencedAnswers().size());
+
+        Answer answer = surveyWithResponse.referencedAnswers().get(
+                "survey1['" + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis");
+
+        assertEquals(answer.getSurveyStableId(), "survey1");
+        assertEquals(answer.getQuestionStableId(), "diagnosis");
+        assertEquals(answer.getStringValue(), "cancer");
+    }
+
+    @Test
+    @Transactional
+    public void testGetReferencedAnswersForPreEnrollResolvesCrossStudyPreEnroll(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox,
+                studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle1.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}"));
+        surveyFactory.attachToEnv(survey1, studyEnvBundle1.getStudyEnv().getId(), true);
+
+        // a pre-enroll survey for study2 that references a question from study1 -- note there is no enrollee
+        // for study2 yet, since the participant hasn't enrolled there
+        Survey preEnrollSurvey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle2.getPortal().getId())
+                .stableId("preEnroll2")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosisConfirm\",\"title\":\"Confirm: {survey1['"
+                        + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis}\"}]}]}"));
+        surveyFactory.attachToEnv(preEnrollSurvey, studyEnvBundle2.getStudyEnv().getId(), true);
+
+        Enrollee enrolleeInStudy1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvBundle1.getStudyEnv());
+        surveyResponseFactory.buildWithAnswers(enrolleeInStudy1, survey1, Map.of("diagnosis", "cancer"));
+
+        Map<String, Answer> referencedAnswers = surveyResponseService.getReferencedAnswersForPreEnroll(
+                enrolleeInStudy1.getParticipantUserId(), studyEnvBundle2.getStudyEnv().getEnvironmentName(), preEnrollSurvey);
+
+        assertEquals(1, referencedAnswers.size());
+        Answer answer = referencedAnswers.get("survey1['" + studyEnvBundle1.getStudy().getShortcode() + "'].diagnosis");
+        assertEquals(answer.getSurveyStableId(), "survey1");
+        assertEquals(answer.getQuestionStableId(), "diagnosis");
+        assertEquals(answer.getStringValue(), "cancer");
+    }
+
+    @Test
+    @Transactional
+    public void testGetReferencedAnswersForPreEnrollIgnoresSameStudyReferences(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+        Survey survey1 = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("survey1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}"));
+        surveyFactory.attachToEnv(survey1, studyEnvBundle.getStudyEnv().getId(), true);
+
+        // a same-study reference makes no sense for pre-enroll, since there's no enrollee yet -- should just be skipped
+        Survey preEnrollSurvey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .stableId("preEnroll1")
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosisConfirm\",\"title\":\"Confirm: {survey1.diagnosis}\"}]}]}"));
+        surveyFactory.attachToEnv(preEnrollSurvey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        ParticipantUser participantUser = participantUserService.create(ParticipantUser.builder()
+                .username(getTestName(info))
+                .environmentName(EnvironmentName.sandbox)
+                .build());
+
+        Map<String, Answer> referencedAnswers = surveyResponseService.getReferencedAnswersForPreEnroll(
+                participantUser.getId(), studyEnvBundle.getStudyEnv().getEnvironmentName(), preEnrollSurvey);
+
+        assertEquals(0, referencedAnswers.size());
     }
 
     @Test

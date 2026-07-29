@@ -104,7 +104,8 @@ export type SurveyJsVariableContext = {
   studyEnvParams?: OptionalStudyEnvParams,
   environmentName?: string,
   enrolleeShortcode?: string,
-  referencedAnswers?: Answer[],
+  // keyed by the full variable name (e.g. "survey1.question1" or "survey1['otherStudy'].question1")
+  referencedAnswers?: Record<string, Answer>,
   extraVariables?: Record<string, unknown>
 }
 
@@ -121,8 +122,8 @@ export const applySurveyJsVariables = (surveyModel: SurveyModel, varContext: Sur
   surveyModel.setVariable('studyEnvParams', studyEnvParams)
   surveyModel.setVariable('enrolleeShortcode', enrolleeShortcode)
   surveyModel.setVariable('portalEnvironmentName', environmentName || studyEnvParams?.envName)
-  referencedAnswers?.forEach(answer => {
-    surveyModel.setVariable(`${answer.surveyStableId}.${answer.questionStableId}`,
+  Object.entries(referencedAnswers ?? {}).forEach(([variableName, answer]) => {
+    surveyModel.setVariable(variableName,
       answer.stringValue ?? answer.numberValue ?? answer.booleanValue ?? answer.objectValue)
   })
   if (!isNil(extraVariables)) {

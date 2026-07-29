@@ -81,7 +81,8 @@ export type RegistrationResponse = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
-  referencedAnswers: Answer[]
+  // keyed by the full variable name (e.g. "survey1.question1" or "survey1['otherStudy'].question1")
+  referencedAnswers: Record<string, Answer>
 }
 
 export type TaskWithSurvey = {
@@ -275,6 +276,19 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(preEnrollResponse)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  /**
+   * gets any answers from other studies' surveys that a pre-enrollment survey references, for the
+   * signed-in user. Should only be called if the user is logged in (e.g. enrolling in a second study
+   * within a portal), since the endpoint requires authentication.
+   */
+  async getPreEnrollReferencedAnswers({ surveyStableId, surveyVersion }:
+                                        { surveyStableId: string, surveyVersion: number }):
+    Promise<Record<string, Answer>> {
+    const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}/referencedAnswers`
+    const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response)
   },
 

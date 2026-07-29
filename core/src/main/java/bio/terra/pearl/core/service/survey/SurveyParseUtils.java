@@ -170,24 +170,31 @@ public class SurveyParseUtils {
     }
 
 
-    public record QuestionReference(String surveyStableId, String questionStableId) {
+    // matches surveyStableId, optionally followed by ['studyShortcode'], followed by .questionStableId
+    private static final Pattern QUESTION_REFERENCE_PATTERN =
+            Pattern.compile("^(\\w+)(?:\\[\\s*['\"]([\\w-]+)['\"]\\s*])?\\.(.+)$");
+
+    // studyShortcode is null unless the reference points at a survey in another study, e.g. otherSurvey['otherStudy'].question
+    public record QuestionReference(String surveyStableId, String questionStableId, String studyShortcode) {
         public static QuestionReference fromString(String reference) {
-            List<String> split = new ArrayList<>(Arrays.asList(reference.split("\\.")));
-
-            String surveyStableId = split.removeFirst();
-            String questionStableId = StringUtils.join(split, ".");
-
-            return new QuestionReference(surveyStableId, questionStableId);
+            Matcher matcher = QUESTION_REFERENCE_PATTERN.matcher(reference);
+            if (!matcher.matches()) {
+                throw new IllegalArgumentException("Invalid question reference: " + reference);
+            }
+            return new QuestionReference(matcher.group(1), matcher.group(3), matcher.group(2));
         }
 
         public String toString() {
-            return surveyStableId + "." + questionStableId;
+            String studyPart = studyShortcode != null ? "['" + studyShortcode + "']" : "";
+            return surveyStableId + studyPart + "." + questionStableId;
         }
     }
 
     // looks for all variables in survey content of form {surveyStableId.questionStableId}
+    // or {surveyStableId['studyShortcode'].questionStableId} for cross-study references
     // this may pick up some false positives, so we need to filter out using the nonSurveyObjectVariables list
-    private static final Pattern surveyQuestionRegexPattern = Pattern.compile("\\{\\s*\\w+\\.[\\w.]+\\s*}");
+    private static final Pattern surveyQuestionRegexPattern =
+            Pattern.compile("\\{\\s*\\w+(?:\\[\\s*['\"][\\w-]+['\"]\\s*])?\\.[\\w.]+\\s*}");
     private static final List<String> nonSurveyObjectVariables = List.of("profile", "proxyProfile");
 
     // returns a list of all potential question references in the survey content. these will need to be checked
