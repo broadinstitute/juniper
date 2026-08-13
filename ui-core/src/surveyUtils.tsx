@@ -3,6 +3,7 @@ import './surveyjs'
 import {
   cloneDeep,
   get,
+  isEmpty,
   isNil,
   isObject,
   isString,
@@ -407,8 +408,10 @@ export function useSurveyJSModel(
       set(newSurveyModel.css, elementPath, classNames(get(newSurveyModel.css, elementPath), className))
     })
 
-    if (refreshData) {
-      newSurveyModel.data = refreshData.data
+    if (refreshData && !isEmpty(refreshData.data)) {
+      for (const key in refreshData.data) {
+        newSurveyModel.setValue(key, refreshData.data[key])
+      }
     }
 
     // default to first page
