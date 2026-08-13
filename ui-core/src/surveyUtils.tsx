@@ -400,7 +400,8 @@ export function useSurveyJSModel(
     refreshData: SurveyJsResumeData | null,
     pagerPageNumber: number | null,
     readonly?: boolean) {
-    const newSurveyModel = surveyJSModelFromForm(form)
+    const formContent = getFormContent(form)
+    const newSurveyModel = surveyJSModelFromFormContent(formContent)
 
     Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
       set(newSurveyModel.css, elementPath, classNames(get(newSurveyModel.css, elementPath), className))
@@ -429,6 +430,10 @@ export function useSurveyJSModel(
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
     newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
+
+    if (form.surveyType === 'OUTREACH' && formContent?.showCompleteButton !== true) {
+      newSurveyModel.showCompleteButton = false
+    }
 
     newSurveyModel.onVariableChanged.add((_model, event) => {
       const valAsBool = isString(event.value) ? event.value === 'true' : !!event.value
