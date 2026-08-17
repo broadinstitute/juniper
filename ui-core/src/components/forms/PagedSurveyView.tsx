@@ -251,12 +251,10 @@ export function PagedSurveyView({
 
   surveyModel.locale = selectedLanguage
 
-  const isOutreach = form.surveyType === 'OUTREACH'
   return (
     <>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
-      <div style={{ background: '#f3f3f3' }} className={classNames('flex-grow-1',
-        isOutreach ? 'survey-hide-complete' : '')} translate={'no'}>
+      <div style={{ background: '#f3f3f3' }} className={classNames('flex-grow-1')} translate={'no'}>
         <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">

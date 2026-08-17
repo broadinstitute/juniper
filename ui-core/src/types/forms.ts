@@ -136,6 +136,7 @@ export type FormContent = {
   pages: FormContentPage[]
   questionTemplates?: Question[]
   calculatedValues?: CalculatedValue[]
+  showCompleteButton?: boolean
 }
 
 export type CalculatedValue = {
