@@ -5,7 +5,10 @@ import { doApiLoad } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import { ParticipantTaskStatus, StudyEnvParams } from '@juniper/ui-core'
+import {
+  ParticipantTaskStatus,
+  StudyEnvParams
+} from '@juniper/ui-core'
 import Select from 'react-select'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { TextInput } from '../../../components/forms/TextInput'
@@ -14,6 +17,7 @@ import { Button } from '../../../components/forms/Button'
 
 const statusOpts: {label: string, value: ParticipantTaskStatus}[] = [
   { label: 'New', value: 'NEW' },
+  { label: 'Viewed', value: 'VIEWED' },
   { label: 'In Progress', value: 'IN_PROGRESS' },
   { label: 'Complete', value: 'COMPLETE' },
   { label: 'Removed', value: 'REMOVED' }
@@ -46,7 +50,10 @@ export default function TaskChangeModal({
 
   const { onChange, options, selectedOption, selectInputId } = useNonNullReactSingleSelect(
     statusOpts.map(opt => opt.value),
-    val => statusOpts.find(opt => opt.value === val)!,
+    val => statusOpts.find(opt => opt.value === val) || {
+      label: val,
+      value: val
+    },
     setUpdatedStatus, updatedStatus)
 
   return <Modal show={true} onHide={onDismiss}>
