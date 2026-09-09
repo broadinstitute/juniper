@@ -57,6 +57,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     return a.task.createdAt - b.task.createdAt
   }).filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
+    if (!task.targetStableId || !task.targetAssignedVersion) {
+      return
+    }
     const studyEnvParams = {
       portalShortcode: portalEnvContext.portal.shortcode,
       studyShortcode: study.shortcode,
@@ -70,7 +73,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       surveyId: task.id,
       complete: false
     } as SurveyResponse
-    task.targetStableId && task.targetAssignedVersion && await Api.updateSurveyResponse({
+    const hubResponse = await Api.updateSurveyResponse({
       studyEnvParams,
       enrolleeShortcode: enrollee.shortcode,
       stableId: task.targetStableId,
@@ -79,6 +82,13 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       alertErrors: false,
       response: responseDto
     })
+    // update the task in-place so the "new" badge clears without requiring a dashboard reload
+    const updatedTask = hubResponse.tasks.find(hubTask => hubTask.id === task.id)
+    if (updatedTask) {
+      setOutreachActivities(previousTasks => previousTasks.map(taskWithSurvey =>
+        taskWithSurvey.task.id === updatedTask.id ? { ...taskWithSurvey, task: updatedTask } : taskWithSurvey
+      ))
+    }
   }
 
   const loadOutreachActivities = async () => {
@@ -104,7 +114,8 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         markTaskAsViewed(matchedTask, taskEnrollee, taskStudy)
       }
     }
-  }, [outreachParams.stableId])
+    // depends on outreachTasks since the tasks may load after the outreach path is already rendered
+  }, [outreachParams.stableId, outreachTasks])
 
   return <div className="">
     <div className="row g-3 pb-3">
@@ -119,8 +130,10 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         return <div className="col-md-6 col-sm-12" key={task.id}>
           <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
-            <h3 className="h5">
+            <h3 className="h5 d-flex align-items-center">
               {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+              {task.status === 'NEW' &&
+                <span className="badge rounded-pill bg-primary ms-2">{i18n('taskNew')}</span>}
             </h3>
             <p className="text-muted">
               {survey.blurb}
