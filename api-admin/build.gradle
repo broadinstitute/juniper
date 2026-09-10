@@ -41,7 +41,7 @@ dependencies {
     implementation 'com.google.guava:guava:33.4.8-jre'
 
     implementation 'net.javacrumbs.shedlock:shedlock-spring:6.3.0'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0'
 
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
