@@ -38,6 +38,26 @@ variable "dns_ttl" {
   description = "DNS TTL"
 }
 
+# pgaudit and connection/checkpoint logging are needed for the production audit
+# trail, but they dominate Cloud Logging ingestion in lower environments.
+variable "enable_db_audit_logging" {
+  type = bool
+  default = true
+  description = "Enable pgaudit and verbose connection logging on the database"
+}
+
+variable "enable_flow_logs" {
+  type = bool
+  default = true
+  description = "Enable VPC flow logs on the cluster and cloud build subnetworks"
+}
+
+variable "cloud_build_nat_machine_type" {
+  type = string
+  default = "e2-medium"
+  description = "Machine type for the VM that NATs cloud build traffic to the GKE control plane"
+}
+
 variable "admin_url" {
   type = string
   description = "Admin URL"
@@ -130,4 +150,22 @@ variable "artifact_registry_location" {
 
 variable "malware_scanner_image_name" {
   type = string
+}
+
+variable "malware_scanner_min_instances" {
+  type = number
+  default = 1
+  description = "Minimum malware scanner instances. 0 lets the service scale to zero at the cost of a ClamAV cold start on the first scan."
+}
+
+variable "malware_scanner_max_instances" {
+  type = number
+  default = 5
+  description = "Maximum malware scanner instances"
+}
+
+variable "malware_scanner_cpu_idle" {
+  type = bool
+  default = false
+  description = "Throttle the malware scanner's CPU outside of requests. false keeps CPU allocated (and billed) continuously."
 }

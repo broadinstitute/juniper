@@ -3,6 +3,20 @@ gcpRegion: us-central1
 adminUrl: juniper-cmi.dev
 deploymentZone: dev
 replicas: 1
+# Sized well below prod: this environment sees occasional manual testing, not
+# participant traffic. Pod total is 450m/2.5Gi, which Autopilot rounds to
+# 500m/2.5Gi (a 1:5 ratio). The app containers keep 2Gi because the JVM sizes
+# its heap off the container limit.
+resources:
+  sqlProxy:
+    cpu: "100m"
+    memory: "256Mi"
+  app:
+    cpu: "250m"
+    memory: "2Gi"
+  oidcProxy:
+    cpu: "100m"
+    memory: "256Mi"
 dsmUrl: https://dsm-dev.datadonationplatform.org/dsm
 dsmIssuer: admin-d2p.ddp-dev.envs.broadinstitute.org
 # "portals" adds certificates for admin subdomains
