@@ -159,7 +159,7 @@ describe('OutreachTasks', () => {
     expect(screen.queryByText('Survey 4 blurb')).not.toBeInTheDocument()
   })
 
-  it('shows a new badge only for tasks the participant has not viewed', async () => {
+  it('badges unviewed tasks with an asterisk and sorts them first', async () => {
     const enrollee = {
       ...mockEnrollee(),
       id: 'enrollee1'
@@ -168,24 +168,27 @@ describe('OutreachTasks', () => {
       ...mockStudy(),
       studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
     }
+    // the viewed task is older, so it would sort first if we weren't prioritizing unviewed tasks
     const tasksWithSurvey: TaskWithSurvey[] = [
       {
         task: {
-          ...mockParticipantTask('OUTREACH', 'NEW'),
-          targetName: 'Unviewed outreach',
+          ...mockParticipantTask('OUTREACH', 'VIEWED'),
+          targetName: 'Viewed outreach',
           targetStableId: 'outreach1',
           enrolleeId: 'enrollee1',
-          studyEnvironmentId: 'studyEnv1'
+          studyEnvironmentId: 'studyEnv1',
+          createdAt: 1
         },
         survey: { ...mockSurvey('outreach1'), surveyType: 'OUTREACH', blurb: 'Survey 1 blurb' }
       },
       {
         task: {
-          ...mockParticipantTask('OUTREACH', 'VIEWED'),
-          targetName: 'Viewed outreach',
+          ...mockParticipantTask('OUTREACH', 'NEW'),
+          targetName: 'Unviewed outreach',
           targetStableId: 'outreach2',
           enrolleeId: 'enrollee1',
-          studyEnvironmentId: 'studyEnv1'
+          studyEnvironmentId: 'studyEnv1',
+          createdAt: 2
         },
         survey: { ...mockSurvey('outreach2'), surveyType: 'OUTREACH', blurb: 'Survey 2 blurb' }
       }
@@ -197,11 +200,14 @@ describe('OutreachTasks', () => {
       </MockI18nProvider>
     )
     render(RoutedComponent)
-    await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
-    const unviewedCard = screen.getByText('Survey 1 blurb').closest<HTMLElement>('div.p-4')!
-    const viewedCard = screen.getByText('Survey 2 blurb').closest<HTMLElement>('div.p-4')!
-    expect(within(unviewedCard).getByText('NEW')).toBeInTheDocument()
-    expect(within(viewedCard).queryByText('NEW')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
+    const viewedCard = screen.getByText('Survey 1 blurb').closest<HTMLElement>('div.p-4')!
+    const unviewedCard = screen.getByText('Survey 2 blurb').closest<HTMLElement>('div.p-4')!
+    expect(within(unviewedCard).getByTitle('NEW')).toBeInTheDocument()
+    expect(within(viewedCard).queryByTitle('NEW')).not.toBeInTheDocument()
+
+    const blurbOrder = screen.getAllByText(/Survey \d blurb/).map(blurb => blurb.textContent)
+    expect(blurbOrder).toEqual(['Survey 2 blurb', 'Survey 1 blurb'])
   })
 
   it('clears the new badge once the task has been viewed', async () => {
@@ -239,7 +245,7 @@ describe('OutreachTasks', () => {
     )
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
-    await waitFor(() => expect(screen.queryByText('NEW')).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.queryByTitle('NEW')).not.toBeInTheDocument())
     expect(updateSpy).toHaveBeenCalledTimes(1)
   })
 })

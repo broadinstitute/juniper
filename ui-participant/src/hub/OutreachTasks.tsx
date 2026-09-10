@@ -15,6 +15,8 @@ import {
   useParams
 } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
+import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Enrollee,
   EnvironmentName,
@@ -53,9 +55,15 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
 
-  const sortedOutreachTasks = outreachTasks.sort((a, b) => {
-    return a.task.createdAt - b.task.createdAt
-  }).filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
+  const sortedOutreachTasks = outreachTasks
+    .filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
+    .sort((a, b) => {
+      // tasks the participant hasn't viewed yet come first, oldest-first within each group
+      if ((a.task.status === 'NEW') !== (b.task.status === 'NEW')) {
+        return a.task.status === 'NEW' ? -1 : 1
+      }
+      return a.task.createdAt - b.task.createdAt
+    })
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     if (!task.targetStableId || !task.targetAssignedVersion) {
       return
@@ -133,7 +141,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
             <h3 className="h5 d-flex align-items-center">
               {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
               {task.status === 'NEW' &&
-                <span className="badge rounded-pill bg-primary ms-2">{i18n('taskNew')}</span>}
+                <FontAwesomeIcon icon={faAsterisk} title={i18n('taskNew')} className="fa-sm text-primary ms-2"/>}
             </h3>
             <p className="text-muted">
               {survey.blurb}
