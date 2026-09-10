@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: Upload test artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: |

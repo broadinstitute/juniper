@@ -67,7 +67,7 @@ jobs:
       run: npm -w e2e-tests test
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: test-results
         path: |
