@@ -13,7 +13,7 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20.x
 
