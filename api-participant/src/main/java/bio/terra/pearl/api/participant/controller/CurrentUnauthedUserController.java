@@ -10,9 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 /**
- * this controller currently relies on the Apache proxy preventing it from being accessible in
- * production. and the tokens it would produce would not be valid to get past that proxy either.
- * That said, we should have at least one other layer of security - See AR-183
+ * these routes live under /api/public, so the Apache proxy does NOT block them. The service layer
+ * disables them outside the "local" deployment zone -- see
+ * CurrentUnauthedUserService.requireUnauthedLoginAllowed. The tokens produced are unsigned and
+ * would not get past the proxy on authenticated routes.
  */
 @Controller
 public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
