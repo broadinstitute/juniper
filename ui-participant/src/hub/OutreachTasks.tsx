@@ -15,6 +15,8 @@ import {
   useParams
 } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
+import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Enrollee,
   EnvironmentName,
@@ -53,10 +55,19 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
 
-  const sortedOutreachTasks = outreachTasks.sort((a, b) => {
-    return a.task.createdAt - b.task.createdAt
-  }).filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
+  const sortedOutreachTasks = outreachTasks
+    .filter(({ task }) => task.status !== 'COMPLETE' && isTaskVisible(task))
+    .sort((a, b) => {
+      // tasks the participant hasn't viewed yet come first, oldest-first within each group
+      if ((a.task.status === 'NEW') !== (b.task.status === 'NEW')) {
+        return a.task.status === 'NEW' ? -1 : 1
+      }
+      return a.task.createdAt - b.task.createdAt
+    })
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
+    if (!task.targetStableId || !task.targetAssignedVersion) {
+      return
+    }
     const studyEnvParams = {
       portalShortcode: portalEnvContext.portal.shortcode,
       studyShortcode: study.shortcode,
@@ -70,7 +81,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       surveyId: task.id,
       complete: false
     } as SurveyResponse
-    task.targetStableId && task.targetAssignedVersion && await Api.updateSurveyResponse({
+    const hubResponse = await Api.updateSurveyResponse({
       studyEnvParams,
       enrolleeShortcode: enrollee.shortcode,
       stableId: task.targetStableId,
@@ -79,6 +90,13 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       alertErrors: false,
       response: responseDto
     })
+    // update the task in-place so the "new" badge clears without requiring a dashboard reload
+    const updatedTask = hubResponse.tasks.find(hubTask => hubTask.id === task.id)
+    if (updatedTask) {
+      setOutreachActivities(previousTasks => previousTasks.map(taskWithSurvey =>
+        taskWithSurvey.task.id === updatedTask.id ? { ...taskWithSurvey, task: updatedTask } : taskWithSurvey
+      ))
+    }
   }
 
   const loadOutreachActivities = async () => {
@@ -104,7 +122,8 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         markTaskAsViewed(matchedTask, taskEnrollee, taskStudy)
       }
     }
-  }, [outreachParams.stableId])
+    // depends on outreachTasks since the tasks may load after the outreach path is already rendered
+  }, [outreachParams.stableId, outreachTasks])
 
   return <div className="">
     <div className="row g-3 pb-3">
@@ -119,8 +138,10 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         return <div className="col-md-6 col-sm-12" key={task.id}>
           <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
-            <h3 className="h5">
+            <h3 className="h5 d-flex align-items-center">
               {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+              {task.status === 'NEW' &&
+                <FontAwesomeIcon icon={faAsterisk} title={i18n('taskNew')} className="fa-sm text-primary ms-2"/>}
             </h3>
             <p className="text-muted">
               {survey.blurb}

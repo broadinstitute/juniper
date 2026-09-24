@@ -2,7 +2,8 @@ import React from 'react'
 import {
   render,
   screen,
-  waitFor
+  waitFor,
+  within
 } from '@testing-library/react'
 import {
   mockEnrollee,
@@ -12,15 +13,20 @@ import {
 import OutreachTasks from './OutreachTasks'
 import {
   mockStudy,
-  mockStudyEnv
+  mockStudyEnv,
+  mockPortalEnvContextT
 } from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
 import {
+  asMockedFn,
+  HubResponse,
   MockI18nProvider,
   setupRouterTest
 } from '@juniper/ui-core'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
+jest.mock('./SurveyModal', () => ({ __esModule: true, default: () => null }))
 
 describe('OutreachTasks', () => {
   it('show tasks with blurbs', async () => {
@@ -151,5 +157,95 @@ describe('OutreachTasks', () => {
     expect(screen.queryByText('Survey 1 blurb')).not.toBeInTheDocument()
     expect(screen.queryByText('Survey 3 blurb')).not.toBeInTheDocument()
     expect(screen.queryByText('Survey 4 blurb')).not.toBeInTheDocument()
+  })
+
+  it('badges unviewed tasks with an asterisk and sorts them first', async () => {
+    const enrollee = {
+      ...mockEnrollee(),
+      id: 'enrollee1'
+    }
+    const study = {
+      ...mockStudy(),
+      studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
+    }
+    // the viewed task is older, so it would sort first if we weren't prioritizing unviewed tasks
+    const tasksWithSurvey: TaskWithSurvey[] = [
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'VIEWED'),
+          targetName: 'Viewed outreach',
+          targetStableId: 'outreach1',
+          enrolleeId: 'enrollee1',
+          studyEnvironmentId: 'studyEnv1',
+          createdAt: 1
+        },
+        survey: { ...mockSurvey('outreach1'), surveyType: 'OUTREACH', blurb: 'Survey 1 blurb' }
+      },
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'NEW'),
+          targetName: 'Unviewed outreach',
+          targetStableId: 'outreach2',
+          enrolleeId: 'enrollee1',
+          studyEnvironmentId: 'studyEnv1',
+          createdAt: 2
+        },
+        survey: { ...mockSurvey('outreach2'), surveyType: 'OUTREACH', blurb: 'Survey 2 blurb' }
+      }
+    ]
+    jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={{ taskNew: 'NEW' }} useDefaultTexts={true}>
+        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+      </MockI18nProvider>
+    )
+    render(RoutedComponent)
+    await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
+    const viewedCard = screen.getByText('Survey 1 blurb').closest<HTMLElement>('div.p-4')!
+    const unviewedCard = screen.getByText('Survey 2 blurb').closest<HTMLElement>('div.p-4')!
+    expect(within(unviewedCard).getByTitle('NEW')).toBeInTheDocument()
+    expect(within(viewedCard).queryByTitle('NEW')).not.toBeInTheDocument()
+
+    const blurbOrder = screen.getAllByText(/Survey \d blurb/).map(blurb => blurb.textContent)
+    expect(blurbOrder).toEqual(['Survey 2 blurb', 'Survey 1 blurb'])
+  })
+
+  it('clears the new badge once the task has been viewed', async () => {
+    asMockedFn(usePortalEnv).mockReturnValue(mockPortalEnvContextT())
+    const enrollee = {
+      ...mockEnrollee(),
+      id: 'enrollee1'
+    }
+    const study = {
+      ...mockStudy(),
+      studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
+    }
+    const task = {
+      ...mockParticipantTask('OUTREACH', 'NEW'),
+      id: 'task1',
+      targetName: 'Unviewed outreach',
+      targetStableId: 'outreach1',
+      targetAssignedVersion: 1,
+      enrolleeId: 'enrollee1',
+      studyEnvironmentId: 'studyEnv1'
+    }
+    jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue([{
+      task,
+      survey: { ...mockSurvey('outreach1'), surveyType: 'OUTREACH', blurb: 'Survey 1 blurb' }
+    }])
+    const updateSpy = jest.spyOn(Api, 'updateSurveyResponse')
+      .mockResolvedValue({ tasks: [{ ...task, status: 'VIEWED' }] } as HubResponse)
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={{ taskNew: 'NEW' }} useDefaultTexts={true}>
+        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+      </MockI18nProvider>,
+      [`/study/${study.shortcode}/enrollee/${enrollee.shortcode}/outreach/outreach1/1?taskId=task1`],
+      'study/:studyShortcode/enrollee/:enrolleeShortcode/outreach/:stableId/:version'
+    )
+    render(RoutedComponent)
+    await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
+    await waitFor(() => expect(screen.queryByTitle('NEW')).not.toBeInTheDocument())
+    expect(updateSpy).toHaveBeenCalledTimes(1)
   })
 })
