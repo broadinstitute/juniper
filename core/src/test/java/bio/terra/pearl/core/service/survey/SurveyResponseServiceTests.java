@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -319,6 +320,39 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertThrows(NotFoundException.class, () ->
                 surveyResponseService.findWithActiveResponse(enrollee.getStudyEnvironmentId(),
                         survey.getPortalId(), survey.getStableId(), survey.getVersion(), enrollee, null));
+    }
+
+    @Test
+    @Transactional
+    public void testFindWithActiveResponseRejectsOtherEnrolleesTask(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId()));
+        StudyEnvironmentSurvey ses = surveyFactory.attachToEnv(survey, studyEnvBundle.getStudyEnv().getId(), true);
+
+        EnrolleeBundle attackerBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        EnrolleeBundle victimBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+        SurveyResponse victimResponse = surveyResponseService.create(SurveyResponse.builder()
+                .enrolleeId(victimBundle.enrollee().getId())
+                .creatingParticipantUserId(victimBundle.enrollee().getParticipantUserId())
+                .surveyId(survey.getId())
+                .answers(AnswerFactory.fromMap(Map.of("foo", "secret")))
+                .build());
+        ParticipantTask victimTask = surveyTaskDispatcher.buildTask(victimBundle.enrollee(), victimBundle.portalParticipantUser(), new SurveyTaskConfigDto(ses));
+        victimTask.setSurveyResponseId(victimResponse.getId());
+        victimTask = participantTaskService.create(victimTask, getAuditInfo(info));
+        UUID victimTaskId = victimTask.getId();
+
+        // the owner of the task can load it
+        SurveyWithResponse ownResult = surveyResponseService.findWithActiveResponse(studyEnvBundle.getStudyEnv().getId(),
+                survey.getPortalId(), survey.getStableId(), survey.getVersion(), victimBundle.enrollee(), victimTaskId);
+        assertThat(ownResult.surveyResponse().getId(), equalTo(victimResponse.getId()));
+
+        // another enrollee can't load it by passing its task id
+        assertThrows(NotFoundException.class, () ->
+                surveyResponseService.findWithActiveResponse(studyEnvBundle.getStudyEnv().getId(),
+                        survey.getPortalId(), survey.getStableId(), survey.getVersion(), attackerBundle.enrollee(), victimTaskId));
     }
 
     @Test

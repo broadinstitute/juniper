@@ -1,11 +1,14 @@
 package bio.terra.pearl.api.participant.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import bio.terra.common.exception.NotFoundException;
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeAndProxy;
+import bio.terra.pearl.core.factory.participant.EnrolleeBundle;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -14,6 +17,8 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -105,5 +110,68 @@ class SurveyResponseExtServiceTest extends BaseSpringBootTest {
 
     Profile proxyProfile = profileService.find(enrolleeAndProxy.proxy().getProfileId()).get();
     assertEquals("John", proxyProfile.getGivenName());
+  }
+
+  @Test
+  @Transactional
+  public void testParticipantCannotAccessStaffForm(TestInfo info) {
+    StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    Survey adminForm =
+        surveyFactory.buildPersisted(
+            surveyFactory
+                .builder(getTestName(info))
+                .portalId(studyEnvBundle.getPortal().getId())
+                .surveyType(SurveyType.ADMIN));
+    surveyFactory.attachToEnv(adminForm, studyEnvBundle.getStudyEnv().getId(), true);
+    EnrolleeBundle enrolleeBundle =
+        enrolleeFactory.buildWithPortalUser(
+            getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+    ParticipantTask adminTask =
+        participantTaskService.create(
+            ParticipantTask.builder()
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
+                .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+                .taskType(TaskType.ADMIN_FORM)
+                .targetStableId(adminForm.getStableId())
+                .targetAssignedVersion(adminForm.getVersion())
+                .status(TaskStatus.NEW)
+                .build(),
+            getAuditInfo(info));
+
+    String portalShortcode = studyEnvBundle.getPortal().getShortcode();
+    String enrolleeShortcode = enrolleeBundle.enrollee().getShortcode();
+
+    assertThrows(
+        NotFoundException.class,
+        () ->
+            surveyResponseExtService.findOrCreateWithActiveResponse(
+                portalShortcode,
+                studyEnvBundle.getStudy().getShortcode(),
+                EnvironmentName.sandbox.name(),
+                adminForm.getStableId(),
+                adminForm.getVersion(),
+                enrolleeShortcode,
+                enrolleeBundle.participantUser().getId(),
+                adminTask.getId()));
+
+    SurveyResponse response =
+        SurveyResponse.builder()
+            .surveyId(adminForm.getId())
+            .enrolleeId(enrolleeBundle.enrollee().getId())
+            .complete(true)
+            .build();
+    assertThrows(
+        NotFoundException.class,
+        () ->
+            surveyResponseExtService.updateResponse(
+                enrolleeBundle.participantUser(),
+                portalShortcode,
+                EnvironmentName.sandbox,
+                response,
+                enrolleeShortcode,
+                adminTask.getId()));
+    assertEquals(TaskStatus.NEW, participantTaskService.find(adminTask.getId()).get().getStatus());
   }
 }

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.ParticipantDataAuditedService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -55,15 +56,22 @@ public class ProfileService extends ParticipantDataAuditedService<Profile, Profi
 
     @Transactional
     public Profile updateWithMailingAddress(Profile profile, DataAuditInfo auditInfo) {
+        // which address a profile points to is never up to the caller -- otherwise a client-supplied
+        // profile could read or overwrite any mailing address by id
+        Profile existingProfile = dao.find(profile.getId())
+                .orElseThrow(() -> new NotFoundException("Profile not found"));
+        profile.setMailingAddressId(existingProfile.getMailingAddressId());
         Profile updatedProfile = this.update(profile, auditInfo);
 
         MailingAddress mailingAddress = profile.getMailingAddress();
         if (mailingAddress != null) {
             if (profile.getMailingAddressId() == null) {
                 // we've added a new mailing address
-                mailingAddress = mailingAddressDao.create(profile.getMailingAddress());
+                mailingAddress.setId(null);
+                mailingAddress = mailingAddressDao.create(mailingAddress);
                 profile.setMailingAddressId(mailingAddress.getId());
             } else {
+                mailingAddress.setId(profile.getMailingAddressId());
                 mailingAddressDao.update(mailingAddress);
             }
         }

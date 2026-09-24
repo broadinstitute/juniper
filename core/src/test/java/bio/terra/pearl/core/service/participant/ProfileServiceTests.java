@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.util.List;
+import java.util.UUID;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
@@ -67,6 +68,34 @@ public class ProfileServiceTests extends BaseSpringBootTest {
         DaoTestUtils.assertGeneratedProperties(savedProfile.getMailingAddress());
         assertThat(savedProfile.getMailingAddressId(), equalTo(savedProfile.getMailingAddress().getId()));
         assertThat(savedProfile.getMailingAddress().getCity(), equalTo(profile.getMailingAddress().getCity()));
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateIgnoresClientSuppliedMailingAddressId(TestInfo info) {
+        Profile victimProfile = profileService.create(Profile.builder()
+                .mailingAddress(MailingAddress.builder().street1("1 Victim St").build())
+                .build(), getAuditInfo(info));
+        Profile attackerProfile = profileService.create(Profile.builder()
+                .mailingAddress(MailingAddress.builder().street1("2 Attacker St").build())
+                .build(), getAuditInfo(info));
+        UUID victimAddressId = victimProfile.getMailingAddressId();
+        UUID attackerAddressId = attackerProfile.getMailingAddressId();
+
+        // attacker points their profile update at the victim's address
+        Profile update = Profile.builder()
+                .mailingAddressId(victimAddressId)
+                .mailingAddress(MailingAddress.builder().street1("overwritten").build())
+                .build();
+        update.setId(attackerProfile.getId());
+        update.getMailingAddress().setId(victimAddressId);
+        profileService.updateWithMailingAddress(update, getAuditInfo(info));
+
+        Profile reloadedVictim = profileService.loadWithMailingAddress(victimProfile.getId()).get();
+        Profile reloadedAttacker = profileService.loadWithMailingAddress(attackerProfile.getId()).get();
+        assertThat(reloadedVictim.getMailingAddress().getStreet1(), equalTo("1 Victim St"));
+        assertThat(reloadedAttacker.getMailingAddressId(), equalTo(attackerAddressId));
+        assertThat(reloadedAttacker.getMailingAddress().getStreet1(), equalTo("overwritten"));
     }
 
     @Test

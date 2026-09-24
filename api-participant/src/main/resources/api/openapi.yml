@@ -272,7 +272,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}/referencedAnswers:
+  /api/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}/referencedAnswers:
     get:
       summary:
         Gets any answers from other studies' surveys that this pre-enrollment survey references, for the
@@ -290,7 +290,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/checkEligible:
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/checkEligible:
     get:
       summary: Checks whether the signed-in user is eligible for the given study
       tags: [ enrollment ]
