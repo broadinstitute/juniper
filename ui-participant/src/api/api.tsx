@@ -218,7 +218,7 @@ export default {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
   }): Promise<Response> {
     const url = `${baseEnvUrl(false)}/studies/${
-      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
     const response = await fetch(url, this.getGetInit())
     return this.processResponse(response)
   },
@@ -227,7 +227,7 @@ export default {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
   }): Promise<void> {
     const url = `${baseEnvUrl(false)}/studies/${
-      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
     await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()

@@ -603,7 +603,7 @@ export default {
     fileName: string): Promise<Response> {
     const url = `${
       baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/file/${fileName}`
+    }/enrollees/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
 
     const response = await fetch(url, this.getGetInit())
     return await this.processResponse(response)
@@ -626,7 +626,7 @@ export default {
     fileName: string): Promise<Response> {
     const url = `${
       baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/file/${fileName}`
+    }/enrollees/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
