@@ -1,14 +1,19 @@
 package bio.terra.pearl.api.admin.service.notifications;
 
+import bio.terra.common.exception.NotFoundException;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeSearchExtService;
+import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
@@ -25,6 +30,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationExtService {
   private final EnrolleeSearchExtService enrolleeSearchExtService;
+  private NotificationService notificationService;
   private TriggerService triggerService;
   private NotificationDispatcher notificationDispatcher;
   private EnrolleeService enrolleeService;
@@ -44,7 +50,9 @@ public class NotificationExtService {
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
       StudyService studyService,
-      EnrolleeSearchExtService enrolleeSearchExtService) {
+      EnrolleeSearchExtService enrolleeSearchExtService,
+      NotificationService notificationService) {
+    this.notificationService = notificationService;
     this.triggerService = triggerService;
     this.notificationDispatcher = notificationDispatcher;
     this.enrolleeService = enrolleeService;
@@ -54,6 +62,24 @@ public class NotificationExtService {
     this.portalEnvironmentService = portalEnvironmentService;
     this.studyService = studyService;
     this.enrolleeSearchExtService = enrolleeSearchExtService;
+  }
+
+  @EnforcePortalEnrolleePermission(permission = "participant_data_view")
+  public List<Notification> findForEnrollee(PortalEnrolleeAuthContext authContext) {
+    return notificationService.findByEnrolleeId(authContext.getEnrollee().getId());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public List<Notification> findAllByTrigger(
+      PortalStudyEnvAuthContext authContext, UUID triggerId) {
+    Trigger trigger =
+        triggerService
+            .find(triggerId)
+            .orElseThrow(() -> new NotFoundException("Could not find trigger"));
+    if (!authContext.getStudyEnvironment().getId().equals(trigger.getStudyEnvironmentId())) {
+      throw new NotFoundException("Could not find trigger");
+    }
+    return notificationService.findAllByConfigId(triggerId, true);
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")

@@ -113,7 +113,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         Survey form = surveyService.findByStableId(stableId, version, portalId).get();
         SurveyResponse lastResponse = null;
         if (taskId != null) {
-            ParticipantTask task = participantTaskService.find(taskId).get();
+            // the task must belong to the enrollee, otherwise this would return another enrollee's response
+            ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId(), false)
+                    .orElseThrow(() -> new NotFoundException("Task not found for enrollee"));
             // if there is an associated task, try to find an associated response
             lastResponse = dao.findOneWithAnswers(task.getSurveyResponseId()).orElse(null);
         } else {

@@ -40,6 +40,11 @@ public class RequestUtilService {
   }
 
   public Optional<ParticipantUser> getUserFromRequest(HttpServletRequest request) {
+    if (isPublicRoute(request)) {
+      // the proxy doesn't validate tokens on public routes, and this app doesn't verify token
+      // signatures, so a token on a public route can't be trusted to identify anyone
+      return Optional.empty();
+    }
     String token = tokenFromRequest(request);
     if (token == null) {
       return Optional.empty();
@@ -51,6 +56,11 @@ public class RequestUtilService {
     EnvironmentName envName = environmentNameFromRequest(request);
     String email = currentUserService.getUsernameFromToken(token);
     return currentUserService.findByUsername(email, envName);
+  }
+
+  protected boolean isPublicRoute(HttpServletRequest request) {
+    // servlet path is decoded and normalized, unlike getRequestURI
+    return request.getServletPath().startsWith("/api/public/");
   }
 
   public EnvironmentName environmentNameFromRequest(HttpServletRequest request) {

@@ -51,7 +51,8 @@ export default function PreEnrollView({ enrollContext, survey }:
     }
     setIsLoading(true)
     try {
-      if (eligibleRule) {
+      // eligibility is evaluated against the signed-in user's data, so there's nothing to check when anonymous
+      if (eligibleRule && user) {
         const response = await Api.checkEligible(enrollContext.studyShortcode)
         setEligibilityResult(response)
       }

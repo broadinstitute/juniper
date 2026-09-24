@@ -2,10 +2,12 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.NotificationsApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
@@ -51,9 +53,14 @@ public class NotificationsController implements NotificationsApi {
   public ResponseEntity<Object> find(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
-    List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
+    List<Notification> notifications =
+        notificationExtService.findForEnrollee(
+            PortalEnrolleeAuthContext.of(
+                adminUser,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName),
+                enrolleeShortcode));
     return ResponseEntity.ok(notifications);
   }
 
@@ -61,8 +68,14 @@ public class NotificationsController implements NotificationsApi {
   public ResponseEntity<Object> findAllByConfigId(
       String portalShortcode, String studyShortcode, String envName, UUID triggerId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    List<Notification> notifications = notificationService.findAllByConfigId(triggerId, true);
+    List<Notification> notifications =
+        notificationExtService.findAllByTrigger(
+            PortalStudyEnvAuthContext.of(
+                adminUser,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            triggerId);
     return ResponseEntity.ok(notifications);
   }
 }

@@ -6,7 +6,6 @@ import bio.terra.pearl.api.participant.service.MailingListContactExtService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.portal.MailingListContact;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +32,13 @@ public class MailingListContactController implements MailingListContactApi {
     Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
     EnvironmentName envName = EnvironmentName.valueOfCaseInsensitive(environmentName);
     // do a get or create to avoid leaking information about whether the user has already signed up
-    MailingListContact contact =
-        mailingListContactExtService.createOrGet(
-            body.getEmail(), body.getName(), portalShortcode, envName, participantUserOpt);
-    // convert to a DTO to avoid leaking when the contact was first created
+    mailingListContactExtService.createOrGet(
+        body.getEmail(), body.getName(), portalShortcode, envName, participantUserOpt);
+    // echo back what was submitted, never the stored contact, so this can't be used to look up
+    // the name of whoever is already signed up with a given email
     MailingListContactDto dto = new MailingListContactDto();
-    dto.setEmail(contact.getEmail());
-    dto.setName(contact.getName());
+    dto.setEmail(body.getEmail());
+    dto.setName(body.getName());
     return ResponseEntity.ok(dto);
   }
 }

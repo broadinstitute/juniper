@@ -218,7 +218,7 @@ export default {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
   }): Promise<Response> {
     const url = `${baseEnvUrl(false)}/studies/${
-      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
     const response = await fetch(url, this.getGetInit())
     return this.processResponse(response)
   },
@@ -227,7 +227,7 @@ export default {
     studyEnvParams: StudyEnvParams, enrolleeShortcode: string, fileName: string
   }): Promise<void> {
     const url = `${baseEnvUrl(false)}/studies/${
-      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${fileName}`
+      studyEnvParams.studyShortcode}/enrollee/${enrolleeShortcode}/file/${encodeURIComponent(fileName)}`
     await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
@@ -287,7 +287,7 @@ export default {
   async getPreEnrollReferencedAnswers({ surveyStableId, surveyVersion }:
                                         { surveyStableId: string, surveyVersion: number }):
     Promise<Record<string, Answer>> {
-    const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}/referencedAnswers`
+    const url = `${baseEnvUrl(false)}/preEnroll/${surveyStableId}/${surveyVersion}/referencedAnswers`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response)
   },
@@ -307,7 +307,7 @@ export default {
 
   async checkEligible(studyShortcode: string):
     Promise<EligibilityResult> {
-    const url =  `${baseStudyEnvUrl(true, studyShortcode)}/checkEligible`
+    const url =  `${baseStudyEnvUrl(false, studyShortcode)}/checkEligible`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response, { alertErrors: false })
   },

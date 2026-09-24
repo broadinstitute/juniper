@@ -1,9 +1,11 @@
 package bio.terra.pearl.api.admin.service;
 
+import bio.terra.common.exception.NotFoundException;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -17,12 +19,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class CurrentUnauthedUserService {
   private AdminUserService adminUserService;
+  private ApplicationRoutingPaths applicationRoutingPaths;
 
-  public CurrentUnauthedUserService(AdminUserService adminUserService) {
+  public CurrentUnauthedUserService(
+      AdminUserService adminUserService, ApplicationRoutingPaths applicationRoutingPaths) {
     this.adminUserService = adminUserService;
+    this.applicationRoutingPaths = applicationRoutingPaths;
   }
 
   public Optional<AdminUserWithPermissionsAndToken> unauthedLogin(String username) {
+    requireUnauthedLoginAllowed();
     Optional<AdminUserWithPermissions> userOpt =
         adminUserService.findByUsernameWithPermissions(username);
     if (userOpt.isPresent()) {
@@ -37,6 +43,17 @@ public class CurrentUnauthedUserService {
     return Optional.empty();
   }
 
+  /**
+   * These routes trust unsigned tokens and log in by username alone, so they must never be
+   * reachable in a deployed environment. This mirrors the UI, which only offers developer login on
+   * localhost. Responds as not found so the route's existence isn't advertised.
+   */
+  protected void requireUnauthedLoginAllowed() {
+    if (!applicationRoutingPaths.getDeploymentZone().equalsIgnoreCase("local")) {
+      throw new NotFoundException("Not found");
+    }
+  }
+
   protected String generateFakeJwtToken(String username) {
     UUID token = UUID.randomUUID();
     return JWT.create()
@@ -46,6 +63,7 @@ public class CurrentUnauthedUserService {
   }
 
   public Optional<AdminUserWithPermissionsAndToken> tokenLogin(String token) {
+    requireUnauthedLoginAllowed();
     String email = getEmailFromToken(token);
 
     Optional<AdminUserWithPermissions> userOpt =

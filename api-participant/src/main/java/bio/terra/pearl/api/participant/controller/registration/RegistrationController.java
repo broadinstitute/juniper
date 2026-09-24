@@ -71,6 +71,9 @@ public class RegistrationController implements RegistrationApi {
       String preferredLanguage,
       UUID preRegResponseId,
       RegistrationInfo body) {
+    // check before registering -- registration commits on its own, so a later failure in
+    // unauthedLogin would still leave the account created
+    currentUnauthedUserService.requireUnauthedLoginAllowed();
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     RegistrationService.RegistrationResult registrationResult =

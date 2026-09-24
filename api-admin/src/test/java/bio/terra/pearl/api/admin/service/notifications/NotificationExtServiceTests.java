@@ -47,7 +47,13 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
   public void testAuthentication() {
     AuthTestUtils.assertAllMethodsAnnotated(
         notificationExtService,
-        Map.of("sendAdHoc", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit")));
+        Map.of(
+            "sendAdHoc",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "findForEnrollee",
+            AuthAnnotationSpec.withPortalEnrolleePerm("participant_data_view"),
+            "findAllByTrigger",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
   }
 
   @Test
