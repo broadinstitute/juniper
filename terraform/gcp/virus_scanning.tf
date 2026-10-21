@@ -35,8 +35,8 @@ resource "google_cloud_run_v2_service" "malware_scanner" {
 
   template {
     scaling {
-      max_instance_count = 5
-      min_instance_count = 1
+      max_instance_count = var.malware_scanner_max_instances
+      min_instance_count = var.malware_scanner_min_instances
     }
     service_account                  = google_service_account.malware_scanner_sa.email
     timeout                          = "300s"
@@ -49,7 +49,7 @@ resource "google_cloud_run_v2_service" "malware_scanner" {
           cpu    = "1"
           memory = "4Gi"
         }
-        cpu_idle          = false # CPU is still allocated outside of requests
+        cpu_idle          = var.malware_scanner_cpu_idle # when false, CPU is still allocated outside of requests
         startup_cpu_boost = true
       }
       env {

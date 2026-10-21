@@ -1,5 +1,21 @@
 adminUrl: ""
 replicas: 1
+# GKE Autopilot bills on requests, not usage, so these are the main lever on
+# cluster cost. Autopilot rounds the pod total up to the nearest 250m CPU /
+# 256Mi memory and requires a vCPU:memory ratio between 1:1 and 1:6.5.
+# Defaults below are the production sizing; see environments/dev.yaml.
+resources:
+  sqlProxy:
+    # The proxy's memory use scales with the number of active connections and
+    # its CPU use with the amount of IO between the database and the application.
+    cpu: "1"
+    memory: "2Gi"
+  app:
+    cpu: "500m"
+    memory: "2Gi"
+  oidcProxy:
+    cpu: "500m"
+    memory: "1Gi"
 portals:
   - ""
 adminCertName: "admin-cert"

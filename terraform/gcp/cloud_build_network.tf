@@ -27,10 +27,13 @@ resource "google_compute_subnetwork" "cloud_build_subnetwork" {
 
   network = google_compute_network.cloud_build_network.id
 
-  log_config {
-    aggregation_interval = "INTERVAL_10_MIN"
-    flow_sampling        = 0.5
-    metadata             = "INCLUDE_ALL_METADATA"
+  dynamic "log_config" {
+    for_each = var.enable_flow_logs ? [1] : []
+    content {
+      aggregation_interval = "INTERVAL_10_MIN"
+      flow_sampling        = 0.5
+      metadata             = "INCLUDE_ALL_METADATA"
+    }
   }
 }
 
@@ -83,12 +86,16 @@ resource "google_compute_address" "public_cloud_build_ip" {
 
 resource "google_compute_instance" "cloud_build_nat_vm" {
   name         = "cloud-build-nat-vm"
-  machine_type = "e2-medium"
+  machine_type = var.cloud_build_nat_machine_type
   zone         = "${var.region}-a"
 
   tags = ["direct-gateway-access", "nat-gateway"]
 
   can_ip_forward = true
+
+  # resizing the VM requires it to be stopped first; the startup script
+  # re-establishes the iptables masquerade rule on boot
+  allow_stopping_for_update = true
 
 
   boot_disk {

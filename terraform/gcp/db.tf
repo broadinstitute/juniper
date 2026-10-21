@@ -1,6 +1,27 @@
 # Creates the database used by Juniper as well as the user that will access it
 # and secrets to allow the application to read the credentials.
 
+locals {
+  db_audit = var.enable_db_audit_logging ? "on" : "off"
+
+  # The audit trail is a production requirement but the dominant source of Cloud
+  # Logging ingestion, so it is switchable per environment. pgaudit stays
+  # installed everywhere and is silenced via pgaudit.log instead: turning
+  # cloudsql.enable_pgaudit off requires dropping the extension by hand first.
+  db_flags = {
+    "cloudsql.iam_authentication" = "on"
+    "log_lock_waits"              = "on"
+    "log_min_error_statement"     = "error"
+    "log_min_messages"            = "warning"
+    "cloudsql.enable_pgaudit"     = "on"
+    "pgaudit.log"                 = var.enable_db_audit_logging ? "all" : "none"
+    "log_connections"             = local.db_audit
+    "log_disconnections"          = local.db_audit
+    "log_hostname"                = local.db_audit
+    "log_checkpoints"             = local.db_audit
+  }
+}
+
 resource "google_sql_database_instance" "d2p" {
   name = "d2p"
   database_version = "POSTGRES_16"
@@ -17,45 +38,12 @@ resource "google_sql_database_instance" "d2p" {
       ssl_mode = "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
     }
 
-    database_flags {
-      name  = "cloudsql.iam_authentication"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_checkpoints"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_lock_waits"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_connections"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_disconnections"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_hostname"
-      value = "on"
-    }
-    database_flags {
-      name  = "log_min_error_statement"
-      value = "error"
-    }
-    database_flags {
-      name  = "log_min_messages"
-      value = "warning"
-    }
-    database_flags {
-      name  = "cloudsql.enable_pgaudit"
-      value = "on"
-    }
-    database_flags {
-      name  = "pgaudit.log"
-      value = "all"
+    dynamic "database_flags" {
+      for_each = local.db_flags
+      content {
+        name  = database_flags.key
+        value = database_flags.value
+      }
     }
 
     backup_configuration {
