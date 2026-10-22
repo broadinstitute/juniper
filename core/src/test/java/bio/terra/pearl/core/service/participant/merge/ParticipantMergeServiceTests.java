@@ -20,6 +20,10 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
+import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
+import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -79,6 +83,10 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
     private EmailTemplateFactory emailTemplateFactory;
     @Autowired
     private SurveyTaskDispatcher surveyTaskDispatcher;
+    @Autowired
+    private PreregistrationResponseDao preregistrationResponseDao;
+    @Autowired
+    private PreEnrollmentResponseDao preEnrollmentResponseDao;
 
     /** merge two enrollees who each have a single not-started survey task */
     @Test
@@ -309,5 +317,114 @@ public class ParticipantMergeServiceTests extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(sourceBundle.enrollee().getId()), hasSize(0));
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(targetBundle.enrollee().getId());
         assertThat(tasks, hasSize(3));
+    }
+
+    /** merge two enrollees who each have a pre-registration and a pre-enrollment response */
+    @Test
+    @Transactional
+    public void testPreRegAndPreEnrollMerge(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        Survey survey = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle.getPortal().getId());
+
+        EnrolleeBundle sourceBundle = enrolleeFactory.enroll("source@test.com", studyEnvBundle.getPortal().getShortcode(),
+                studyEnvBundle.getStudy().getShortcode(), studyEnvBundle.getStudyEnv().getEnvironmentName());
+        EnrolleeBundle targetBundle = enrolleeFactory.enroll("target@test.com", studyEnvBundle.getPortal().getShortcode(),
+                studyEnvBundle.getStudy().getShortcode(), studyEnvBundle.getStudyEnv().getEnvironmentName());
+
+        PreregistrationResponse sourcePreReg = createPreReg(survey, studyEnvBundle, sourceBundle);
+        PreEnrollmentResponse sourcePreEnroll = createPreEnroll(survey, studyEnvBundle, sourceBundle);
+        PreregistrationResponse targetPreReg = createPreReg(survey, studyEnvBundle, targetBundle);
+        PreEnrollmentResponse targetPreEnroll = createPreEnroll(survey, studyEnvBundle, targetBundle);
+
+        ParticipantUserMerge merge = participantMergePlanService.planMerge(sourceBundle.participantUser(), targetBundle.participantUser(),
+                studyEnvBundle.getPortal());
+        assertThat(merge.getEnrollees(), hasSize(1));
+
+        participantMergeService.applyMerge(merge, DataAuditInfo.builder().systemProcess("test").build());
+
+        // the source's responses are cleaned up, the target's are untouched
+        assertThat(preregistrationResponseDao.find(sourcePreReg.getId()).isPresent(), is(false));
+        assertThat(preEnrollmentResponseDao.find(sourcePreEnroll.getId()).isPresent(), is(false));
+        assertThat(preregistrationResponseDao.find(targetPreReg.getId()).isPresent(), is(true));
+        assertThat(preEnrollmentResponseDao.find(targetPreEnroll.getId()).isPresent(), is(true));
+
+        // confirm the merge itself still worked
+        assertThat(enrolleeService.find(sourceBundle.enrollee().getId()).isPresent(), is(false));
+        assertThat(enrolleeService.find(targetBundle.enrollee().getId()).isPresent(), is(true));
+        assertThat(participantUserService.find(sourceBundle.participantUser().getId()).isPresent(), is(false));
+    }
+
+    /**
+     * merge where the source's enrollee is moved (not deleted) and the source also has a pre-enrollment response
+     * not tied to any enrollee.  Those responses still reference the source portal participant user, so they
+     * must be cleaned up (or reassigned) before that user can be deleted.
+     */
+    @Test
+    @Transactional
+    public void testPreEnrollResponsesOfMovedEnrolleeAndOrphan(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironmentBundle studyEnvBundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox,
+                studyEnvBundle1.getPortal(), studyEnvBundle1.getPortalEnv());
+        Survey survey = surveyFactory.buildPersisted(getTestName(info), studyEnvBundle1.getPortal().getId());
+
+        // source is only in study 2, target is only in study 1, so the source enrollee is moved rather than merged
+        EnrolleeBundle sourceBundle = enrolleeFactory.enroll("source@test.com", studyEnvBundle1.getPortal().getShortcode(),
+                studyEnvBundle2.getStudy().getShortcode(), studyEnvBundle2.getStudyEnv().getEnvironmentName());
+        EnrolleeBundle targetBundle = enrolleeFactory.enroll("target@test.com", studyEnvBundle1.getPortal().getShortcode(),
+                studyEnvBundle1.getStudy().getShortcode(), studyEnvBundle1.getStudyEnv().getEnvironmentName());
+
+        createPreReg(survey, studyEnvBundle1, sourceBundle);
+        PreEnrollmentResponse linkedPreEnroll = createPreEnroll(survey, studyEnvBundle2, sourceBundle);
+        // a pre-enroll response that the source completed but never used to enroll
+        PreEnrollmentResponse orphanPreEnroll = preEnrollmentResponseDao.create(PreEnrollmentResponse.builder()
+                .surveyId(survey.getId())
+                .studyEnvironmentId(studyEnvBundle1.getStudyEnv().getId())
+                .portalParticipantUserId(sourceBundle.portalParticipantUser().getId())
+                .creatingParticipantUserId(sourceBundle.participantUser().getId())
+                .fullData("[]")
+                .qualified(true)
+                .build());
+
+        ParticipantUserMerge merge = participantMergePlanService.planMerge(sourceBundle.participantUser(), targetBundle.participantUser(),
+                studyEnvBundle1.getPortal());
+        assertThat(merge.getEnrollees().stream().map(MergeAction::getAction).toList(),
+                containsInAnyOrder(MergeAction.Action.MOVE_SOURCE, MergeAction.Action.NO_ACTION));
+
+        participantMergeService.applyMerge(merge, DataAuditInfo.builder().systemProcess("test").build());
+
+        assertThat(participantUserService.find(sourceBundle.participantUser().getId()).isPresent(), is(false));
+        assertThat(preEnrollmentResponseDao.find(orphanPreEnroll.getId()).isPresent(), is(false));
+        // the moved enrollee keeps its pre-enroll response, now owned by the target ppUser
+        Enrollee moved = enrolleeService.find(sourceBundle.enrollee().getId()).orElseThrow();
+        assertThat(moved.getParticipantUserId(), equalTo(targetBundle.participantUser().getId()));
+        assertThat(moved.getPreEnrollmentResponseId(), equalTo(linkedPreEnroll.getId()));
+        PreEnrollmentResponse keptResponse = preEnrollmentResponseDao.find(linkedPreEnroll.getId()).orElseThrow();
+        assertThat(keptResponse.getPortalParticipantUserId(), equalTo(targetBundle.portalParticipantUser().getId()));
+    }
+
+    private PreregistrationResponse createPreReg(Survey survey, StudyEnvironmentBundle studyEnvBundle, EnrolleeBundle bundle) {
+        return preregistrationResponseDao.create(PreregistrationResponse.builder()
+                .surveyId(survey.getId())
+                .portalEnvironmentId(studyEnvBundle.getPortalEnv().getId())
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .creatingParticipantUserId(bundle.participantUser().getId())
+                .fullData("[]")
+                .qualified(true)
+                .build());
+    }
+
+    private PreEnrollmentResponse createPreEnroll(Survey survey, StudyEnvironmentBundle studyEnvBundle, EnrolleeBundle bundle) {
+        PreEnrollmentResponse response = preEnrollmentResponseDao.create(PreEnrollmentResponse.builder()
+                .surveyId(survey.getId())
+                .studyEnvironmentId(studyEnvBundle.getStudyEnv().getId())
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .creatingParticipantUserId(bundle.participantUser().getId())
+                .fullData("[]")
+                .qualified(true)
+                .build());
+        Enrollee enrollee = enrolleeService.find(bundle.enrollee().getId()).orElseThrow();
+        enrollee.setPreEnrollmentResponseId(response.getId());
+        enrolleeService.update(enrollee);
+        return response;
     }
 }

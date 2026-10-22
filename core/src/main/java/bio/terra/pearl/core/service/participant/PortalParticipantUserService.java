@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -9,7 +10,6 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -24,17 +24,20 @@ import java.util.UUID;
 public class PortalParticipantUserService extends CrudService<PortalParticipantUser, PortalParticipantUserDao> {
     private final ProfileService profileService;
     private final PreregistrationResponseDao preregistrationResponseDao;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final ParticipantDataChangeService participantDataChangeService;
     private final ParticipantUserService participantUserService;
 
     public PortalParticipantUserService(PortalParticipantUserDao dao,
                                         ProfileService profileService,
                                         PreregistrationResponseDao preregistrationResponseDao,
+                                        PreEnrollmentResponseDao preEnrollmentResponseDao,
                                         @Lazy ParticipantDataChangeService participantDataChangeService,
                                         @Lazy ParticipantUserService participantUserService) {
         super(dao);
         this.profileService = profileService;
         this.preregistrationResponseDao = preregistrationResponseDao;
+        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.participantDataChangeService = participantDataChangeService;
         this.participantUserService = participantUserService;
     }
@@ -110,6 +113,7 @@ public class PortalParticipantUserService extends CrudService<PortalParticipantU
     public void delete(UUID portalParticipantUserId, Set<CascadeProperty> cascades) {
         PortalParticipantUser ppUser = dao.find(portalParticipantUserId).get();
         preregistrationResponseDao.deleteByPortalParticipantUserId(portalParticipantUserId);
+        preEnrollmentResponseDao.deleteByPortalParticipantUserId(portalParticipantUserId);
         participantDataChangeService.deleteByPortalParticipantUserId(portalParticipantUserId);
 
         dao.delete(portalParticipantUserId);
