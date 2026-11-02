@@ -9,12 +9,14 @@ import bio.terra.pearl.core.model.participant.EnrolleeWithdrawalReason;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import bio.terra.pearl.core.service.survey.PreEnrollmentResponseService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantDataChangeService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -35,6 +37,7 @@ public class ParticipantMergeService {
     private final AnswerService answerService;
     private final KitRequestService kitRequestService;
     private final ParticipantUserService participantUserService;
+    private final PreEnrollmentResponseService preEnrollmentResponseService;
     private final MergeDao mergeDao;
 
     public ParticipantMergeService(PortalParticipantUserService portalParticipantUserService,
@@ -46,6 +49,7 @@ public class ParticipantMergeService {
                                    AnswerService answerService,
                                    KitRequestService kitRequestService,
                                    ParticipantUserService participantUserService,
+                                   PreEnrollmentResponseService preEnrollmentResponseService,
                                    MergeDao mergeDao) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantTaskService = participantTaskService;
@@ -56,6 +60,7 @@ public class ParticipantMergeService {
         this.answerService = answerService;
         this.kitRequestService = kitRequestService;
         this.participantUserService = participantUserService;
+        this.preEnrollmentResponseService = preEnrollmentResponseService;
         this.mergeDao = mergeDao;
     }
 
@@ -194,6 +199,16 @@ public class ParticipantMergeService {
         enrollee.setParticipantUserId(targetPpUser.getParticipantUserId());
         enrollee.setProfileId(targetPpUser.getProfileId());
         enrolleeService.update(enrollee);
+
+        // the enrollee keeps its pre-enrollment response, so it must stop referencing the source ppUser, which is about to be deleted
+        if (enrollee.getPreEnrollmentResponseId() != null) {
+            PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseService.find(enrollee.getPreEnrollmentResponseId()).orElseThrow();
+            preEnrollResponse.setPortalParticipantUserId(targetPpUser.getId());
+            if (preEnrollResponse.getCreatingParticipantUserId() != null) {
+                preEnrollResponse.setCreatingParticipantUserId(targetPpUser.getParticipantUserId());
+            }
+            preEnrollmentResponseService.update(preEnrollResponse);
+        }
 
         // merge the data from enrollee into targetEnrollee
         // delete the enrollee
