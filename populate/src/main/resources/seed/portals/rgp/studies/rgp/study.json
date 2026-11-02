@@ -29,6 +29,11 @@
         {
           "active": true,
           "surveyOrder": 0,
+          "populateFileName": "../../surveys/prequal.json"
+        },
+        {
+          "active": true,
+          "surveyOrder": 0,
           "populateFileName": "../../surveys/enrollment.json"
         },
         {

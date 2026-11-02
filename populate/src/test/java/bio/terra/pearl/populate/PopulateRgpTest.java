@@ -35,6 +35,9 @@ public class PopulateRgpTest extends BasePopulatePortalsTest {
         Assertions.assertEquals(SurveyType.PRE_ENROLL, preEnroll.getSurveyType());
         Assertions.assertEquals(1, preEnroll.getVersion());
         Assertions.assertTrue(preEnroll.getContent().contains("\"qualified\""));
+        // the admin "Forms & Surveys" page lists pre-enroll surveys from the configured surveys, not from preEnrollSurveyId
+        assertThat(surveyService.findActiveInStudyEnvWithType(sandbox.getId(), SurveyType.PRE_ENROLL)
+                .stream().map(Survey::getStableId).toList(), containsInAnyOrder("prequal"));
 
         // the family-member surveys from pepper are questions within enrollment, not separate surveys
         Survey enrollment = surveyService.findByStableIdAndPortalShortcodeWithMappings("enrollment", 1, "rgp").orElseThrow();

@@ -1,62 +1,85 @@
 {
-  "createdAt" : 1793636366.800170000,
-  "lastUpdatedAt" : 1793636366.800170000,
-  "stableId" : "prequal",
-  "version" : 1,
-  "name" : "Tell us your story",
-  "surveyType" : "PRE_ENROLL",
-  "answerMappings" : [ ],
-  "triggers" : [ ],
-  "referencedQuestions" : [ ],
-  "recurrenceType" : "NONE",
-  "recurOn" : "COMPLETION",
-  "required" : false,
-  "allowAdminEdit" : true,
-  "allowParticipantStart" : true,
-  "allowParticipantReedit" : true,
-  "prepopulate" : false,
-  "autoAssign" : false,
-  "assignToExistingEnrollees" : false,
-  "autoUpdateTaskAssignments" : false,
-  "jsonContent" : {
-    "title" : {
-      "en" : "Tell us your story",
-      "es" : "Cuéntenos su historia"
-    },
-    "pages" : [ {
-      "elements" : [ {
-        "name" : "generalInfo",
-        "type" : "checkbox",
-        "title" : {
-          "en" : "<p class=\"Accent\">I am, or am applying on behalf of, a patient who: </p>",
-          "es" : "<p class=\"Accent\">Presento esta solicitud en mi nombre o en nombre de un paciente que: </p>"
-        },
-        "choices" : [ {
-          "text" : {
-            "en" : "Lives in the United States",
-            "es" : "Vive en los Estados Unidos"
-          },
-          "value" : "RESIDENT"
-        }, {
-          "text" : {
-            "en" : "Has a rare and genetically undiagnosed condition",
-            "es" : "Tiene una afección genética rara que no se ha diagnosticado"
-          },
-          "value" : "RARE_CONDITION"
-        }, {
-          "text" : {
-            "en" : "Is currently under the care of a doctor that is helping to understand the cause of the patient's condition",
-            "es" : "Recibe los cuidados de un profesional médico que le está ayudando a determinar la causa de la afección"
-          },
-          "value" : "UNDER_CARE"
-        } ],
-        "validators" : [ ]
-      } ]
-    } ],
-    "calculatedValues" : [ {
-      "name" : "qualified",
-      "includeIntoResult" : true,
-      "expression" : "{generalInfo} contains 'RESIDENT' and {generalInfo} contains 'RARE_CONDITION' and {generalInfo} contains 'UNDER_CARE'"
-    } ]
+  "stableId": "prequal",
+  "version": 1,
+  "name": "Tell Us Your Story",
+  "surveyType": "PRE_ENROLL",
+  "autoAssign": false,
+  "assignToExistingEnrollees": false,
+  "allowAdminEdit": true,
+  "allowParticipantStart": true,
+  "allowParticipantReedit": true,
+  "required": false,
+  "answerMappings": [],
+  "jsonContent": {
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "type": "panel",
+            "name": "panel1",
+            "elements": [
+              {
+                "type": "html",
+                "name": "image",
+                "html": " <style>\n    .scaleA {\n      width: 100%;\n      max-width: max-content;\n    }\n    </style>\n</br><img src=\"/api/public/portals/v1/rgp/env/live/siteMedia/1/tell-us-your-story.jpg\"  class=\"scaleA\">"
+              },
+              {
+                "type": "html",
+                "name": "interestInRGP",
+                "html": {
+                  "en": "<div align=center><h1><font color=\"#0c457d\">Thank you for your interest in joining the Rare Genomes Project!</font color></h1></div></br>\n\nTo get started, please let us know if you or a loved one meets the <b>participation requirements</b> listed below by attesting that all of the statements listed next to the checkboxes below are true. You will then be asked to create a <font color=\"#e8702a\"><b>raregenomes.org</b></font> account and complete a questionnaire to tell us about the rare condition in your family. The information will be reviewed by our study team, and eligible families will be invited to participate.",
+                  "es": "<div align=center><h1><font color=\"#0c457d\">¡Gracias por su interés en unirse al Proyecto Genomas Raros!</font color></h1></div></br>  Para comenzar, indíquenos si usted o un ser querido cumple con los <b>requisitos de participación</b> que se enumeran a continuación, confirmando que todas las afirmaciones junto a las casillas de verificación son ciertas. Después se le pedirá que cree una cuenta de <font color=\"#e8702a\"><b>raregenomes.org</b></font> y que complete un cuestionario para contarnos sobre la enfermedad rara que afecta a su familia. Nuestro equipo de estudio revisará la información e invitará a participar a las familias elegibles."
+                }
+              },
+              {
+                "type": "checkbox",
+                "name": "eligibilityCriteria",
+                "title": {
+                  "en": "I am, or am applying on behalf of, a patient who:",
+                  "es": "<p class=\"Accent\">Presento esta solicitud en mi nombre o en nombre de un paciente que: </p>"
+                },
+                "hideNumber": true,
+                "isRequired": true,
+                "choices": [
+                  {
+                    "value": "livesInUS",
+                    "text": {
+                      "en": "Lives in the United States",
+                      "es": "Vive en los Estados Unidos"
+                    }
+                  },
+                  {
+                    "value": "hasRareCondition",
+                    "text": {
+                      "en": "Has a rare and genetically undiagnosed condition",
+                      "es": "Tiene una afección genética rara que no se ha diagnosticado"
+                    }
+                  },
+                  {
+                    "value": "doctorsCare",
+                    "text": {
+                      "en": "Is currently under the care of a doctor that is helping to understand the cause of the patient's condition",
+                      "es": "Recibe los cuidados de un profesional médico que le está ayudando a determinar la causa de la afección"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "includeIntoResult": true,
+        "expression": "{eligibilityCriteria} contains 'livesInUS' and {eligibilityCriteria} contains 'hasRareCondition' and {eligibilityCriteria} contains 'doctorsCare'"
+      }
+    ],
+    "title": {
+      "en": "Tell us your story",
+      "es": "Cuéntenos su historia"
+    }
   }
 }

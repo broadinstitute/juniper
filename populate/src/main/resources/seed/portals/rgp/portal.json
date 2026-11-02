@@ -261,6 +261,10 @@
     {
       "version": 1,
       "populateFileName": "media/ur-our-hope.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/tell-us-your-story.jpg"
     }
   ],
   "emailTemplateFiles": [],
