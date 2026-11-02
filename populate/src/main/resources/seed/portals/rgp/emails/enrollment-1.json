@@ -1,0 +1,13 @@
+{
+  "stableId": "enrollment",
+  "name": "Enrollment",
+  "version": 1,
+  "localizedEmailTemplates": [],
+  "localizedEmailTemplateDtos": [
+    {
+      "language": "en",
+      "subject": "Welcome to the ${study.name}!",
+      "bodyPopulateFile": "en/enrollment-1.html"
+    }
+  ]
+}

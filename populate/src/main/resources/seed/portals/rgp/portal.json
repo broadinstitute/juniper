@@ -265,9 +265,20 @@
     {
       "version": 1,
       "populateFileName": "media/tell-us-your-story.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rgp-logo-primary.png"
     }
   ],
-  "emailTemplateFiles": [],
+  "emailTemplateFiles": [
+    "emails/enrollment-1.json",
+    "emails/kitSent-1.json",
+    "emails/kitReturned-1.json",
+    "emails/surveyReminder-1.json",
+    "emails/rgp_surveyCompletion-1.json",
+    "emails/rgp_familyExperienceCompletion-1.json"
+  ],
   "portalEnvironmentChangeRecordPopDtos": [],
   "adminUsers": []
 }

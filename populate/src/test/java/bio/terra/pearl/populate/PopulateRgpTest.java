@@ -2,6 +2,7 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -48,5 +49,12 @@ public class PopulateRgpTest extends BasePopulatePortalsTest {
         List<String> adminSurveys = surveyService.findActiveInStudyEnvWithType(sandbox.getId(), SurveyType.ADMIN)
                 .stream().map(Survey::getStableId).toList();
         assertThat(adminSurveys, containsInAnyOrder("participantInfo", "studyStatus", "legacyIdentifiers"));
+
+        // baseline email notifications from the dev rgp setup
+        List<Trigger> triggers = triggerService.findByStudyEnvironmentId(sandbox.getId());
+        assertThat(triggers.stream().map(t -> emailTemplateService.find(t.getEmailTemplateId()).orElseThrow().getStableId()).toList(),
+                containsInAnyOrder("enrollment", "kitSent", "kitReturned", "surveyReminder",
+                        "rgp_surveyCompletion", "rgp_familyExperienceCompletion"));
+        assertThat(triggers.stream().filter(Trigger::isActive).count(), org.hamcrest.Matchers.equalTo(5L));
     }
 }

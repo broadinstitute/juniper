@@ -1,0 +1,13 @@
+{
+  "stableId": "kitSent",
+  "name": "Kit Sent",
+  "version": 1,
+  "localizedEmailTemplates": [],
+  "localizedEmailTemplateDtos": [
+    {
+      "language": "en",
+      "subject": "Your ${study.name} sample kit is on its way!",
+      "bodyPopulateFile": "en/kitSent-1.html"
+    }
+  ]
+}

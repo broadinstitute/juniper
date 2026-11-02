@@ -52,7 +52,111 @@
           "populateFileName": "../../surveys/legacyIdentifiers.json"
         }
       ],
-      "triggerDtos": [],
+      "triggerDtos": [
+        {
+          "active": true,
+          "triggerType": "EVENT",
+          "eventType": "STUDY_ENROLLMENT",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 3,
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 4320,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/enrollment-1.json"
+        },
+        {
+          "active": true,
+          "triggerType": "EVENT",
+          "eventType": "KIT_SENT",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 3,
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 4320,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/kitSent-1.json"
+        },
+        {
+          "active": true,
+          "triggerType": "EVENT",
+          "eventType": "KIT_RECEIVED",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 3,
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 4320,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/kitReturned-1.json"
+        },
+        {
+          "active": true,
+          "triggerType": "TASK_REMINDER",
+          "eventType": "STUDY_ENROLLMENT",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 2,
+          "taskType": "SURVEY",
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 10080,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/surveyReminder-1.json"
+        },
+        {
+          "active": false,
+          "triggerType": "EVENT",
+          "eventType": "SURVEY_RESPONSE",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 3,
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 4320,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/rgp_surveyCompletion-1.json"
+        },
+        {
+          "active": true,
+          "triggerType": "AD_HOC",
+          "eventType": "STUDY_ENROLLMENT",
+          "actionType": "NOTIFICATION",
+          "filterTargetStableIds": [],
+          "actionScope": "STUDY",
+          "actionTargetStableIds": [
+            null
+          ],
+          "deliveryType": "EMAIL",
+          "maxNumNotifications": 3,
+          "afterMinutesIncomplete": 4320,
+          "reminderIntervalMinutes": 4320,
+          "emailTemplateVersion": 0,
+          "populateFileName": "../../emails/rgp_familyExperienceCompletion-1.json"
+        }
+      ],
       "preEnrollmentResponseDtos": [],
       "kitTypeNames": [],
       "enrolleeFiles": [],

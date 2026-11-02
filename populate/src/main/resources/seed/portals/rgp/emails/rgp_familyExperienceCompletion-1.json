@@ -1,0 +1,13 @@
+{
+  "stableId": "rgp_familyExperienceCompletion",
+  "name": "Family Experience completion",
+  "version": 1,
+  "localizedEmailTemplates": [],
+  "localizedEmailTemplateDtos": [
+    {
+      "language": "en",
+      "subject": "Thank you for sharing your family's experiences!",
+      "bodyPopulateFile": "en/rgp_familyExperienceCompletion-1.html"
+    }
+  ]
+}
