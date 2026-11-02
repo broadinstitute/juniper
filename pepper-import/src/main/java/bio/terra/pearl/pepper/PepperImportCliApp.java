@@ -106,6 +106,8 @@ public class PepperImportCliApp implements CommandLineRunner {
             // these questions are flagged in the pepper config as no longer used
             normalizer.removeQuestions(survey.getJsonContent(), Set.of(varsCfg.getString("id.q.ethnicity_categories"), varsCfg.getString("id.q.sick_family")));
             normalizer.normalize(survey.getJsonContent());
+            // juniper survey stable ids are camelCase, pepper's are UPPER_SNAKE
+            survey.setStableId(SurveyNormalizer.camelCase(survey.getStableId()));
             allRenames.put(survey.getStableId(), new TreeMap<>(normalizer.getRenames()));
             surveys.put(formFile.replace(".conf", ""), survey);
         }
@@ -123,7 +125,8 @@ public class PepperImportCliApp implements CommandLineRunner {
         qualified.put("expression", Stream.of("RESIDENT", "RARE_CONDITION", "UNDER_CARE")
                 .map(option -> "{%s} contains '%s'".formatted(general, option)).collect(Collectors.joining(" and ")));
         ((ObjectNode) preEnroll.getJsonContent()).putArray("calculatedValues").add(qualified);
-        surveys.put("preEnroll", preEnroll);
+        // the prequal is only ever used as the pre-enroll survey in juniper, so it replaces the plain conversion
+        surveys.put("prequal", preEnroll);
 
         try {
             Path outDir = getFilePath("rgp", OUTPUT_ROOT);

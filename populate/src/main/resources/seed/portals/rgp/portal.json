@@ -1,0 +1,269 @@
+{
+  "name": "Rare Genomes Project",
+  "shortcode": "rgp",
+  "surveyFiles": [
+    "surveys/prequal.json",
+    "surveys/enrollment.json",
+    "surveys/participantInfo.json",
+    "surveys/studyStatus.json",
+    "surveys/legacyIdentifiers.json"
+  ],
+  "consentFormFiles": [],
+  "populateStudyFiles": [
+    "studies/rgp/study.json"
+  ],
+  "siteContentFiles": [
+    "siteContent/rgp_portalContent-1/siteContent.json"
+  ],
+  "portalEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "portalEnvironmentConfig": {
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "acceptingRegistration": true,
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
+      },
+      "triggers": [],
+      "participantDashboardAlerts": [],
+      "supportedLanguages": [
+        {
+          "portalEnvironmentId": "fbfc10c3-9a80-45e8-b350-5877ed7cd1ab",
+          "languageCode": "en",
+          "languageName": "English"
+        },
+        {
+          "portalEnvironmentId": "fbfc10c3-9a80-45e8-b350-5877ed7cd1ab",
+          "languageCode": "es",
+          "languageName": "Español"
+        }
+      ],
+      "participantUserFiles": [],
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/rgp_portalContent-1/siteContent.json"
+      },
+      "mailingListContacts": []
+    },
+    {
+      "environmentName": "irb",
+      "portalEnvironmentConfig": {
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "acceptingRegistration": true,
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
+      },
+      "triggers": [],
+      "participantDashboardAlerts": [],
+      "supportedLanguages": [
+        {
+          "portalEnvironmentId": "ad4dd74e-c65c-48c0-aa59-2b86955879e2",
+          "languageCode": "en",
+          "languageName": "English"
+        }
+      ],
+      "participantUserFiles": [],
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/rgp_portalContent-1/siteContent.json"
+      },
+      "mailingListContacts": []
+    },
+    {
+      "environmentName": "live",
+      "portalEnvironmentConfig": {
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "acceptingRegistration": true,
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
+      },
+      "triggers": [],
+      "participantDashboardAlerts": [],
+      "supportedLanguages": [
+        {
+          "portalEnvironmentId": "ae9ee3ef-5297-400d-a0e4-932add7b900d",
+          "languageCode": "en",
+          "languageName": "English"
+        }
+      ],
+      "participantUserFiles": [],
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/rgp_portalContent-1/siteContent.json"
+      },
+      "mailingListContacts": []
+    }
+  ],
+  "siteMediaDtos": [
+    {
+      "version": 1,
+      "populateFileName": "media/aid-discovery.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/aware-of-angels.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/broad_logo.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/craniofacial-centered-image-md.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/curehht-logo.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/eligibility-criteria-md.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/favicon.ico"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/find-answers.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/get-involved.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/global-genes.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/how-it-works-family.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/lgmd-centered-image-md.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/muscular-dystrophy-association-logo.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/my-gene-2.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/national-organization-for-rare-disorders.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/patient-worthy.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/privacy-and-your-data-lg.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rare-as-one-logo.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rare-genome-project-logo-primary.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rare-science-accelerating-cures-for-rare-kids.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rare-undiagnosed-network.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rgp-dna-strand-illustration.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rgp-home-banner.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/rgp-people-illustration.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/run-my-dna.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/same-but-different-cic.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/share-data.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-2.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-3.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-4.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-5.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-6.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-7.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step-8.jpg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step1-illustration.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step2-illustration.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/step3-illustration.svg"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/sweet-nectar-society.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/syndromes-without-a-name.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/the-giving-picture-project.png"
+    },
+    {
+      "version": 1,
+      "populateFileName": "media/ur-our-hope.png"
+    }
+  ],
+  "emailTemplateFiles": [],
+  "portalEnvironmentChangeRecordPopDtos": [],
+  "adminUsers": []
+}

@@ -1,0 +1,112 @@
+{
+  "name": "Rare Genomes Project",
+  "shortcode": "rgp",
+  "studyPortals": [],
+  "surveyFiles": [],
+  "consentFormFiles": [],
+  "emailTemplateFiles": [],
+  "studyEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "studyEnvironmentConfig": {
+        "passwordProtected": true,
+        "password": "broad_institute",
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": false,
+        "enableFamilyLinkage": true,
+        "initialized": true,
+        "useStubDsm": true,
+        "useDevDsmRealm": true,
+        "enableInPersonKits": false,
+        "includeSexAtBirthInKitMetadata": false,
+        "kitUseResearchIds": false,
+        "timeZone": "America/New_York"
+      },
+      "triggers": [],
+      "kitTypes": [],
+      "exportIntegrations": [],
+      "configuredSurveyDtos": [
+        {
+          "active": true,
+          "surveyOrder": 0,
+          "populateFileName": "../../surveys/enrollment.json"
+        },
+        {
+          "active": true,
+          "surveyOrder": 0,
+          "populateFileName": "../../surveys/participantInfo.json"
+        },
+        {
+          "active": true,
+          "surveyOrder": 1,
+          "populateFileName": "../../surveys/studyStatus.json"
+        },
+        {
+          "active": true,
+          "surveyOrder": 2,
+          "populateFileName": "../../surveys/legacyIdentifiers.json"
+        }
+      ],
+      "triggerDtos": [],
+      "preEnrollmentResponseDtos": [],
+      "kitTypeNames": [],
+      "enrolleeFiles": [],
+      "familyFiles": [],
+      "preEnrollSurveyDto": {
+        "populateFileName": "../../surveys/prequal.json"
+      }
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "passwordProtected": true,
+        "password": "broad_institute",
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": false,
+        "enableFamilyLinkage": false,
+        "initialized": false,
+        "useStubDsm": true,
+        "useDevDsmRealm": true,
+        "enableInPersonKits": false,
+        "includeSexAtBirthInKitMetadata": false,
+        "kitUseResearchIds": false,
+        "timeZone": "America/New_York"
+      },
+      "triggers": [],
+      "kitTypes": [],
+      "exportIntegrations": [],
+      "configuredSurveyDtos": [],
+      "triggerDtos": [],
+      "preEnrollmentResponseDtos": [],
+      "kitTypeNames": [],
+      "enrolleeFiles": [],
+      "familyFiles": []
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "passwordProtected": true,
+        "password": "broad_institute",
+        "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": false,
+        "enableFamilyLinkage": false,
+        "initialized": false,
+        "useStubDsm": true,
+        "useDevDsmRealm": true,
+        "enableInPersonKits": false,
+        "includeSexAtBirthInKitMetadata": false,
+        "kitUseResearchIds": false,
+        "timeZone": "America/New_York"
+      },
+      "triggers": [],
+      "kitTypes": [],
+      "exportIntegrations": [],
+      "configuredSurveyDtos": [],
+      "triggerDtos": [],
+      "preEnrollmentResponseDtos": [],
+      "kitTypeNames": [],
+      "enrolleeFiles": [],
+      "familyFiles": []
+    }
+  ]
+}

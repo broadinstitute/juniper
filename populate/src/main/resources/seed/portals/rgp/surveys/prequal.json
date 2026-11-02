@@ -1,0 +1,62 @@
+{
+  "createdAt" : 1793636366.800170000,
+  "lastUpdatedAt" : 1793636366.800170000,
+  "stableId" : "prequal",
+  "version" : 1,
+  "name" : "Tell us your story",
+  "surveyType" : "PRE_ENROLL",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "referencedQuestions" : [ ],
+  "recurrenceType" : "NONE",
+  "recurOn" : "COMPLETION",
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "autoAssign" : false,
+  "assignToExistingEnrollees" : false,
+  "autoUpdateTaskAssignments" : false,
+  "jsonContent" : {
+    "title" : {
+      "en" : "Tell us your story",
+      "es" : "Cuéntenos su historia"
+    },
+    "pages" : [ {
+      "elements" : [ {
+        "name" : "generalInfo",
+        "type" : "checkbox",
+        "title" : {
+          "en" : "<p class=\"Accent\">I am, or am applying on behalf of, a patient who: </p>",
+          "es" : "<p class=\"Accent\">Presento esta solicitud en mi nombre o en nombre de un paciente que: </p>"
+        },
+        "choices" : [ {
+          "text" : {
+            "en" : "Lives in the United States",
+            "es" : "Vive en los Estados Unidos"
+          },
+          "value" : "RESIDENT"
+        }, {
+          "text" : {
+            "en" : "Has a rare and genetically undiagnosed condition",
+            "es" : "Tiene una afección genética rara que no se ha diagnosticado"
+          },
+          "value" : "RARE_CONDITION"
+        }, {
+          "text" : {
+            "en" : "Is currently under the care of a doctor that is helping to understand the cause of the patient's condition",
+            "es" : "Recibe los cuidados de un profesional médico que le está ayudando a determinar la causa de la afección"
+          },
+          "value" : "UNDER_CARE"
+        } ],
+        "validators" : [ ]
+      } ]
+    } ],
+    "calculatedValues" : [ {
+      "name" : "qualified",
+      "includeIntoResult" : true,
+      "expression" : "{generalInfo} contains 'RESIDENT' and {generalInfo} contains 'RARE_CONDITION' and {generalInfo} contains 'UNDER_CARE'"
+    } ]
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "title": "",
+  "sections": [],
+  "minimalNavbar": false,
+  "sectionDtos": [
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-home-banner.png",
+          "version": 1
+        },
+        "fullWidth": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "Si usted o una persona de su familia tiene una enfermedad rara cuya causa genética no se ha diagnosticado, quizá cumpla los requisitos para participar en un estudio dirigido por los pacientes cuya finalidad es descubrir los genes implicados en la enfermedad rara de su familia.",
+        "blurbAlign": "center",
+        "buttons": [],
+        "blurbSize": "fs-2",
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "El Proyecto Genomas Raros del Broad Institute de MIT y Harvard es un estudio dirigido por los pacientes y realizado por expertos en genómica y médicos que creen que los últimos avances en la secuenciación del genoma están cambiando el mundo de la medicina y deberían estar al alcance de las familias que tienen enfermedades raras y sin diagnosticar.",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "lgmd-centered-image-md.jpg",
+          "version": 1
+        },
+        "imagePosition": "left",
+        "background": "#FFFFFF",
+        "buttons": [
+          {
+            "text": "Solicitud",
+            "type": "join",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "logos": [
+          {
+            "cleanFileName": "broad_logo.png",
+            "version": 1,
+            "alt": "Broad Institute logo",
+            "link": "https://broadinstitute.org",
+            "style": {
+              "height": "40px"
+            }
+          }
+        ],
+        "imageAsBackground": false,
+        "aspectRatio": ""
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-people-illustration.svg",
+          "version": 1
+        }
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "background": "#F2F2F2",
+        "title": "Impulsar descubrimientos",
+        "blurb": "*Más de la mitad de los genes causantes de enfermedades raras no se han descubierto aún.*\n\nAl participar en el Proyecto Genomas Raros, usted puede ayudar a los investigadores a identificar los genes que causan una enfermedad rara. Si cumple los requisitos para participar en el estudio, usaremos la secuenciación del genoma para buscar la causa de la enfermedad rara y sin diagnosticar que afecta a su familia.",
+        "fullWidth": true,
+        "buttons": [],
+        "imagePosition": "right",
+        "imageWidthPercentage": 34,
+        "image": {
+          "cleanFileName": "aid-discovery.jpg",
+          "version": 1
+        }
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Busque respuestas",
+        "blurb": "*El diagnóstico de su familia le pertenece a usted.*\n\nSi encontramos una alteración genética que pueda ser la causa de la enfermedad rara de su familia, la confirmaremos en un laboratorio clínico y colaboraremos con un médico de su localidad para entregarle los resultados.",
+        "fullWidth": true,
+        "buttons": [],
+        "image": {
+          "cleanFileName": "find-answers.jpg",
+          "version": 1
+        },
+        "imagePosition": "left"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Participe",
+        "blurb": "*Intégrese a la comunidad de investigación.*\n\nEl Proyecto Genomas Raros cuenta con el apoyo del Broad Institute de MIT y Harvard, y con la colaboración de pacientes y de defensores de la comunidad que sufre enfermedades raras. Creemos que las familias deben ser el centro de la investigación relacionada con sus enfermedades, y recomendamos la participación de ellas y de los grupos de defensa que las apoyan a lo largo del estudio.",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "get-involved.jpg",
+          "version": 1
+        },
+        "imagePosition": "right",
+        "buttons": [],
+        "logos": [],
+        "background": "#F2F2F2"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": " Comparta sus datos",
+        "blurb": "*Compartir datos es esencial para mejorar las tasas de diagnóstico de las enfermedades raras en todo el mundo.*\n\nLa información genética que se genere en este proyecto se compartirá con otros científicos para garantizar que tenga el más amplio efecto posible. Sus datos genéticos pueden ayudar a otras familias y mejorar los conocimientos que los científicos tienen acerca de las enfermedades raras. Encontrará más información sobre nuestras políticas en cuanto a la comunicación de datos [aquí](/privacy-and-your-data).",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "share-data.jpg",
+          "version": 1
+        },
+        "imagePosition": "left",
+        "buttons": [],
+        "logos": []
+      }
+    },
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-dna-strand-illustration.svg",
+          "version": 1
+        },
+        "fullWidth": false
+      }
+    },
+    {
+      "sectionType": "STEP_OVERVIEW",
+      "sectionConfigJson": {
+        "background": "linear-gradient(to left, #FFFFFF 0%, #F2F2F2 100%)",
+        "title": "Cómo puede participar usted",
+        "steps": [
+          {
+            "image": {
+              "id": "ed017661-5154-4a57-be4b-a3898b235fff",
+              "createdAt": 1723234066.248914,
+              "lastUpdatedAt": 1723234066.248915,
+              "cleanFileName": "step1-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Cuéntenos su historia",
+            "blurb": "Haga clic en [Solicitud](/join) para ver un resumen general del estudio y enterarse de cómo iniciar una solicitud de ingreso. El equipo investigador revisará la información e invitará a participar a las familias que cumplan los requisitos. Programaremos una cita para tener una conversación detallada sobre el estudio y enviarle un documento de consentimiento."
+          },
+          {
+            "image": {
+              "id": "56ba8123-6970-4d83-aa1e-7c2691de6697",
+              "createdAt": 1723234074.509436,
+              "lastUpdatedAt": 1723234074.509437,
+              "cleanFileName": "step2-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Envíe una muestra",
+            "blurb": "Cuando se haya inscrito, les enviaremos por correo postal a usted y a su familia un estuche franqueado de recolección de muestras. También le haremos más preguntas sobre sus antecedentes médicos y le pediremos copias de su historia clínica y de los resultados de pruebas genéticas, si se ha hecho alguna."
+          },
+          {
+            "image": {
+              "id": "c411639b-8db7-426b-8ba9-cca04d0f2f0c",
+              "createdAt": 1723234094.265934,
+              "lastUpdatedAt": 1723234094.265935,
+              "cleanFileName": "step3-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Ayúdenos a descubrir",
+            "blurb": "Es posible que, mediante la secuenciación del ADN, podamos descubrir la causa genética de la enfermedad rara de su familia, y que colaboremos con el médico que le atiende para entregarle resultados importantes para usted. Además, compartiremos de manera amplia sus datos desidentificados con la comunidad científica para promover descubrimientos en la investigación de las enfermedades raras."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "Solicitud",
+            "type": "join",
+            "href": "/participation",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "showStepNumbers": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "<<En este proyecto de investigación se entiende realmente la importancia de vincular a los pacientes como colaboradores y en pedirles que participen de una manera novedosa. Es esencial hacerlo, porque **a menudo los pacientes son quienes comienzan a dirigir el rumbo de la investigación**.>>\n\n-Matt Might, cuidador y director del Hugh Kaul Precision Medicine Institute",
+        "blurbAlign": "right",
+        "buttons": [],
+        "background": "#0ea7b5",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Organizaciones de defensa del paciente que colaboran con nosotros",
+        "blurb": "",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "craniofacial-centered-image-md.jpg",
+          "version": 1
+        },
+        "imagePosition": "right",
+        "buttons": [],
+        "logos": [
+          {
+            "cleanFileName": "rare-as-one-logo.png",
+            "version": 1,
+            "link": "https://chanzuckerberg.com/science/programs-resources/rare-as-one/",
+            "alt": "Rare As One Project"
+          },
+          {
+            "cleanFileName": "national-organization-for-rare-disorders.png",
+            "version": 1,
+            "alt": "National Organization for Rare Disorders",
+            "link": "https://rarediseases.org/"
+          },
+          {
+            "cleanFileName": "syndromes-without-a-name.png",
+            "version": 1,
+            "alt": "Syndromes Without a Name",
+            "link": "http://swanusa.org/"
+          },
+          {
+            "cleanFileName": "rare-science-accelerating-cures-for-rare-kids.png",
+            "version": 1,
+            "alt": "Rare Science - Accelerating Cures for RARE Kids",
+            "link": "https://www.rarescience.org/"
+          },
+          {
+            "cleanFileName": "run-my-dna.png",
+            "version": 1
+          },
+          {
+            "cleanFileName": "same-but-different-cic.png",
+            "version": 1,
+            "alt": "Same but Different",
+            "link": "https://www.samebutdifferentcic.org.uk/"
+          },
+          {
+            "cleanFileName": "ur-our-hope.png",
+            "version": 1,
+            "link": "https://urourhope.org/",
+            "alt": "U.R. Our Hope"
+          },
+          {
+            "cleanFileName": "aware-of-angels.png",
+            "version": 1,
+            "alt": "Aware of Angels",
+            "link": "http://awareofangels.org/"
+          },
+          {
+            "cleanFileName": "sweet-nectar-society.png",
+            "version": 1,
+            "link": "https://sweetnectarsociety.org/",
+            "alt": "Sweet Nectar Society"
+          },
+          {
+            "cleanFileName": "rare-undiagnosed-network.png",
+            "version": 1,
+            "link": "https://rareundiagnosed.org/",
+            "alt": "Rare & Undiagnosed Network"
+          },
+          {
+            "cleanFileName": "muscular-dystrophy-association-logo.svg",
+            "version": 1,
+            "alt": "Muscular Dystrophy Association",
+            "link": "https://www.mda.org/"
+          },
+          {
+            "cleanFileName": "global-genes.png",
+            "version": 1,
+            "link": "https://globalgenes.org/",
+            "alt": "Global Genes"
+          },
+          {
+            "cleanFileName": "my-gene-2.png",
+            "version": 1,
+            "alt": "My Gene 2",
+            "link": "https://mygene2.org/MyGene2/"
+          },
+          {
+            "cleanFileName": "patient-worthy.png",
+            "version": 1,
+            "link": "https://patientworthy.com/",
+            "alt": "Patient Worthy"
+          },
+          {
+            "cleanFileName": "the-giving-picture-project.png",
+            "version": 1,
+            "link": "https://www.thegivingpictureproject.com/",
+            "alt": "The Giving Picture Project"
+          },
+          {
+            "cleanFileName": "curehht-logo.png",
+            "version": 1,
+            "alt": "Cure HHT",
+            "link": "https://curehht.org/"
+          }
+        ],
+        "imageAsBackground": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "Usted puede ser la fuerza que impulse la investigación de las enfermedades raras.",
+        "blurb": "",
+        "buttons": [
+          {
+            "type": "join",
+            "text": "Solicitud",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "Agradecemos mucho a los Institutos Nacionales de la Salud (NIH); la Muscular Dystrophy Association (MDA); Illumina, Inc.; el Broad Institute; la Silicon Valley Community Foundation; y los Shriners Hospitals for Children por el apoyo económico que le dan a este proyecto.",
+        "blurbAlign": "center",
+        "buttons": [],
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    }
+  ]
+}

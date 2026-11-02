@@ -187,7 +187,8 @@ public class ActivityImporter {
      * Inlines an embedded Pepper activity (e.g. FATHER within ENROLLMENT). Since Juniper surveys can't embed other surveys,
      * the questions are renamed with the activity as a prefix: single-instance activities become a panel with
      * questions named e.g. "father.race"; allowMultiple activities become a dynamic panel (e.g. "sibling") whose
-     * template questions are named by their unprefixed name, e.g. "sex".
+     * template questions are named e.g. "sibling.sex". Juniper requires question names to be unique across the whole
+     * survey (including inside dynamic panels), so the prefix is needed in both cases.
      */
     private List<JsonNode> convertNestedActivityBlock(Map<String, Map<String, Object>> allLangMap, NestedActivityBlockDef blockDef) {
         FormActivityDef nested = nestedActivities.get(blockDef.getActivityCode());
@@ -208,7 +209,7 @@ public class ActivityImporter {
         collectNames(elements, name -> {
             if (name.startsWith(pepperPrefix)) {
                 String rest = name.substring(pepperPrefix.length()).toLowerCase();
-                renames.put(name, multiple ? rest : code.toLowerCase() + "." + rest);
+                renames.put(name, code.toLowerCase() + "." + rest);
             }
         });
         // inside a dynamic panel, siblings are referenced relative to the panel
