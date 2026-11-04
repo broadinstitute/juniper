@@ -1,0 +1,315 @@
+{
+  "stableId": "studyStatus",
+  "name": "Study Status",
+  "surveyType": "ADMIN",
+  "version": 1,
+  "allowAdminEdit": true,
+  "allowParticipantStart": false,
+  "allowParticipantReedit": false,
+  "autoAssign": true,
+  "assignToExistingEnrollees": true,
+  "required": false,
+  "answerMappings": [],
+  "jsonContent": {
+    "title": {
+      "en": "Study Status"
+    },
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "acceptanceStatus",
+                "title": {
+                  "en": "Acceptance Status"
+                },
+                "isRequired": false,
+                "type": "dropdown",
+                "choices": [
+                  {
+                    "value": "ACCEPTED",
+                    "text": {
+                      "en": "Accepted"
+                    }
+                  },
+                  {
+                    "value": "IN_REVIEW",
+                    "text": {
+                      "en": "In Review"
+                    }
+                  },
+                  {
+                    "value": "MORE_INFO_NEEDED",
+                    "text": {
+                      "en": "More Info Needed"
+                    }
+                  },
+                  {
+                    "value": "NOT_ACCEPTED",
+                    "text": {
+                      "en": "Not Accepted"
+                    }
+                  },
+                  {
+                    "value": "NMI_TO_ACCEPT",
+                    "text": {
+                      "en": "NMI to Accepted"
+                    }
+                  },
+                  {
+                    "value": "PRE_REVIEW",
+                    "text": {
+                      "en": "Pre-review"
+                    }
+                  }
+                ],
+                "defaultValue": "PRE_REVIEW"
+              },
+              {
+                "name": "acceptanceStatusDate",
+                "title": {
+                  "en": "Acceptance Status Date"
+                },
+                "isRequired": false,
+                "type": "text",
+                "inputType": "date"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "active",
+                "title": {
+                  "en": "Active/Inactive/HOLD"
+                },
+                "isRequired": false,
+                "type": "dropdown",
+                "choices": [
+                  {
+                    "value": "ACTIVE",
+                    "text": {
+                      "en": "Active"
+                    }
+                  },
+                  {
+                    "value": "HOLD",
+                    "text": {
+                      "en": "HOLD"
+                    }
+                  },
+                  {
+                    "value": "INACTIVE",
+                    "text": {
+                      "en": "Inactive"
+                    }
+                  }
+                ],
+                "defaultValue": "ACTIVE"
+              },
+              {
+                "name": "inactiveReason",
+                "title": {
+                  "en": "Inactive Reason"
+                },
+                "isRequired": false,
+                "type": "dropdown",
+                "choices": [
+                  {
+                    "value": "WITHDREW",
+                    "text": {
+                      "en": "Withdrew"
+                    }
+                  },
+                  {
+                    "value": "DECLINED",
+                    "text": {
+                      "en": "Declined to Participate"
+                    }
+                  },
+                  {
+                    "value": "ENROLLED_INELIGIBLE",
+                    "text": {
+                      "en": "Enrolled-Ineligible"
+                    }
+                  },
+                  {
+                    "value": "COMPLETED",
+                    "text": {
+                      "en": "Completed"
+                    }
+                  },
+                  {
+                    "value": "LOST_TO_FOLLOWUP",
+                    "text": {
+                      "en": "Lost to Follow-up"
+                    }
+                  },
+                  {
+                    "value": "INELIGIBLE",
+                    "text": {
+                      "en": "Ineligible"
+                    }
+                  },
+                  {
+                    "value": "NA",
+                    "text": {
+                      "en": "N/A"
+                    }
+                  }
+                ],
+                "defaultValue": "NA"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "acuityAppointmentDate",
+                "title": {
+                  "en": "Acuity Appointment Date"
+                },
+                "isRequired": false,
+                "type": "text",
+                "inputType": "date"
+              },
+              {
+                "name": "dateConsentCall",
+                "title": {
+                  "en": "Date of Consent Call"
+                },
+                "isRequired": false,
+                "type": "text",
+                "inputType": "date"
+              },
+              {
+                "name": "enrollmentDate",
+                "title": {
+                  "en": "Enrollment Date"
+                },
+                "isRequired": false,
+                "type": "text",
+                "inputType": "date"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "dataSharingPermissions",
+                "title": {
+                  "en": "Data-sharing permissions"
+                },
+                "isRequired": false,
+                "type": "dropdown",
+                "choices": [
+                  {
+                    "value": "HMB",
+                    "text": {
+                      "en": "HMB"
+                    }
+                  },
+                  {
+                    "value": "GRU",
+                    "text": {
+                      "en": "GRU"
+                    }
+                  },
+                  {
+                    "value": "UNKNOWN",
+                    "text": {
+                      "en": "Unknown"
+                    }
+                  }
+                ],
+                "defaultValue": "UNKNOWN"
+              },
+              {
+                "name": "consentingNotes",
+                "title": {
+                  "en": "Consenting Notes"
+                },
+                "isRequired": false,
+                "type": "comment"
+              },
+              {
+                "name": "consentDocumentationComplete",
+                "title": {
+                  "en": "Consent Documentation Complete"
+                },
+                "isRequired": false,
+                "type": "radiogroup",
+                "choices": [
+                  {
+                    "value": "YES",
+                    "text": {
+                      "en": "Yes"
+                    }
+                  },
+                  {
+                    "value": "NO",
+                    "text": {
+                      "en": "No"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "photoPermissions",
+                "title": {
+                  "en": "Photo Permissions"
+                },
+                "isRequired": false,
+                "type": "dropdown",
+                "choices": [
+                  {
+                    "value": "NA",
+                    "text": {
+                      "en": "N/A"
+                    }
+                  },
+                  {
+                    "value": "INTERNAL_ONLY",
+                    "text": {
+                      "en": "Internal only"
+                    }
+                  },
+                  {
+                    "value": "EXTERNAL_INTERNAL",
+                    "text": {
+                      "en": "External and Internal"
+                    }
+                  },
+                  {
+                    "value": "DECLINED",
+                    "text": {
+                      "en": "Declined"
+                    }
+                  },
+                  {
+                    "value": "OTHER",
+                    "text": {
+                      "en": "Other"
+                    }
+                  },
+                  {
+                    "value": "REQUESTED",
+                    "text": {
+                      "en": "Requested"
+                    }
+                  }
+                ],
+                "defaultValue": "NA"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

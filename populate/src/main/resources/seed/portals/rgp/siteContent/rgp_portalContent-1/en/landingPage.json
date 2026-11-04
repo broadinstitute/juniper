@@ -1,0 +1,416 @@
+{
+  "title": "",
+  "sections": [],
+  "minimalNavbar": false,
+  "sectionDtos": [
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-home-banner.png",
+          "version": 1
+        },
+        "fullWidth": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "If you or your family member has a rare and genetically undiagnosed condition, you may be eligible to join a patient-driven amazing!!!!! search study aimed at discovering the genes underlying your family’s rare disease.",
+        "blurbAlign": "center",
+        "buttons": [],
+        "blurbSize": "fs-2",
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "The Rare Genomes Project (RGP) at the Broad Institute of MIT and Harvard is a patient-driven research study led by genomics experts and clinicians who believe that the latest advances in genomic sequencing are changing medicine and should be accessible to families with rare and undiagnosed conditions.",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "lgmd-centered-image-md.jpg",
+          "version": 1
+        },
+        "imagePosition": "left",
+        "background": "#FFFFFF",
+        "buttons": [
+          {
+            "text": "Apply",
+            "type": "join",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "logos": [
+          {
+            "cleanFileName": "broad_logo.png",
+            "version": 1,
+            "alt": "Broad Institute logo",
+            "link": "https://broadinstitute.org",
+            "style": {
+              "height": "40px"
+            }
+          }
+        ],
+        "imageAsBackground": false,
+        "aspectRatio": ""
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-people-illustration.svg",
+          "version": 1
+        }
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "background": "#F2F2F2",
+        "title": "Aid Discovery",
+        "blurb": "*More than half of the genes underlying rare diseases remain undiscovered.*\n\nBy participating in the Rare Genomes Project, you can help researchers identify the genes that cause rare disease. If you are eligible for the study, we will use genomic sequencing to look for the cause of the rare, undiagnosed disease in your family.",
+        "fullWidth": true,
+        "buttons": [],
+        "imagePosition": "right",
+        "imageWidthPercentage": 34,
+        "image": {
+          "cleanFileName": "aid-discovery.jpg",
+          "version": 1
+        }
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Find Answers",
+        "blurb": "*Your family’s diagnosis belongs to you.*\n\nIf we find a genetic change that may be the cause of the rare disease in your family, we will confirm it in a clinical lab and work with your local doctor to return the result to you.",
+        "fullWidth": true,
+        "buttons": [],
+        "image": {
+          "cleanFileName": "find-answers.jpg",
+          "version": 1
+        },
+        "imagePosition": "left"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Get Involved",
+        "blurb": "*Join the research community.*\n\nThe Rare Genomes Project is supported by The Broad Institute of MIT and Harvard in partnership with patients and rare disease advocates. We believe that families should be at the center of research involving their diseases, and encourage the involvement of families and the advocacy groups that support them throughout the study.",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "get-involved.jpg",
+          "version": 1
+        },
+        "imagePosition": "right",
+        "buttons": [],
+        "logos": [],
+        "background": "#F2F2F2"
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "Share Data",
+        "blurb": "*Data sharing is crucial for improving diagnosis rates of rare disease worldwide.*\n\nThe genetic information generated in this project will be shared with other scientists to ensure it has the widest possible impact. Your genetic data can help other families and improve scientists’ understanding of rare disease. Learn more about our data sharing policies [here](/privacy-and-your-data).",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "share-data.jpg",
+          "version": 1
+        },
+        "imagePosition": "left",
+        "buttons": [],
+        "logos": []
+      }
+    },
+    {
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "rgp-dna-strand-illustration.svg",
+          "version": 1
+        },
+        "fullWidth": false
+      }
+    },
+    {
+      "sectionType": "STEP_OVERVIEW",
+      "sectionConfigJson": {
+        "background": "linear-gradient(to left, #FFFFFF 0%, #F2F2F2 100%)",
+        "title": "How to Participate",
+        "steps": [
+          {
+            "image": {
+              "id": "ed017661-5154-4a57-be4b-a3898b235fff",
+              "createdAt": 1723234066.248914,
+              "lastUpdatedAt": 1723234066.248915,
+              "cleanFileName": "step1-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Tell us your story",
+            "blurb": "Click [apply](/join) to see a broad overview of the study and learn how you can start an application. The information will be reviewed by our study team, and eligible families will be invited to participate. We will arrange a time to have a detailed discussion about the study and send a consent form."
+          },
+          {
+            "image": {
+              "id": "56ba8123-6970-4d83-aa1e-7c2691de6697",
+              "createdAt": 1723234074.509436,
+              "lastUpdatedAt": 1723234074.509437,
+              "cleanFileName": "step2-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Submit a sample",
+            "blurb": "Once enrolled, we will mail a pre-paid sample collection kit directly to you and your family. We will also ask you more about medical history and ask for copies of medical records, including any prior genetic test results."
+          },
+          {
+            "image": {
+              "id": "c411639b-8db7-426b-8ba9-cca04d0f2f0c",
+              "createdAt": 1723234094.265934,
+              "lastUpdatedAt": 1723234094.265935,
+              "cleanFileName": "step3-illustration.svg",
+              "version": 1,
+              "portalShortcode": "rgp"
+            },
+            "duration": "Discover",
+            "blurb": "Through DNA sequencing, we may discover the genetic cause of the rare disease in your family and will work with you and your doctor to return important results to you. We will also share de-identified data broadly with the scientific community to empower discoveries in rare disease research."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "Apply",
+            "type": "join",
+            "href": "/participation",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "showStepNumbers": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "\"This research project really understands the importance of bringing patients in as partners and engaging patients in a novel way. It's critical to do that because **patients are often the ones that start driving the research**.\"\n\n-Matt Might, Caregiver and Director, Hugh Kaul Precision Medicine Institute",
+        "blurbAlign": "right",
+        "buttons": [],
+        "background": "#0ea7b5",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "Our advocacy partners",
+        "blurb": "",
+        "blurbAlign": "center",
+        "buttons": []
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "craniofacial-centered-image-md.jpg",
+          "version": 1
+        },
+        "imagePosition": "right",
+        "buttons": [],
+        "logos": [
+          {
+            "cleanFileName": "rare-as-one-logo.png",
+            "version": 1,
+            "link": "https://chanzuckerberg.com/science/programs-resources/rare-as-one/",
+            "alt": "Rare As One Project"
+          },
+          {
+            "cleanFileName": "national-organization-for-rare-disorders.png",
+            "version": 1,
+            "alt": "National Organization for Rare Disorders",
+            "link": "https://rarediseases.org/"
+          },
+          {
+            "cleanFileName": "syndromes-without-a-name.png",
+            "version": 1,
+            "alt": "Syndromes Without a Name",
+            "link": "http://swanusa.org/"
+          },
+          {
+            "cleanFileName": "rare-science-accelerating-cures-for-rare-kids.png",
+            "version": 1,
+            "alt": "Rare Science - Accelerating Cures for RARE Kids",
+            "link": "https://www.rarescience.org/"
+          },
+          {
+            "cleanFileName": "run-my-dna.png",
+            "version": 1
+          },
+          {
+            "cleanFileName": "same-but-different-cic.png",
+            "version": 1,
+            "alt": "Same but Different",
+            "link": "https://www.samebutdifferentcic.org.uk/"
+          }
+        ],
+        "imageAsBackground": false
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "privacy-and-your-data-lg.jpg",
+          "version": 1
+        },
+        "imagePosition": "left",
+        "buttons": [],
+        "logos": [
+          {
+            "cleanFileName": "ur-our-hope.png",
+            "version": 1,
+            "link": "https://urourhope.org/",
+            "alt": "U.R. Our Hope"
+          },
+          {
+            "cleanFileName": "aware-of-angels.png",
+            "version": 1,
+            "alt": "Aware of Angels",
+            "link": "http://awareofangels.org/"
+          },
+          {
+            "cleanFileName": "sweet-nectar-society.png",
+            "version": 1,
+            "link": "https://sweetnectarsociety.org/",
+            "alt": "Sweet Nectar Society"
+          },
+          {
+            "cleanFileName": "rare-undiagnosed-network.png",
+            "version": 1,
+            "link": "https://rareundiagnosed.org/",
+            "alt": "Rare & Undiagnosed Network"
+          },
+          {
+            "cleanFileName": "muscular-dystrophy-association-logo.svg",
+            "version": 1,
+            "alt": "Muscular Dystrophy Association",
+            "link": "https://www.mda.org/"
+          },
+          {
+            "cleanFileName": "global-genes.png",
+            "version": 1,
+            "link": "https://globalgenes.org/",
+            "alt": "Global Genes"
+          }
+        ],
+        "imageAsBackground": false
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "",
+        "fullWidth": true,
+        "image": {
+          "cleanFileName": "how-it-works-family.jpg",
+          "version": 1
+        },
+        "imagePosition": "right",
+        "buttons": [],
+        "logos": [
+          {
+            "cleanFileName": "my-gene-2.png",
+            "version": 1,
+            "alt": "My Gene 2",
+            "link": "https://mygene2.org/MyGene2/"
+          },
+          {
+            "cleanFileName": "patient-worthy.png",
+            "version": 1,
+            "link": "https://patientworthy.com/",
+            "alt": "Patient Worthy"
+          },
+          {
+            "cleanFileName": "the-giving-picture-project.png",
+            "version": 1,
+            "link": "https://www.thegivingpictureproject.com/",
+            "alt": "The Giving Picture Project"
+          },
+          {
+            "cleanFileName": "curehht-logo.png",
+            "version": 1,
+            "alt": "Cure HHT",
+            "link": "https://curehht.org/"
+          }
+        ],
+        "imageAsBackground": false
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "You can be the driving force behind rare disease research.",
+        "blurb": "",
+        "buttons": [
+          {
+            "type": "join",
+            "text": "Apply",
+            "studyShortcode": "rgp"
+          }
+        ],
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "",
+        "blurb": "Many thanks to the National Institutes of Health (NIH), the Muscular Dystrophy Association (MDA), Illumina, Inc., Broad Institute, the Silicon Valley Community Foundation, and Shriners Hospitals for Children for their financial support of our project.",
+        "blurbAlign": "center",
+        "buttons": [],
+        "background": "#e8702a",
+        "color": "#FFFFFF"
+      }
+    }
+  ]
+}

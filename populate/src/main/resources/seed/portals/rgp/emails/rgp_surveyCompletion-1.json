@@ -1,0 +1,13 @@
+{
+  "stableId": "rgp_surveyCompletion",
+  "name": "Survey Completion",
+  "version": 1,
+  "localizedEmailTemplates": [],
+  "localizedEmailTemplateDtos": [
+    {
+      "language": "en",
+      "subject": "Thank you for sharing your family's experiences with the ${study.name}",
+      "bodyPopulateFile": "en/rgp_surveyCompletion-1.html"
+    }
+  ]
+}

@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -42,19 +44,51 @@ public class ActivityImporter {
     private final String[] languages = {"en", "es", "de", "fr", "hi", "it", "ja", "pl", "pt", "ru", "tr", "zh"};
 
 
+    /**
+     * Activities that other activities embed via ACTIVITY blocks, keyed by activity code. Juniper has no embedded
+     * surveys, so the questions of these activities are inlined into the parent survey.
+     */
+    private final Map<String, FormActivityDef> nestedActivities = new HashMap<>();
+    /**
+     * question stableId -> option stableIds that have been retired in Pepper (via patches) and should not be imported
+     */
+    private final Map<String, Set<String>> optionsToRemove = new HashMap<>();
+
+    public void setNestedActivities(Map<String, FormActivityDef> activities) {
+        nestedActivities.clear();
+        nestedActivities.putAll(activities);
+    }
+
+    public void setOptionsToRemove(Map<String, Set<String>> toRemove) {
+        optionsToRemove.clear();
+        optionsToRemove.putAll(toRemove);
+    }
+
+    private int staticContentCount = 0;
+
     public ActivityImporter(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public Survey parsePepperForm(Config varsConfig, Path dirPath, Path path) {
+    public FormActivityDef parseActivityDef(Config varsConfig, Path dirPath, Path path) {
         File file = dirPath.resolve(path).toFile();
         if (!file.exists()) {
             throw new RuntimeException("Activity definition file is missing: " + file);
         }
+        return buildActivity(file, FormActivityDef.class, varsConfig);
+    }
 
-        FormActivityDef activityDef = buildActivity(file, FormActivityDef.class, varsConfig);
+    public Survey parsePepperForm(Config varsConfig, Path dirPath, Path path) {
+        return convert(varsConfig, parseActivityDef(varsConfig, dirPath, path));
+    }
+
+    public Survey convert(Config varsConfig, FormActivityDef activityDef) {
         Map<String, Map<String, Object>> languageTranslations = new HashMap<>();
         for (String language : languages) {
+            if (!varsConfig.hasPath("i18n." + language)) {
+                // not every study is translated into every language
+                continue;
+            }
             Map<String, Object> langMap = varsConfig.getConfig("i18n." + language).entrySet().stream()
                     .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
             languageTranslations.put(language, langMap);
@@ -140,10 +174,119 @@ public class ActivityImporter {
             case CONDITIONAL:
                 elements.addAll(convertConditionalBlock(allLangMap, (ConditionalBlockDef) blockDef));
                 break;
+            case ACTIVITY:
+                elements.addAll(convertNestedActivityBlock(allLangMap, (NestedActivityBlockDef) blockDef));
+                break;
             default:
                 log.warn("Unsupported block type: " + blockDef.getBlockType());
         }
         return elements;
+    }
+
+    /**
+     * Inlines an embedded Pepper activity (e.g. FATHER within ENROLLMENT). Since Juniper surveys can't embed other surveys,
+     * the questions are renamed with the activity as a prefix: single-instance activities become a panel with
+     * questions named e.g. "father.race"; allowMultiple activities become a dynamic panel (e.g. "sibling") whose
+     * template questions are named e.g. "sibling.sex". Juniper requires question names to be unique across the whole
+     * survey (including inside dynamic panels), so the prefix is needed in both cases.
+     */
+    private List<JsonNode> convertNestedActivityBlock(Map<String, Map<String, Object>> allLangMap, NestedActivityBlockDef blockDef) {
+        FormActivityDef nested = nestedActivities.get(blockDef.getActivityCode());
+        if (nested == null) {
+            throw new RuntimeException("Nested activity not provided: " + blockDef.getActivityCode());
+        }
+        List<JsonNode> elements = new ArrayList<>();
+        for (FormSectionDef section : nested.getAllSections()) {
+            for (FormBlockDef nestedBlock : section.getBlocks()) {
+                elements.addAll(convertBlock(allLangMap, nestedBlock));
+            }
+        }
+
+        String code = blockDef.getActivityCode();
+        String pepperPrefix = code + "_";
+        boolean multiple = blockDef.isAllowMultiple();
+        Map<String, String> renames = new HashMap<>();
+        collectNames(elements, name -> {
+            if (name.startsWith(pepperPrefix)) {
+                String rest = name.substring(pepperPrefix.length()).toLowerCase();
+                renames.put(name, code.toLowerCase() + "." + rest);
+            }
+        });
+        // inside a dynamic panel, siblings are referenced relative to the panel
+        Function<String, String> refFn = old -> multiple ? "panel." + renames.get(old) : renames.get(old);
+        elements.forEach(el -> applyRenames(el, renames, refFn));
+
+        String visibleIf = convertVisibilityExpressions(blockDef.getShownExpr());
+        ObjectNode panelNode;
+        if (multiple) {
+            SurveyJSPanel panel = SurveyJSPanel.builder()
+                    .type("paneldynamic")
+                    .name(code.toLowerCase())
+                    .title(null)
+                    .templateElements(elements)
+                    .templateTitle(fromPepperTranslations(nested.getTranslatedNames()))
+                    .panelAddText(blockDef.getAddButtonTemplate() != null ? translatePepperTemplate(blockDef.getAddButtonTemplate()) : null)
+                    .visibleIf(visibleIf)
+                    .build();
+            panelNode = objectMapper.valueToTree(panel);
+            // Pepper creates the first instance with the parent and doesn't allow it to be deleted
+            panelNode.put("minPanelCount", 1);
+            panelNode.put("panelCount", 1);
+        } else {
+            SurveyJSPanel panel = SurveyJSPanel.builder()
+                    .type("panel")
+                    .name(code.toLowerCase())
+                    .elements(elements)
+                    .visibleIf(visibleIf)
+                    .build();
+            panelNode = objectMapper.valueToTree(panel);
+        }
+        return List.of(panelNode);
+    }
+
+    private void collectNames(Collection<JsonNode> nodes, java.util.function.Consumer<String> consumer) {
+        for (JsonNode node : nodes) {
+            if (node.has("name")) {
+                consumer.accept(node.get("name").asText());
+            }
+            for (String key : List.of("elements", "templateElements")) {
+                if (node.has(key)) {
+                    List<JsonNode> children = new ArrayList<>();
+                    node.get(key).forEach(children::add);
+                    collectNames(children, consumer);
+                }
+            }
+        }
+    }
+
+    private static final Pattern REF_PATTERN = Pattern.compile("\\{([^}]+)\\}");
+    private static final List<String> EXPRESSION_KEYS = List.of("visibleIf", "enableIf", "requiredIf");
+
+    private void applyRenames(JsonNode node, Map<String, String> renames, Function<String, String> refFn) {
+        if (!node.isObject()) {
+            return;
+        }
+        ObjectNode obj = (ObjectNode) node;
+        if (obj.has("name") && renames.containsKey(obj.get("name").asText())) {
+            obj.put("name", renames.get(obj.get("name").asText()));
+        }
+        for (String key : EXPRESSION_KEYS) {
+            if (obj.has(key) && obj.get(key).isTextual()) {
+                String expr = REF_PATTERN.matcher(obj.get(key).asText()).replaceAll(m ->
+                        Matcher.quoteReplacement(renames.containsKey(m.group(1)) ? "{" + refFn.apply(m.group(1)) + "}" : m.group(0)));
+                obj.put(key, expr);
+            }
+        }
+        for (String key : List.of("elements", "templateElements")) {
+            if (obj.has(key)) {
+                obj.get(key).forEach(child -> applyRenames(child, renames, refFn));
+            }
+        }
+    }
+
+    private List<PicklistOptionDef> activeOptions(PicklistQuestionDef def) {
+        Set<String> removed = optionsToRemove.getOrDefault(def.getStableId(), Set.of());
+        return def.getPicklistOptions().stream().filter(o -> !removed.contains(o.getStableId())).collect(Collectors.toList());
     }
 
     private List<JsonNode> convertGroupBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
@@ -317,7 +460,7 @@ public class ActivityImporter {
 
     private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
 
-        boolean hasDetailsAllowed = picklistQuestionDef.getPicklistOptions().stream().anyMatch(PicklistOptionDef::isDetailsAllowed);
+        boolean hasDetailsAllowed = activeOptions(picklistQuestionDef).stream().anyMatch(PicklistOptionDef::isDetailsAllowed);
 
         if (!hasDetailsAllowed) {
             return List.of();
@@ -325,7 +468,7 @@ public class ActivityImporter {
 
         if (picklistQuestionDef.getSelectMode().equals(PicklistSelectMode.SINGLE)) {
 
-            PicklistOptionDef option = picklistQuestionDef.getPicklistOptions().stream().filter(PicklistOptionDef::isDetailsAllowed).findFirst().orElseThrow();
+            PicklistOptionDef option = activeOptions(picklistQuestionDef).stream().filter(PicklistOptionDef::isDetailsAllowed).findFirst().orElseThrow();
 
             Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
             String detailStableId = picklistQuestionDef.getStableId() + "_DETAIL";
@@ -342,7 +485,7 @@ public class ActivityImporter {
         }
 
         List<JsonNode> otherQuestions = new ArrayList<>();
-        for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
+        for (PicklistOptionDef option : activeOptions(picklistQuestionDef)) {
             if (option.isDetailsAllowed()) {
                 Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
 
@@ -501,7 +644,7 @@ public class ActivityImporter {
     private List<SurveyJSQuestion.Choice> getPicklistChoices(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap) {
 
         List<SurveyJSQuestion.Choice> choices = new ArrayList<>();
-        for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
+        for (PicklistOptionDef option : activeOptions(picklistQuestionDef)) {
             ObjectNode choiceNode = objectMapper.createObjectNode();
             choiceNode.put("value", option.getStableId());
 
@@ -533,7 +676,18 @@ public class ActivityImporter {
             titleTxtMap = getVariableTranslationsTxt(contentBlockDef.getTitleTemplate().getTemplateText(), contentBlockDef.getTitleTemplate().getVariables());
         }
 
-        String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
+        String name;
+        if (contentBlockDef.getBodyTemplate().getVariables().isEmpty()) {
+            // static markup with no translatable text, e.g. a horizontal rule
+            if (!StringUtils.isEmpty(bodyTemplateTxt) && htmlTxtMap.isEmpty()) {
+                for (String language : allLangMap.keySet()) {
+                    htmlTxtMap.put(language, bodyTemplateTxt.trim());
+                }
+            }
+            name = "static_content_" + (++staticContentCount);
+        } else {
+            name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
+        }
 
         List<JsonNode> out = new ArrayList<>();
         if (!titleTxtMap.isEmpty()) {
@@ -561,7 +715,7 @@ public class ActivityImporter {
             return null;
         }
 
-        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
+        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\](?:\\.instances\\[specific\\])?\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
         // study e.g.: !user.studies["atcp"].isGovernedParticipant()
         Pattern studyPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.(.*?)\\(\\)");
         String out = questionPattern.matcher(pepperExpr).replaceAll(matchResult -> {
@@ -598,6 +752,9 @@ public class ActivityImporter {
                     throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
             }
         });
+
+        // pepper negation of a single comparison, e.g. !{Q} contains 'YES'
+        out = Pattern.compile("!\\s*(\\{[^}]+\\}) contains ('[^']*')").matcher(out).replaceAll("$1 notcontains $2");
 
         return out.replace("&&", "and").replace("\n", "").trim();
 

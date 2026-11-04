@@ -1,0 +1,3260 @@
+{
+  "stableId": "enrollment",
+  "version": 1,
+  "name": "Tell Us About Your Family",
+  "surveyType": "RESEARCH",
+  "answerMappings": [
+    {
+      "questionStableId": "telephoneNumber",
+      "targetType": "PROFILE",
+      "targetField": "phoneNumber",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "firstName",
+      "targetType": "PROFILE",
+      "targetField": "givenName",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "state",
+      "targetType": "PROFILE",
+      "targetField": "mailingAddress.state",
+      "mapType": "STRING_TO_STRING"
+    }
+  ],
+  "triggers": [],
+  "referencedQuestions": [],
+  "recurrenceType": "NONE",
+  "recurOn": "COMPLETION",
+  "required": true,
+  "recurrenceIntervalDays": 0,
+  "eligibilityRule": "",
+  "allowAdminEdit": true,
+  "allowParticipantStart": true,
+  "allowParticipantReedit": true,
+  "prepopulate": false,
+  "autoAssign": true,
+  "assignToExistingEnrollees": true,
+  "autoUpdateTaskAssignments": false,
+  "jsonContent": {
+    "pages": [
+      {
+        "elements": [
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "intro1",
+                "html": {
+                  "en": "</br>Thank you for providing information about your family. The Rare Genomes Project is a patient-driven research study that empowers families to have a direct impact on research into the undiagnosed, rare disease affecting the study by sharing health information and a blood or DNA sample with researchers. Completion of this survey will help determine your family’s eligibility for participation. Please help us understand more about your family’s rare and undiagnosed condition by answering the questions below.</br></br>\n\nPlease note that if you exit this survey at any time before submission, your answers will automatically be saved. When you are ready to continue, you can login again and return to this page to complete the survey.",
+                  "es": "</br>Gracias por proporcionar información sobre su familia. El Proyecto Genomas Raros es un estudio clínico controlado\n   por los pacientes que habilita a las familias para tener un efecto directo en las investigaciones acerca de las enfermedades raras y sin\n   diagnosticar que las afectan. Para ello comparten sus datos médicos y una muestra de sangre o de ADN con los investigadores. Al llenar esta\n   solicitud nos ayudará a determinar si su familia cumple los requisitos para participar. Cuéntenos acerca de la enfermedad rara y sin\n   diagnosticar de su familia respondiendo a las siguientes preguntas.</br></br>\n\nTenga en cuenta que si sale de la aplicación en algún momento antes de enviar la solicitud, sus respuestas\n  se grabarán automáticamente. Cuando esté listo para continuar, puede ingresar de nuevo y volver a esta página para terminar la solicitud."
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": {
+              "en": "Please provide information about yourself (person filling out this form):",
+              "es": "Proporcione información sobre usted  (la persona que llena este formulario):"
+            },
+            "type": "panel",
+            "elements": [
+              {
+                "type": "dropdown",
+                "name": "yourTitle",
+                "title": {
+                  "en": "Your Title",
+                  "es": "Título de cortesía"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Mr.",
+                      "es": "Sr."
+                    },
+                    "value": "mr"
+                  },
+                  {
+                    "text": {
+                      "en": "Mrs.",
+                      "es": "Sra."
+                    },
+                    "value": "mrs"
+                  },
+                  {
+                    "text": {
+                      "en": "Miss",
+                      "es": "Srta."
+                    },
+                    "value": "miss"
+                  },
+                  {
+                    "text": {
+                      "en": "Ms.",
+                      "es": "-"
+                    },
+                    "value": "ms"
+                  },
+                  {
+                    "text": {
+                      "en": "Dr.",
+                      "es": "Dr. / Dra."
+                    },
+                    "value": "dr"
+                  },
+                  {
+                    "text": {
+                      "en": "Other",
+                      "es": "Otra"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "showOtherItem": false,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "firstName",
+                "title": {
+                  "en": "Your First Name",
+                  "es": "Nombre de pila"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "telephoneNumber",
+                "title": {
+                  "en": "Your Telephone Number",
+                  "es": "Número de teléfono"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "confirmTelephoneNumber",
+                "title": {
+                  "en": "Confirm Your Telephone Number",
+                  "es": "Confirme su número de teléfono"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text"
+              },
+              {
+                "type": "dropdown",
+                "name": "patientIs",
+                "title": {
+                  "en": "The patient is",
+                  "es": "El paciente... [seleccione de la lista]"
+                },
+                "description": {
+                  "en": "If the patient is age 18y or older, applications must be submitted by the patient themselves (if they are able) or an individual with the authorization to provide medical information on their behalf. Please call us at 617-714-7395 if you have questions.",
+                  "es": "Si el paciente es una persona de 18 años o más, debe presentar por sí mismo(a) las solicitudes (si puede hacerlo) o debe presentarlas una persona autorizada para proporcionar datos médicos en su nombre. Si tiene preguntas, llámenos al (617) 714-7395."
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Myself",
+                      "es": "Soy yo"
+                    },
+                    "value": "myself"
+                  },
+                  {
+                    "text": {
+                      "en": "My minor (under age 18y) child",
+                      "es": "Es mi hijo(a) menor de edad (menor de 18 años)"
+                    },
+                    "value": "minorChild"
+                  },
+                  {
+                    "text": {
+                      "en": "My adult (age 18y or older) child who is unable to provide consent",
+                      "es": "Es mi hijo(a) adulto(a) (mayor de 18 años) que no puede otorgar consentimiento"
+                    },
+                    "value": "adultChild"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify your relationship to the patient",
+                  "es": "Especifique su parentesco con el paciente"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "patientName",
+                "title": {
+                  "en": "Patient's First Name",
+                  "es": "Nombre del paciente"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{patientIs} notempty and {patientIs} != 'myself'"
+              },
+              {
+                "type": "dropdown",
+                "name": "state",
+                "title": {
+                  "en": "State the family lives in",
+                  "es": "Estado en que vive la familia"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Alabama",
+                      "es": "Alabama"
+                    },
+                    "value": "AL"
+                  },
+                  {
+                    "text": {
+                      "en": "Alaska",
+                      "es": "Alaska"
+                    },
+                    "value": "AK"
+                  },
+                  {
+                    "text": {
+                      "en": "American Samoa",
+                      "es": "American Samoa"
+                    },
+                    "value": "AS"
+                  },
+                  {
+                    "text": {
+                      "en": "Arizona",
+                      "es": "Arizona"
+                    },
+                    "value": "AZ"
+                  },
+                  {
+                    "text": {
+                      "en": "Arkansas",
+                      "es": "Arkansas"
+                    },
+                    "value": "AR"
+                  },
+                  {
+                    "text": {
+                      "en": "California",
+                      "es": "California"
+                    },
+                    "value": "CA"
+                  },
+                  {
+                    "text": {
+                      "en": "Colorado",
+                      "es": "Colorado"
+                    },
+                    "value": "CO"
+                  },
+                  {
+                    "text": {
+                      "en": "Connecticut",
+                      "es": "Connecticut"
+                    },
+                    "value": "CT"
+                  },
+                  {
+                    "text": {
+                      "en": "Delaware",
+                      "es": "Delaware"
+                    },
+                    "value": "DE"
+                  },
+                  {
+                    "text": {
+                      "en": "District of Columbia",
+                      "es": "District Of Columbia"
+                    },
+                    "value": "DC"
+                  },
+                  {
+                    "text": {
+                      "en": "Florida",
+                      "es": "Florida"
+                    },
+                    "value": "FL"
+                  },
+                  {
+                    "text": {
+                      "en": "Georgia",
+                      "es": "Georgia"
+                    },
+                    "value": "GA"
+                  },
+                  {
+                    "text": {
+                      "en": "Guam",
+                      "es": "Guam"
+                    },
+                    "value": "GU"
+                  },
+                  {
+                    "text": {
+                      "en": "Hawaii",
+                      "es": "Hawaii"
+                    },
+                    "value": "HI"
+                  },
+                  {
+                    "text": {
+                      "en": "Idaho",
+                      "es": "Idaho"
+                    },
+                    "value": "ID"
+                  },
+                  {
+                    "text": {
+                      "en": "Illinois",
+                      "es": "Illinois"
+                    },
+                    "value": "IL"
+                  },
+                  {
+                    "text": {
+                      "en": "Indiana",
+                      "es": "Indiana"
+                    },
+                    "value": "IN"
+                  },
+                  {
+                    "text": {
+                      "en": "Iowa",
+                      "es": "Iowa"
+                    },
+                    "value": "IA"
+                  },
+                  {
+                    "text": {
+                      "en": "Kansas",
+                      "es": "Kansas"
+                    },
+                    "value": "KS"
+                  },
+                  {
+                    "text": {
+                      "en": "Kentucky",
+                      "es": "Kentucky"
+                    },
+                    "value": "KY"
+                  },
+                  {
+                    "text": {
+                      "en": "Louisiana",
+                      "es": "Louisiana"
+                    },
+                    "value": "LA"
+                  },
+                  {
+                    "text": {
+                      "en": "Maine",
+                      "es": "Maine"
+                    },
+                    "value": "ME"
+                  },
+                  {
+                    "text": {
+                      "en": "Maryland",
+                      "es": "Maryland"
+                    },
+                    "value": "MD"
+                  },
+                  {
+                    "text": {
+                      "en": "Massachusetts",
+                      "es": "Massachusetts"
+                    },
+                    "value": "MA"
+                  },
+                  {
+                    "text": {
+                      "en": "Michigan",
+                      "es": "Michigan"
+                    },
+                    "value": "MI"
+                  },
+                  {
+                    "text": {
+                      "en": "Minnesota",
+                      "es": "Minnesota"
+                    },
+                    "value": "MN"
+                  },
+                  {
+                    "text": {
+                      "en": "Mississippi",
+                      "es": "Mississippi"
+                    },
+                    "value": "MS"
+                  },
+                  {
+                    "text": {
+                      "en": "Missouri",
+                      "es": "Missouri"
+                    },
+                    "value": "MO"
+                  },
+                  {
+                    "text": {
+                      "en": "Montana",
+                      "es": "Montana"
+                    },
+                    "value": "MT"
+                  },
+                  {
+                    "text": {
+                      "en": "Nebraska",
+                      "es": "Nebraska"
+                    },
+                    "value": "NE"
+                  },
+                  {
+                    "text": {
+                      "en": "Nevada",
+                      "es": "Nevada"
+                    },
+                    "value": "NV"
+                  },
+                  {
+                    "text": {
+                      "en": "New Hampshire",
+                      "es": "New Hampshire"
+                    },
+                    "value": "NH"
+                  },
+                  {
+                    "text": {
+                      "en": "New Jersey",
+                      "es": "New Jersey"
+                    },
+                    "value": "NJ"
+                  },
+                  {
+                    "text": {
+                      "en": "New Mexico",
+                      "es": "New Mexico"
+                    },
+                    "value": "NM"
+                  },
+                  {
+                    "text": {
+                      "en": "New York",
+                      "es": "New York"
+                    },
+                    "value": "NY"
+                  },
+                  {
+                    "text": {
+                      "en": "North Carolina",
+                      "es": "North Carolina"
+                    },
+                    "value": "NC"
+                  },
+                  {
+                    "text": {
+                      "en": "North Dakota",
+                      "es": "North Dakota"
+                    },
+                    "value": "ND"
+                  },
+                  {
+                    "text": {
+                      "en": "Northern Mariana Islands",
+                      "es": "Northern Mariana Islands"
+                    },
+                    "value": "MP"
+                  },
+                  {
+                    "text": {
+                      "en": "Ohio",
+                      "es": "Ohio"
+                    },
+                    "value": "OH"
+                  },
+                  {
+                    "text": {
+                      "en": "Oklahoma",
+                      "es": "Oklahoma"
+                    },
+                    "value": "OK"
+                  },
+                  {
+                    "text": {
+                      "en": "Oregon",
+                      "es": "Oregon"
+                    },
+                    "value": "OR"
+                  },
+                  {
+                    "text": {
+                      "en": "Pennsylvania",
+                      "es": "Pennsylvania"
+                    },
+                    "value": "PA"
+                  },
+                  {
+                    "text": {
+                      "en": "Puerto Rico",
+                      "es": "Puerto Rico"
+                    },
+                    "value": "PR"
+                  },
+                  {
+                    "text": {
+                      "en": "Rhode Island",
+                      "es": "Rhode Island"
+                    },
+                    "value": "RI"
+                  },
+                  {
+                    "text": {
+                      "en": "South Carolina",
+                      "es": "South Carolina"
+                    },
+                    "value": "SC"
+                  },
+                  {
+                    "text": {
+                      "en": "South Dakota",
+                      "es": "South Dakota"
+                    },
+                    "value": "SD"
+                  },
+                  {
+                    "text": {
+                      "en": "Tennessee",
+                      "es": "Tennessee"
+                    },
+                    "value": "TN"
+                  },
+                  {
+                    "text": {
+                      "en": "Texas",
+                      "es": "Texas"
+                    },
+                    "value": "TX"
+                  },
+                  {
+                    "text": {
+                      "en": "US Virgin Islands",
+                      "es": "U.S. Virgin Islands"
+                    },
+                    "value": "VI"
+                  },
+                  {
+                    "text": {
+                      "en": "Utah",
+                      "es": "Utah"
+                    },
+                    "value": "UT"
+                  },
+                  {
+                    "text": {
+                      "en": "Vermont",
+                      "es": "Vermont"
+                    },
+                    "value": "VT"
+                  },
+                  {
+                    "text": {
+                      "en": "Virginia",
+                      "es": "Virginia"
+                    },
+                    "value": "VA"
+                  },
+                  {
+                    "text": {
+                      "en": "Washington",
+                      "es": "Washington"
+                    },
+                    "value": "WA"
+                  },
+                  {
+                    "text": {
+                      "en": "West Virginia",
+                      "es": "West Virginia"
+                    },
+                    "value": "WV"
+                  },
+                  {
+                    "text": {
+                      "en": "Wisconsin",
+                      "es": "Wisconsin"
+                    },
+                    "value": "WI"
+                  },
+                  {
+                    "text": {
+                      "en": "Wyoming",
+                      "es": "Wyoming"
+                    },
+                    "value": "WY"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "websiteBlog",
+                "title": {
+                  "en": "Is there a website, blog, or social media page that you write or maintain that describes your family's undiagnosed suspected genetic condition?",
+                  "es": "¿Redacta o mantiene usted un sitio web, un blog o una página en las redes sociales en que se describe la enfermedad genética y sin diagnosticar que se sospecha en su familia? <span class=\"Italic\">(opcional)</span>"
+                },
+                "description": {
+                  "en": "If yes, provide the link here.",
+                  "es": "Si la respuesta es «sí», proporcione el enlace aquí."
+                },
+                "isRequired": false,
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "text",
+                "name": "geneticCondition",
+                "title": {
+                  "en": "Please describe the rare and undiagnosed suspected genetic condition present in the family and any relevant symptoms.",
+                  "es": "Describa la enfermedad rara y sin diagnosticar que se sospecha en su familia, y los síntomas pertinentes. <span class=\"Italic\">Los detalles útiles abarcan una descripción del inicio de la enfermedad y de cómo evolucionó con el tiempo. Incluir descripciones de las evaluaciones que se han realizado o de los diagnósticos que se han tenido en cuenta y se han descartado también puede ayudarnos a entender mejor si nuestra estrategia podría beneficiar a su familia.</span>"
+                },
+                "description": {
+                  "en": "Helpful details include a description of when the medical condition first began and how it developed over time. Including descriptions of the prior evaluations or diagnoses that have been considered and ruled out can also help our team better understand if our approach is likely to benefit your family.",
+                  "es": "Los detalles útiles abarcan una descripción del inicio de la enfermedad y de cómo evolucionó con el tiempo.\n  Incluir descripciones de las evaluaciones que se han realizado o de los diagnósticos que se han tenido en cuenta y se han descartado también\n  puede ayudarnos a entender mejor si nuestra estrategia podría beneficiar a su familia."
+                },
+                "isRequired": true,
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "haveClinicalDiagnosisesBeenMade",
+                "title": {
+                  "en": "Have any clinical diagnoses been made?",
+                  "es": "¿Se ha llegado a algún diagnóstico clínico?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "clinicalDiagnosisDescription",
+                "title": {
+                  "en": "Please list each clinical diagnosis",
+                  "es": "Indíquelos"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{haveClinicalDiagnosisesBeenMade} = true"
+              },
+              {
+                "type": "radiogroup",
+                "name": "haveGeneticDiagnosisesBeenMade",
+                "title": {
+                  "en": "Have any genetic diagnoses been made?",
+                  "es": "¿Se ha llegado a algún diagnóstico genético (por los resultados de una prueba genética)?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "geneticDiagnosisDescription",
+                "title": {
+                  "en": "For each genetic diagnosis, please also provide information as to why the geneticist does not think these results fully explain the condition",
+                  "es": "En cada diagnóstico genético proporcione también información sobre por qué el genetista no cree que estos resultados expliquen por completo la enfermedad."
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{haveGeneticDiagnosisesBeenMade} = true"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "howDidYouFindOutAboutRGP",
+                "title": {
+                  "en": "How did you find out about this project?",
+                  "es": "¿Cómo se enteró de este proyecto?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Doctor",
+                      "es": "El médico"
+                    },
+                    "value": "doctor"
+                  },
+                  {
+                    "text": {
+                      "en": "Family or friend",
+                      "es": "Un familiar o amigo"
+                    },
+                    "value": "familyOrFriend"
+                  },
+                  {
+                    "text": {
+                      "en": "Advocacy/Support Group",
+                      "es": "Un grupo de apoyo o de defensa"
+                    },
+                    "value": "advocacySupportGroup"
+                  },
+                  {
+                    "text": {
+                      "en": "Current participant",
+                      "es": "Un participante actual"
+                    },
+                    "value": "currentParticipant"
+                  },
+                  {
+                    "text": {
+                      "en": "Facebook",
+                      "es": "Facebook"
+                    },
+                    "value": "facebook"
+                  },
+                  {
+                    "text": {
+                      "en": "Twitter",
+                      "es": "Twitter"
+                    },
+                    "value": "twitter"
+                  },
+                  {
+                    "text": {
+                      "en": "Google or other search engine",
+                      "es": "Google u otro motor de búsqueda"
+                    },
+                    "value": "google"
+                  },
+                  {
+                    "text": {
+                      "en": "Word of mouth",
+                      "es": "Una recomendación verbal"
+                    },
+                    "value": "wordOfMouth"
+                  },
+                  {
+                    "text": {
+                      "en": "Newspaper story",
+                      "es": "Un reportaje en un periódico"
+                    },
+                    "value": "newsStory"
+                  },
+                  {
+                    "text": {
+                      "en": "Youtube",
+                      "es": "YouTube"
+                    },
+                    "value": "youtube"
+                  },
+                  {
+                    "text": {
+                      "en": "Partner's research letter",
+                      "es": "Carta de investigación de Partners"
+                    },
+                    "value": "researchLetter"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "referralSourceDoctor",
+                "title": {
+                  "en": "Please indicate Doctor's Full Name",
+                  "es": "Indique el nombre completo del médico"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{howDidYouFindOutAboutRGP} contains 'doctor'"
+              },
+              {
+                "type": "text",
+                "name": "referralSourceAdvocacySupportGroup",
+                "title": {
+                  "en": "Please indicate Name of Advocacy/Support Group",
+                  "es": "Indique el nombre del grupo de apoyo / defensa"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{howDidYouFindOutAboutRGP} contains 'advocacySupportGroup'"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "footer1",
+                "html": {
+                  "en": "</br>We are required by the Health Insurance Portability and Accountability Act (HIPAA) to protect the privacy of health information obtained for research. This is an abbreviated notice, and does not describe all details of this requirement (see Partners Privacy Notice*). During this study, identifiable information about you or your health will be collected and shared with the researchers conducting the research. In general, under federal law, identifiable health information is private. However, there are exceptions to this rule. In some cases, others may see your identifiable health information for purposes of research oversight, quality control, public health and safety, or law enforcement. We share your health information only when we must, and we ask anyone who receives it from us to protect your privacy.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_English.pdf\">Partners HealthCare Notice for Use and Sharing of Protected Health Information</a>",
+                  "es": "</br>La ley de transferibilidad y responsabilidad de los seguros médicos (Health Insurance Portability and Accountability Act, HIPAA)\n  nos exige proteger la confidencialidad de los datos de salud que se obtengan en investigación. Este es un aviso abreviado en el que no se explican todos los detalles\n  de este requisito (véase el «Aviso sobre prácticas de protección de la privacidad» de Partners) . Durante este estudio se recolectará información acerca de su salud\n  con la que se podría deducir su identidad. Estos datos se comunicarán a los investigadores que realizan la investigación.\n  En términos generales, las leyes federales disponen que los datos médicos que revelan la identidad de una persona son de carácter confidencial.\n  Sin embargo, esta regla tiene excepciones. En ciertos casos, otras personas pueden ver datos médicos que revelan su identidad para efectos de supervisión de la investigación, control de calidad,\n  salud y seguridad pública o cumplimiento de las leyes. Compartimos sus datos médicos solo cuando es necesario y solicitamos que los que la reciban protejan su privacidad.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_Spanish.pdf\">Aviso de Partners HealthCare para el uso y el intercambio de información médica protegida</a>"
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "intro2",
+                "html": {
+                  "en": "</br>Thank you for providing information about your family. The Rare Genomes Project is a patient-driven research study that empowers families to have a direct impact on research into the undiagnosed, rare disease affecting the study by sharing health information and a blood or DNA sample with researchers. Completion of this survey will help determine your family’s eligibility for participation. Please help us understand more about your family’s rare and undiagnosed condition by answering the questions below.</br></br>\n\nPlease note that if you exit this survey at any time before submission, your answers will automatically be saved. When you are ready to continue, you can login again and return to this page to complete the survey.",
+                  "es": "</br>Gracias por proporcionar información sobre su familia. El Proyecto Genomas Raros es un estudio clínico controlado\n   por los pacientes que habilita a las familias para tener un efecto directo en las investigaciones acerca de las enfermedades raras y sin\n   diagnosticar que las afectan. Para ello comparten sus datos médicos y una muestra de sangre o de ADN con los investigadores. Al llenar esta\n   solicitud nos ayudará a determinar si su familia cumple los requisitos para participar. Cuéntenos acerca de la enfermedad rara y sin\n   diagnosticar de su familia respondiendo a las siguientes preguntas.</br></br>\n\nTenga en cuenta que si sale de la aplicación en algún momento antes de enviar la solicitud, sus respuestas\n  se grabarán automáticamente. Cuando esté listo para continuar, puede ingresar de nuevo y volver a esta página para terminar la solicitud."
+                },
+                "isRequired": false
+              }
+            ]
+          },
+          {
+            "title": {
+              "en": "Please provide information on the patient:",
+              "es": "Proporcione información sobre el paciente:"
+            },
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "sampleIntro",
+                "html": {
+                  "en": "</br><i>This study requires that at least one individual in the family affected by the rare condition provide a DNA sample.</i>",
+                  "es": "</br><i>En este estudio es necesario que por lo menos una persona de la familia afectada por la enfermedad rara proporcione una muestra de ADN.</i>"
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "currentAge",
+                "title": {
+                  "en": "Patient's Current Age",
+                  "es": "Edad actual del paciente"
+                },
+                "description": "",
+                "isRequired": true
+              },
+              {
+                "type": "text",
+                "name": "ageAtOnsent",
+                "title": {
+                  "en": "Patient's Age at Onset of Condition",
+                  "es": "Edad del paciente al inicio de la enfermedad"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "choices": []
+              },
+              {
+                "type": "checkbox",
+                "name": "patientDeceased",
+                "title": {
+                  "en": "The patient is deceased",
+                  "es": "El paciente ha fallecido"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "ageOfDeath",
+                "title": {
+                  "en": "Age of death",
+                  "es": "Edad al morir"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{patientDeceased} contains 'true'"
+              },
+              {
+                "type": "text",
+                "name": "causeOfDeath",
+                "title": {
+                  "en": "Cause of death",
+                  "es": "Causa del fallecimiento"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{patientDeceased} contains 'true'"
+              },
+              {
+                "type": "radiogroup",
+                "name": "deceasedDNASample",
+                "title": {
+                  "en": "Does the deceased patient have a DNA sample available?",
+                  "es": "Tiene el paciente fallecido una muestra de ADN disponible?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "visibleIf": "{patientDeceased} contains 'true'",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "radiogroup",
+                "name": "patientSex",
+                "title": {
+                  "en": "Patient's Sex",
+                  "es": "Sexo del paciente"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Female",
+                      "es": "Femenino"
+                    },
+                    "value": "female"
+                  },
+                  {
+                    "text": {
+                      "en": "Male",
+                      "es": "Masculino"
+                    },
+                    "value": "male"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiero no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "patientRace",
+                "title": {
+                  "en": "Patient's Race",
+                  "es": "Raza del paciente"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                      "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "text": {
+                      "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                      "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "text": {
+                      "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                      "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                    },
+                    "value": "asian"
+                  },
+                  {
+                    "text": {
+                      "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                      "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                    },
+                    "value": "americanIndianAlaskanNative"
+                  },
+                  {
+                    "text": {
+                      "en": "Native Hawaiian or other Pacific Islander",
+                      "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                    },
+                    "value": "nativeHawaiianPacificIslander"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "patientEthnicity",
+                "title": {
+                  "en": "Patient's Ethnicity",
+                  "es": "Grupo étnico del paciente"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Hispanic",
+                      "es": "Es hispano(a)"
+                    },
+                    "value": "hispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Not Hispanic",
+                      "es": "No es hispano(a)"
+                    },
+                    "value": "notHispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "typesOfDoctors",
+                "title": {
+                  "en": "Please indicate types of doctors the patient has seen",
+                  "es": "Indique los tipos de médicos que han atendido al paciente"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Clinical geneticist",
+                      "es": "Genetista clínico"
+                    },
+                    "value": "clinicalGeneticist"
+                  },
+                  {
+                    "text": {
+                      "en": "Neurologist",
+                      "es": "Neurólogo"
+                    },
+                    "value": "neurologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Endocrinologist",
+                      "es": "Endocrinólogo"
+                    },
+                    "value": "endocrinologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Pulmonologist",
+                      "es": "Neumólogo"
+                    },
+                    "value": "pulmonologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Cardiologist",
+                      "es": "Cardiólogo"
+                    },
+                    "value": "cardiologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Otolaryngologist",
+                      "es": "Otorrinolaringólogo"
+                    },
+                    "value": "otolaryngologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Nephrologist",
+                      "es": "Nefrólogo"
+                    },
+                    "value": "nephrologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Psychiatrist",
+                      "es": "Psiquiatra"
+                    },
+                    "value": "psychiatrist"
+                  },
+                  {
+                    "text": {
+                      "en": "Gastroenterologist",
+                      "es": "Gastroenterólogo"
+                    },
+                    "value": "gastroenterologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Dermatologist",
+                      "es": "Dermatólogo"
+                    },
+                    "value": "dermatologist"
+                  },
+                  {
+                    "text": {
+                      "en": "Ophthalmologist",
+                      "es": "Oftalmólogo"
+                    },
+                    "value": "ophthalmologist"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "hasHadTests",
+                "title": {
+                  "en": "Please indicate if the patient has had any of the following tests.",
+                  "es": "Indique si el paciente se ha hecho alguna de las siguientes pruebas. <span class=\"Italic\">Si se le piden detalles específicos que usted no conoce, incluya los que recuerde. El año aproximado en que se realizó cada prueba es un dato útil.</span>"
+                },
+                "description": {
+                  "en": "If specific requested details are asked but are not known, please include those details that you recall. Estimates of year of testing are still helpful.",
+                  "es": "Si se le piden detalles específicos que usted no conoce, incluya los que recuerde.\n  El año aproximado en que se realizó cada prueba es un dato útil."
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Karyotype",
+                      "es": "Cariotipo"
+                    },
+                    "value": "karyotype"
+                  },
+                  {
+                    "text": {
+                      "en": "Single gene testing",
+                      "es": "Prueba de un gen individual"
+                    },
+                    "value": "singleGeneTesting"
+                  },
+                  {
+                    "text": {
+                      "en": "Gene panel testing",
+                      "es": "Prueba de panel genético"
+                    },
+                    "value": "genePanelTesting"
+                  },
+                  {
+                    "text": {
+                      "en": "Chromosomal microarray",
+                      "es": "Micromatriz cromosómica"
+                    },
+                    "value": "chromosomalMicroarray"
+                  },
+                  {
+                    "text": {
+                      "en": "Whole exome sequencing",
+                      "es": "Secuenciación del exoma completo"
+                    },
+                    "value": "wholeExomeSequencing"
+                  },
+                  {
+                    "text": {
+                      "en": "Whole genome sequencing",
+                      "es": "Secuenciación del genoma completo"
+                    },
+                    "value": "wholeGenomeSequencing"
+                  },
+                  {
+                    "text": {
+                      "en": "Mitochondrial genome sequencing",
+                      "es": "Secuenciación del genoma mitocóndrico"
+                    },
+                    "value": "mitochondrialGenomeSequencing"
+                  },
+                  {
+                    "text": {
+                      "en": "The patient hasn't had any testing",
+                      "es": "El paciente no se ha hecho ninguna prueba"
+                    },
+                    "value": "hasNotHadTesting"
+                  },
+                  {
+                    "text": {
+                      "en": "I don't know if any testing has been performed",
+                      "es": "No sé si haya realizado alguna prueba"
+                    },
+                    "value": "iDontKnow"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "chromosomalMicroarrayYear",
+                "title": {
+                  "en": "Chromosomal microarray year",
+                  "es": "Micromatriz cromosómica"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'chromosomalMicroarray'"
+              },
+              {
+                "type": "text",
+                "name": "chromosomalMicroarrayLab",
+                "title": {
+                  "en": "Chromosomal microarray lab",
+                  "es": "Lab"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'chromosomalMicroarray'"
+              },
+              {
+                "type": "checkbox",
+                "name": "chromosomalMicroarrayFamily",
+                "title": {
+                  "en": "Which other family members had this test?",
+                  "es": "Qué otros miembros de la familia se hicieron esta prueba?"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Child",
+                      "es": "Nina/Nino"
+                    },
+                    "value": "child"
+                  },
+                  {
+                    "text": {
+                      "en": "Sibling",
+                      "es": "Hermana/Hermano"
+                    },
+                    "value": "sibling"
+                  },
+                  {
+                    "text": {
+                      "en": "Cousin",
+                      "es": "Primo(a)"
+                    },
+                    "value": "cousin"
+                  },
+                  {
+                    "text": {
+                      "en": "Niece/Nephew",
+                      "es": "Sobrina/Sobrino"
+                    },
+                    "value": "nieceNephew"
+                  },
+                  {
+                    "text": {
+                      "en": "Parent",
+                      "es": "Madre/Padre"
+                    },
+                    "value": "parent"
+                  },
+                  {
+                    "text": {
+                      "en": "Aunt/Uncle",
+                      "es": "Tia/Tio"
+                    },
+                    "value": "auntUncle"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "visibleIf": "{hasHadTests} contains 'chromosomalMicroarray'",
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "wholeExomeSequencingYear",
+                "title": {
+                  "en": "Whole exome sequencing year",
+                  "es": "Secuenciación del exoma completo"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'wholeExomeSequencing'"
+              },
+              {
+                "type": "text",
+                "name": "wholeExomeSequencingLab",
+                "title": {
+                  "en": "Whole exome sequencing lab",
+                  "es": "Lab"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'wholeExomeSequencing'"
+              },
+              {
+                "type": "checkbox",
+                "name": "wholeExomeSequencingFamily",
+                "title": {
+                  "en": "Which other family members had this test?",
+                  "es": "Qué otros miembros de la familia se hicieron esta prueba?"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Child",
+                      "es": "Nina/Nino"
+                    },
+                    "value": "child"
+                  },
+                  {
+                    "text": {
+                      "en": "Sibling",
+                      "es": "Hermana/Hermano"
+                    },
+                    "value": "sibling"
+                  },
+                  {
+                    "text": {
+                      "en": "Cousin",
+                      "es": "Primo(a)"
+                    },
+                    "value": "cousin"
+                  },
+                  {
+                    "text": {
+                      "en": "Niece/Nephew",
+                      "es": "Sobrina/Sobrino"
+                    },
+                    "value": "nieceNephew"
+                  },
+                  {
+                    "text": {
+                      "en": "Parent",
+                      "es": "Madre/Padre"
+                    },
+                    "value": "parent"
+                  },
+                  {
+                    "text": {
+                      "en": "Aunt/Uncle",
+                      "es": "Tia/Tio"
+                    },
+                    "value": "auntUncle"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "visibleIf": "{hasHadTests} contains 'wholeExomeSequencing'",
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "wholeGenomeSequencingYear",
+                "title": {
+                  "en": "Whole genome sequencing year",
+                  "es": "Secuenciación del genoma completo"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'wholeGenomeSequencing'"
+              },
+              {
+                "type": "text",
+                "name": "wholeGenomeSequencingLab",
+                "title": {
+                  "en": "Whole genome sequencing lab",
+                  "es": "Lab"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{hasHadTests} contains 'wholeGenomeSequencing'"
+              },
+              {
+                "type": "checkbox",
+                "name": "wholeGenomeSequencingFamily",
+                "title": {
+                  "en": "Which other family members had this test?",
+                  "es": "Qué otros miembros de la familia se hicieron esta prueba?"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Child",
+                      "es": "Nina/Nino"
+                    },
+                    "value": "child"
+                  },
+                  {
+                    "text": {
+                      "en": "Sibling",
+                      "es": "Hermana/Hermano"
+                    },
+                    "value": "sibling"
+                  },
+                  {
+                    "text": {
+                      "en": "Cousin",
+                      "es": "Primo(a)"
+                    },
+                    "value": "cousin"
+                  },
+                  {
+                    "text": {
+                      "en": "Niece/Nephew",
+                      "es": "Sobrina/Sobrino"
+                    },
+                    "value": "nieceNephew"
+                  },
+                  {
+                    "text": {
+                      "en": "Parent",
+                      "es": "Madre/Padre"
+                    },
+                    "value": "parent"
+                  },
+                  {
+                    "text": {
+                      "en": "Aunt/Uncle",
+                      "es": "Tia/Tio"
+                    },
+                    "value": "auntUncle"
+                  }
+                ],
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other",
+                  "es": "Otro"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "visibleIf": "{hasHadTests} contains 'wholeGenomeSequencing'",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "biopsiesAvailable",
+                "title": {
+                  "en": "Please indicate if any patient biopsies may be available.",
+                  "es": "Indique si se cuenta con biopsias del paciente."
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Muscle Biopsy",
+                      "es": "Biopsia de músculo"
+                    },
+                    "value": "muscleBiopsy"
+                  },
+                  {
+                    "text": {
+                      "en": "Bone Marrow Biopsy",
+                      "es": "Biopsia de médula ósea"
+                    },
+                    "value": "boneMarrowBiopsy"
+                  },
+                  {
+                    "text": {
+                      "en": "Liver Biopsy",
+                      "es": "Biopsia de hígado"
+                    },
+                    "value": "liverBiopsy"
+                  },
+                  {
+                    "text": {
+                      "en": "Heart Biopsy",
+                      "es": "Biopsia de corazón"
+                    },
+                    "value": "heartBiopsy"
+                  },
+                  {
+                    "text": {
+                      "en": "Skin Biopsy",
+                      "es": "Biopsia de piel"
+                    },
+                    "value": "skinBiopsy"
+                  },
+                  {
+                    "text": {
+                      "en": "Craniofacial Biopsy",
+                      "es": "Biopsia craneofacial"
+                    },
+                    "value": "craniofacialBiopsy"
+                  }
+                ],
+                "showNoneItem": true,
+                "noneText": {
+                  "en": "This individual hasn't had any biopsy",
+                  "es": "Este paciente no se ha hecho ninguna biopsia"
+                },
+                "noneValue": "noBiopsy",
+                "showOtherItem": true,
+                "otherText": {
+                  "en": "Other Tissue Biopsy",
+                  "es": "Otra biopsia de tejido"
+                },
+                "otherPlaceholder": {
+                  "en": "Please specify",
+                  "es": "Especifique"
+                },
+                "otherErrorText": {
+                  "en": "A description is required for choices of \"other\".",
+                  "es": "Se requiere una descripción para la opción \"otro\"."
+                },
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "otherResearchStudies",
+                "title": {
+                  "en": "Is the patient currently participating in other research studies with genetic evaluations?",
+                  "es": "¿Participa el paciente en este momento en otros estudios clínicos en los que se realicen evaluaciones genéticas?"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "otherStudyResults",
+                "title": {
+                  "en": "Are you expecting to receive results from this study?",
+                  "es": "Espera recibir los resultados de este estudio?"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  }
+                ],
+                "visibleIf": "{otherResearchStudies} = true",
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "describeOtherStudies",
+                "title": {
+                  "en": "Please describe the other studies",
+                  "es": "Describa los otros estudios"
+                },
+                "description": "",
+                "isRequired": false,
+                "inputType": "text",
+                "visibleIf": "{otherResearchStudies} = true"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "footer2",
+                "html": {
+                  "en": "</br>We are required by the Health Insurance Portability and Accountability Act (HIPAA) to protect the privacy of health information obtained for research. This is an abbreviated notice, and does not describe all details of this requirement (see Partners Privacy Notice*). During this study, identifiable information about you or your health will be collected and shared with the researchers conducting the research. In general, under federal law, identifiable health information is private. However, there are exceptions to this rule. In some cases, others may see your identifiable health information for purposes of research oversight, quality control, public health and safety, or law enforcement. We share your health information only when we must, and we ask anyone who receives it from us to protect your privacy.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_English.pdf\">Partners HealthCare Notice for Use and Sharing of Protected Health Information</a>",
+                  "es": "</br>La ley de transferibilidad y responsabilidad de los seguros médicos (Health Insurance Portability and Accountability Act, HIPAA)\n  nos exige proteger la confidencialidad de los datos de salud que se obtengan en investigación. Este es un aviso abreviado en el que no se explican todos los detalles\n  de este requisito (véase el «Aviso sobre prácticas de protección de la privacidad» de Partners) . Durante este estudio se recolectará información acerca de su salud\n  con la que se podría deducir su identidad. Estos datos se comunicarán a los investigadores que realizan la investigación.\n  En términos generales, las leyes federales disponen que los datos médicos que revelan la identidad de una persona son de carácter confidencial.\n  Sin embargo, esta regla tiene excepciones. En ciertos casos, otras personas pueden ver datos médicos que revelan su identidad para efectos de supervisión de la investigación, control de calidad,\n  salud y seguridad pública o cumplimiento de las leyes. Compartimos sus datos médicos solo cuando es necesario y solicitamos que los que la reciban protejan su privacidad.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_Spanish.pdf\">Aviso de Partners HealthCare para el uso y el intercambio de información médica protegida</a>"
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "intro3",
+                "html": {
+                  "en": "</br>Thank you for providing information about your family. The Rare Genomes Project is a patient-driven research study that empowers families to have a direct impact on research into the undiagnosed, rare disease affecting the study by sharing health information and a blood or DNA sample with researchers. Completion of this survey will help determine your family’s eligibility for participation. Please help us understand more about your family’s rare and undiagnosed condition by answering the questions below.</br></br>\n\nPlease note that if you exit this survey at any time before submission, your answers will automatically be saved. When you are ready to continue, you can login again and return to this page to complete the survey.",
+                  "es": "</br>Gracias por proporcionar información sobre su familia. El Proyecto Genomas Raros es un estudio clínico controlado\n   por los pacientes que habilita a las familias para tener un efecto directo en las investigaciones acerca de las enfermedades raras y sin\n   diagnosticar que las afectan. Para ello comparten sus datos médicos y una muestra de sangre o de ADN con los investigadores. Al llenar esta\n   solicitud nos ayudará a determinar si su familia cumple los requisitos para participar. Cuéntenos acerca de la enfermedad rara y sin\n   diagnosticar de su familia respondiendo a las siguientes preguntas.</br></br>\n\nTenga en cuenta que si sale de la aplicación en algún momento antes de enviar la solicitud, sus respuestas\n  se grabarán automáticamente. Cuando esté listo para continuar, puede ingresar de nuevo y volver a esta página para terminar la solicitud."
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": {
+              "en": "Patient's Biological Mother",
+              "es": "Madre biológica del paciente"
+            },
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "mothersRace",
+                "title": {
+                  "en": "Patient's Biological Mother's Race",
+                  "es": "Raza de la madre biológica del paciente"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                      "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "text": {
+                      "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                      "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "text": {
+                      "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                      "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                    },
+                    "value": "asian"
+                  },
+                  {
+                    "text": {
+                      "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                      "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                    },
+                    "value": "americanIndianAlaskanNative"
+                  },
+                  {
+                    "text": {
+                      "en": "Native Hawaiian or other Pacific Islander",
+                      "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                    },
+                    "value": "nativeHawaiianPacificIslander"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "mothersEthnicity",
+                "title": {
+                  "en": "Patient's Biological Mother's Ethnicity",
+                  "es": "Grupo étnico de la madre biológica del paciente"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Hispanic",
+                      "es": "Es hispano(a)"
+                    },
+                    "value": "hispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Not Hispanic",
+                      "es": "No es hispano(a)"
+                    },
+                    "value": "notHispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "motherSameGeneticCondition",
+                "title": {
+                  "en": "Does the patient's biological mother have the same genetic medical condition as the patient?",
+                  "es": "¿La madre biológica del paciente tiene la misma enfermedad genética del paciente?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "motherAgeOfOnset",
+                "title": {
+                  "en": "Age of Onset of Condition",
+                  "es": "Edad de aparición de la enfermedad"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{motherSameGeneticCondition} = true"
+              },
+              {
+                "type": "radiogroup",
+                "name": "motherParticipate",
+                "title": {
+                  "en": "Is the patient's biological mother able to participate in the study?",
+                  "es": "¿La madre biológica del paciente puede participar en el estudio?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "motherDeceased",
+                "title": {
+                  "en": "Is the patient's biological mother deceased?",
+                  "es": "¿La madre biológica del paciente ha fallecido?"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "visibleIf": "{motherParticipate} = false",
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "motherDNASample",
+                "title": {
+                  "en": "Does the deceased biological mother of the patient have a stored DNA sample available?",
+                  "es": "¿Se cuenta con una muestra de ADN de la madre biológica fallecida del paciente?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "visibleIf": "{motherDeceased} = true",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": {
+              "en": "Patient's Biological Father",
+              "es": "El padre biológico del paciente"
+            },
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "fathersRace",
+                "title": {
+                  "en": "Patient's Biological Father's Race",
+                  "es": "Raza del padre biológico del paciente"
+                },
+                "description": {
+                  "en": "Select all that apply",
+                  "es": "Seleccione todas las que correspondan"
+                },
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                      "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "text": {
+                      "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                      "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "text": {
+                      "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                      "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                    },
+                    "value": "asian"
+                  },
+                  {
+                    "text": {
+                      "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                      "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                    },
+                    "value": "americanIndianAlaskanNative"
+                  },
+                  {
+                    "text": {
+                      "en": "Native Hawaiian or other Pacific Islander",
+                      "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                    },
+                    "value": "nativeHawaiianPacificIslander"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "fathersEthnicity",
+                "title": {
+                  "en": "Patient's Biological Father's Ethnicity",
+                  "es": "Grupo étnico del padre biológico del paciente"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Hispanic",
+                      "es": "Es hispano(a)"
+                    },
+                    "value": "hispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Not Hispanic",
+                      "es": "No es hispano(a)"
+                    },
+                    "value": "notHispanic"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown",
+                      "es": "No sabe"
+                    },
+                    "value": "unknown"
+                  },
+                  {
+                    "text": {
+                      "en": "I prefer not to answer",
+                      "es": "Prefiere no responder"
+                    },
+                    "value": "noAnswer"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "fatherSameGeneticCondition",
+                "title": {
+                  "en": "Does the patient's biological father have the same genetic medical condition as the patient?",
+                  "es": "¿El padre biológico del paciente tiene la misma enfermedad genética del paciente?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "text",
+                "name": "fatherAgeOfOnset",
+                "title": {
+                  "en": "Age of Onset of Condition",
+                  "es": "Edad de aparición de la enfermedad"
+                },
+                "description": "",
+                "isRequired": true,
+                "inputType": "text",
+                "visibleIf": "{fatherSameGeneticCondition} = true"
+              },
+              {
+                "type": "radiogroup",
+                "name": "fatherParticipate",
+                "title": {
+                  "en": "Is the patient's biological father able to participate in the study?",
+                  "es": "¿El padre biológico del paciente puede participar en el estudio?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "fatherDeceased",
+                "title": {
+                  "en": "Is the patient's biological father deceased?",
+                  "es": "¿El padre biológico del paciente ha fallecido?"
+                },
+                "description": "",
+                "isRequired": false,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "visibleIf": "{fatherParticipate} = false",
+                "inputType": "text"
+              },
+              {
+                "type": "radiogroup",
+                "name": "fatherDNASample",
+                "title": {
+                  "en": "Does the deceased biological father of the patient have a stored DNA sample available?",
+                  "es": "¿Se cuenta con una muestra de ADN del padre biológico fallecido del paciente?"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "Yes",
+                      "es": "Sí"
+                    },
+                    "value": "true"
+                  },
+                  {
+                    "text": {
+                      "en": "No",
+                      "es": "No"
+                    },
+                    "value": "false"
+                  },
+                  {
+                    "text": {
+                      "en": "Unknown/Unsure",
+                      "es": "No sabe / No está seguro(a)"
+                    },
+                    "value": "unknown"
+                  }
+                ],
+                "visibleIf": "{fatherDeceased} = true",
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "noSiblings",
+                "title": {
+                  "en": "Patient's Biological Sibling",
+                  "es": "Hermano(a) biológico(a) del paciente"
+                },
+                "choices": [
+                  {
+                    "value": "true",
+                    "text": {
+                      "en": "Patient doesn't have any siblings",
+                      "es": "El paciente no tiene hermanos"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "paneldynamic",
+                "name": "siblings",
+                "visibleIf": "{noSiblings} empty",
+                "templateElements": [
+                  {
+                    "type": "radiogroup",
+                    "name": "siblingSex",
+                    "title": {
+                      "en": "Sex",
+                      "es": "Sexo"
+                    },
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "value": "female",
+                        "text": {
+                          "en": "Female",
+                          "es": "Femenino"
+                        }
+                      },
+                      {
+                        "value": "male",
+                        "text": {
+                          "en": "Male",
+                          "es": "Masculino"
+                        }
+                      },
+                      {
+                        "value": "noAnswer",
+                        "text": {
+                          "en": "Prefer not to answer",
+                          "es": "Prefiere no responder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "name": "siblingAge",
+                    "title": {
+                      "en": "Current Age",
+                      "es": "Edad actual"
+                    },
+                    "isRequired": true
+                  },
+                  {
+                    "type": "checkbox",
+                    "name": "siblingRace",
+                    "title": {
+                      "en": "Patient's Biological Sibling's Race",
+                      "es": "Raza del hermano biológico o la hermana biológica del paciente"
+                    },
+                    "isRequired": true,
+                    "description": {
+                      "en": "Select all that apply",
+                      "es": "Seleccione todas las que correspondan"
+                    },
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                          "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                        },
+                        "value": "white"
+                      },
+                      {
+                        "text": {
+                          "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                          "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                        },
+                        "value": "black"
+                      },
+                      {
+                        "text": {
+                          "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                          "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                        },
+                        "value": "asian"
+                      },
+                      {
+                        "text": {
+                          "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                          "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                        },
+                        "value": "americanIndianAlaskanNative"
+                      },
+                      {
+                        "text": {
+                          "en": "Native Hawaiian or other Pacific Islander",
+                          "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                        },
+                        "value": "nativeHawaiianPacificIslander"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "siblingEthnicity",
+                    "title": {
+                      "en": "Patient's Biological Sibling's Ethnicity",
+                      "es": "Grupo étnico del hermano biológico o la hermana biológica del paciente"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Hispanic",
+                          "es": "Es hispano(a)"
+                        },
+                        "value": "hispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Not Hispanic",
+                          "es": "No es hispano(a)"
+                        },
+                        "value": "notHispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "siblingSameGeneticCondition",
+                    "title": {
+                      "en": "Does the patient's biological sibling have the same genetic medical condition as the patient?",
+                      "es": "¿El hermano biológico o la hermana biológica del paciente tiene la misma enfermedad genética del paciente?"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Yes",
+                          "es": "Sí"
+                        },
+                        "value": "true"
+                      },
+                      {
+                        "text": {
+                          "en": "No",
+                          "es": "No"
+                        },
+                        "value": "false"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown/Unsure",
+                          "es": "No sabe / No está seguro(a)"
+                        },
+                        "value": "unknown"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "text",
+                    "name": "siblingAgeOfOnset",
+                    "title": {
+                      "en": "Age of Onset of Condition",
+                      "es": "Edad de aparición de la enfermedad"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "inputType": "text",
+                    "visibleIf": "{panel.siblingSameGeneticCondition} = true"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "siblingParticipate",
+                    "title": {
+                      "en": "Is the patient's biological sibling able to participate in the study?",
+                      "es": "¿El hermano biológico o la hermana biológica del paciente puede participar en el estudio?"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Yes",
+                          "es": "Sí"
+                        },
+                        "value": "true"
+                      },
+                      {
+                        "text": {
+                          "en": "No",
+                          "es": "No"
+                        },
+                        "value": "false"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown/Unsure",
+                          "es": "No sabe / No está seguro(a)"
+                        },
+                        "value": "unknown"
+                      }
+                    ]
+                  }
+                ],
+                "noEntriesText": "No siblings have been added yet",
+                "confirmDelete": true,
+                "confirmDeleteText": "Are you sure you want to delete this information?",
+                "panelAddText": {
+                  "en": "Add a Sibling",
+                  "es": "Agregar a otro(a) hermano(a)"
+                },
+                "panelRemoveText": "Remove Sibling",
+                "title": {
+                  "en": "Siblings",
+                  "es": "Hermanos"
+                }
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "noChildren",
+                "title": {
+                  "en": "Patient's Biological Children",
+                  "es": "Hijos biológicos del paciente"
+                },
+                "choices": [
+                  {
+                    "value": "true",
+                    "text": {
+                      "en": "Patient doesn't have any children",
+                      "es": "El paciente no tiene hijos"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "paneldynamic",
+                "name": "children",
+                "visibleIf": "{noChildren} empty",
+                "templateElements": [
+                  {
+                    "type": "radiogroup",
+                    "name": "childSex",
+                    "title": {
+                      "en": "Sex",
+                      "es": "Sexo"
+                    },
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "value": "female",
+                        "text": {
+                          "en": "Female",
+                          "es": "Femenino"
+                        }
+                      },
+                      {
+                        "value": "male",
+                        "text": {
+                          "en": "Male",
+                          "es": "Masculino"
+                        }
+                      },
+                      {
+                        "value": "noAnswer",
+                        "text": {
+                          "en": "Prefer not to answer",
+                          "es": "Prefiere no responder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "name": "childAge",
+                    "title": {
+                      "en": "Current Age",
+                      "es": "Edad actual"
+                    },
+                    "isRequired": true
+                  },
+                  {
+                    "type": "checkbox",
+                    "name": "childRace",
+                    "title": {
+                      "en": "Patient's Biological Child's Race",
+                      "es": "Raza del hijo biológico o la hija biológica del paciente"
+                    },
+                    "isRequired": true,
+                    "description": {
+                      "en": "Select all that apply",
+                      "es": "Seleccione todas las que correspondan"
+                    },
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                          "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                        },
+                        "value": "white"
+                      },
+                      {
+                        "text": {
+                          "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                          "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                        },
+                        "value": "black"
+                      },
+                      {
+                        "text": {
+                          "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                          "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                        },
+                        "value": "asian"
+                      },
+                      {
+                        "text": {
+                          "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                          "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                        },
+                        "value": "americanIndianAlaskanNative"
+                      },
+                      {
+                        "text": {
+                          "en": "Native Hawaiian or other Pacific Islander",
+                          "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                        },
+                        "value": "nativeHawaiianPacificIslander"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "childEthnicity",
+                    "title": {
+                      "en": "Patient's Biological Child's Ethnicity",
+                      "es": "Grupo étnico del hijo biológico o la hija biológica del paciente"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Hispanic",
+                          "es": "Es hispano(a)"
+                        },
+                        "value": "hispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Not Hispanic",
+                          "es": "No es hispano(a)"
+                        },
+                        "value": "notHispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "childSameGeneticCondition",
+                    "title": {
+                      "en": "Does the patient's biological child have the same genetic medical condition as the patient?",
+                      "es": "¿El hijo biológico o la hija biológica del paciente tiene la misma enfermedad genética del paciente?"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Yes",
+                          "es": "Sí"
+                        },
+                        "value": "true"
+                      },
+                      {
+                        "text": {
+                          "en": "No",
+                          "es": "No"
+                        },
+                        "value": "false"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown/Unsure",
+                          "es": "No sabe / No está seguro(a)"
+                        },
+                        "value": "unknown"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "text",
+                    "name": "childAgeOfOnset",
+                    "title": {
+                      "en": "Age of Onset of Condition",
+                      "es": "Edad de aparición de la enfermedad"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "inputType": "text",
+                    "visibleIf": "{panel.childSameGeneticCondition} = true"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "childParticipate",
+                    "title": {
+                      "en": "Is the patient's biological child able to participate in the study?",
+                      "es": "¿El hijo biológico o la hija biológica del paciente puede participar en el estudio?"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Yes",
+                          "es": "Sí"
+                        },
+                        "value": "true"
+                      },
+                      {
+                        "text": {
+                          "en": "No",
+                          "es": "No"
+                        },
+                        "value": "false"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown/Unsure",
+                          "es": "No sabe / No está seguro(a)"
+                        },
+                        "value": "unknown"
+                      }
+                    ]
+                  }
+                ],
+                "noEntriesText": "No children have been added yet",
+                "confirmDelete": true,
+                "confirmDeleteText": "Are you sure you want to delete this information?",
+                "panelAddText": {
+                  "en": "Add a Child",
+                  "es": "Agregar a otro(a) hijo(a)"
+                },
+                "panelRemoveText": "Remove Child",
+                "title": {
+                  "en": "Children",
+                  "es": "Hijos"
+                }
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "checkbox",
+                "name": "noRelatives",
+                "title": {
+                  "en": "Other biological family members affected by the same condition as the patient (aunt/uncle/grandma/grandpa/cousin,etc.)",
+                  "es": "Otros familiares biológicos que tienen la misma enfermedad del paciente (tío, tía, abuelo, abuela, primo(a), etc.)"
+                },
+                "choices": [
+                  {
+                    "value": "true",
+                    "text": {
+                      "en": "Patient doesn't have any other family members affected by the condition",
+                      "es": "El paciente no tiene otros familiares que tengan esa enfermedad"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "paneldynamic",
+                "name": "relatives",
+                "visibleIf": "{noRelatives} empty",
+                "templateElements": [
+                  {
+                    "type": "radiogroup",
+                    "name": "relativeSex",
+                    "title": {
+                      "en": "Sex",
+                      "es": "Sexo"
+                    },
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "value": "female",
+                        "text": {
+                          "en": "Female",
+                          "es": "Femenino"
+                        }
+                      },
+                      {
+                        "value": "male",
+                        "text": {
+                          "en": "Male",
+                          "es": "Masculino"
+                        }
+                      },
+                      {
+                        "value": "noAnswer",
+                        "text": {
+                          "en": "Prefer not to answer",
+                          "es": "Prefiere no responder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "name": "relativeAge",
+                    "title": {
+                      "en": "Current Age",
+                      "es": "Edad actual"
+                    },
+                    "isRequired": true
+                  },
+                  {
+                    "type": "checkbox",
+                    "name": "relativeRace",
+                    "title": {
+                      "en": "Patient's Biological Relative's Race",
+                      "es": "Raza del pariente biológico del paciente"
+                    },
+                    "isRequired": true,
+                    "description": {
+                      "en": "Select all that apply",
+                      "es": "Seleccione todas las que correspondan"
+                    },
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "White (for example, German, Irish, English, Italian, Polish, French, etc.)",
+                          "es": "De raza blanca (por ejemplo, alemán, irlandés, inglés, italiano, polaco, francés, etc.)"
+                        },
+                        "value": "white"
+                      },
+                      {
+                        "text": {
+                          "en": "Black or African American (for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, Somalian, etc.)",
+                          "es": "De raza negra o de origen africano (por ejemplo, estadounidense de ascendencia africana, jamaiquino, haitiano, nigeriano, etíope, somalí, etc.)"
+                        },
+                        "value": "black"
+                      },
+                      {
+                        "text": {
+                          "en": "Asian (for example, Chinese, Filipino, Asian Indian, Vietnamese, Korean, Japanese, etc.)",
+                          "es": "Asiático (por ejemplo, chino, filipino, indio, vietnamita, coreano, japonés, etc.)"
+                        },
+                        "value": "asian"
+                      },
+                      {
+                        "text": {
+                          "en": "American Indian or Alaskan Native (for example, Navajo Nation, Blackfeet Tribe, Mayan, Aztec, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, etc.)",
+                          "es": "Indígena estadounidense o de los grupos originarios de Alaska (por ejemplo, de la nación navaja, de la tribu pies negros (Blackfeet), maya, azteca, iñupiat, esquimal, etc.)"
+                        },
+                        "value": "americanIndianAlaskanNative"
+                      },
+                      {
+                        "text": {
+                          "en": "Native Hawaiian or other Pacific Islander",
+                          "es": "De los grupos originarios de Hawái o de otra isla del Pacífico"
+                        },
+                        "value": "nativeHawaiianPacificIslander"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "relativeEthnicity",
+                    "title": {
+                      "en": "Patient's Biological Relative's Ethnicity",
+                      "es": "Grupo étnico del del paciente biológico del paciente"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Hispanic",
+                          "es": "Es hispano(a)"
+                        },
+                        "value": "hispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Not Hispanic",
+                          "es": "No es hispano(a)"
+                        },
+                        "value": "notHispanic"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown",
+                          "es": "No sabe"
+                        },
+                        "value": "unknown"
+                      },
+                      {
+                        "text": {
+                          "en": "I prefer not to answer",
+                          "es": "Prefiere no responder"
+                        },
+                        "value": "noAnswer"
+                      }
+                    ],
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "text",
+                    "name": "relativeAgeOfOnset",
+                    "title": {
+                      "en": "Age of Onset of Condition",
+                      "es": "Edad de aparición de la enfermedad"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "inputType": "text"
+                  },
+                  {
+                    "type": "radiogroup",
+                    "name": "relativeParticipate",
+                    "title": {
+                      "en": "Is the patient's biological relative able to participate in the study?",
+                      "es": "¿El pariente biológico del paciente puede participar en el estudio?"
+                    },
+                    "description": "",
+                    "isRequired": true,
+                    "choices": [
+                      {
+                        "text": {
+                          "en": "Yes",
+                          "es": "Sí"
+                        },
+                        "value": "true"
+                      },
+                      {
+                        "text": {
+                          "en": "No",
+                          "es": "No"
+                        },
+                        "value": "false"
+                      },
+                      {
+                        "text": {
+                          "en": "Unknown/Unsure",
+                          "es": "No sabe / No está seguro(a)"
+                        },
+                        "value": "unknown"
+                      }
+                    ]
+                  }
+                ],
+                "noEntriesText": "No family members have been added yet",
+                "confirmDelete": true,
+                "confirmDeleteText": "Are you sure you want to delete this information?",
+                "panelAddText": {
+                  "en": "Add a Family Member",
+                  "es": "Agregar a otro pariente del paciente"
+                },
+                "panelRemoveText": "Remove Family Member",
+                "title": {
+                  "en": "Relatives",
+                  "es": "Familiares"
+                }
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "text",
+                "name": "familyAnythingElse",
+                "title": {
+                  "en": "Please tell us anything else you would like to about the patient or the patient’s biological family. Please also note if there is any topic that is particularly sensitive before discussing with your family.",
+                  "es": "Díganos cualquier otra cosa que usted quiera que sepamos sobre el paciente o sobre la familia biológica del paciente. Tenga en cuenta si hay algún tema que sea especialmente delicado y que usted quiera que conozcamos antes de que hablemos con usted o con su familia."
+                },
+                "description": {
+                  "en": "Please describe",
+                  "es": "Describa lo siguiente"
+                },
+                "isRequired": false,
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "agreeSecureDatabase",
+                "title": {
+                  "en": "I agree that the information I entered here will be stored in a secure database and may be used to match me to a research study—the Rare Genomes Project.",
+                  "es": "Entiendo que la información que ingresé aquí se conservará en una base de datos segura y que se empleará\n  para vincularme con un estudio clínico: el Proyecto Genomas Raros"
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "I agree",
+                      "es": "Estoy de acuerdo"
+                    },
+                    "value": "true"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "agreeContacted",
+                "title": {
+                  "en": "I agree that if the information that I entered is a match for the Rare Genomes Project now or in the future, I may be contacted about my possible participation.",
+                  "es": "Accedo a que se comuniquen conmigo sobre mi posible participación."
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "I agree",
+                      "es": "Estoy de acuerdo"
+                    },
+                    "value": "true"
+                  }
+                ],
+                "inputType": "text"
+              },
+              {
+                "type": "checkbox",
+                "name": "understandDeleteInformation",
+                "title": {
+                  "en": "I understand that if I would like my information deleted from our database now or in the future, I can email raregenomes@broadinstitute.org and my information will be removed from the database.",
+                  "es": "Entiendo que, si deseara que mi información se borrara de la base de datos ahora o en el futuro,\n  puedo escribir por correo electrónico a raregenomes@broadinstitute.org y pedir que esta información se borre."
+                },
+                "description": "",
+                "isRequired": true,
+                "choices": [
+                  {
+                    "text": {
+                      "en": "I understand",
+                      "es": "Entiendo"
+                    },
+                    "value": "true"
+                  }
+                ],
+                "inputType": "text"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "footer3",
+                "html": {
+                  "en": "</br>We are required by the Health Insurance Portability and Accountability Act (HIPAA) to protect the privacy of health information obtained for research. This is an abbreviated notice, and does not describe all details of this requirement (see Partners Privacy Notice*). During this study, identifiable information about you or your health will be collected and shared with the researchers conducting the research. In general, under federal law, identifiable health information is private. However, there are exceptions to this rule. In some cases, others may see your identifiable health information for purposes of research oversight, quality control, public health and safety, or law enforcement. We share your health information only when we must, and we ask anyone who receives it from us to protect your privacy.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_English.pdf\">Partners HealthCare Notice for Use and Sharing of Protected Health Information</a>",
+                  "es": "</br>La ley de transferibilidad y responsabilidad de los seguros médicos (Health Insurance Portability and Accountability Act, HIPAA)\n  nos exige proteger la confidencialidad de los datos de salud que se obtengan en investigación. Este es un aviso abreviado en el que no se explican todos los detalles\n  de este requisito (véase el «Aviso sobre prácticas de protección de la privacidad» de Partners) . Durante este estudio se recolectará información acerca de su salud\n  con la que se podría deducir su identidad. Estos datos se comunicarán a los investigadores que realizan la investigación.\n  En términos generales, las leyes federales disponen que los datos médicos que revelan la identidad de una persona son de carácter confidencial.\n  Sin embargo, esta regla tiene excepciones. En ciertos casos, otras personas pueden ver datos médicos que revelan su identidad para efectos de supervisión de la investigación, control de calidad,\n  salud y seguridad pública o cumplimiento de las leyes. Compartimos sus datos médicos solo cuando es necesario y solicitamos que los que la reciban protejan su privacidad.</br></br>\n\n*<a href=\"http://www.partners.org/Assets/Documents/Notices/Partners_Privacy_Policy_Spanish.pdf\">Aviso de Partners HealthCare para el uso y el intercambio de información médica protegida</a>"
+                },
+                "isRequired": false,
+                "title": "",
+                "description": "",
+                "inputType": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

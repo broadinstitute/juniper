@@ -1,0 +1,611 @@
+{
+  "stableId": "rgp_portalContent",
+  "version": 1,
+  "localizedSiteContents": [],
+  "localizedSiteContentDtos": [
+    {
+      "language": "en",
+      "navbarItems": [],
+      "pages": [],
+      "languageTextOverrides": [],
+      "navLogoCleanFileName": "rare-genome-project-logo-primary.svg",
+      "navLogoVersion": 1,
+      "primaryBrandColor": "#0c457d",
+      "dashboardBackgroundColor": "linear-gradient(270deg, #0ea7b5 0%, #8bb1b5 100%)",
+      "landingPageFileName": "en/landingPage.json",
+      "pageDtos": [
+        {
+          "title": "Eligibility Criteria",
+          "sections": [],
+          "path": "eligibility-criteria",
+          "minimalNavbar": false,
+          "sectionDtos": [
+            {
+              "sectionType": "BANNER_IMAGE",
+              "sectionConfigJson": {
+                "image": {
+                  "cleanFileName": "eligibility-criteria-md.jpg",
+                  "version": 1
+                },
+                "fullWidth": true
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "Eligibility Criteria",
+                "blurb": "The Rare Genomes Project offers research-based genomic sequencing to patients and families with an undiagnosed, suspected genetic disease. Each application that we receive is carefully reviewed by our team to determine if our study is likely to find the genetic cause of the condition in your family.\n\nWe welcome applications from families with all types of rare disease. Additionally, we have specialized branches of our project focusing on [limb-girdle muscular dystrophy](/limb-girdle-muscular-dystrophy) and [craniofacial conditions](/craniofacial), which are described in more detail on their disease-specific pages.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "To be eligible, participants **must**:\n\n* Have a rare and genetically undiagnosed condition\n* Live in the United States\n* Be currently under the care of a medical provider that is helping to understand the cause of the condition\n* Have access to a telephone and/or a computer\n\nApplicants do **NOT** need to pay any fees associated with our study or travel to our office in Cambridge, Massachusetts. Participation is entirely remote and free-of-cost.\n\nIf one or more of these criteria do not apply to you, we encourage you to join our [mailing list](#mailing-list). We will contact you if requirements change and make you eligible to apply to the study.",
+                "blurbAlign": "left",
+                "buttons": [],
+                "background": "#0ea7b5",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "In general, the families ***more likely*** to benefit from our study approach are those that are suspected to have a single gene cause of disease and may have some of the following features:\n\n* An earlier-than-typical onset or severe presentation of symptoms\n* Multiple family members with the same (or similar) medical condition\n* Available, unaffected biological parents of the affected individual(s)\n* Some prior genetic testing that did not identify a diagnosis\n\nIn general, the families ***less likely*** to benefit from our study approach include those with a condition that:\n\n* Is not likely to be caused by a change in a single gene (for example, Ehlers-Danlos syndrome, isolated heart defects, VACTERL, and autoimmune disorders)\n* Has a suspected or known environmental cause\n* Has already been diagnosed genetically\n* Has not been diagnosed by prior whole genome sequencing\n\nIf you think your family is eligible, we encourage you to [learn more about how to apply](/how-it-works).\n\nPlease reach out to us by email at [raregenomes@broadinstitute.org](mailto:raregenomes@broadinstitute.org) or by phone at [617-714-7395](tel:617-714-7395) ([Toll-free: 855-534-4300](tel:855-534-4300)). If you have any questions or would like us to consider a special-case application.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            }
+          ]
+        },
+        {
+          "title": "Getting Started",
+          "sections": [],
+          "path": "how-it-works",
+          "minimalNavbar": false,
+          "sectionDtos": [
+            {
+              "sectionType": "BANNER_IMAGE",
+              "sectionConfigJson": {
+                "image": {
+                  "cleanFileName": "how-it-works-family.jpg",
+                  "version": 1
+                },
+                "fullWidth": true
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "Thinking about joining us?",
+                "blurb": "",
+                "blurbAlign": "center",
+                "buttons": [],
+                "color": "#0c457d"
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "**We’re excited you’re interested in our project! Read through these steps to learn more about what participation in the Rare Genomes Project entails. If you think the Rare Genomes Project might be right for you, click [“Start an Application”](/hub) at the bottom of this page.**",
+                "blurbAlign": "center",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "HERO_WITH_IMAGE",
+              "sectionConfigJson": {
+                "title": "Get to know our project",
+                "blurb": "The Rare Genomes Project is a research study focused on patients and families with **rare and genetically undiagnosed conditions**. We use genomic sequencing to search for the cause of rare disease in these families and hope to accelerate the rate of rare disease diagnosis in the process. For more information, review our [eligibility criteria](/eligibility-criteria) and read through the steps below.",
+                "fullWidth": true,
+                "image": {
+                  "videoLink": "https://www.youtube.com/embed/ux4_MwSALrc",
+                  "alt": "Rare Genomes Project"
+                },
+                "imagePosition": "left",
+                "buttons": [],
+                "logos": []
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "During the application process, we will ask about the rare, suspected genetic disease in your family, limited demographic information, family history information, and the results of previous genetic and other tests. After you complete your application, our study team will review the information you submit to determine if you are a good fit for the study. If so, we will set up a video meeting or phone conference with you and your family to explain the study and make sure that all of your questions are answered. Each person in the family will receive a consent document to sign to participate.",
+                "image": {
+                  "cleanFileName": "step-2.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": "Tell us about your family",
+                "fullWidth": true
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "After signing consent documents, we will ask for copies of medical records, including genetic test results, from affected family members. You can send this information by mail or secure fax using the information provided after your consent session.",
+                "image": {
+                  "cleanFileName": "step-3.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": "Share your medical history",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "Once enrolled, we will mail pre-paid sample collection kits directly to you and your family. You can take these kits to your local Quest Diagnostics facility, or to a local doctor’s office or hospital. We cover all fees associated with sample collection.",
+                "image": {
+                  "cleanFileName": "step-4.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": "Send us your sample",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "When your sample arrives at our lab, we will extract DNA from the sample and perform genomic sequencing. To learn more about genomic sequencing, you can visit the U.S. National Library of Medicine's [Help Me Understand Genetics](https://medlineplus.gov/genetics/) page.",
+                "image": {
+                  "cleanFileName": "step-5.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": "Have your DNA sequenced",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "To search for the genetic cause of your condition, we will compare your genome to hundreds of thousands of other individuals without your condition as well as your family members. This allows us to identify which DNA variants in your genome are potentially related to your condition.\n\n",
+                "image": {
+                  "cleanFileName": "step-6.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": " Have your genomic data analyzed",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "Sharing your symptoms and genomic data with other researchers and clinicians makes finding others with similar symptoms and changes in the same genes more likely. You can learn more about the ways we share data and our privacy policy [here](/privacy-and-your-data).",
+                "image": {
+                  "cleanFileName": "step-7.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": "Share your data",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "PARTICIPATION_DETAIL",
+              "sectionConfigJson": {
+                "blurb": "If we find results that we believe may explain the cause of your rare condition, we will contact you and ask if you would like to have the findings confirmed with our clinical laboratory partner, the Laboratory for Molecular Medicine (LMM) in Cambridge, MA. If you do, we will work with you and your doctor to return the results to you.",
+                "image": {
+                  "cleanFileName": "step-8.jpg",
+                  "version": 1
+                },
+                "imagePosition": "left",
+                "stepNumberText": "",
+                "timeIndication": "",
+                "title": " Receive clinically significant results",
+                "fullWidth": false
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "If this project sounds like it could benefit you or a loved one, we encourage you to fill out an online application here:",
+                "blurb": "",
+                "blurbAlign": "center",
+                "buttons": [
+                  {
+                    "type": "join",
+                    "text": "Start an Application",
+                    "href": "",
+                    "studyShortcode": "rgp"
+                  }
+                ],
+                "color": "#0c457d"
+              }
+            },
+            {
+              "sectionType": "HERO_WITH_IMAGE",
+              "sectionConfigJson": {
+                "title": "Still have questions?",
+                "blurb": "If you do not see your question [here](/faq), please email us at [raregenomes@broadinstitute.org](mailto:raregenomes@broadinstitute.org) or call us at [617-714-7395](tel:617-714-7395) (Toll-free: [855-534-4300](tel:855-534-4300)).",
+                "fullWidth": false,
+                "image": {
+                  "cleanFileName": "",
+                  "version": 1,
+                  "alt": "",
+                  "style": {
+                    "height": "40px"
+                  }
+                },
+                "imagePosition": "right",
+                "buttons": [],
+                "logos": []
+              }
+            }
+          ]
+        },
+        {
+          "title": "Privacy & Data Use",
+          "sections": [],
+          "path": "privacy-and-your-data",
+          "minimalNavbar": false,
+          "sectionDtos": [
+            {
+              "sectionType": "BANNER_IMAGE",
+              "sectionConfigJson": {
+                "image": {
+                  "cleanFileName": "privacy-and-your-data-lg.jpg",
+                  "version": 1
+                },
+                "fullWidth": true
+              }
+            },
+            {
+              "sectionType": "HERO_WITH_IMAGE",
+              "sectionConfigJson": {
+                "title": "Privacy and Your Data",
+                "blurb": "",
+                "fullWidth": true,
+                "image": {
+                  "cleanFileName": "",
+                  "version": 1,
+                  "alt": "",
+                  "style": {
+                    "height": "40px"
+                  }
+                },
+                "imagePosition": "left",
+                "buttons": [],
+                "logos": [],
+                "color": "#ffffff",
+                "background": "#0c457d"
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "**Genomic sequencing is just the first step in understanding rare diseases-** sharing your symptoms and genomic data with other researchers and clinicians makes finding others with similar symptoms and changes in the same genes more likely.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "What is Data Sharing?",
+                "blurb": "Data sharing means that sequencing and limited clinical data from this project will be shared with others outside our project. Those who would like to access the data we produce in the Rare Genomes Project are often other scientists who are interested in learning more about the genetics of a specific disease or condition. Because any given rare disease affects so few people, data sharing enables scientists worldwide to connect with one another and accelerate the speed of new discoveries in genetic disease.\n\nWe will utilize multiple platforms to share your sequencing data and key symptoms of the rare genetic disease in your family. **The information that we share is de-identified, meaning that your name, date of birth, contact information, or other personal identifiers are never shared.**",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "FAQ",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "",
+                "questions": [
+                  {
+                    "question": "How We Share Variant Information",
+                    "answer": "We share variant information when we are suspicious that a specific variant may cause a rare disease. For this type of variant, we share information through an online tool called [Matchmaker Exchange](http://www.matchmakerexchange.org/), which helps researchers and clinicians connect with one another. These connections can lead to collaborations that help establish evidence that variants and genes are related to rare diseases.\n\nWe also share variant information when we have confirmed that a variant causes a rare disease. For these variants, we share information through an online, public database called [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/). ClinVar serves as a reference that clinicians and scientists can use to know which genetic changes have been found in patients and associated with genetic diseases."
+                  },
+                  {
+                    "question": "How We Share Full Genomic Information",
+                    "answer": "We share full genomic sequencing data and summarized medical information through two platforms to help increase the pace of scientific discovery. For example, data is stored at the Broad Institute and accessible after approval by its Data Use Oversight System ([DUOS](https://duos.broadinstitute.org/#/home)). We also share data through a similar, federally-funded genomic database called [AnVIL](https://www.genome.gov/27569268/genomic-analysis-visualization-and-informatics-labspace-anvil/). Interested researchers must apply and be granted access to the data in these platforms."
+                  }
+                ],
+                "showToggleAllButton": false
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "Privacy",
+                "blurb": "Data sharing is important to advancing the understanding of rare genetic disease, and we have many safeguards in place to ensure that the data we collect as part of our project is securely stored and shared responsibly. Below are some frequently asked questions about privacy and data usage in the Rare Genomes Project.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "FAQ",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "",
+                "questions": [
+                  {
+                    "question": "How is my data stored?",
+                    "answer": "We store genetic and electronic data (such as electronic medical records) on secure, encrypted systems belonging to the Broad Institute and Partners HealthCare, the hospital organization responsible for this project. Your data is labeled with a randomized, numerical study ID available only to study staff. Physical data (such as paper medical records) are stored in a secure, locked cabinet in the study staff office."
+                  },
+                  {
+                    "question": "Will my name or personal information be shared with other researchers and clinicians?",
+                    "answer": "Never. The genetic data that we generate in the project is **de-identified**, meaning that it does not contain personally identifiable information such as your name or date of birth."
+                  },
+                  {
+                    "question": "Will the Rare Genomes Project profit off of my data?",
+                    "answer": "Never. The Rare Genomes Project is a non-profit research study and will not sell your genomic data."
+                  }
+                ],
+                "showToggleAllButton": false
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "We discuss data sharing during the consent call if you are accepted into the project and will make sure you understand how your data will be used. If you have questions or concerns about privacy that are not answered above, please contact us by email at [raregenomes@broadinstitute.org](mailto:raregenomes@broadinstitute.org) or by phone at [617-714-7395](tel:617-714-7395) (Toll-free: [855-534-4300](tel:855-534-4300)).",
+                "blurbAlign": "left",
+                "buttons": [],
+                "blurbSize": "fs-5"
+              }
+            }
+          ]
+        },
+        {
+          "title": "For Your Physician",
+          "sections": [],
+          "path": "for-your-physician",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "Data Access",
+          "sections": [],
+          "path": "data-sharing",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "LGMD",
+          "sections": [],
+          "path": "limb-girdle-muscular-dystrophy",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "Craniofacial",
+          "sections": [],
+          "path": "craniofacial",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "About Us",
+          "sections": [],
+          "path": "about-us",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "FAQs",
+          "sections": [],
+          "path": "faq",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        }
+      ],
+      "navbarItemDtos": [
+        {
+          "populateFileName": "en/navbar-item-eligibility-criteria.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-how-it-works.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-privacy-and-your-data.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-for-your-physician.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-data-sharing.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-limb-girdle-muscular-dystrophy.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-craniofacial.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-about-us.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "en/navbar-item-faq.json",
+          "itemDtos": []
+        }
+      ],
+      "footerSectionFile": "en/footer.json"
+    },
+    {
+      "language": "es",
+      "navbarItems": [],
+      "pages": [],
+      "languageTextOverrides": [],
+      "navLogoCleanFileName": "rare-genome-project-logo-primary.svg",
+      "navLogoVersion": 1,
+      "primaryBrandColor": "#0c457d",
+      "dashboardBackgroundColor": "linear-gradient(270deg, #0ea7b5 0%, #8bb1b5 100%)",
+      "landingPageFileName": "es/landingPage.json",
+      "pageDtos": [
+        {
+          "title": "Eligibility Criteria",
+          "sections": [],
+          "path": "eligibility-criteria",
+          "minimalNavbar": false,
+          "sectionDtos": [
+            {
+              "sectionType": "BANNER_IMAGE",
+              "sectionConfigJson": {
+                "image": {
+                  "cleanFileName": "eligibility-criteria-md.jpg",
+                  "version": 1
+                }
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "Criterios de idoneidad",
+                "blurb": "El Proyecto Genomas Raros ofrece secuenciación genómica de investigación a pacientes y familias en quienes se sospecha una enfermedad genética que no se ha diagnosticado. Nuestro equipo revisa atentamente cada solicitud que recibimos para determinar si existe la probabilidad de que en el estudio que realizamos se descubra la causa genética de la enfermedad que se presenta en su familia.\n\nAceptamos solicitudes de familias con todo tipo de enfermedades raras. Además, en el Proyecto hay divisiones especializadas que se centran en la [distrofia muscular de cinturas](/limb-girdle-muscular-dystrophy) y en las [enfermedades craneofaciales](/craniofacial), que se explican en más detalle en las páginas respectivas.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "Para participar, el solicitante **debe**:\n\n* Tener una enfermedad genética rara que no se haya diagnosticado\n* Vivir en los Estados Unidos\n* Recibir actualmente los cuidados de un profesional médico que le esté ayudando a determinar la causa de la enfermedad\n* Tener acceso a un teléfono o a una computadora\n\nLos solicitantes **no tienen** que pagar ninguna cuota relacionada con el estudio ni viajar a nuestra oficina de Cambridge (Massachusetts). La participación se realiza completamente a distancia y es gratuita.\n\nSi no cumple uno o más de estos criterios, le recomendamos que se [inscriba en nuestra lista de correo](#mailing-list). Nos comunicaremos con usted si los requisitos cambian y le permiten solicitar el ingreso al estudio.",
+                "blurbAlign": "left",
+                "buttons": [],
+                "background": "#0ea7b5",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "sectionType": "HERO_CENTERED",
+              "sectionConfigJson": {
+                "title": "",
+                "blurb": "En general, las familias que tienen **más probabilidades** de beneficiarse de la estrategia de este estudio son aquellas en quienes se sospecha que la causa de la enfermedad es un gen único y que tienen algunas de las siguientes características:\n\n* Un inicio más precoz que el típico o una presentación grave de los síntomas\n* Varias personas de la familia afectadas por la misma enfermedad (o por una enfermedad parecida)\n* Disponibilidad de los padres biológicos de las personas afectadas y que estos padres no tengan la enfermedad\n* Resultados de algunas pruebas genéticas anteriores que no llevaron a un diagnóstico\n\nEn general, las familias que tienen **menos probabilidades** de beneficiarse de la estrategia de este estudio son aquellas cuya enfermedad:\n\n* Tal vez no se deba a una alteración en un gen único (por ejemplo, el síndrome de Ehlers-Danlos, los defectos cardíacos aislados, la asociación VACTERL y los trastornos autoinmunitarios).\n* Tenga una causa ambiental presunta o conocida.\n* Tenga una causa genética ya diagnosticada.\n* No se haya diagnosticado mediante secuenciación previa del genoma completo.\n\nSi cree que su familia cumple los criterios, le recomendamos que [se entere de cómo presentar su solicitud](/how-it-works).\n\nEscríbanos por correo electrónico a [raregenomes@broadinstitute.org](mailto:raregenomes@broadinstitute.org) o llámenos por teléfono al [617-714-7395](tel:617-714-7395) ([Línea gratuita: 855-534-4300](tel:855-534-4300)). Si tiene preguntas o desea que tengamos en cuenta la solicitud de un caso especial.",
+                "blurbAlign": "left",
+                "buttons": []
+              }
+            }
+          ]
+        },
+        {
+          "title": "Getting Started",
+          "sections": [],
+          "path": "how-it-works",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "Privacy & Data Use",
+          "sections": [],
+          "path": "privacy-and-your-data",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "For Your Physician",
+          "sections": [],
+          "path": "for-your-physician",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "Data Access",
+          "sections": [],
+          "path": "data-sharing",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "LGMD",
+          "sections": [],
+          "path": "limb-girdle-muscular-dystrophy",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "Craniofacial",
+          "sections": [],
+          "path": "craniofacial",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "About Us",
+          "sections": [],
+          "path": "about-us",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        },
+        {
+          "title": "FAQs",
+          "sections": [],
+          "path": "faq",
+          "minimalNavbar": false,
+          "sectionDtos": []
+        }
+      ],
+      "navbarItemDtos": [
+        {
+          "populateFileName": "es/navbar-item-eligibility-criteria.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-how-it-works.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-privacy-and-your-data.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-for-your-physician.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-data-sharing.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-limb-girdle-muscular-dystrophy.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-craniofacial.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-about-us.json",
+          "itemDtos": []
+        },
+        {
+          "populateFileName": "es/navbar-item-faq.json",
+          "itemDtos": []
+        }
+      ],
+      "footerSectionFile": "es/footer.json"
+    }
+  ]
+}

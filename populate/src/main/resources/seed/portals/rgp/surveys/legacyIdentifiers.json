@@ -1,0 +1,51 @@
+{
+  "stableId": "legacyIdentifiers",
+  "name": "Legacy Identifiers",
+  "surveyType": "ADMIN",
+  "version": 1,
+  "allowAdminEdit": true,
+  "allowParticipantStart": false,
+  "allowParticipantReedit": false,
+  "autoAssign": true,
+  "assignToExistingEnrollees": true,
+  "required": false,
+  "answerMappings": [],
+  "jsonContent": {
+    "title": {
+      "en": "Legacy Identifiers"
+    },
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "text",
+            "name": "rgpFamilyId",
+            "title": {
+              "en": "RGP Family ID"
+            },
+            "isRequired": false,
+            "inputType": "text"
+          },
+          {
+            "type": "text",
+            "name": "pepperShortId",
+            "title": {
+              "en": "Pepper Short ID"
+            },
+            "isRequired": false,
+            "inputType": "text"
+          },
+          {
+            "type": "text",
+            "name": "pepperInternalParticipantId",
+            "title": {
+              "en": "Pepper Internal Participant ID"
+            },
+            "isRequired": false,
+            "inputType": "text"
+          }
+        ]
+      }
+    ]
+  }
+}

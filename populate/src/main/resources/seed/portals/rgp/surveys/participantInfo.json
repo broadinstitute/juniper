@@ -1,0 +1,501 @@
+{
+  "stableId": "participantInfo",
+  "name": "Participant Info",
+  "surveyType": "ADMIN",
+  "version": 1,
+  "allowAdminEdit": true,
+  "allowParticipantStart": false,
+  "allowParticipantReedit": false,
+  "autoAssign": true,
+  "assignToExistingEnrollees": true,
+  "required": false,
+  "answerMappings": [
+    {
+      "questionStableId": "firstName",
+      "targetType": "PROFILE",
+      "targetField": "givenName",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "lastName",
+      "targetType": "PROFILE",
+      "targetField": "familyName",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "sex",
+      "targetType": "PROFILE",
+      "targetField": "sexAtBirth",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "birthdate",
+      "targetType": "PROFILE",
+      "targetField": "birthDate",
+      "mapType": "STRING_TO_LOCAL_DATE"
+    }
+  ],
+  "jsonContent": {
+    "title": {
+      "en": "Participant Info"
+    },
+    "pages": [
+      {
+        "elements": [
+          {
+            "name": "subjectId",
+            "title": {
+              "en": "Subject ID"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "text"
+          },
+          {
+            "name": "importantNotes",
+            "title": {
+              "en": "Important Notes"
+            },
+            "isRequired": false,
+            "type": "comment"
+          },
+          {
+            "name": "processNotes",
+            "title": {
+              "en": "Process Notes"
+            },
+            "isRequired": false,
+            "type": "comment"
+          },
+          {
+            "name": "firstName",
+            "title": {
+              "en": "First Name"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "text"
+          },
+          {
+            "name": "middleName",
+            "title": {
+              "en": "Middle Name"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "text"
+          },
+          {
+            "name": "lastName",
+            "title": {
+              "en": "Last Name"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "text"
+          },
+          {
+            "name": "nameSuffix",
+            "title": {
+              "en": "Name Suffix"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "text"
+          },
+          {
+            "name": "preferredLanguage",
+            "title": {
+              "en": "Preferred Language"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "ENGLISH",
+                "text": {
+                  "en": "English"
+                }
+              },
+              {
+                "value": "SPANISH",
+                "text": {
+                  "en": "Spanish"
+                }
+              },
+              {
+                "value": "OTHER",
+                "text": {
+                  "en": "Other"
+                }
+              }
+            ],
+            "defaultValue": "ENGLISH"
+          },
+          {
+            "name": "sex",
+            "title": {
+              "en": "Sex"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "F",
+                "text": {
+                  "en": "Female"
+                }
+              },
+              {
+                "value": "UN",
+                "text": {
+                  "en": "Intersex"
+                }
+              },
+              {
+                "value": "M",
+                "text": {
+                  "en": "Male"
+                }
+              },
+              {
+                "value": "U",
+                "text": {
+                  "en": "Unknown"
+                }
+              }
+            ]
+          },
+          {
+            "name": "pronouns",
+            "title": {
+              "en": "Pronouns"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "SHE",
+                "text": {
+                  "en": "she/her"
+                }
+              },
+              {
+                "value": "HE",
+                "text": {
+                  "en": "he/him"
+                }
+              },
+              {
+                "value": "THEY",
+                "text": {
+                  "en": "they/them"
+                }
+              },
+              {
+                "value": "OTHER",
+                "text": {
+                  "en": "Other"
+                }
+              },
+              {
+                "value": "UNKNOWN",
+                "text": {
+                  "en": "unknown"
+                }
+              }
+            ],
+            "defaultValue": "UNKNOWN"
+          },
+          {
+            "name": "birthdate",
+            "title": {
+              "en": "DOB"
+            },
+            "isRequired": false,
+            "type": "text",
+            "inputType": "date"
+          },
+          {
+            "type": "expression",
+            "name": "age",
+            "title": {
+              "en": "Age Today"
+            },
+            "expression": "(age({birthdate}))",
+            "isRequired": false
+          },
+          {
+            "name": "alive",
+            "title": {
+              "en": "Alive/Deceased"
+            },
+            "isRequired": false,
+            "type": "radiogroup",
+            "choices": [
+              {
+                "value": "ALIVE",
+                "text": {
+                  "en": "Alive"
+                }
+              },
+              {
+                "value": "DECEASED",
+                "text": {
+                  "en": "Deceased"
+                }
+              }
+            ],
+            "defaultValue": "ALIVE"
+          },
+          {
+            "name": "relationshipToProband",
+            "title": {
+              "en": "Relationship to Proband"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "SELF",
+                "text": {
+                  "en": "Self"
+                }
+              },
+              {
+                "value": "SISTER",
+                "text": {
+                  "en": "Sister"
+                }
+              },
+              {
+                "value": "BROTHER",
+                "text": {
+                  "en": "Brother"
+                }
+              },
+              {
+                "value": "MOTHER",
+                "text": {
+                  "en": "Mother"
+                }
+              },
+              {
+                "value": "FATHER",
+                "text": {
+                  "en": "Father"
+                }
+              },
+              {
+                "value": "PATERNAL_GRANDMOTHER",
+                "text": {
+                  "en": "Paternal Grandmother"
+                }
+              },
+              {
+                "value": "PATERNAL_GRANDFATHER",
+                "text": {
+                  "en": "Paternal Grandfather"
+                }
+              },
+              {
+                "value": "MATERNAL_GRANDMOTHER",
+                "text": {
+                  "en": "Maternal Grandmother"
+                }
+              },
+              {
+                "value": "MATERNAL_GRANDFATHER",
+                "text": {
+                  "en": "Maternal Grandfather"
+                }
+              },
+              {
+                "value": "DAUGHTER",
+                "text": {
+                  "en": "Daughter"
+                }
+              },
+              {
+                "value": "SON",
+                "text": {
+                  "en": "Son"
+                }
+              },
+              {
+                "value": "OTHER",
+                "text": {
+                  "en": "Other"
+                }
+              },
+              {
+                "value": "HALF_SIBLING_MATERNAL",
+                "text": {
+                  "en": "Half Sibling Maternal"
+                }
+              },
+              {
+                "value": "HALF_SIBLING_PATERNAL",
+                "text": {
+                  "en": "Half Sibling Paternal"
+                }
+              },
+              {
+                "value": "MATERNAL_AUNT",
+                "text": {
+                  "en": "Maternal Aunt"
+                }
+              },
+              {
+                "value": "MATERNAL_FIRST_COUSIN",
+                "text": {
+                  "en": "Maternal First Cousin"
+                }
+              },
+              {
+                "value": "MATERNAL_UNCLE",
+                "text": {
+                  "en": "Maternal Uncle"
+                }
+              },
+              {
+                "value": "PATERNAL_AUNT",
+                "text": {
+                  "en": "Paternal Aunt"
+                }
+              },
+              {
+                "value": "PATERNAL_FIRST_COUSIN",
+                "text": {
+                  "en": "Paternal First Cousin"
+                }
+              },
+              {
+                "value": "PATERNAL_UNCLE",
+                "text": {
+                  "en": "Paternal Uncle"
+                }
+              }
+            ]
+          },
+          {
+            "name": "affectedStatus",
+            "title": {
+              "en": "Affected Status"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "1",
+                "text": {
+                  "en": "Affected"
+                }
+              },
+              {
+                "value": "0",
+                "text": {
+                  "en": "Unaffected"
+                }
+              },
+              {
+                "value": "3",
+                "text": {
+                  "en": "Uncertain"
+                }
+              }
+            ]
+          },
+          {
+            "name": "race",
+            "title": {
+              "en": "Race"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "AMERICAN_INDIAN_ALASKA_NATIVE",
+                "text": {
+                  "en": "American Indian or Alaska Native"
+                }
+              },
+              {
+                "value": "ASIAN",
+                "text": {
+                  "en": "Asian"
+                }
+              },
+              {
+                "value": "AFRICAN_AMERICAN",
+                "text": {
+                  "en": "Black or African American"
+                }
+              },
+              {
+                "value": "MORE_THAN_ONE",
+                "text": {
+                  "en": "More Than One Race"
+                }
+              },
+              {
+                "value": "NATIVE_HAWAIIAN_OTHER_PI",
+                "text": {
+                  "en": "Native Hawaiian or Other Pacific Islander"
+                }
+              },
+              {
+                "value": "UNKNOWN",
+                "text": {
+                  "en": "Unknown or Not Reported"
+                }
+              },
+              {
+                "value": "WHITE",
+                "text": {
+                  "en": "White"
+                }
+              }
+            ]
+          },
+          {
+            "name": "ethnicity",
+            "title": {
+              "en": "Ethnicity"
+            },
+            "isRequired": false,
+            "type": "dropdown",
+            "choices": [
+              {
+                "value": "HISPANIC",
+                "text": {
+                  "en": "Hispanic"
+                }
+              },
+              {
+                "value": "NOT_HISPANIC",
+                "text": {
+                  "en": "Not Hispanic"
+                }
+              },
+              {
+                "value": "UNKNOWN",
+                "text": {
+                  "en": "Unknown or Not Reported"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mixedRaceNotes",
+            "title": {
+              "en": "Mixed Race Notes"
+            },
+            "isRequired": false,
+            "type": "comment"
+          }
+        ]
+      }
+    ]
+  }
+}

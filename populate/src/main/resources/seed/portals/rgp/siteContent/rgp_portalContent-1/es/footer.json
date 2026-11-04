@@ -1,0 +1,67 @@
+{
+  "sectionType": "LINK_SECTIONS_FOOTER",
+  "sectionConfigJson": {
+    "itemSections": [
+      {
+        "title": "Rare Genomes Project",
+        "items": [
+          {
+            "type": "internalLink",
+            "text": "Página principal",
+            "href": "/"
+          },
+          {
+            "type": "internalLink",
+            "text": "Quiénes somos",
+            "href": "/about-us"
+          }
+        ]
+      },
+      {
+        "title": "Mantente informado",
+        "items": [
+          {
+            "type": "mailingList",
+            "text": "Lista de correo"
+          },
+          {
+            "text": "Facebook",
+            "href": "https://facebook.com/RareGenomesProject"
+          }
+        ]
+      },
+      {
+        "title": "Contacta con nosotros",
+        "items": [
+          {
+            "text": "raregenomes@broadinstitute.org",
+            "href": "mailto:raregenomes@broadinstitute.org"
+          },
+          {
+            "text": "617-714-7395",
+            "href": "tel:617-714-7395"
+          },
+          {
+            "text": "Línea gratuita: 855-534-4300",
+            "href": "tel:855-534-4300"
+          }
+        ]
+      },
+      {
+        "title": "Para los participantes",
+        "items": [
+          {
+            "type": "internalLink",
+            "text": "Ingresar",
+            "href": "/hub"
+          },
+          {
+            "type": "join",
+            "text": "Solicitud",
+            "studyShortcode": "rgp"
+          }
+        ]
+      }
+    ]
+  }
+}
