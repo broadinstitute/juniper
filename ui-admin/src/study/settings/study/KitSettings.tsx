@@ -31,11 +31,12 @@ import { isNil } from 'lodash'
 
 const KITTING_SYSTEM_OPTIONS = [
   { value: 'DSM_PEPPER', label: 'Pepper/DSM' },
-  { value: 'SIDR', label: 'SIDR' }
+  { value: 'SIDR', label: 'GPO / BCL Orders' }
 ]
 
-const SIDR_ENVIRONMENT_OPTIONS = ['production', 'staging', 'sandbox1', 'sandbox2', 'sandbox3', 'sandbox4', 'sandbox5']
-  .map(env => ({ value: env, label: env }))
+const SIDR_ENVIRONMENT_OPTIONS = [
+  'production', 'staging', 'dev', 'sandbox1', 'sandbox2', 'sandbox3', 'sandbox4', 'sandbox5'
+].map(env => ({ value: env, label: env }))
 
 export const KitSettings = (
   {
@@ -129,6 +130,7 @@ export const KitSettings = (
             'been requested.'
           }/>
           <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
+            aria-label="Kitting system"
             options={KITTING_SYSTEM_OPTIONS}
             value={KITTING_SYSTEM_OPTIONS.find(opt => opt.value === config.kittingSystem)}
             isClearable={false}
@@ -140,7 +142,7 @@ export const KitSettings = (
           <label className="form-label">
             Use mock kit requests <InfoPopup content={
               `If checked, kit requests will be mocked for this environment, `
-              + `and not sent to SIDR.`
+              + `and not sent to GPO / BCL Orders.`
             }/>
             <input type="checkbox" checked={config.useStubSidr}
               onChange={e => updateConfig('useStubSidr', e.target.checked)}/>
@@ -148,8 +150,8 @@ export const KitSettings = (
         </div>
         <div className="mb-2">
           <label className="form-label">
-            SIDR environment <InfoPopup content={
-              'Which SIDR deployment kit requests are sent to. Only used if kit requests are not mocked.'
+            GPO / BCL Orders environment <InfoPopup content={
+              'Which GPO / BCL Orders environment kit requests are sent to. Only used if kit requests are not mocked.'
             }/>
             <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
               options={SIDR_ENVIRONMENT_OPTIONS}
@@ -160,8 +162,8 @@ export const KitSettings = (
         </div>
         <div className="mb-2">
           <label className="form-label">
-            SIDR project key <InfoPopup content={
-              'The SIDR project that kit orders for this study environment will be placed under.'
+            GPO / BCL Orders project key <InfoPopup content={
+              'The GPO / BCL Orders project that kit orders for this study environment will be placed under.'
             }/>
             <input type="text" className="form-control" style={{ width: 300 }}
               value={config.sidrProject ?? ''}

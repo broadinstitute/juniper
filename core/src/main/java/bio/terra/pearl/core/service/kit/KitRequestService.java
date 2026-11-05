@@ -18,7 +18,6 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.pepper.*;
-import bio.terra.pearl.core.service.kit.sidr.SIDRApiException;
 import bio.terra.pearl.core.service.kit.sidr.SIDRService;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -93,15 +92,16 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
          */
         StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         if (config.getKittingSystem() == ExternalKitSystem.SIDR) {
-            return switch (kitRequestCreationDto.distributionMethod) {
-                case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.SIDR);
-                case MAILED -> createNewSidrKitRequest(operator, config, enrollee, kitRequestCreationDto);
-                // TBD: return-only kits for SIDR
-                case MANUAL -> throw new IllegalArgumentException("Manually assigned kits are not yet supported with SIDR");
-            };
+            if (kitRequestCreationDto.distributionMethod != DistributionMethod.MAILED) {
+                // in-person and manually assigned kits already have a barcode and are sent to the kitting
+                // system as "return only" orders, which we don't yet support for SIDR
+                throw new IllegalArgumentException(
+                        "In-person and manually assigned kits are not currently supported for this study");
+            }
+            return createNewSidrKitRequest(operator, config, enrollee, kitRequestCreationDto);
         }
         return switch (kitRequestCreationDto.distributionMethod) {
-            case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.DSM_PEPPER);
+            case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
             case MAILED, MANUAL -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
@@ -111,10 +111,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         Once the kit is collected by staff later on, the kit request will be sent to Pepper as "returnOnly".
      */
     protected KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
-        return createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.DSM_PEPPER);
-    }
-
-    protected KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto, ExternalKitSystem kittingSystem) {
         //we need to make sure that there aren't any kits with the same label already assigned
         List<KitRequest> kits = dao.findAllByKitLabel(kitRequestCreationDto.kitLabel);
         if (!kits.isEmpty()) {
@@ -128,7 +124,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
-                .externalKitSystem(kittingSystem)
                 .kitLabel(kitRequestCreationDto.kitLabel)
                 .skipAddressValidation(true) // skip address validation for in-person kits, as they aren't shipped
                 .build();
@@ -214,7 +209,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private KitRequestDto createNewSidrKitRequest(AdminUser operator, StudyEnvironmentConfig config, Enrollee enrollee,
                                                   KitRequestCreationDto kitRequestCreationDto) {
         if (!kitRequestCreationDto.attestationAccepted) {
-            throw new IllegalArgumentException("The SIDR kit attestations must be accepted to request a kit");
+            throw new IllegalArgumentException("Order acknowledgements must be accepted to request a kit");
         }
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         KitRequest kitRequest = assemble(operator, enrollee, makePepperKitAddress(profile), kitRequestCreationDto);
@@ -564,10 +559,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
                 .formatted(kitRequest.getId())));
         kitRequest.setKitType(kitType);
-        if (kitRequest.getExternalKitSystem() == ExternalKitSystem.SIDR) {
-            // TBD: return-only kits for SIDR
-            throw new IllegalArgumentException("Collecting in-person kits is not yet supported with SIDR");
-        }
         createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
         KitRequestStatus priorStatus = kitRequest.getStatus();
         kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);

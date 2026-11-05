@@ -10,9 +10,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDRSample;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,6 +80,35 @@ class SIDRServiceTest {
         SIDROrder order = SIDRService.buildKitRequestOrder(config, kit("SALIVA", false), enrollee, profile);
         assertTrue(order.getSamples().get(0).getPatient().getMetadata().stream()
                 .noneMatch(m -> m.getKey().equals("date_of_birth")));
+    }
+
+    /** these messages are shown to study staff, who don't need to know which system we order kits from */
+    @Test
+    void validationMessagesDoNotMentionSidr() {
+        Profile noSex = profile();
+        noSex.setSexAtBirth(null);
+        Profile oddSex = profile();
+        oddSex.setSexAtBirth("other");
+        Profile noName = profile();
+        noName.setGivenName(null);
+        Profile noCity = profile();
+        noCity.getMailingAddress().setCity(null);
+        List<Executable> invalidOrders = List.of(
+                () -> SIDRService.buildKitRequestOrder(config, kit("STOOL", false), enrollee, profile()),
+                () -> SIDRService.buildKitRequestOrder(config, kit("SALIVA", false), enrollee, noSex),
+                () -> SIDRService.buildKitRequestOrder(config, kit("SALIVA", false), enrollee, oddSex),
+                () -> SIDRService.buildKitRequestOrder(config, kit("SALIVA", false), enrollee, noName),
+                () -> SIDRService.buildKitRequestOrder(config, kit("SALIVA", false), enrollee, noCity),
+                () -> SIDRService.buildKitRequestOrder(StudyEnvironmentConfig.builder().build(), kit("SALIVA", false), enrollee, profile()),
+                () -> new SIDRService(mock(SIDRClientWrapper.class)).placeKitRequestOrder(
+                        config, kit("SALIVA", false), enrollee, profile(), new AdminUser(), false),
+                () -> new SIDRService(mock(SIDRClientWrapper.class)).placeReturnOnlyKitRequestOrder(
+                        config, kit("SALIVA", false), enrollee, new AdminUser()));
+        for (Executable invalidOrder : invalidOrders) {
+            RuntimeException e = assertThrows(RuntimeException.class, invalidOrder);
+            assertFalse(e.getMessage().toLowerCase().contains("sidr"), e.getMessage());
+            assertFalse(e.getMessage().contains("GPO"), e.getMessage());
+        }
     }
 
     @Test

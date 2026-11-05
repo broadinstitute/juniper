@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.kit.sidr.models;
 public enum SIDREnvironment {
     PRODUCTION,
     STAGING,
+    DEV,
     SANDBOX1,
     SANDBOX2,
     SANDBOX3,
@@ -15,12 +16,12 @@ public enum SIDREnvironment {
      */
     public static SIDREnvironment fromConfigValue(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("No SIDR environment configured");
+            throw new IllegalArgumentException("Kit ordering environment is not configured");
         }
         try {
             return SIDREnvironment.valueOf(value.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown SIDR environment: " + value, e);
+            throw new IllegalArgumentException("Unknown kit ordering environment: " + value, e);
         }
     }
 

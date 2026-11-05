@@ -38,7 +38,7 @@ class StubSIDRClientTest {
         SIDRApiException e = assertThrows(SIDRApiException.class,
                 () -> client.postOrder(config, new AdminUser(), orderWithStreet("BAD street")));
         assertTrue(e.isAddressValidationError());
-        assertTrue(e.getMessage().startsWith("ADDRESS_VALIDATION_ERROR"));
+        assertEquals("Could not validate the participant's address", e.getMessage());
     }
 
     @Test

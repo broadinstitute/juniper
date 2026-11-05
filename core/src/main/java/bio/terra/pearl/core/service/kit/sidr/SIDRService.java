@@ -47,7 +47,7 @@ public class SIDRService {
                                           Profile profile, AdminUser operator, boolean attestationAccepted)
             throws SIDRApiException {
         if (!attestationAccepted) {
-            throw new IllegalArgumentException("The SIDR kit attestations must be accepted to request a kit");
+            throw new IllegalArgumentException("Order acknowledgements must be accepted to request a kit");
         }
         SIDROrder order = buildKitRequestOrder(config, kitRequest, enrollee, profile);
         return sidrClientWrapper.postOrder(config, operator, order);
@@ -56,14 +56,14 @@ public class SIDRService {
     /** TBD: return-only kits (in-person and manually assigned kits) will be ordered under a different test code */
     public SIDROrder placeReturnOnlyKitRequestOrder(StudyEnvironmentConfig config, KitRequest kitRequest,
                                                     Enrollee enrollee, AdminUser operator) {
-        throw new UnsupportedOperationException("Return-only kits are not yet supported with SIDR");
+        throw new UnsupportedOperationException("Return-only kits are not yet supported");
     }
 
     /** builds the SIDR order for a mailed kit. Does not communicate with SIDR. */
     static SIDROrder buildKitRequestOrder(StudyEnvironmentConfig config, KitRequest kitRequest, Enrollee enrollee,
                                           Profile profile) {
         if (StringUtils.isBlank(config.getSidrProject())) {
-            throw new IllegalArgumentException("No SIDR project is configured for this study environment");
+            throw new IllegalArgumentException("Kit ordering is not configured for this study environment");
         }
         String enrolleeId = config.isKitUseResearchIds() ? enrollee.getResearchId() : enrollee.getShortcode();
         MailingAddress address = profile.getMailingAddress();
@@ -72,7 +72,7 @@ public class SIDRService {
             throw new IllegalArgumentException("Participant has an incomplete mailing address");
         }
         if (StringUtils.isAnyBlank(profile.getGivenName(), profile.getFamilyName())) {
-            throw new IllegalArgumentException("Participant name is required to request a SIDR kit");
+            throw new IllegalArgumentException("Participant name is required to request a kit");
         }
 
         SIDRShippingInformation shippingInfo = SIDRShippingInformation.builder()
@@ -120,7 +120,7 @@ public class SIDRService {
         return switch (kitType.getName()) {
             case "SALIVA" -> "SALIVA";
             case "BLOOD" -> "CAPBLOOD";
-            default -> throw new IllegalArgumentException("Kit type not supported by SIDR: " + kitType.getName());
+            default -> throw new IllegalArgumentException("Kit type cannot be ordered: " + kitType.getName());
         };
     }
 
@@ -128,20 +128,20 @@ public class SIDRService {
         return switch (kitType.getName()) {
             case "SALIVA" -> "BODILY_FLUID_SALIVA";
             case "BLOOD" -> "WHOLE_BLOOD_CAPILLARY_BLOOD";
-            default -> throw new IllegalArgumentException("Kit type not supported by SIDR: " + kitType.getName());
+            default -> throw new IllegalArgumentException("Kit type cannot be ordered: " + kitType.getName());
         };
     }
 
     private static String normalizeSexAtBirth(String sexAtBirth) {
         if (StringUtils.isBlank(sexAtBirth)) {
-            throw new IllegalArgumentException("Sex at birth is required to request a SIDR kit");
+            throw new IllegalArgumentException("Sex at birth is required to request a kit");
         }
         if (sexAtBirth.equalsIgnoreCase("male") || sexAtBirth.equalsIgnoreCase("m")) {
             return "Male";
         } else if (sexAtBirth.equalsIgnoreCase("female") || sexAtBirth.equalsIgnoreCase("f")) {
             return "Female";
         }
-        throw new IllegalArgumentException("Sex at birth must be male or female to request a SIDR kit: " + sexAtBirth);
+        throw new IllegalArgumentException("Sex at birth must be male or female to request a kit: " + sexAtBirth);
     }
 
     private static String normalizeDateOfBirth(LocalDate dateOfBirth) {

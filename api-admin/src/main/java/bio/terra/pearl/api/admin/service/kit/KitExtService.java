@@ -14,7 +14,6 @@ import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
-import bio.terra.pearl.core.service.kit.sidr.SIDRApiException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -122,9 +121,7 @@ public class KitExtService {
         // would send stack traces (and for SIDR, raw response bodies) to the browser. Log it
         // instead.
         log.warn("Kit request failed for enrollee {}", enrolleeShortcode, e);
-        String message =
-            e instanceof SIDRApiException sidrError ? sidrError.getUserMessage() : e.getMessage();
-        response.addException(new Exception(enrolleeShortcode + ": " + message));
+        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage()));
       }
     }
     return response;

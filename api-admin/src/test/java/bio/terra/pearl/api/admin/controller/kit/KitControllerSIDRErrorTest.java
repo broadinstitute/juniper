@@ -47,7 +47,7 @@ class KitControllerSIDRErrorTest {
             SIDRApiException.fromResponse(
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "{\"errors\":[{\"type\":\"invalid.address_invalid\"}]}"));
-    assertTrue(response.getBody().getMessage().startsWith("ADDRESS_VALIDATION_ERROR"));
+    assertEquals("Could not validate the participant's address", response.getBody().getMessage());
   }
 
   @Test
@@ -72,7 +72,11 @@ class KitControllerSIDRErrorTest {
 
     assertEquals(1, response.getExceptions().size());
     assertTrue(
-        response.getExceptions().get(0).getMessage().startsWith("HDSALK: SIDR could not process"));
+        response
+            .getExceptions()
+            .get(0)
+            .getMessage()
+            .startsWith("HDSALK: Could not place kit order"));
     assertNull(response.getExceptions().get(0).getCause());
     // this is what actually gets serialized to the browser
     assertFalse(objectMapper.writeValueAsString(response).contains("SECRET"));

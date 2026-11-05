@@ -17,8 +17,7 @@ class SIDRApiExceptionTest {
     void addressValidationFailuresAreIdentified() {
         SIDRApiException e = SIDRApiException.fromResponse(HttpStatus.UNPROCESSABLE_ENTITY, ADDRESS_INVALID_BODY);
         assertTrue(e.isAddressValidationError());
-        assertTrue(e.getMessage().startsWith("ADDRESS_VALIDATION_ERROR"));
-        assertTrue(e.getUserMessage().startsWith("ADDRESS_VALIDATION_ERROR"));
+        assertEquals("Could not validate the participant's address", e.getMessage());
         assertEquals(ADDRESS_INVALID_BODY, e.getResponseBody());
     }
 
@@ -28,34 +27,24 @@ class SIDRApiExceptionTest {
                 "not json", "", null, "{\"detail\":\"bad\"}"}) {
             SIDRApiException e = SIDRApiException.fromResponse(HttpStatus.UNPROCESSABLE_ENTITY, body);
             assertFalse(e.isAddressValidationError(), "body: " + body);
-            assertTrue(e.getMessage().startsWith("SIDR returned 422"), "body: " + body);
+            assertTrue(e.getMessage().startsWith("Could not place kit order (HTTP 422)"), "body: " + body);
         }
     }
 
     @Test
-    void messageHasTheBodyForLogsButUserMessageNeverDoes() {
+    void messageNeverIncludesTheResponseBody() {
         String body = "{\"trace\": \"SECRET-INTERNAL-DETAIL\"}";
         for (HttpStatus status : new HttpStatus[]{HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN,
                 HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.INTERNAL_SERVER_ERROR}) {
             SIDRApiException e = SIDRApiException.fromResponse(status, body);
-            assertTrue(e.getMessage().contains("SECRET"));
-            assertFalse(e.getUserMessage().contains("SECRET"));
-            assertTrue(e.getUserMessage().contains("HTTP " + status.value()));
+            assertFalse(e.getMessage().contains("SECRET"));
+            assertTrue(e.getMessage().contains("HTTP " + status.value()));
+            // but it's kept, in full, for logging
+            assertEquals(body, e.getResponseBody());
         }
-        // address failures don't pass the body on to users either
         assertFalse(SIDRApiException.fromResponse(HttpStatus.UNPROCESSABLE_ENTITY,
-                ADDRESS_INVALID_BODY + "SECRET").getUserMessage().contains("SECRET"));
-        // failures before a response (authentication, parsing) don't expose the cause either
-        assertFalse(new SIDRApiException("Unable to authenticate to SIDR: key file /secrets/sa.json",
-                new RuntimeException()).getUserMessage().contains("secrets"));
-    }
-
-    @Test
-    void messageIncludesTheWholeBody() {
-        String body = "x".repeat(5000);
-        SIDRApiException e = SIDRApiException.fromResponse(HttpStatus.BAD_GATEWAY, body);
-        assertTrue(e.getMessage().endsWith(body));
-        assertEquals(body, e.getResponseBody());
-        assertFalse(e.getUserMessage().contains("xxx"));
+                ADDRESS_INVALID_BODY + "SECRET").getMessage().contains("SECRET"));
+        String longBody = "x".repeat(5000);
+        assertEquals(longBody, SIDRApiException.fromResponse(HttpStatus.BAD_GATEWAY, longBody).getResponseBody());
     }
 }

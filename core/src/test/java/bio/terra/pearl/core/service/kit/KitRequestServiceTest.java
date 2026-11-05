@@ -769,12 +769,16 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestManualKitNotSupportedForSidr(TestInfo testInfo) {
+    public void testReturnOnlyKitsNotSupportedForSidr(TestInfo testInfo) {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
         Enrollee enrollee = buildSidrEnrollee(testName);
-        assertThrows(IllegalArgumentException.class, () -> kitRequestService.requestKit(adminUser, "testStudy", enrollee,
-                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MANUAL, "label", false, null, null, true)));
+        for (DistributionMethod method : List.of(DistributionMethod.MANUAL, DistributionMethod.IN_PERSON)) {
+            assertThrows(IllegalArgumentException.class, () -> kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                    new KitRequestService.KitRequestCreationDto("SALIVA", method, "label", false, null, null, true)),
+                    method + " kits should not be supported with SIDR");
+        }
+        Assertions.assertTrue(kitRequestDao.findByEnrollee(enrollee.getId()).isEmpty());
     }
 
     @MockitoBean

@@ -88,7 +88,7 @@ class LiveSIDRClientTest {
                 client.postOrder(config, AdminUser.builder().username("staff@example.com").build(), new SIDROrder()));
         assertEquals(422, e.getHttpStatusCode().value());
         assertTrue(e.getResponseBody().contains("bad address"));
-        assertTrue(e.getMessage().contains("bad address"), "the raw body is in the message for logs");
+        assertFalse(e.getMessage().contains("bad address"), "response content isn't in the message");
         assertFalse(e.isAddressValidationError());
     }
 
@@ -99,7 +99,7 @@ class LiveSIDRClientTest {
         SIDRApiException e = assertThrows(SIDRApiException.class, () ->
                 client.postOrder(config, AdminUser.builder().username("staff@example.com").build(), new SIDROrder()));
         assertTrue(e.isAddressValidationError());
-        assertTrue(e.getMessage().startsWith("ADDRESS_VALIDATION_ERROR"));
+        assertEquals("Could not validate the participant's address", e.getMessage());
         assertEquals(422, e.getHttpStatusCode().value());
     }
 

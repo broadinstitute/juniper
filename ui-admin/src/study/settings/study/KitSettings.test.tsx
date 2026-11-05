@@ -2,6 +2,7 @@ import { setupRouterTest } from '@juniper/ui-core'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { mockPortalContext, mockStudyEnvContext, mockStudyEnvironmentConfig } from 'test-utils/mocking-utils'
 import { render, screen } from '@testing-library/react'
+import { select } from 'react-select-event'
 import React from 'react'
 import { KitSettings } from './KitSettings'
 
@@ -40,5 +41,42 @@ describe('Kit Settings', () => {
     expect(screen.queryByText('Use kit request development realm')).toBeInTheDocument()
     expect(screen.queryByText('Use mock kit requests')).toBeInTheDocument()
     expect(screen.queryByText('Kit types')).toBeInTheDocument()
+  })
+
+  test('Calls the SIDR kitting system GPO / BCL Orders, and never says SIDR', () => {
+    const { RoutedComponent } = setupRouterTest(<MockUserProvider user={mockAdminUser(true)}>
+      <KitSettings
+        studyEnvContext={mockStudyEnvContext()}
+        portalContext={mockPortalContext()}
+        config={{ ...mockStudyEnvironmentConfig(), kittingSystem: 'SIDR', sidrEnvironment: 'dev', sidrProject: 'P1' }}
+        updateConfig={() => {}}
+      />
+    </MockUserProvider>, [''])
+
+    const { container } = render(RoutedComponent)
+
+    expect(screen.getByText('GPO / BCL Orders')).toBeInTheDocument()
+    expect(screen.getByText('GPO / BCL Orders environment')).toBeInTheDocument()
+    expect(screen.getByText('GPO / BCL Orders project key')).toBeInTheDocument()
+    expect(screen.getByText('dev')).toBeInTheDocument()
+    expect(screen.queryByText('Pepper/DSM')).not.toBeInTheDocument()
+    expect(container.textContent).not.toMatch(/sidr/i)
+  })
+
+  test('Offers both kitting systems by display name', async () => {
+    const updateConfig = jest.fn()
+    const { RoutedComponent } = setupRouterTest(<MockUserProvider user={mockAdminUser(true)}>
+      <KitSettings
+        studyEnvContext={mockStudyEnvContext()}
+        portalContext={mockPortalContext()}
+        config={{ ...mockStudyEnvironmentConfig(), kittingSystem: 'DSM_PEPPER' }}
+        updateConfig={updateConfig}
+      />
+    </MockUserProvider>, [''])
+    render(RoutedComponent)
+
+    expect(screen.getByText('Pepper/DSM')).toBeInTheDocument()
+    await select(screen.getByLabelText('Kitting system'), 'GPO / BCL Orders')
+    expect(updateConfig).toHaveBeenCalledWith('kittingSystem', 'SIDR')
   })
 })

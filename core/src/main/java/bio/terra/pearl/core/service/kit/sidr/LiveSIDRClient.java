@@ -56,7 +56,7 @@ public class LiveSIDRClient implements SIDRClient {
     public SIDROrder postOrder(StudyEnvironmentConfig config, AdminUser actor, SIDROrder order) throws SIDRApiException {
         if (actor == null || actor.getUsername() == null || actor.getUsername().isBlank()) {
             // SIDR rejects service-account order submissions that don't say who the order is on behalf of
-            throw new IllegalArgumentException("An admin user with an email is required to place a SIDR order");
+            throw new IllegalArgumentException("Kit order requires a user with an email");
         }
         SIDREnvironment env = SIDREnvironment.fromConfigValue(config.getSidrEnvironment());
         String body;
@@ -64,7 +64,7 @@ public class LiveSIDRClient implements SIDRClient {
             body = objectMapper.writeValueAsString(order);
         } catch (JsonProcessingException e) {
             // there's no normal reason for serialization to fail, so something very unexpected is happening
-            throw new SIDRApiException("Error serializing SIDR order", e);
+            throw new SIDRApiException("Could not place kit order", e);
         }
         WebClient.RequestHeadersSpec<?> request = webClient.post()
                 .uri(buildUri(env, "api/order"))
@@ -95,7 +95,7 @@ public class LiveSIDRClient implements SIDRClient {
             try {
                 return GoogleServiceAccountUtils.getIdTokenCreds(aud);
             } catch (IOException e) {
-                throw new SIDRApiException("Unable to load credentials for SIDR", e);
+                throw new SIDRApiException("Could not place kit order", e);
             }
         });
         creds.refreshIfExpired();
@@ -106,7 +106,7 @@ public class LiveSIDRClient implements SIDRClient {
         try {
             return "Bearer " + fetchIdToken(env.getAPIAudience());
         } catch (IOException | IllegalArgumentException e) {
-            throw new SIDRApiException("Unable to authenticate to SIDR: " + e.getMessage(), e);
+            throw new SIDRApiException("Could not place kit order", e);
         }
     }
 
@@ -122,8 +122,8 @@ public class LiveSIDRClient implements SIDRClient {
         try {
             return objectMapper.readValue(body, clazz);
         } catch (JsonProcessingException | IllegalArgumentException e) {
-            throw new SIDRApiException("Unable to parse response from SIDR as %s".formatted(clazz.getSimpleName()),
-                    null, body, e);
+            log.error("Unable to parse SIDR response as {}: {}", clazz.getSimpleName(), body, e);
+            throw new SIDRApiException("Could not place kit order", e);
         }
     }
 
