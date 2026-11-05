@@ -1,5 +1,9 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import Api from 'api/api'
 import PortalProvider from './PortalProvider'
 
@@ -8,7 +12,7 @@ describe('PortalProvider', () => {
     jest.spyOn(Api, 'getPortal').mockImplementation(() => Promise.reject(null))
     render(<PortalProvider><span>some stuff</span></PortalProvider>)
 
-    await waitFor(() => expect(screen.getByText('support@juniper.terra.bio')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('juniper-support@broadinstitute.org')).toBeInTheDocument())
     expect(screen.queryByText('some stuff')).not.toBeInTheDocument()
   })
 })

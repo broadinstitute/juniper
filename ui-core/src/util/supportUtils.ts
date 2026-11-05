@@ -1,1 +1,1 @@
-export const SUPPORT_EMAIL_ADDRESS = 'support@juniper.terra.bio'
+export const SUPPORT_EMAIL_ADDRESS = 'juniper-support@broadinstitute.org'

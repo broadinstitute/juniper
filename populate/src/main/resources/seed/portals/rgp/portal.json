@@ -23,7 +23,7 @@
         "password": "broad_institute",
         "acceptingRegistration": true,
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en"
       },
       "triggers": [],
@@ -53,7 +53,7 @@
         "password": "broad_institute",
         "acceptingRegistration": true,
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en"
       },
       "triggers": [],
@@ -78,7 +78,7 @@
         "password": "broad_institute",
         "acceptingRegistration": true,
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en"
       },
       "triggers": [],
