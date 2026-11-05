@@ -34,6 +34,8 @@ export type StudyEnvironment = {
   kitTypes: KitType[]
 }
 
+export type KittingSystem = 'DSM_PEPPER' | 'SIDR'
+
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
   acceptingProxyEnrollment: boolean
@@ -43,6 +45,10 @@ export type StudyEnvironmentConfig = {
   password: string
   useStubDsm: boolean
   useDevDsmRealm: boolean
+  kittingSystem: KittingSystem
+  useStubSidr: boolean
+  sidrEnvironment: string
+  sidrProject?: string
   enableInPersonKits: boolean
   includeSexAtBirthInKitMetadata: boolean
   timeZone: string

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.kit.ExternalKitSystem;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,19 +46,31 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean useDevDsmRealm = true;
 
     /**
-     * if true, kit requests never reach SIDR.
+     * if true, SIDR kit requests are handled by a stub client instead of the live SIDR API, so they
+     * never reach SIDR. Only relevant when kittingSystem is SIDR.
      */
     @Builder.Default
     private boolean useStubSidr = true;
 
     /**
-     * if true, kit requests never reach SIDR.
+     * which SIDR deployment live kit requests are sent to (see SIDREnvironment, e.g. "production", "staging").
+     * Only relevant when kittingSystem is SIDR and useStubSidr is false.
      */
     @Builder.Default
     private String sidrEnvironment = "production";
 
+    /**
+     * the SIDR project key kit orders for this study environment are placed under.
+     */
     @Builder.Default
     private String sidrProject = null;
+
+    /**
+     * the external system kit requests are sent to. New studies default to SIDR; studies that existed
+     * before SIDR support were migrated to DSM_PEPPER.
+     */
+    @Builder.Default
+    private ExternalKitSystem kittingSystem = ExternalKitSystem.SIDR;
 
     /**
      * if true, the study staff will be able to scan in-person kits into the system,

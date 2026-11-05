@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: "sidr_kitting_config"
+      author: cbarker
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: { name: kitting_system, type: text, defaultValue: DSM_PEPPER, constraints: { nullable: false } }
+              - column: { name: use_stub_sidr, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: sidr_environment, type: text, defaultValue: production, constraints: { nullable: false } }
+              - column: { name: sidr_project, type: text }
+        # the default above backfills all pre-existing studies to DSM_PEPPER; new studies get their
+        # kitting system from the application (SIDR), so don't leave a hidden db default behind
+        - dropDefaultValue:
+            tableName: study_environment_config
+            columnName: kitting_system
+  - changeSet:
+      id: "sidr_kitting_kit_request"
+      author: cbarker
+      changes:
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: external_kit_system, type: text, defaultValue: DSM_PEPPER, constraints: { nullable: false } }
+              - column: { name: external_order_id, type: text }

@@ -18,6 +18,9 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.service.kit.sidr.SIDRApiException;
+import bio.terra.pearl.core.service.kit.sidr.SIDRService;
+import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -42,12 +45,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final DaoUtils daoUtils;
+    private final SIDRService sidrService;
 
     public KitRequestService(KitRequestDao dao,
                              StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
                              EventService eventService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClientWrapper pepperDSMClientWrapper,
+                             SIDRService sidrService,
                              ProfileService profileService,
                              PortalParticipantUserService portalParticipantUserService,
                              @Lazy StudyEnvironmentService studyEnvironmentService,
@@ -61,6 +66,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         this.eventService = eventService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClientWrapper = pepperDSMClientWrapper;
+        this.sidrService = sidrService;
         this.profileService = profileService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -85,8 +91,17 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             For IN_PERSON kits, we'll first create a record in the database. Once the kit has been collected, we'll
             update the record with the collected status and send the kit request to Pepper as "returnOnly".
          */
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        if (config.getKittingSystem() == ExternalKitSystem.SIDR) {
+            return switch (kitRequestCreationDto.distributionMethod) {
+                case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.SIDR);
+                case MAILED -> createNewSidrKitRequest(operator, config, enrollee, kitRequestCreationDto);
+                // TBD: return-only kits for SIDR
+                case MANUAL -> throw new IllegalArgumentException("Manually assigned kits are not yet supported with SIDR");
+            };
+        }
         return switch (kitRequestCreationDto.distributionMethod) {
-            case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
+            case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.DSM_PEPPER);
             case MAILED, MANUAL -> createNewPepperKitRequest(operator, studyShortcode, enrollee, kitRequestCreationDto);
         };
     }
@@ -96,6 +111,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         Once the kit is collected by staff later on, the kit request will be sent to Pepper as "returnOnly".
      */
     protected KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto) {
+        return createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto, ExternalKitSystem.DSM_PEPPER);
+    }
+
+    protected KitRequestDto createNewInPersonKitRequest(AdminUser operator, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto, ExternalKitSystem kittingSystem) {
         //we need to make sure that there aren't any kits with the same label already assigned
         List<KitRequest> kits = dao.findAllByKitLabel(kitRequestCreationDto.kitLabel);
         if (!kits.isEmpty()) {
@@ -109,6 +128,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
+                .externalKitSystem(kittingSystem)
                 .kitLabel(kitRequestCreationDto.kitLabel)
                 .skipAddressValidation(true) // skip address validation for in-person kits, as they aren't shipped
                 .build();
@@ -187,12 +207,50 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
+    /**
+     * Creates a mailed kit request by placing an order in SIDR. Unlike with Pepper, a failed order means no kit is
+     * saved: we can't tell the staff member it worked, and there's nothing in SIDR to reconcile against.
+     */
+    private KitRequestDto createNewSidrKitRequest(AdminUser operator, StudyEnvironmentConfig config, Enrollee enrollee,
+                                                  KitRequestCreationDto kitRequestCreationDto) {
+        if (!kitRequestCreationDto.attestationAccepted) {
+            throw new IllegalArgumentException("The SIDR kit attestations must be accepted to request a kit");
+        }
+        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
+        KitRequest kitRequest = assemble(operator, enrollee, makePepperKitAddress(profile), kitRequestCreationDto);
+        kitRequest.setExternalKitSystem(ExternalKitSystem.SIDR);
+
+        // an SIDRApiException from SIDR propagates to the caller, and nothing is saved
+        SIDROrder order = sidrService.placeKitRequestOrder(config, kitRequest, enrollee, profile, operator,
+                kitRequestCreationDto.attestationAccepted);
+        kitRequest.setExternalOrderId(order.getOrderId());
+        try {
+            kitRequest.setExternalKit(objectMapper.writeValueAsString(order));
+        } catch (JsonProcessingException e) {
+            // the order was already placed, so don't abort; we still have the order id
+            log.error("Unable to serialize SIDR order response: kit id {}", kitRequest.getId());
+        }
+        kitRequest = dao.createWithIdSpecified(kitRequest);
+        log.info("SIDR kit request created: enrollee: {}, kit: {}, order: {}", enrollee.getShortcode(),
+                kitRequest.getId(), order.getOrderId());
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
+    }
+
+    /**
+     * @param attestationAccepted whether the staff member agreed to the SIDR kit attestations. Only required
+     *                            (and only used) when the study environment's kitting system is SIDR.
+     */
     public record KitRequestCreationDto(String kitType,
                                         DistributionMethod distributionMethod,
                                         String kitLabel,
                                         boolean skipAddressValidation,
                                         String returnTrackingNumber,
-                                        String trackingNumber) {
+                                        String trackingNumber,
+                                        boolean attestationAccepted) {
+        public KitRequestCreationDto(String kitType, DistributionMethod distributionMethod, String kitLabel,
+                                     boolean skipAddressValidation, String returnTrackingNumber, String trackingNumber) {
+            this(kitType, distributionMethod, kitLabel, skipAddressValidation, returnTrackingNumber, trackingNumber, false);
+        }
     }
 
     public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
@@ -288,6 +346,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     @Transactional
     public void syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
         KitRequest kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
+        if (kitRequest.getExternalKitSystem() != ExternalKitSystem.DSM_PEPPER) {
+            // SIDR kit statuses are not synced from here
+            return;
+        }
         Enrollee enrollee = enrolleeService.find(kitRequest.getEnrolleeId()).orElseThrow(IllegalStateException::new);
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         PepperKit pepperKitStatus = pepperDSMClientWrapper.fetchKitStatus(studyEnvironmentConfig, kitId);
@@ -318,6 +380,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // and so the calls will get all kits for a study, regardless of environment. This is necessary, though,
             // since the different environments may be configured to hit different DSM endpoints.
             StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
+            if (studyEnvironmentConfig.getKittingSystem() != ExternalKitSystem.DSM_PEPPER) {
+                continue;
+            }
             Study study = studies.stream().filter(s -> s.getId().equals(studyEnv.getStudyId())).findFirst().orElseThrow();
             try {
                 Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
@@ -333,6 +398,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName)
             throws PepperParseException, PepperApiException {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyShortcode(study.getShortcode(), environmentName);
+        if (studyEnvironmentConfig.getKittingSystem() != ExternalKitSystem.DSM_PEPPER) {
+            return;
+        }
         Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
         syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKits);
     }
@@ -496,6 +564,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
                 .formatted(kitRequest.getId())));
         kitRequest.setKitType(kitType);
+        if (kitRequest.getExternalKitSystem() == ExternalKitSystem.SIDR) {
+            // TBD: return-only kits for SIDR
+            throw new IllegalArgumentException("Collecting in-person kits is not yet supported with SIDR");
+        }
         createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
         KitRequestStatus priorStatus = kitRequest.getStatus();
         kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);

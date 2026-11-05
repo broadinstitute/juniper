@@ -114,6 +114,7 @@
         "initialized": false,
         "useDevDsmRealm": false,
         "useStubDsm": false,
+        "kittingSystem": "DSM_PEPPER",
         "enableInPersonKits": true
       }
     }

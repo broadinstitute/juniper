@@ -13,14 +13,18 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.sidr.SIDRApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Slf4j
 @Controller
 public class KitController implements KitApi {
   private final AuthUtilService authUtilService;
@@ -56,6 +60,26 @@ public class KitController implements KitApi {
   @ExceptionHandler(PepperApiException.class)
   public ResponseEntity<ErrorReport> handlePepperApiException(PepperApiException e) {
     return GlobalExceptionHandler.badRequestHandler(e, request);
+  }
+
+  /**
+   * SIDR failures can include raw SIDR response content in their message, so only the user-safe
+   * message is returned to the client; the full details are logged.
+   */
+  @ExceptionHandler(SIDRApiException.class)
+  public ResponseEntity<ErrorReport> handleSIDRApiException(SIDRApiException e) {
+    log.warn(
+        "SIDR kit request failed: {} {} {}",
+        request.getMethod(),
+        request.getRequestURI(),
+        e.getMessage(),
+        e);
+    return new ResponseEntity<>(
+        new ErrorReport()
+            .errorClass(e.getClass().getName())
+            .message(e.getUserMessage())
+            .statusCode(HttpStatus.BAD_REQUEST.value()),
+        HttpStatus.BAD_REQUEST);
   }
 
   @Override

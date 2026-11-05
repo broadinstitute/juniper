@@ -9,6 +9,7 @@ import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import InfoPopup from 'components/forms/InfoPopup'
 import { KitType, StudyEnvParams } from '@juniper/ui-core'
+import { useSidrAttestation } from 'study/kits/SidrAttestation'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({
@@ -23,11 +24,14 @@ export default function RequestKitModal({
   const [isLoading, setIsLoading] = useState(false)
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
   const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
+  const { attestationAccepted, canSubmit, AttestationControl } =
+    useSidrAttestation(currentEnv.studyEnvironmentConfig)
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
       await Api.createKitRequest(portal.shortcode, study.shortcode,
-        currentEnv.environmentName, enrolleeShortcode, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
+        currentEnv.environmentName, enrolleeShortcode,
+        { kitType, distributionMethod: 'MAILED', skipAddressValidation, attestationAccepted })
       Store.addNotification(successNotification('Kit request created'))
       onSubmit()
     } catch (e) {
@@ -58,12 +62,13 @@ export default function RequestKitModal({
           </label>
         </div>
         { OverrideControl }
+        {AttestationControl}
       </form>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-        <button className='btn btn-primary' onClick={handleSubmit}>Request Kit</button>
+        <button className='btn btn-primary' onClick={handleSubmit} disabled={!canSubmit}>Request Kit</button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>

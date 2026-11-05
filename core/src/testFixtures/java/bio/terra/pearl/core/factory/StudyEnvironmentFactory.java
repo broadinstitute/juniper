@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.kit.ExternalKitSystem;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -45,7 +46,7 @@ public class StudyEnvironmentFactory {
         Study study = studyFactory.buildPersisted(testName);
         return builder(testName)
                 .studyId(study.getId())
-                .studyEnvironmentConfig(new StudyEnvironmentConfig())
+                .studyEnvironmentConfig(StudyEnvironmentConfig.builder().kittingSystem(ExternalKitSystem.DSM_PEPPER).build())
                 .environmentName(EnvironmentName.sandbox);
     }
 
@@ -63,7 +64,7 @@ public class StudyEnvironmentFactory {
         StudyEnvironment studyEnv = StudyEnvironment.builder()
                 .studyId(studyId)
                 .environmentName(envName)
-                .studyEnvironmentConfig(new StudyEnvironmentConfig()).build();
+                .studyEnvironmentConfig(StudyEnvironmentConfig.builder().kittingSystem(ExternalKitSystem.DSM_PEPPER).build()).build();
         return studyEnvironmentService.create(studyEnv);
     }
 
