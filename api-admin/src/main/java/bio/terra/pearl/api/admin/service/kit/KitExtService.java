@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class KitExtService {
   private final KitRequestService kitRequestService;
   private final StudyEnvironmentService studyEnvironmentService;
@@ -114,8 +115,13 @@ public class KitExtService {
         response.addKitRequest(createdKit);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
-        // this, a structured response might be useful here
-        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
+        // this, a structured response might be useful here.
+        // These exceptions are serialized into the response, so don't attach the original as a
+        // cause: that
+        // would send stack traces (and for SIDR, raw response bodies) to the browser. Log it
+        // instead.
+        log.warn("Kit request failed for enrollee {}", enrolleeShortcode, e);
+        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage()));
       }
     }
     return response;

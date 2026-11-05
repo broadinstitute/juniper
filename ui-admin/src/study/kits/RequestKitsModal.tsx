@@ -17,6 +17,7 @@ import {
 import { Modal } from 'react-bootstrap'
 import LoadingSpinner from 'util/LoadingSpinner'
 import pluralize from 'pluralize'
+import { useSidrAttestation } from 'study/kits/SidrAttestation'
 
 
 /** Renders a modal for an admin to submit multiple kit requests. */
@@ -34,10 +35,12 @@ export default function RequestKitsModal({
 
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
   const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
+  const { attestationAccepted, canSubmit, AttestationControl } =
+    useSidrAttestation(currentEnv.studyEnvironmentConfig)
   const handleSubmit = async () => {
     doApiLoad(async () => {
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
-        enrolleeShortcodes, { kitType, distributionMethod: 'MAILED', skipAddressValidation })
+        enrolleeShortcodes, { kitType, distributionMethod: 'MAILED', skipAddressValidation, attestationAccepted })
       if (response.exceptions.length) {
         const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')
@@ -69,13 +72,16 @@ export default function RequestKitsModal({
             {KitSelect}
           </label>
           { OverrideControl}
+          {AttestationControl}
         </div>
       </form>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-        <button className='btn btn-primary' onClick={handleSubmit}>Request {kitPluralized}</button>
+        <button className='btn btn-primary' onClick={handleSubmit} disabled={!canSubmit}>
+          Request {kitPluralized}
+        </button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
