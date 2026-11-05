@@ -195,7 +195,7 @@ export const mockStudyEnvironmentConfig = (): StudyEnvironmentConfig => {
     useStubDsm: false,
     kittingSystem: 'DSM_PEPPER',
     useStubSidr: true,
-    sidrEnvironment: 'production',
+    sidrEnvironment: 'PRODUCTION',
     enableInPersonKits: false,
     includeSexAtBirthInKitMetadata: false,
     timeZone: 'America/New_York',

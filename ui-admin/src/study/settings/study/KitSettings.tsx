@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {
+  SidrEnvironment,
   StudyEnvironmentConfig,
   StudyEnvParams
 } from '@juniper/ui-core'
@@ -34,9 +35,9 @@ const KITTING_SYSTEM_OPTIONS = [
   { value: 'SIDR', label: 'GPO / BCL Orders' }
 ]
 
-const SIDR_ENVIRONMENT_OPTIONS = [
-  'production', 'staging', 'dev', 'sandbox1', 'sandbox2', 'sandbox3', 'sandbox4', 'sandbox5'
-].map(env => ({ value: env, label: env }))
+const SIDR_ENVIRONMENT_OPTIONS: { value: SidrEnvironment, label: string }[] = [
+  'PRODUCTION', 'STAGING', 'DEV', 'SANDBOX1', 'SANDBOX2', 'SANDBOX3', 'SANDBOX4', 'SANDBOX5'
+].map(env => ({ value: env as SidrEnvironment, label: env.toLowerCase() }))
 
 export const KitSettings = (
   {

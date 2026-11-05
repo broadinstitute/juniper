@@ -9,17 +9,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter @Setter
 @SuperBuilder @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SIDRClinician {
-    private String emailAddress;
-    private String clinicianNpi;
-    private String firstName;
-    private String lastName;
-    private String fullName;
-    private String middleInitial;
-    private String suffix;
+/** the status of one sample for one test on an order. Only returned by SIDR, never sent. */
+public class SIDRTestSample {
+    private String sampleId;
+    private String sidrSampleId;
+    private String clientBarcode;
+    private String testSampleStatus;
+    private List<SIDRStatus> statusHistory;
+    private String cancellationReason;
+    private String lastModified;
 }

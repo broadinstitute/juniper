@@ -48,7 +48,7 @@ describe('Kit Settings', () => {
       <KitSettings
         studyEnvContext={mockStudyEnvContext()}
         portalContext={mockPortalContext()}
-        config={{ ...mockStudyEnvironmentConfig(), kittingSystem: 'SIDR', sidrEnvironment: 'dev', sidrProject: 'P1' }}
+        config={{ ...mockStudyEnvironmentConfig(), kittingSystem: 'SIDR', sidrEnvironment: 'DEV', sidrProject: 'P1' }}
         updateConfig={() => {}}
       />
     </MockUserProvider>, [''])

@@ -19,7 +19,7 @@ class SIDREnvironmentTest {
         assertEquals("https://gpo-dev.broadinstitute.org", SIDREnvironment.DEV.getAPIURl());
         assertEquals("broad-gpo-dev", SIDREnvironment.DEV.getAPIAudience());
         for (int i = 1; i <= 5; i++) {
-            SIDREnvironment sandbox = SIDREnvironment.fromConfigValue("sandbox" + i);
+            SIDREnvironment sandbox = SIDREnvironment.valueOf("SANDBOX" + i);
             assertEquals("https://gpo-sandbox%d.broadinstitute.org".formatted(i), sandbox.getAPIURl());
             assertEquals("broad-gpo-sandbox" + i, sandbox.getAPIAudience());
         }
@@ -35,21 +35,16 @@ class SIDREnvironmentTest {
     }
 
     @Test
-    void configValuesAreParsedCaseInsensitively() {
-        assertEquals(SIDREnvironment.PRODUCTION, SIDREnvironment.fromConfigValue("production"));
-        assertEquals(SIDREnvironment.SANDBOX2, SIDREnvironment.fromConfigValue(" Sandbox2 "));
-        assertEquals(SIDREnvironment.DEV, SIDREnvironment.fromConfigValue("dev"));
-        // GPO has a canary environment too, but Juniper doesn't order kits there
-        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.fromConfigValue("canary"));
-        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.fromConfigValue(""));
-        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.fromConfigValue(null));
+    void urlsAndAudiencesUseTheLowercaseName() {
+        // the enum is persisted by name (uppercase), but SIDR's hosts and audiences are lowercase
+        assertEquals("sandbox3", SIDREnvironment.SANDBOX3.toString());
+        assertEquals("SANDBOX3", SIDREnvironment.SANDBOX3.name());
     }
 
     @Test
-    void everyEnvironmentRoundTripsThroughTheStoredConfigValue() {
-        // StudyEnvironmentConfig.sidrEnvironment stores the lowercase name, which is also toString()
-        for (SIDREnvironment env : SIDREnvironment.values()) {
-            assertEquals(env, SIDREnvironment.fromConfigValue(env.toString()));
-        }
+    void canaryIsNotAnOption() {
+        // GPO has a canary environment, but Juniper doesn't order kits there
+        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.valueOf("CANARY"));
+        assertNotNull(SIDREnvironment.valueOf("DEV"));
     }
 }

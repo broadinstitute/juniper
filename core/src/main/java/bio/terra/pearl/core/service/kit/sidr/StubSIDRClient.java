@@ -38,6 +38,7 @@ public class StubSIDRClient implements SIDRClient {
         String orderId = STUB_ORDER_PREFIX + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return SIDROrder.builder()
                 .orderId(orderId)
+                .projectId(order.getProjectKey())
                 .projectKey(order.getProjectKey())
                 .externalOrderId(order.getExternalOrderId())
                 .numberOfSamples(order.getNumberOfSamples())
@@ -85,7 +86,7 @@ public class StubSIDRClient implements SIDRClient {
                         .sidrPatientId("SDPT-STUB-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                         .build())
                 .orderIds(List.of(orderId))
-                .lastModified(Instant.now())
+                .lastModified(Instant.now().toString())
                 .build();
     }
 }

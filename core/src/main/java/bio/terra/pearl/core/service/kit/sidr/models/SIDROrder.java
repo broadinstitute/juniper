@@ -25,13 +25,14 @@ public class SIDROrder {
     private List<SIDRMetadata> metadata;
     private List<SIDRTest> tests;
     private List<SIDRSample> samples;
-    private SIDRClinician clinician;
     private Integer numberOfSamples;
-    private String quote;
     private Boolean sampleKitRequested;
-    private Boolean bulkUploadRequested;
+    // everything from here on is only returned by SIDR, never sent
     private String orderId;
     private String projectId;
+    private String status;
+    private List<SIDRStatus> statusHistory;
+    private String lastModified;
     private SIDRLinks links;
     private SIDRMessages messages;
 

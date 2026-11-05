@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.kit.ExternalKitSystem;
+import bio.terra.pearl.core.service.kit.sidr.models.SIDREnvironment;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,11 +54,11 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean useStubSidr = true;
 
     /**
-     * which SIDR deployment live kit requests are sent to (see SIDREnvironment, e.g. "production", "staging").
+     * which SIDR deployment live kit requests are sent to.
      * Only relevant when kittingSystem is SIDR and useStubSidr is false.
      */
     @Builder.Default
-    private String sidrEnvironment = "production";
+    private SIDREnvironment sidrEnvironment = SIDREnvironment.PRODUCTION;
 
     /**
      * the SIDR project key kit orders for this study environment are placed under.

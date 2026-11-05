@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LiveSIDRClientTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final StudyEnvironmentConfig config = StudyEnvironmentConfig.builder()
-            .useStubSidr(false).sidrEnvironment("staging").build();
+            .useStubSidr(false).sidrEnvironment(SIDREnvironment.STAGING).build();
     private MockWebServer server;
     private LiveSIDRClient client;
     private String requestedAudience;
@@ -118,13 +118,5 @@ class LiveSIDRClientTest {
         assertEquals("GET", request.getMethod());
         assertEquals("/api/order/SDOR-9", request.getPath());
         assertEquals("Bearer fake-id-token", request.getHeader("Authorization"));
-    }
-
-    @Test
-    void parsesConfiguredEnvironments() {
-        assertEquals(SIDREnvironment.SANDBOX2, SIDREnvironment.fromConfigValue("sandbox2"));
-        assertEquals(SIDREnvironment.PRODUCTION, SIDREnvironment.fromConfigValue("production"));
-        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.fromConfigValue("nope"));
-        assertThrows(IllegalArgumentException.class, () -> SIDREnvironment.fromConfigValue(null));
     }
 }

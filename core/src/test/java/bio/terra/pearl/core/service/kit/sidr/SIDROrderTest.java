@@ -57,4 +57,37 @@ class SIDROrderTest {
         assertEquals("SDPT-X", sample.getPatient().getSidrPatientId());
         assertEquals("m", order.getMessages().getWarnings().get(0).get("msg"));
     }
+
+    /**
+     * the order response is stored with the kit by serializing the parsed SIDROrder, so anything SIDR returns
+     * that isn't on our models is lost. This is a response in the shape of GPO's order creation output.
+     */
+    @Test
+    void responseFieldsSurviveRoundTrip() throws Exception {
+        String response = """
+                {"order_id":"SDOR-X","project_id":"PROJ","external_order_id":"kit-1","status":"Order Submitted",
+                 "status_history":[{"status_key":"submitted","status_name":"Order Submitted","timestamp":"2024-05-07T12:00:00"}],
+                 "last_modified":"2024-05-07T12:00:00",
+                 "tests":[{"test_code":"R_DTP_KIT_REC_AND_STORE","version":"1","product":"P-ESH-0106",
+                   "test_samples":[{"sample_id":"","sidr_sample_id":"SDSM-X","test_sample_status":"Kit Requested",
+                     "client_barcode":"","last_modified":"2024-05-07T12:00:00",
+                     "status_history":[{"status_key":"kit_requested","status_name":"Kit Requested","timestamp":"2024-05-07T12:00:00Z"}]}]}],
+                 "samples":[{"sidr_sample_id":"SDSM-X","last_modified":"2024-05-07T12:00:00",
+                   "shipping_information":{"kit_type":"SALIVA","kit_status":"Requested"},
+                   "patient":{"sidr_patient_id":"SDPT-X","last_modified":"2024-05-07T12:00:00"}}],
+                 "links":{"order":"http://x/api/order/SDOR-X"}}""";
+        SIDROrder order = mapper.readValue(response, SIDROrder.class);
+        JsonNode stored = mapper.readTree(mapper.writeValueAsString(order));
+        assertEquals("PROJ", stored.get("project_id").asText());
+        assertEquals("Order Submitted", stored.get("status").asText());
+        assertEquals("submitted", stored.get("status_history").get(0).get("status_key").asText());
+        JsonNode test = stored.get("tests").get(0);
+        assertEquals("P-ESH-0106", test.get("product").asText());
+        assertEquals("Kit Requested", test.get("test_samples").get(0).get("test_sample_status").asText());
+        assertEquals("SDSM-X", test.get("test_samples").get(0).get("sidr_sample_id").asText());
+        assertEquals("Requested", stored.get("samples").get(0).get("shipping_information").get("kit_status").asText());
+        // timestamps are kept as sent: naive and offset forms both parse
+        assertEquals("2024-05-07T12:00:00", stored.get("last_modified").asText());
+        assertEquals("2024-05-07T12:00:00Z", test.get("test_samples").get(0).get("status_history").get(0).get("timestamp").asText());
+    }
 }

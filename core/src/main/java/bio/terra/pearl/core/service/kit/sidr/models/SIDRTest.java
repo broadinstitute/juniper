@@ -19,4 +19,7 @@ public class SIDRTest {
     private String testCode;
     private String version;
     private List<String> samples;
+    // returned by SIDR, never sent
+    private String product;
+    private List<SIDRTestSample> testSamples;
 }

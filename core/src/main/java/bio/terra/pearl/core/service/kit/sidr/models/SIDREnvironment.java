@@ -10,21 +10,6 @@ public enum SIDREnvironment {
     SANDBOX4,
     SANDBOX5;
 
-    /**
-     * parses the value stored in StudyEnvironmentConfig.sidrEnvironment (e.g. "production", "sandbox1")
-     * @throws IllegalArgumentException if the value isn't a known SIDR environment
-     */
-    public static SIDREnvironment fromConfigValue(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Kit ordering environment is not configured");
-        }
-        try {
-            return SIDREnvironment.valueOf(value.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown kit ordering environment: " + value, e);
-        }
-    }
-
     @Override
     public String toString() {
         return this.name().toLowerCase();

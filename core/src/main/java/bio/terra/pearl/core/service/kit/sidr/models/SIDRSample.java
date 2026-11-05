@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter @Setter
@@ -27,5 +26,6 @@ public class SIDRSample {
     private SIDRPatient patient;
     private List<SIDRMetadata> metadata;
     private List<String> orderIds;
-    private Instant lastModified;
+    private String lastModified;
+    private SIDRMessages messages;
 }

@@ -14,11 +14,9 @@ import lombok.experimental.SuperBuilder;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SIDRHpoTerm {
-    private String hpoTermId;
-    private String version;
-    private String displayName;
-    private String definition;
-    private String carrierStatus;
-    private Boolean archived;
+/** an entry in the status history of an order or sample, as returned by SIDR. Timestamps are kept as sent. */
+public class SIDRStatus {
+    private String statusKey;
+    private String statusName;
+    private String timestamp;
 }

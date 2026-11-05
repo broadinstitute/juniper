@@ -27,6 +27,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -713,7 +714,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestKitSidr(TestInfo testInfo) {
+    public void testRequestKitSidr(TestInfo testInfo) throws JsonProcessingException {
         String testName = getTestName(testInfo);
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
         Enrollee enrollee = buildSidrEnrollee(testName);
@@ -725,6 +726,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(saved.getExternalKitSystem(), equalTo(ExternalKitSystem.SIDR));
         Assertions.assertTrue(saved.getExternalOrderId().startsWith("SDOR-"));
         Assertions.assertTrue(saved.getExternalKit().contains(saved.getExternalOrderId()));
+        // the stored blob is the order response, which parses back to the same order
+        Assertions.assertEquals(saved.getExternalOrderId(),
+                objectMapper.readValue(saved.getExternalKit(), SIDROrder.class).getOrderId());
         assertThat(saved.getStatus(), equalTo(KitRequestStatus.CREATED));
         assertThat(saved.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         Mockito.verifyNoInteractions(mockPepperDSMClient, livePepperDSMClient);

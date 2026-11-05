@@ -36,6 +36,9 @@ export type StudyEnvironment = {
 
 export type KittingSystem = 'DSM_PEPPER' | 'SIDR'
 
+export type SidrEnvironment =
+  'PRODUCTION' | 'STAGING' | 'DEV' | 'SANDBOX1' | 'SANDBOX2' | 'SANDBOX3' | 'SANDBOX4' | 'SANDBOX5'
+
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
   acceptingProxyEnrollment: boolean
@@ -47,7 +50,7 @@ export type StudyEnvironmentConfig = {
   useDevDsmRealm: boolean
   kittingSystem: KittingSystem
   useStubSidr: boolean
-  sidrEnvironment: string
+  sidrEnvironment: SidrEnvironment
   sidrProject?: string
   enableInPersonKits: boolean
   includeSexAtBirthInKitMetadata: boolean

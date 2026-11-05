@@ -204,7 +204,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     /**
      * Creates a mailed kit request by placing an order in SIDR. Unlike with Pepper, a failed order means no kit is
-     * saved: we can't tell the staff member it worked, and there's nothing in SIDR to reconcile against.
+     * saved: we can't tell the staff member it worked.
      */
     private KitRequestDto createNewSidrKitRequest(AdminUser operator, StudyEnvironmentConfig config, Enrollee enrollee,
                                                   KitRequestCreationDto kitRequestCreationDto) {

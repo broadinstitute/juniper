@@ -58,7 +58,7 @@ public class LiveSIDRClient implements SIDRClient {
             // SIDR rejects service-account order submissions that don't say who the order is on behalf of
             throw new IllegalArgumentException("Kit order requires a user with an email");
         }
-        SIDREnvironment env = SIDREnvironment.fromConfigValue(config.getSidrEnvironment());
+        SIDREnvironment env = config.getSidrEnvironment();
         String body;
         try {
             body = objectMapper.writeValueAsString(order);
@@ -72,16 +72,16 @@ public class LiveSIDRClient implements SIDRClient {
                 .header(ACTOR_EMAIL_HEADER, actor.getUsername())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body);
-        return retrieveAndDeserialize(request, SIDROrder.class);
+        return retrieveOrder(request);
     }
 
     @Override
     public SIDROrder getOrder(StudyEnvironmentConfig config, String sidrOrderId) throws SIDRApiException {
-        SIDREnvironment env = SIDREnvironment.fromConfigValue(config.getSidrEnvironment());
+        SIDREnvironment env = config.getSidrEnvironment();
         WebClient.RequestHeadersSpec<?> request = webClient.get()
                 .uri(buildUri(env, "api/order/" + sidrOrderId))
                 .header(HttpHeaders.AUTHORIZATION, buildAuthorizationHeader(env));
-        return retrieveAndDeserialize(request, SIDROrder.class);
+        return retrieveOrder(request);
     }
 
     /** the base url of the SIDR API for the environment. Overridable so tests can point at a mock server */
@@ -110,7 +110,8 @@ public class LiveSIDRClient implements SIDRClient {
         }
     }
 
-    private <T> T retrieveAndDeserialize(WebClient.RequestHeadersSpec<?> request, Class<T> clazz) {
+    /** Performs the request and parses the response as an order. A response that can't be parsed is a failure. */
+    private SIDROrder retrieveOrder(WebClient.RequestHeadersSpec<?> request) {
         request.httpRequest(req -> log.info("Sending SIDR request: {} {}", req.getMethod(), req.getURI()));
         String body = request
                 .retrieve()
@@ -120,9 +121,9 @@ public class LiveSIDRClient implements SIDRClient {
                 .bodyToMono(String.class)
                 .block();
         try {
-            return objectMapper.readValue(body, clazz);
+            return objectMapper.readValue(body, SIDROrder.class);
         } catch (JsonProcessingException | IllegalArgumentException e) {
-            log.error("Unable to parse SIDR response as {}: {}", clazz.getSimpleName(), body, e);
+            log.error("Unable to parse SIDR response as an order: {}", body, e);
             throw new SIDRApiException("Could not place kit order", e);
         }
     }

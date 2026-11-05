@@ -37,7 +37,7 @@ public class KitRequest extends BaseEntity {
     private String errorMessage;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
-     * any fields that don't happen to be stored directly in our model
+     * any fields that don't happen to be stored directly in our model.
      */
     private String externalKit;
     /**
