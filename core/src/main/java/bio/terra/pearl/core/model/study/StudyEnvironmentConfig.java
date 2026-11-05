@@ -45,6 +45,21 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean useDevDsmRealm = true;
 
     /**
+     * if true, kit requests never reach SIDR.
+     */
+    @Builder.Default
+    private boolean useStubSidr = true;
+
+    /**
+     * if true, kit requests never reach SIDR.
+     */
+    @Builder.Default
+    private String sidrEnvironment = "production";
+
+    @Builder.Default
+    private String sidrProject = null;
+
+    /**
      * if true, the study staff will be able to scan in-person kits into the system,
      * and participants will see information about in-person kits on their dashboard
      */

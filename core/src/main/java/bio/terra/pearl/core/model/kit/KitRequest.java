@@ -40,5 +40,7 @@ public class KitRequest extends BaseEntity {
      * any fields that don't happen to be stored directly in our model
      */
     private String externalKit;
+    private String externalOrderId;
+    private ExternalKitSystem externalKitSystem;
     private Instant externalKitFetchedAt;
 }

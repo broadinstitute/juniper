@@ -2,6 +2,8 @@ package bio.terra.pearl.core.shared;
 
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.IdTokenCredentials;
+import com.google.auth.oauth2.IdTokenProvider;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +40,18 @@ public class GoogleServiceAccountUtils {
         }
 
         return serviceAccountCredentials;
+    }
+
+    public static IdTokenCredentials getIdTokenCreds(String audience) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+        if (!(credentials instanceof IdTokenProvider)) {
+            throw new IllegalArgumentException("Credentials are not an instance of IdTokenProvider.");
+        }
+
+        return IdTokenCredentials.newBuilder()
+                .setIdTokenProvider((IdTokenProvider) credentials)
+                .setTargetAudience(audience)
+                .build();
     }
 
 }
