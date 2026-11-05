@@ -24,7 +24,7 @@ env:
     config-file: ${B2C_CONFIG_FILE:b2c-config.yml}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
-    supportEmailAddress: ${SUPPORT_EMAIL_ADDRESS:support@juniper.terra.bio}
+    supportEmailAddress: ${SUPPORT_EMAIL_ADDRESS:juniper-support@broadinstitute.org}
   hostnames:
     participantUi: ${PARTICIPANT_UI_HOSTNAME:localhost:3001}
     participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}

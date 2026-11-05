@@ -16,7 +16,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en",
         "primaryStudy": "heartdemo"
       },
@@ -74,7 +74,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en",
         "primaryStudy": "heartdemo"
       },
@@ -93,7 +93,7 @@
         "password": "broad_institute",
         "initialized": true,
         "participantHostname" : "juniperdemostudy.dev",
-        "emailSourceAddress": "support@juniper.terra.bio",
+        "emailSourceAddress": "juniper-support@broadinstitute.org",
         "defaultLanguage": "en",
         "primaryStudy": "heartdemo"
       },
