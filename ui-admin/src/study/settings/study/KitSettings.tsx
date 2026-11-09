@@ -140,7 +140,7 @@ export const KitSettings = (
           <label className="form-label">
             Use mock kit requests <InfoPopup content={
               `If checked, kit requests will be mocked for this environment, `
-              + `and not sent to GPO / BCL Orders.`
+              + `and not sent to SIDR.`
             }/>
             <input type="checkbox" checked={config.useStubSidr}
               onChange={e => updateConfig('useStubSidr', e.target.checked)}/>
