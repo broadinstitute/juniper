@@ -4,10 +4,13 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDREnvironment;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
-import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.IdTokenCredentials;
+import com.google.auth.oauth2.IdTokenProvider;
+import com.google.auth.oauth2.ImpersonatedCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,25 +24,33 @@ import reactor.netty.resources.ConnectionProvider;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handles only the HTTP communication with the SIDR API. Requests are authenticated as the Juniper service account,
- * using a Google ID token minted from the application default credentials with the SIDR environment's audience.
+ * using a Google ID token with the SIDR environment's audience. When deployed, the token comes from the application
+ * default credentials; in local environments those are the developer's, so the service account is impersonated.
  * Deciding what to order is the job of {@link SIDRService}.
  */
 @Component
 @Slf4j
 public class LiveSIDRClient implements SIDRClient {
     public static final String ACTOR_EMAIL_HEADER = "Actor-Email";
+    /**
+     * the service account that local environments impersonate, since SIDR knows the service account, not people
+     */
+    private static final String LOCAL_IMPERSONATED_SERVICE_ACCOUNT =
+            "juniper-app-gsa@broad-juniper-dev.iam.gserviceaccount.com";
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
     // one set of credentials per audience (i.e. SIDR environment); they refresh their own tokens as needed
     private final Map<String, IdTokenCredentials> credentialsByAudience = new ConcurrentHashMap<>();
+    private final ApplicationRoutingPaths routingPaths;
 
-    public LiveSIDRClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
+    public LiveSIDRClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper, ApplicationRoutingPaths routingPaths) {
         this.objectMapper = objectMapper;
         ConnectionProvider provider = ConnectionProvider.builder("sidr-connection-provider")
                 .maxConnections(100)
@@ -50,6 +61,7 @@ public class LiveSIDRClient implements SIDRClient {
         this.webClient = webClientBuilder
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create(provider)))
                 .build();
+        this.routingPaths = routingPaths;
     }
 
     @Override
@@ -93,7 +105,7 @@ public class LiveSIDRClient implements SIDRClient {
     protected String fetchIdToken(String audience) throws IOException {
         IdTokenCredentials creds = credentialsByAudience.computeIfAbsent(audience, aud -> {
             try {
-                return GoogleServiceAccountUtils.getIdTokenCreds(aud);
+                return createIdTokenCredentials(aud);
             } catch (IOException e) {
                 throw new SIDRApiException("Could not place kit order", e);
             }
@@ -133,5 +145,25 @@ public class LiveSIDRClient implements SIDRClient {
             log.warn("Error response from SIDR: {} {}", response.statusCode(), body);
             return SIDRApiException.fromResponse(response.statusCode(), body);
         });
+    }
+
+    private IdTokenCredentials createIdTokenCredentials(String audience) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+        IdTokenProvider idTokenProvider;
+        if ("local".equals(routingPaths.getDeploymentZone())) {
+            idTokenProvider = ImpersonatedCredentials.newBuilder()
+                    .setSourceCredentials(credentials)
+                    .setTargetPrincipal(LOCAL_IMPERSONATED_SERVICE_ACCOUNT)
+                    .setScopes(List.of("https://www.googleapis.com/auth/cloud-platform"))
+                    .build();
+        } else if (credentials instanceof IdTokenProvider provider) {
+            idTokenProvider = provider;
+        } else {
+            throw new IllegalArgumentException("Credentials are not an instance of IdTokenProvider.");
+        }
+        return IdTokenCredentials.newBuilder()
+                .setIdTokenProvider(idTokenProvider)
+                .setTargetAudience(audience)
+                .build();
     }
 }

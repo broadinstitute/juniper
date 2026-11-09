@@ -23,6 +23,7 @@ import { Store } from 'react-notifications-component'
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { useSidrAttestation } from 'study/kits/SidrAttestation'
 
 const kitScanModeOptions = [
   { value: 'ASSIGN', label: 'Assign a new kit' },
@@ -49,11 +50,15 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
   const [enableManualReturnLabelOverride, setEnableManualReturnLabelOverride] = useState(false)
   const [enrolleeShortcodeOverride, setEnrolleeShortcodeOverride] = useState<string>()
 
+  // only collecting a kit places an order, which is when the attestation is needed
+  const { attestationAccepted, canSubmit: isAttested, resetAttestation, AttestationControl } =
+    useSidrAttestation(studyEnvContext.currentEnv.studyEnvironmentConfig, true)
+
   const isSubmitDisabled = () => {
     if (!kitLabel || !enrollee || !selectedScanMode) {
       return true
     }
-    return selectedScanMode.value === 'COLLECT' && !returnTrackingNumber
+    return selectedScanMode.value === 'COLLECT' && (!returnTrackingNumber || !isAttested)
   }
 
   const assignKit = async () => {
@@ -95,7 +100,8 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
         enrollee.shortcode,
         {
           kitLabel,
-          returnTrackingNumber
+          returnTrackingNumber,
+          attestationAccepted
         }
       )
       Store.addNotification(successNotification('Kit successfully collected'))
@@ -330,6 +336,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
             <div className="text-danger">{returnTrackingNumberError}</div>
         }
       </KitCollectionStepWrapper>}
+    {selectedScanMode?.value === 'COLLECT' && !!kitLabel && !!returnTrackingNumber && AttestationControl}
     <div className="d-flex justify-content-end align-items-center">
       { submitError && <span className="text-danger me-2">{submitError}</span>}
       <LoadingSpinner isLoading={loading}/>
@@ -347,6 +354,7 @@ export const KitScanner = ({ studyEnvContext }: { studyEnvContext: StudyEnvConte
           setSelectedScanMode(undefined)
           setReturnTrackingNumber(undefined)
           setReturnTrackingNumberError(undefined)
+          resetAttestation()
           if (selectedScanMode?.value === 'ASSIGN') {
             await assignKit()
           }

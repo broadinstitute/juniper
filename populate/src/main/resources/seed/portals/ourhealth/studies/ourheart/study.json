@@ -25,6 +25,7 @@
       "environmentName": "sandbox",
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
+        "kittingSystem": "DSM_PEPPER",
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
@@ -98,6 +99,7 @@
     {
       "environmentName": "irb",
       "studyEnvironmentConfig": {
+        "kittingSystem": "DSM_PEPPER",
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",

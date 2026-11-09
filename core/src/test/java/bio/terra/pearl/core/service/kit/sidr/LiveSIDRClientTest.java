@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDREnvironment;
 import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -13,9 +14,9 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +34,8 @@ class LiveSIDRClientTest {
     void setup() throws Exception {
         server = new MockWebServer();
         server.start();
-        client = new LiveSIDRClient(WebClient.builder(), objectMapper) {
+        client = new LiveSIDRClient(WebClient.builder(), objectMapper,
+                new ApplicationRoutingPaths(new MockEnvironment())) {
             @Override
             protected String buildUri(SIDREnvironment env, String path) {
                 return server.url("/" + path).toString();

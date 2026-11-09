@@ -51,7 +51,7 @@ class StubSIDRClientTest {
     @Test
     void wrapperChoosesClientByConfig() {
         LiveSIDRClient live = new LiveSIDRClient(org.springframework.web.reactive.function.client.WebClient.builder(),
-                new com.fasterxml.jackson.databind.ObjectMapper());
+                new com.fasterxml.jackson.databind.ObjectMapper(), null);
         SIDRClientWrapper wrapper = new SIDRClientWrapper(live, client);
         assertSame(client, wrapper.getSIDRClient(StudyEnvironmentConfig.builder().useStubSidr(true).build()));
         assertSame(live, wrapper.getSIDRClient(StudyEnvironmentConfig.builder().useStubSidr(false).build()));

@@ -1158,7 +1158,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitLabel: string, returnTrackingNumber: string }
+    kitOptions: { kitLabel: string, returnTrackingNumber: string, attestationAccepted?: boolean }
   ): Promise<string> {
     const url =
         `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/collectKit`

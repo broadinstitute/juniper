@@ -138,7 +138,10 @@ public class KitExtService {
     kitRequest.setReturnTrackingNumber(kitCollectionDto.returnTrackingNumber());
 
     return kitRequestService.collectKit(
-        authContext.getOperator(), authContext.getStudyShortcode(), kitRequest);
+        authContext.getOperator(),
+        authContext.getStudyShortcode(),
+        kitRequest,
+        kitCollectionDto.attestationAccepted());
   }
 
   @EnforcePortalEnrolleePermission(permission = AuthUtilService.BASE_PERMISSION)

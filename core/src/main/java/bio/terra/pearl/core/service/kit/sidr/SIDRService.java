@@ -24,8 +24,11 @@ import java.util.List;
 public class SIDRService {
     /** the SIDR test code for ordering a research kit that is received and stored on return */
     public static final String KIT_REC_AND_STORE_TEST_CODE = "R_DTP_KIT_REC_AND_STORE";
-    /** TBD: the SIDR test code that return-only kits will be ordered under */
-    public static final String RETURN_ONLY_TEST_CODE = null;
+    /**
+     * the SIDR test code for a kit that was not mailed by SIDR: the barcode is already on the kit, and it is
+     * only being received and stored on return
+     */
+    public static final String RETURN_ONLY_TEST_CODE = "R_KIT_REC_AND_STORE";
 
     private final SIDRClientWrapper sidrClientWrapper;
 
@@ -53,19 +56,77 @@ public class SIDRService {
         return sidrClientWrapper.postOrder(config, operator, order);
     }
 
-    /** TBD: return-only kits (in-person and manually assigned kits) will be ordered under a different test code */
+    /**
+     * Places an order in SIDR for a kit that already has a barcode: an in-person kit that staff have collected,
+     * or a kit that staff assigned by hand. SIDR only needs to know the barcode and kit type, the participant's
+     * identifier and sex at birth, and the tracking numbers if we have them, so no name, date of birth or address
+     * is sent.
+     *
+     * @param profile             the participant's profile, for sex at birth
+     * @param attestationAccepted whether the operator has agreed to the research kit attestation
+     * @return the order as created by SIDR
+     * @throws IllegalArgumentException if the kit can't be ordered, e.g. it has no barcode
+     * @throws SIDRApiException if SIDR rejects the order
+     */
     public SIDROrder placeReturnOnlyKitRequestOrder(StudyEnvironmentConfig config, KitRequest kitRequest,
-                                                    Enrollee enrollee, AdminUser operator) {
-        throw new UnsupportedOperationException("Return-only kits are not yet supported");
+                                                    Enrollee enrollee, Profile profile, AdminUser operator,
+                                                    boolean attestationAccepted) throws SIDRApiException {
+        if (!attestationAccepted) {
+            throw new IllegalArgumentException("Order acknowledgements must be accepted to place a kit order");
+        }
+        SIDROrder order = buildReturnOnlyKitRequestOrder(config, kitRequest, enrollee, profile);
+        return sidrClientWrapper.postOrder(config, operator, order);
+    }
+
+    /** builds the SIDR order for a kit that already has a barcode. Does not communicate with SIDR. */
+    static SIDROrder buildReturnOnlyKitRequestOrder(StudyEnvironmentConfig config, KitRequest kitRequest,
+                                                    Enrollee enrollee, Profile profile) {
+        requireProject(config);
+        if (StringUtils.isBlank(kitRequest.getKitLabel())) {
+            throw new IllegalArgumentException("A kit label is required to place a kit order");
+        }
+        SIDRSample sample = SIDRSample.builder()
+                // SIDR uses the barcode as the sample id when it isn't given one
+                .clientBarcode(kitRequest.getKitLabel())
+                .shippingInformation(SIDRShippingInformation.builder()
+                        .kitType(toSidrKitType(kitRequest.getKitType()))
+                        // the tracking numbers are optional for SIDR, and we may not have either one
+                        .trackingIdToPatient(StringUtils.trimToNull(kitRequest.getTrackingNumber()))
+                        .trackingIdToBroad(StringUtils.trimToNull(kitRequest.getReturnTrackingNumber()))
+                        .build())
+                // the material type is derived from the kit type
+                .patient(SIDRPatient.builder()
+                        .patientId(getEnrolleeId(config, enrollee))
+                        .metadata(List.of(SIDRMetadata.of("sex_at_birth", normalizeSexAtBirth(profile.getSexAtBirth()))))
+                        .build())
+                .build();
+
+        return SIDROrder.builder()
+                .projectKey(config.getSidrProject())
+                .numberOfSamples(1)
+                .clinicalOrderAttestation(true)
+                .externalOrderId(kitRequest.getId().toString())
+                // SIDR attaches every sample to every test when no sample ids are given
+                .tests(List.of(SIDRTest.builder().testCode(RETURN_ONLY_TEST_CODE).build()))
+                .samples(List.of(sample))
+                .build();
+    }
+
+    private static void requireProject(StudyEnvironmentConfig config) {
+        if (StringUtils.isBlank(config.getSidrProject())) {
+            throw new IllegalArgumentException("Kit ordering is not configured for this study environment");
+        }
+    }
+
+    private static String getEnrolleeId(StudyEnvironmentConfig config, Enrollee enrollee) {
+        return config.isKitUseResearchIds() ? enrollee.getResearchId() : enrollee.getShortcode();
     }
 
     /** builds the SIDR order for a mailed kit. Does not communicate with SIDR. */
     static SIDROrder buildKitRequestOrder(StudyEnvironmentConfig config, KitRequest kitRequest, Enrollee enrollee,
                                           Profile profile) {
-        if (StringUtils.isBlank(config.getSidrProject())) {
-            throw new IllegalArgumentException("Kit ordering is not configured for this study environment");
-        }
-        String enrolleeId = config.isKitUseResearchIds() ? enrollee.getResearchId() : enrollee.getShortcode();
+        requireProject(config);
+        String enrolleeId = getEnrolleeId(config, enrollee);
         MailingAddress address = profile.getMailingAddress();
         if (address == null || StringUtils.isAnyBlank(address.getStreet1(), address.getCity(),
                 address.getPostalCode(), address.getCountry())) {

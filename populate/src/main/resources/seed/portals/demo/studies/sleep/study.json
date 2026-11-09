@@ -16,6 +16,7 @@
     {
       "environmentName": "sandbox",
       "studyEnvironmentConfig": {
+        "kittingSystem": "DSM_PEPPER",
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
         "enableFamilyLinkage": true,
@@ -54,6 +55,7 @@
     {
       "environmentName": "irb",
       "studyEnvironmentConfig": {
+        "kittingSystem": "DSM_PEPPER",
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
         "enableFamilyLinkage": true,
@@ -91,6 +93,7 @@
     {
       "environmentName": "live",
       "studyEnvironmentConfig": {
+        "kittingSystem": "DSM_PEPPER",
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
         "enableFamilyLinkage": true,

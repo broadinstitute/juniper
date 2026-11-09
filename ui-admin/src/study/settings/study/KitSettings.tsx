@@ -32,7 +32,7 @@ import { isNil } from 'lodash'
 
 const KITTING_SYSTEM_OPTIONS = [
   { value: 'DSM_PEPPER', label: 'Pepper/DSM' },
-  { value: 'SIDR', label: 'GPO / BCL Orders' }
+  { value: 'SIDR', label: 'SIDR' }
 ]
 
 const SIDR_ENVIRONMENT_OPTIONS: { value: SidrEnvironment, label: string }[] = [
@@ -126,10 +126,7 @@ export const KitSettings = (
 
       <div className="mb-2">
         <label className="form-label">
-          Kitting system <InfoPopup content={
-            'The external system kit requests are sent to. Changing this does not affect kits that have already ' +
-            'been requested.'
-          }/>
+          Kitting system
           <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
             aria-label="Kitting system"
             options={KITTING_SYSTEM_OPTIONS}
@@ -151,9 +148,7 @@ export const KitSettings = (
         </div>
         <div className="mb-2">
           <label className="form-label">
-            GPO / BCL Orders environment <InfoPopup content={
-              'Which GPO / BCL Orders environment kit requests are sent to. Only used if kit requests are not mocked.'
-            }/>
+            SIDR environment
             <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
               options={SIDR_ENVIRONMENT_OPTIONS}
               value={SIDR_ENVIRONMENT_OPTIONS.find(opt => opt.value === config.sidrEnvironment)}
@@ -163,9 +158,7 @@ export const KitSettings = (
         </div>
         <div className="mb-2">
           <label className="form-label">
-            GPO / BCL Orders project key <InfoPopup content={
-              'The GPO / BCL Orders project that kit orders for this study environment will be placed under.'
-            }/>
+            SIDR project key
             <input type="text" className="form-control" style={{ width: 300 }}
               value={config.sidrProject ?? ''}
               onChange={e => updateConfig('sidrProject', e.target.value || undefined)}/>

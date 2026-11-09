@@ -92,13 +92,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
          */
         StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         if (config.getKittingSystem() == ExternalKitSystem.SIDR) {
-            if (kitRequestCreationDto.distributionMethod != DistributionMethod.MAILED) {
-                // in-person and manually assigned kits already have a barcode and are sent to the kitting
-                // system as "return only" orders, which we don't yet support for SIDR
-                throw new IllegalArgumentException(
-                        "In-person and manually assigned kits are not currently supported for this study");
-            }
-            return createNewSidrKitRequest(operator, config, enrollee, kitRequestCreationDto);
+            return switch (kitRequestCreationDto.distributionMethod) {
+                case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
+                case MAILED -> createNewSidrKitRequest(operator, config, enrollee, kitRequestCreationDto);
+                case MANUAL -> createNewSidrReturnOnlyKitRequest(operator, config, enrollee, kitRequestCreationDto);
+            };
         }
         return switch (kitRequestCreationDto.distributionMethod) {
             case IN_PERSON -> createNewInPersonKitRequest(operator, enrollee, kitRequestCreationDto);
@@ -124,6 +122,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .enrolleeId(enrollee.getId())
                 .creatingAdminUserId(operator.getId())
                 .distributionMethod(DistributionMethod.IN_PERSON)
+                // the order is placed when the kit is collected, but it will go to whichever system is in use now
+                .externalKitSystem(studyEnvironmentConfigService
+                        .findByStudyEnvironmentId(enrollee.getStudyEnvironmentId()).getKittingSystem())
                 .kitLabel(kitRequestCreationDto.kitLabel)
                 .skipAddressValidation(true) // skip address validation for in-person kits, as they aren't shipped
                 .build();
@@ -208,16 +209,41 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     private KitRequestDto createNewSidrKitRequest(AdminUser operator, StudyEnvironmentConfig config, Enrollee enrollee,
                                                   KitRequestCreationDto kitRequestCreationDto) {
-        if (!kitRequestCreationDto.attestationAccepted) {
-            throw new IllegalArgumentException("Order acknowledgements must be accepted to request a kit");
-        }
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         KitRequest kitRequest = assemble(operator, enrollee, makePepperKitAddress(profile), kitRequestCreationDto);
-        kitRequest.setExternalKitSystem(ExternalKitSystem.SIDR);
 
         // an SIDRApiException from SIDR propagates to the caller, and nothing is saved
         SIDROrder order = sidrService.placeKitRequestOrder(config, kitRequest, enrollee, profile, operator,
                 kitRequestCreationDto.attestationAccepted);
+        recordSidrOrder(kitRequest, order);
+        kitRequest = dao.createWithIdSpecified(kitRequest);
+        log.info("SIDR kit request created: enrollee: {}, kit: {}, order: {}", enrollee.getShortcode(),
+                kitRequest.getId(), order.getOrderId());
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
+    }
+
+    /**
+     * Creates a kit request for a kit staff assigned by hand, which already has a barcode, by placing a
+     * return-only order in SIDR. As with mailed kits, a failed order means no kit is saved.
+     */
+    private KitRequestDto createNewSidrReturnOnlyKitRequest(AdminUser operator, StudyEnvironmentConfig config,
+                                                            Enrollee enrollee,
+                                                            KitRequestCreationDto kitRequestCreationDto) {
+        Profile profile = profileService.find(enrollee.getProfileId()).get();
+        // return-only kits aren't mailed to an address
+        KitRequest kitRequest = assemble(operator, enrollee, null, kitRequestCreationDto);
+        SIDROrder order = sidrService.placeReturnOnlyKitRequestOrder(config, kitRequest, enrollee, profile, operator,
+                kitRequestCreationDto.attestationAccepted);
+        recordSidrOrder(kitRequest, order);
+        kitRequest = dao.createWithIdSpecified(kitRequest);
+        log.info("SIDR return-only kit request created: enrollee: {}, kit: {}, order: {}", enrollee.getShortcode(),
+                kitRequest.getId(), order.getOrderId());
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
+    }
+
+    /** saves the order that SIDR created, and the system it came from, on the kit request. Does not save the kit. */
+    private void recordSidrOrder(KitRequest kitRequest, SIDROrder order) {
+        kitRequest.setExternalKitSystem(ExternalKitSystem.SIDR);
         kitRequest.setExternalOrderId(order.getOrderId());
         try {
             kitRequest.setExternalKit(objectMapper.writeValueAsString(order));
@@ -225,10 +251,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // the order was already placed, so don't abort; we still have the order id
             log.error("Unable to serialize SIDR order response: kit id {}", kitRequest.getId());
         }
-        kitRequest = dao.createWithIdSpecified(kitRequest);
-        log.info("SIDR kit request created: enrollee: {}, kit: {}, order: {}", enrollee.getShortcode(),
-                kitRequest.getId(), order.getOrderId());
-        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
     /**
@@ -248,7 +270,15 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
     }
 
-    public record KitCollectionDto(String kitLabel, String returnTrackingNumber) {}
+    /**
+     * @param attestationAccepted whether the staff member agreed to the research kit attestation. Only required
+     *                            when the kit is ordered through SIDR, which happens when the kit is collected.
+     */
+    public record KitCollectionDto(String kitLabel, String returnTrackingNumber, boolean attestationAccepted) {
+        public KitCollectionDto(String kitLabel, String returnTrackingNumber) {
+            this(kitLabel, returnTrackingNumber, false);
+        }
+    }
 
     /**
      * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address
@@ -459,7 +489,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .creatingAdminUserId(operator.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .sentToAddress(stringifyPepperAddress(pepperKitAddress))
+                .sentToAddress(pepperKitAddress == null ? null : stringifyPepperAddress(pepperKitAddress))
                 .status(KitRequestStatus.CREATED)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
@@ -553,13 +583,31 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     public KitRequest collectKit(AdminUser operator, String studyShortcode, KitRequest kitRequest) {
+        return collectKit(operator, studyShortcode, kitRequest, false);
+    }
+
+    /**
+     * Records that staff collected an in-person kit, and sends the kit to the kitting system as a return-only kit.
+     * @param attestationAccepted required if the kit is ordered through SIDR
+     */
+    public KitRequest collectKit(AdminUser operator, String studyShortcode, KitRequest kitRequest,
+                                 boolean attestationAccepted) {
         if(kitRequest.getDistributionMethod() != DistributionMethod.IN_PERSON) {
             throw new IllegalArgumentException("You can only collect kits that were distributed in person.");
         }
         KitType kitType = kitTypeDao.find(kitRequest.getKitTypeId()).orElseThrow(() -> new NotFoundException("KitType not found for kit request %s"
                 .formatted(kitRequest.getId())));
         kitRequest.setKitType(kitType);
-        createNewPepperReturnOnlyKitRequest(operator, studyShortcode, getEnrollee(kitRequest), kitRequest);
+        Enrollee enrollee = getEnrollee(kitRequest);
+        if (kitRequest.getExternalKitSystem() == ExternalKitSystem.SIDR) {
+            // an SIDRApiException propagates, and the kit stays uncollected
+            StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+            Profile profile = profileService.find(enrollee.getProfileId()).get();
+            recordSidrOrder(kitRequest, sidrService.placeReturnOnlyKitRequestOrder(config, kitRequest, enrollee,
+                    profile, operator, attestationAccepted));
+        } else {
+            createNewPepperReturnOnlyKitRequest(operator, studyShortcode, enrollee, kitRequest);
+        }
         KitRequestStatus priorStatus = kitRequest.getStatus();
         kitRequest.setStatus(KitRequestStatus.COLLECTED_BY_STAFF);
         kitRequest.setCollectingAdminUserId(operator.getId());
