@@ -4,14 +4,19 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentBundle;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -22,6 +27,8 @@ import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -80,6 +87,12 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private AnswerService answerService;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private FamilyFactory familyFactory;
+    @Autowired
+    private FamilyEnrolleeService familyEnrolleeService;
+    @Autowired
+    private ParticipantUserService participantUserService;
 
     @Test
     @Transactional
@@ -508,6 +521,75 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .collect(Collectors.toMap(Event::getEventClass, List::of, (a, b) -> Stream.of(a, b).flatMap(List::stream).toList()));
     }
 
+    @Test
+    @Transactional
+    public void testEnrollFamilyMember(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        Enrollee proband = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, true).getEnrollee();
+        Family family = familyFactory.buildPersisted(getTestName(info), proband);
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(getTestName(info)).build();
 
+        Enrollee sibling = enrollmentService.enrollFamilyMember(studyEnv.getEnvironmentName(), studyShortcode,
+                proband, true, family.getId(), "sister",
+                Profile.builder().givenName("Sis").familyName("Tester").phoneNumber("555-1234").sexAtBirth("Female")
+                        .contactEmail("own@example.com").doNotEmail(false)
+                        .mailingAddress(MailingAddress.builder().street1("1 Main St").city("Boston").state("MA")
+                                .postalCode("02115").country("US").build())
+                        .build(),
+                auditInfo);
 
+        // the account is governed-style, so it is based on the existing member's email but can't be a valid login
+        ParticipantUser siblingUser = participantUserService.find(sibling.getParticipantUserId()).get();
+        assertThat(siblingUser.getUsername(), matchesPattern(
+                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-prox-[A-Z]{4}"));
+        Profile profile = profileService.find(sibling.getProfileId()).get();
+        assertThat(profile.getGivenName(), equalTo("Sis"));
+        assertThat(profile.getFamilyName(), equalTo("Tester"));
+        assertThat(profile.getPhoneNumber(), equalTo("555-1234"));
+        assertThat(profile.getSexAtBirth(), equalTo("Female"));
+        assertThat(profile.getContactEmail(), equalTo("own@example.com"));
+        assertThat(profile.isDoNotEmail(), equalTo(false));
+        assertThat(profileService.loadWithMailingAddress(profile.getId()).get().getMailingAddress().getCity(), equalTo("Boston"));
+        assertThat(sibling.getSource(), equalTo(bio.terra.pearl.core.model.participant.EnrolleeSourceType.MANUAL_ADMIN));
+
+        // the proband is the enrollee of the relation, and the new member is the target
+        // ("proband is the sister of the new member")
+        List<EnrolleeRelation> relations = enrolleeRelationService.findByTargetEnrolleeId(sibling.getId());
+        assertThat(relations, hasSize(1));
+        assertThat(relations.get(0).getRelationshipType(), equalTo(RelationshipType.FAMILY));
+        assertThat(relations.get(0).getFamilyRelationship(), equalTo("sister"));
+        assertThat(relations.get(0).getEnrolleeId(), equalTo(proband.getId()));
+        assertThat(relations.get(0).getFamilyId(), equalTo(family.getId()));
+        assertThat(familyEnrolleeService.findByFamilyId(family.getId()), hasSize(2));
+
+        // creating from a governed-style member doesn't stack suffixes
+        Enrollee niece = enrollmentService.enrollFamilyMember(studyEnv.getEnvironmentName(), studyShortcode,
+                sibling, false, family.getId(), "daughter", null, auditInfo);
+        // with no profile supplied, emails are off by default and the existing member's contact email is kept
+        assertThat(profileService.find(niece.getProfileId()).get().isDoNotEmail(), equalTo(true));
+        ParticipantUser nieceUser = participantUserService.find(niece.getParticipantUserId()).get();
+        assertThat(nieceUser.getUsername(), matchesPattern(
+                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-prox-[A-Z]{4}"));
+        // newMemberIsTarget=false flips the direction: the new member is the enrollee ("niece is the daughter of sibling")
+        List<EnrolleeRelation> nieceRelations = enrolleeRelationService.findAllByEnrolleeId(niece.getId());
+        assertThat(nieceRelations, hasSize(1));
+        assertThat(nieceRelations.get(0).getTargetEnrolleeId(), equalTo(sibling.getId()));
+        assertThat(familyEnrolleeService.findByFamilyId(family.getId()), hasSize(3));
+    }
+
+    @Test
+    @Transactional
+    public void testEnrollFamilyMemberRequiresRelationship(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                enrollmentService.enrollFamilyMember(studyEnv.getEnvironmentName(), studyShortcode,
+                        new Enrollee(), true, UUID.randomUUID(), " ", null, DataAuditInfo.builder().build()));
+    }
 }
