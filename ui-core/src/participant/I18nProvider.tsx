@@ -55,7 +55,6 @@ export function I18nProvider({
   loadedPortalContentLang,
   reloadPortalContent,
   persistLanguage = true,
-  keepMountedOnLanguageChange = false,
   children
 }: {
   defaultLanguage: string,
@@ -66,21 +65,15 @@ export function I18nProvider({
   reloadPortalContent?: (language: string) => void,
   /**
    * whether the selected language is read from and saved to localStorage. Defaults to true, which is what the
-   * participant UI wants. Contexts like the admin UI, which only preview in other languages, should pass false so a
-   * previewed language doesn't stick around (and so the participant UI's saved choice doesn't leak in).
+   * participant UI wants. Contexts like the admin UI should pass false so a
+   * language chosen in the participant UI does not leak in.
    */
-  persistLanguage?: boolean,
-  /**
-   * if true, children stay mounted when the language changes after the first load, rather than being replaced
-   * by the loading indicator. Prevents losing in-progress state (e.g. unsaved edits) when switching languages.
-   */
-  keepMountedOnLanguageChange?: boolean
+  persistLanguage?: boolean
 }) {
   const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState(
     (persistLanguage && localStorage.getItem(SELECTED_LANGUAGE_KEY)) || defaultLanguage)
 
@@ -109,7 +102,6 @@ export function I18nProvider({
       setLanguageTexts(result)
       setIsError(false)
       setIsLoading(false)
-      setHasLoadedOnce(true)
     }).catch(() => {
       setIsError(true)
       setIsLoading(false)
@@ -130,9 +122,8 @@ export function I18nProvider({
     return text
   }
 
-  const keepMounted = keepMountedOnLanguageChange && hasLoadedOnce
   return <>
-    {isLoading && !keepMounted && <div className="bg-white h-100 w-100">
+    {isLoading && <div className="bg-white h-100 w-100">
       <div className="position-absolute top-50 start-50 translate-middle">Loading...</div>
     </div>}
     {isError && <div className="bg-white h-100 w-100">
@@ -141,8 +132,7 @@ export function I18nProvider({
             If this is an error, contact <a href={`mailto:${SUPPORT_EMAIL_ADDRESS}`}>{SUPPORT_EMAIL_ADDRESS}</a>.
       </div>
     </div>}
-    {(!isLoading || keepMounted) && !isError && <I18nContext.Provider
-      value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
+    {!isLoading && !isError && <I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
       {children}
     </I18nContext.Provider>}
   </>

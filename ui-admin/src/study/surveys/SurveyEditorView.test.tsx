@@ -2,7 +2,7 @@ import React from 'react'
 import { screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
-import { defaultSurvey, MockI18nProvider, renderWithRouter, Survey } from '@juniper/ui-core'
+import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
 import {
   mockExpressionApis,
   mockStudyEnvContext, mockTwoLanguagePortal, renderInPortalRouter
@@ -31,13 +31,13 @@ describe('SurveyEditorView', () => {
     localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({}))
 
     jest.spyOn(Storage.prototype, 'getItem')
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
 
     //Assert
     const modalHeader = screen.getByText('Survey Draft Loaded')
@@ -52,13 +52,13 @@ describe('SurveyEditorView', () => {
 
     jest.spyOn(Storage.prototype, 'getItem')
 
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
 
     //Assert
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
@@ -67,13 +67,13 @@ describe('SurveyEditorView', () => {
 
   test('shows a dropdown with options', async () => {
     mockExpressionApis()
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
     expect(screen.getByLabelText('form options menu')).toBeInTheDocument()
     await userEvent.click(screen.getByLabelText('form options menu'))
     await userEvent.click(screen.getByText('Configuration'))
@@ -82,39 +82,39 @@ describe('SurveyEditorView', () => {
 
   test('allows the user to download the JSON file', async () => {
     mockExpressionApis()
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
     await userEvent.click(screen.getByLabelText('form options menu'))
     expect(screen.getByText('Download form JSON')).toBeInTheDocument()
   })
 
   test('shows stableId and version', async () => {
     const stableId = 'testStableId'
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={{ ...mockForm(), stableId }}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
     expect(screen.getByText('testStableId v12')).toBeInTheDocument()
     expect(screen.queryByText('published')).not.toBeInTheDocument()
   })
 
   test('shows published version if applicable', async () => {
     const stableId = 'testStableId'
-    renderWithRouter(<MockI18nProvider><SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={{ ...mockForm(), stableId, publishedVersion: 2 }}
       onCancel={jest.fn()}
       onSave={jest.fn()}
       replaceSurvey={jest.fn()}
-    /></MockI18nProvider>)
+    />)
     expect(screen.getByText('testStableId v12')).toBeInTheDocument()
     expect(screen.getByText('- published v2')).toBeInTheDocument()
   })
@@ -123,7 +123,7 @@ describe('SurveyEditorView', () => {
     Element.prototype.scrollIntoView = jest.fn()
     const portal = mockTwoLanguagePortal()
     renderInPortalRouter(portal,
-      <MockI18nProvider><SurveyEditorView
+      <SurveyEditorView
         studyEnvContext={mockStudyEnvContext()}
         currentForm={{
           ...mockForm(), content: JSON.stringify({
@@ -137,7 +137,7 @@ describe('SurveyEditorView', () => {
         onCancel={jest.fn()}
         onSave={jest.fn()}
         replaceSurvey={jest.fn()}
-      /></MockI18nProvider>)
+      />)
     await userEvent.click(screen.getAllByText('Designer')[1])
 
     await userEvent.click(screen.getByText('testQ'))
