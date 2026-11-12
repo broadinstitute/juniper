@@ -342,7 +342,7 @@ public class EnrollmentService {
         ParticipantUser governedUserParticipantUserOpt = participantUserService.findOne(governedUserName, envName).orElse(null);
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult =
-                registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
+                registrationService.registerDerivedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
 
         return enrollGovernedUser(
                 envName,
@@ -417,7 +417,7 @@ public class EnrollmentService {
         String newUsername = registrationService.getGovernedUsername(baseUsername, envName);
 
         RegistrationService.RegistrationResult registration =
-                registrationService.registerGovernedUser(existingUser, existingPpUser, newUsername, null);
+                registrationService.registerDerivedUser(existingUser, existingPpUser, newUsername, null);
 
         Profile profile = profileService.loadWithMailingAddress(registration.portalParticipantUser().getProfileId()).orElseThrow();
         // no emails by default -- the existing enrollee's address is shared, and this is a staff-created record
