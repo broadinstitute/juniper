@@ -37,8 +37,17 @@ public class KitRequest extends BaseEntity {
     private String errorMessage;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
-     * any fields that don't happen to be stored directly in our model
+     * any fields that don't happen to be stored directly in our model.
      */
     private String externalKit;
+    /**
+     * the id of this kit's order in the external system, if that system has a concept of orders (e.g. the SIDR order id)
+     */
+    private String externalOrderId;
+    /**
+     * the system this kit was (or will be) requested from.  Kits default to Pepper/DSM
+     */
+    @Builder.Default
+    private ExternalKitSystem externalKitSystem = ExternalKitSystem.DSM_PEPPER;
     private Instant externalKitFetchedAt;
 }

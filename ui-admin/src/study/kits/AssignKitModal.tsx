@@ -4,6 +4,7 @@ import {
 } from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
 import { useKitTypeSelect } from '../participants/RequestKitModal'
+import { useSidrAttestation } from 'study/kits/SidrAttestation'
 import {
   doApiLoad,
   useLoadingEffect
@@ -47,6 +48,7 @@ type ManualKitRequestCreationDto = {
   kitType: string,
   kitLabel: string,
   skipAddressValidation: boolean,
+  attestationAccepted?: boolean,
   trackingNumber?: string,
   returnTrackingNumber?: string,
 }
@@ -87,12 +89,15 @@ export default function AssignKitModal({
 
 
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
+  const { attestationAccepted, canSubmit, resetAttestation, AttestationControl } =
+    useSidrAttestation(studyEnvContext.currentEnv.studyEnvironmentConfig, true)
 
   const assembledKitDto: ManualKitRequestCreationDto = {
     kitType,
     distributionMethod: 'MANUAL',
     kitLabel: kitLabel || '',
     skipAddressValidation: false,
+    attestationAccepted,
     returnTrackingNumber,
     trackingNumber
   }
@@ -117,6 +122,7 @@ export default function AssignKitModal({
       setKitLabel(undefined)
       setReturnTrackingNumber(undefined)
       setTrackingNumber(undefined)
+      resetAttestation()
     }, {
       setError: error => {
         if (error) {
@@ -209,6 +215,7 @@ export default function AssignKitModal({
             </InfoCardRow>
           </InfoCardBody>
         </InfoCard>
+        {AttestationControl}
       </>}
     </Modal.Body>
     <Modal.Footer>
@@ -220,7 +227,8 @@ export default function AssignKitModal({
                 <button className='btn btn-secondary me-2' onClick={skip}>
                     Skip
                 </button>}
-            <button className='btn btn-primary' onClick={assignKit} disabled={!isKitComplete || isLoading}>
+            <button className='btn btn-primary' onClick={assignKit}
+              disabled={!isKitComplete || !canSubmit || isLoading}>
               Assign kit
             </button>
           </div>

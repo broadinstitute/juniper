@@ -15,6 +15,7 @@
       "enableFamilyLinkage" : false,
       "initialized" : true,
       "useStubDsm" : true,
+      "kittingSystem": "DSM_PEPPER",
       "useDevDsmRealm" : true
     },
     "triggers" : [ ],
@@ -328,6 +329,7 @@
       "enableFamilyLinkage" : false,
       "initialized" : true,
       "useStubDsm" : true,
+      "kittingSystem": "DSM_PEPPER",
       "useDevDsmRealm" : true
     },
     "triggers" : [ ],
@@ -406,6 +408,7 @@
       "enableFamilyLinkage" : false,
       "initialized" : true,
       "useStubDsm" : true,
+      "kittingSystem": "DSM_PEPPER",
       "useDevDsmRealm" : true
     },
     "triggers" : [ ],

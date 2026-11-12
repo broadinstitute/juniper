@@ -13,6 +13,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.sidr.SIDRApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -55,6 +56,11 @@ public class KitController implements KitApi {
 
   @ExceptionHandler(PepperApiException.class)
   public ResponseEntity<ErrorReport> handlePepperApiException(PepperApiException e) {
+    return GlobalExceptionHandler.badRequestHandler(e, request);
+  }
+
+  @ExceptionHandler(SIDRApiException.class)
+  public ResponseEntity<ErrorReport> handleSIDRApiException(SIDRApiException e) {
     return GlobalExceptionHandler.badRequestHandler(e, request);
   }
 

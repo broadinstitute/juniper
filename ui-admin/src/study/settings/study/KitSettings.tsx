@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {
+  SidrEnvironment,
   StudyEnvironmentConfig,
   StudyEnvParams
 } from '@juniper/ui-core'
@@ -28,6 +29,15 @@ import {
 import { RequireUserPermission } from 'util/RequireUserPermission'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 import { isNil } from 'lodash'
+
+const KITTING_SYSTEM_OPTIONS = [
+  { value: 'DSM_PEPPER', label: 'Pepper/DSM' },
+  { value: 'SIDR', label: 'SIDR' }
+]
+
+const SIDR_ENVIRONMENT_OPTIONS: { value: SidrEnvironment, label: string }[] = [
+  'PRODUCTION', 'STAGING', 'DEV', 'SANDBOX1', 'SANDBOX2', 'SANDBOX3', 'SANDBOX4', 'SANDBOX5'
+].map(env => ({ value: env as SidrEnvironment, label: env.toLowerCase() }))
 
 export const KitSettings = (
   {
@@ -114,26 +124,68 @@ export const KitSettings = (
         </label>
       </div>
 
-      <div>
+      <div className="mb-2">
         <label className="form-label">
-          Use mock kit requests <InfoPopup content={
-          `If checked, kit requests will be mocked for this environment, `
-          + `and not sent to any external services.`
-          }/>
-          <input type="checkbox" checked={config.useStubDsm}
-            onChange={e => updateConfig('useStubDsm', e.target.checked)}/>
+          Kitting system
+          <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
+            aria-label="Kitting system"
+            options={KITTING_SYSTEM_OPTIONS}
+            value={KITTING_SYSTEM_OPTIONS.find(opt => opt.value === config.kittingSystem)}
+            isClearable={false}
+            onChange={opt => opt && updateConfig('kittingSystem', opt.value)}/>
         </label>
       </div>
-      <div>
-        <label className="form-label">
-          Use kit request development realm
-          <InfoPopup content={
-            `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
-               will not be shipped. To actually mail kits, this and the above field should be unchecked.`}/>
-          <input type="checkbox" checked={config.useDevDsmRealm}
-            onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
-        </label>
-      </div>
+      {config.kittingSystem === 'SIDR' ? <>
+        <div>
+          <label className="form-label">
+            Use mock kit requests <InfoPopup content={
+              `If checked, kit requests will be mocked for this environment, `
+              + `and not sent to SIDR.`
+            }/>
+            <input type="checkbox" checked={config.useStubSidr}
+              onChange={e => updateConfig('useStubSidr', e.target.checked)}/>
+          </label>
+        </div>
+        <div className="mb-2">
+          <label className="form-label">
+            SIDR environment
+            <Select className="m-1" styles={{ container: base => ({ ...base, width: 300 }) }}
+              options={SIDR_ENVIRONMENT_OPTIONS}
+              value={SIDR_ENVIRONMENT_OPTIONS.find(opt => opt.value === config.sidrEnvironment)}
+              isClearable={false}
+              onChange={opt => opt && updateConfig('sidrEnvironment', opt.value)}/>
+          </label>
+        </div>
+        <div className="mb-2">
+          <label className="form-label">
+            SIDR project key
+            <input type="text" className="form-control" style={{ width: 300 }}
+              value={config.sidrProjectKey ?? ''}
+              onChange={e => updateConfig('sidrProjectKey', e.target.value || undefined)}/>
+          </label>
+        </div>
+      </> : <>
+        <div>
+          <label className="form-label">
+            Use mock kit requests <InfoPopup content={
+            `If checked, kit requests will be mocked for this environment, `
+            + `and not sent to any external services.`
+            }/>
+            <input type="checkbox" checked={config.useStubDsm}
+              onChange={e => updateConfig('useStubDsm', e.target.checked)}/>
+          </label>
+        </div>
+        <div>
+          <label className="form-label">
+            Use kit request development realm
+            <InfoPopup content={
+              `If checked, kit requests will be sent to DSM, but to a development realm so they can be reviewed, but 
+                 will not be shipped. To actually mail kits, this and the above field should be unchecked.`}/>
+            <input type="checkbox" checked={config.useDevDsmRealm}
+              onChange={e => updateConfig('useDevDsmRealm', e.target.checked)}/>
+          </label>
+        </div>
+      </>}
       <div>
         <label className="form-label">
           Use research IDs as participant kit identifier <InfoPopup content={

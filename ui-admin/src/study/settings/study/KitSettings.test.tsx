@@ -1,7 +1,18 @@
 import { setupRouterTest } from '@juniper/ui-core'
-import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
-import { mockPortalContext, mockStudyEnvContext, mockStudyEnvironmentConfig } from 'test-utils/mocking-utils'
-import { render, screen } from '@testing-library/react'
+import {
+  mockAdminUser,
+  MockUserProvider
+} from 'test-utils/user-mocking-utils'
+import {
+  mockPortalContext,
+  mockStudyEnvContext,
+  mockStudyEnvironmentConfig
+} from 'test-utils/mocking-utils'
+import {
+  render,
+  screen
+} from '@testing-library/react'
+import { select } from 'react-select-event'
 import React from 'react'
 import { KitSettings } from './KitSettings'
 
@@ -40,5 +51,23 @@ describe('Kit Settings', () => {
     expect(screen.queryByText('Use kit request development realm')).toBeInTheDocument()
     expect(screen.queryByText('Use mock kit requests')).toBeInTheDocument()
     expect(screen.queryByText('Kit types')).toBeInTheDocument()
+  })
+
+
+  test('Offers both kitting systems by display name', async () => {
+    const updateConfig = jest.fn()
+    const { RoutedComponent } = setupRouterTest(<MockUserProvider user={mockAdminUser(true)}>
+      <KitSettings
+        studyEnvContext={mockStudyEnvContext()}
+        portalContext={mockPortalContext()}
+        config={{ ...mockStudyEnvironmentConfig(), kittingSystem: 'DSM_PEPPER' }}
+        updateConfig={updateConfig}
+      />
+    </MockUserProvider>, [''])
+    render(RoutedComponent)
+
+    expect(screen.getByText('Pepper/DSM')).toBeInTheDocument()
+    await select(screen.getByLabelText('Kitting system'), 'SIDR')
+    expect(updateConfig).toHaveBeenCalledWith('kittingSystem', 'SIDR')
   })
 })

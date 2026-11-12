@@ -1137,6 +1137,7 @@ export default {
       kitType: string,
       distributionMethod: string,
       skipAddressValidation: boolean,
+      attestationAccepted?: boolean,
       kitLabel?: string,
       trackingNumber?: string,
       returnTrackingNumber?: string
@@ -1157,7 +1158,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitLabel: string, returnTrackingNumber: string }
+    kitOptions: { kitLabel: string, returnTrackingNumber: string, attestationAccepted?: boolean }
   ): Promise<string> {
     const url =
         `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/collectKit`
@@ -1174,7 +1175,9 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitOptions: { kitType: string, distributionMethod: string, skipAddressValidation: boolean }
+    kitOptions: {
+      kitType: string, distributionMethod: string, skipAddressValidation: boolean, attestationAccepted?: boolean
+    }
   ): Promise<KitRequestListResponse> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {

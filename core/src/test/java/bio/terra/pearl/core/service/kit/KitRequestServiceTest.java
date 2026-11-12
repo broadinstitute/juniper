@@ -15,6 +15,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.kit.DistributionMethod;
+import bio.terra.pearl.core.model.kit.ExternalKitSystem;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -26,6 +27,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.service.kit.sidr.models.SIDROrder;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -688,6 +690,161 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 equalTo(expectedDSMStatus));
     }
 
+
+    private Enrollee buildSidrEnrollee(String testName) {
+        EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        Profile profile = enrollee.getProfile();
+        profile.setGivenName("Alex");
+        profile.setFamilyName("Tester");
+        profile.setSexAtBirth("female");
+        profile.getMailingAddress().setStreet1("123 Fake Street");
+        profile.getMailingAddress().setCity("Cambridge");
+        profile.getMailingAddress().setState("MA");
+        profile.getMailingAddress().setPostalCode("02142");
+        profile.getMailingAddress().setCountry("US");
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        config.setKittingSystem(ExternalKitSystem.SIDR);
+        config.setUseStubSidr(true);
+        config.setSidrProjectKey("TEST_PROJECT");
+        studyEnvironmentConfigService.update(config);
+        return enrollee;
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitSidr(TestInfo testInfo) throws JsonProcessingException {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+
+        KitRequestDto dto = kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false, null, null, true));
+
+        KitRequest saved = kitRequestDao.find(dto.getId()).get();
+        assertThat(saved.getExternalKitSystem(), equalTo(ExternalKitSystem.SIDR));
+        Assertions.assertTrue(saved.getExternalOrderId().startsWith("SDOR-"));
+        Assertions.assertTrue(saved.getExternalKit().contains(saved.getExternalOrderId()));
+        // the stored blob is the order response, which parses back to the same order
+        Assertions.assertEquals(saved.getExternalOrderId(),
+                objectMapper.readValue(saved.getExternalKit(), SIDROrder.class).getOrderId());
+        assertThat(saved.getStatus(), equalTo(KitRequestStatus.CREATED));
+        assertThat(saved.getCreatingAdminUserId(), equalTo(adminUser.getId()));
+        Mockito.verifyNoInteractions(mockPepperDSMClient, livePepperDSMClient);
+
+        // SIDR kits aren't synced from Pepper
+        kitRequestService.syncKitStatusFromPepper(saved.getId());
+        Mockito.verifyNoInteractions(mockPepperDSMClient, livePepperDSMClient);
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitSidrRequiresAttestation(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+
+        assertThrows(IllegalArgumentException.class, () -> kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false, null, null)));
+        Assertions.assertTrue(kitRequestDao.findByEnrollee(enrollee.getId()).isEmpty());
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitSidrRejectedAddressSavesNothing(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+        enrollee.getProfile().getMailingAddress().setStreet1("BAD street");
+        profileService.updateWithMailingAddress(enrollee.getProfile(), DataAuditInfo.builder().build());
+
+        var thrown = assertThrows(bio.terra.pearl.core.service.kit.sidr.SIDRApiException.class, () -> kitRequestService.requestKit(
+                adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, false, null, null, true)));
+        Assertions.assertTrue(thrown.isAddressValidationError());
+        Assertions.assertTrue(kitRequestDao.findByEnrollee(enrollee.getId()).isEmpty());
+
+        // with address validation overridden, the same address goes through
+        KitRequestDto dto = kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MAILED, null, true, null, null, true));
+        Assertions.assertNotNull(kitRequestDao.find(dto.getId()).get().getExternalOrderId());
+    }
+
+    @Transactional
+    @Test
+    public void testAssignManualKitSidr(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+
+        // the attestation is required to place the order, and nothing is saved without it
+        assertThrows(IllegalArgumentException.class, () -> kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MANUAL, "BARCODE-1", false, "RETURN-1", "OUT-1", false)));
+        Assertions.assertTrue(kitRequestDao.findByEnrollee(enrollee.getId()).isEmpty());
+
+        KitRequestDto dto = kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.MANUAL, "BARCODE-1", false, "RETURN-1", "OUT-1", true));
+        KitRequest saved = kitRequestDao.find(dto.getId()).get();
+        assertThat(saved.getExternalKitSystem(), equalTo(ExternalKitSystem.SIDR));
+        Assertions.assertTrue(saved.getExternalOrderId().startsWith("SDOR-"));
+        assertThat(saved.getStatus(), equalTo(KitRequestStatus.SENT_BY_STAFF));
+        assertThat(saved.getKitLabel(), equalTo("BARCODE-1"));
+        assertThat(saved.getSentToAddress(), nullValue());
+        // the tracking numbers went to SIDR, which the stub echoes back
+        Assertions.assertTrue(saved.getExternalKit().contains("OUT-1"));
+        Assertions.assertTrue(saved.getExternalKit().contains("RETURN-1"));
+        Mockito.verifyNoInteractions(mockPepperDSMClient, livePepperDSMClient);
+    }
+
+    @Transactional
+    @Test
+    public void testCollectInPersonKitSidr(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+
+        // requesting an in-person kit only creates it in Juniper, so there is nothing to attest to yet
+        KitRequestDto dto = kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.IN_PERSON, "BARCODE-2", false, null, null));
+        KitRequest requested = kitRequestDao.find(dto.getId()).get();
+        assertThat(requested.getExternalKitSystem(), equalTo(ExternalKitSystem.SIDR));
+        assertThat(requested.getExternalOrderId(), nullValue());
+        assertThat(requested.getStatus(), equalTo(KitRequestStatus.CREATED));
+
+        // collecting it places the order, which needs the attestation
+        requested.setReturnTrackingNumber("RETURN-2");
+        assertThrows(IllegalArgumentException.class, () -> kitRequestService.collectKit(adminUser, "testStudy", requested, false));
+        assertThat(kitRequestDao.find(dto.getId()).get().getStatus(), equalTo(KitRequestStatus.CREATED));
+
+        kitRequestService.collectKit(adminUser, "testStudy", requested, true);
+        KitRequest collected = kitRequestDao.find(dto.getId()).get();
+        assertThat(collected.getStatus(), equalTo(KitRequestStatus.COLLECTED_BY_STAFF));
+        assertThat(collected.getCollectingAdminUserId(), equalTo(adminUser.getId()));
+        Assertions.assertTrue(collected.getExternalOrderId().startsWith("SDOR-"));
+        Assertions.assertTrue(collected.getExternalKit().contains("RETURN-2"));
+        Mockito.verifyNoInteractions(mockPepperDSMClient, livePepperDSMClient);
+    }
+
+    @Transactional
+    @Test
+    public void testCollectInPersonKitSidrRejectedOrderLeavesKitUncollected(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = buildSidrEnrollee(testName);
+        KitRequestDto dto = kitRequestService.requestKit(adminUser, "testStudy", enrollee,
+                new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.IN_PERSON, "BARCODE-3", false, null, null));
+        // no project to order under
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        config.setSidrProjectKey(null);
+        studyEnvironmentConfigService.update(config);
+
+        KitRequest requested = kitRequestDao.find(dto.getId()).get();
+        assertThrows(IllegalArgumentException.class, () -> kitRequestService.collectKit(adminUser, "testStudy", requested, true));
+        KitRequest after = kitRequestDao.find(dto.getId()).get();
+        assertThat(after.getStatus(), equalTo(KitRequestStatus.CREATED));
+        assertThat(after.getExternalOrderId(), nullValue());
+    }
 
     @MockitoBean
     private StubPepperDSMClient mockPepperDSMClient;

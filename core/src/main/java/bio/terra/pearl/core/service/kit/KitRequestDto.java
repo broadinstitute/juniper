@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.kit;
 import bio.terra.pearl.core.model.kit.DistributionMethod;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.ExternalKitSystem;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,6 +78,14 @@ public class KitRequestDto {
 
     ObjectNode rootNode = objectMapper.createObjectNode();
     rootNode.put("requestId", kitRequest.getId().toString());
+    if (kitRequest.getExternalKitSystem() == ExternalKitSystem.SIDR) {
+      // the external kit blob is a SIDR order, not a PepperKit
+      if (kitRequest.getExternalOrderId() != null) {
+        rootNode.put("externalOrderId", kitRequest.getExternalOrderId());
+      }
+      return rootNode.toString();
+    }
+
     try {
       PepperKit pepperKit = objectMapper.readValue(kitRequest.getExternalKit(), PepperKit.class);
       rootNode.put("shippingId", pepperKit.getDsmShippingLabel());
