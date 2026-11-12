@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.study.AttachSurvey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.*;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.stream.Stream;
 import java.util.*;
 
 @Service
@@ -142,15 +144,32 @@ public class EnrollmentService {
                                         UUID preEnrollResponseId,
                                         boolean isSubject,
                                         EnrolleeSourceType source) {
+        return enroll(operator, envName, studyShortcode, user, ppUser, preEnrollResponseId, isSubject, source, true);
+    }
+
+    /**
+     * @param enforceEnrollmentGates whether to require that the study is accepting enrollment and that the required
+     *                               pre-enrollment survey was completed. These gates apply to participants enrolling
+     *                               themselves, and are skipped for staff creating records (e.g. family members).
+     */
+    protected HubResponse<Enrollee> enroll(PortalParticipantUser operator,
+                                        EnvironmentName envName,
+                                        String studyShortcode,
+                                        ParticipantUser user,
+                                        PortalParticipantUser ppUser,
+                                        UUID preEnrollResponseId,
+                                        boolean isSubject,
+                                        EnrolleeSourceType source,
+                                        boolean enforceEnrollmentGates) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
                 .orElseThrow(StudyEnvConfigMissing::new);
-        if (!studyEnvConfig.isAcceptingEnrollment()) {
+        if (enforceEnrollmentGates && !studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
-        if (isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
+        if (enforceEnrollmentGates && isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
             throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
         if (!isEligibleForStudy(user, ppUser, studyEnvConfig)) {
@@ -340,7 +359,7 @@ public class EnrollmentService {
         ParticipantUser governedUserParticipantUserOpt = participantUserService.findOne(governedUserName, envName).orElse(null);
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult =
-                registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
+                registrationService.registerDerivedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
 
         return enrollGovernedUser(
                 envName,
@@ -383,6 +402,93 @@ public class EnrollmentService {
                 hubResponse.getEnrollee().getShortcode());
 
         return hubResponse;
+    }
+
+    /**
+     * Creates a new enrollee who is a family member of an existing enrollee. Intended for study staff doing manual
+     * data upkeep: the new enrollee gets a governed-style username derived from the existing enrollee's
+     * (e.g. "a@b.com-derived-ABCD") which is not a deliverable address, so they cannot log in unless
+     * their email is later changed and they are invited. Emails to the new enrollee are disabled.
+     * A family relation "{enrollee} is the {familyRelationship} of {target}" is created between the two within
+     * the given family; if newMemberIsTarget the existing enrollee is the relation's enrollee and the new
+     * enrollee is its target, otherwise the other way around.
+     */
+    @Transactional
+    public Enrollee enrollFamilyMember(EnvironmentName envName,
+                                       String studyShortcode,
+                                       Enrollee existingEnrollee,
+                                       boolean newMemberIsTarget,
+                                       UUID familyId,
+                                       String familyRelationship,
+                                       Profile profileInfo,
+                                       DataAuditInfo auditInfo) {
+        if (StringUtils.isBlank(familyRelationship)) {
+            throw new IllegalArgumentException("Family relationship is required");
+        }
+        PortalParticipantUser existingPpUser = portalParticipantUserService.findForEnrollee(existingEnrollee);
+        ParticipantUser existingUser = participantUserService.find(existingEnrollee.getParticipantUserId())
+                .orElseThrow(() -> new IllegalStateException("No participant user for enrollee %s".formatted(existingEnrollee.getShortcode())));
+
+        // if the existing enrollee is itself a governed user, derive from the original email rather than stacking suffixes
+        String baseUsername = RegistrationService.removeProxySuffix(existingUser.getUsername());
+        String newUsername = registrationService.getDerivedUsername(baseUsername, envName);
+
+        RegistrationService.RegistrationResult registration =
+                registrationService.registerDerivedUser(existingUser, existingPpUser, newUsername, null, true);
+
+        Profile profile = profileService.loadWithMailingAddress(registration.portalParticipantUser().getProfileId()).orElseThrow();
+        if (profileInfo != null) {
+            applyEditableProfileFields(profile, profileInfo);
+        }
+        // no emails -- the existing enrollee's address is shared, and this is a staff-created record.
+        // Set after applying the supplied fields so callers can't re-enable it.
+        profile.setDoNotEmail(true);
+        profileService.updateWithMailingAddress(profile, auditInfo);
+
+        Enrollee newEnrollee = this
+                .enroll(existingPpUser, envName, studyShortcode, registration.participantUser(),
+                        registration.portalParticipantUser(), null, true, EnrolleeSourceType.MANUAL_ADMIN, false)
+                .getEnrollee();
+
+        EnrolleeRelation relation = EnrolleeRelation.builder()
+                .enrolleeId(newMemberIsTarget ? existingEnrollee.getId() : newEnrollee.getId())
+                .targetEnrolleeId(newMemberIsTarget ? newEnrollee.getId() : existingEnrollee.getId())
+                .familyId(familyId)
+                .familyRelationship(familyRelationship.trim())
+                .beginDate(Instant.now())
+                .build();
+        enrolleeRelationService.createFamilyRelationship(relation, auditInfo);
+        log.info("Created family member {} related to {} ({}, new member is {})", newEnrollee.getShortcode(),
+                existingEnrollee.getShortcode(), familyRelationship, newMemberIsTarget ? "target" : "enrollee");
+        return newEnrollee;
+    }
+
+    /** copies only the fields staff may set when creating a member; ids, timestamps and address ids are never taken from the caller */
+    private void applyEditableProfileFields(Profile profile, Profile supplied) {
+        profile.setGivenName(StringUtils.trimToNull(supplied.getGivenName()));
+        profile.setFamilyName(StringUtils.trimToNull(supplied.getFamilyName()));
+        profile.setBirthDate(supplied.getBirthDate());
+        profile.setSexAtBirth(StringUtils.trimToNull(supplied.getSexAtBirth()));
+        profile.setPhoneNumber(StringUtils.trimToNull(supplied.getPhoneNumber()));
+        profile.setDoNotEmailSolicit(supplied.isDoNotEmailSolicit());
+        if (StringUtils.isNotBlank(supplied.getContactEmail())) {
+            profile.setContactEmail(supplied.getContactEmail().trim());
+        }
+        if (StringUtils.isNotBlank(supplied.getPreferredLanguage())) {
+            profile.setPreferredLanguage(supplied.getPreferredLanguage());
+        }
+        MailingAddress address = supplied.getMailingAddress();
+        if (address != null && Stream.of(address.getStreet1(), address.getStreet2(), address.getCity(),
+                address.getState(), address.getPostalCode(), address.getCountry()).anyMatch(StringUtils::isNotBlank)) {
+            MailingAddress newAddress = new MailingAddress();
+            newAddress.setStreet1(address.getStreet1());
+            newAddress.setStreet2(address.getStreet2());
+            newAddress.setCity(address.getCity());
+            newAddress.setState(address.getState());
+            newAddress.setPostalCode(address.getPostalCode());
+            newAddress.setCountry(address.getCountry());
+            profile.setMailingAddress(newAddress);
+        }
     }
 
     private PreEnrollmentResponse validatePreEnrollResponse(PortalParticipantUser operator,

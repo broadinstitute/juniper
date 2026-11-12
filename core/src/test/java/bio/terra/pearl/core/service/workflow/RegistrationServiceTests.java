@@ -52,11 +52,11 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
 
         EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
         ParticipantUser proxyUser = participantUserService.find(proxyBundle.enrollee().getParticipantUserId()).orElseThrow();
-        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(proxyUser, proxyBundle.portalParticipantUser(), proxyUser.getUsername()+"-prox-RFGU", null);
-        Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUser.getUsername()));
+        RegistrationService.RegistrationResult registerDerivedUser = registrationService.registerDerivedUser(proxyUser, proxyBundle.portalParticipantUser(), proxyUser.getUsername()+"-prox-RFGU", null);
+        Assertions.assertTrue(registerDerivedUser.participantUser().getUsername().contains(proxyUser.getUsername()));
         Assertions.assertTrue(participantUserService.findOne(proxyUser.getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
-        Assertions.assertNotEquals(proxyUser.getUsername(), registerGovernedUser.participantUser().getUsername());
-        Assertions.assertTrue(participantUserService.findOne(registerGovernedUser.participantUser().getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
+        Assertions.assertNotEquals(proxyUser.getUsername(), registerDerivedUser.participantUser().getUsername());
+        Assertions.assertTrue(participantUserService.findOne(registerDerivedUser.participantUser().getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
     }
 
     @Test

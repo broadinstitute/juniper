@@ -1181,6 +1181,29 @@ paths:
           description: Successfully updated proband
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/newMember:
+    post:
+      summary: Creates a brand new enrollee as a member of the family, related to an existing member.
+        The new enrollee's username is derived from the existing member's (but is not a valid email),
+        so they cannot log in unless their email is later changed and they are invited.
+      tags: [ family ]
+      operationId: createMember
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: "{ existingEnrolleeShortcode, newMemberIsTarget, familyRelationship, profile? }"
+        content: *jsonContent
+      responses:
+        '200':
+          description: The newly created enrollee
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/members/{enrolleeShortcode}:
     put:
       summary: Adds a new member to the family
