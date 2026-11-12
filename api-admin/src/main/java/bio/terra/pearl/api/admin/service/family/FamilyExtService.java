@@ -20,6 +20,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,14 +127,17 @@ public class FamilyExtService {
       String familyShortcode,
       NewFamilyMemberInfo info,
       String justification) {
+    if (info == null || StringUtils.isBlank(info.getExistingEnrolleeShortcode())) {
+      throw new IllegalArgumentException("Existing enrollee is required");
+    }
+    if (StringUtils.isBlank(info.getFamilyRelationship())) {
+      throw new IllegalArgumentException("Family relationship is required");
+    }
     StudyEnvironment studyEnv = authContext.getStudyEnvironment();
     Family family =
         familyService
             .findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnv.getId())
             .orElseThrow(() -> new NotFoundException("Family not found"));
-    if (info == null || info.getExistingEnrolleeShortcode() == null) {
-      throw new IllegalArgumentException("Existing enrollee is required");
-    }
     Enrollee existing =
         enrolleeService
             .findByShortcodeAndStudyEnv(

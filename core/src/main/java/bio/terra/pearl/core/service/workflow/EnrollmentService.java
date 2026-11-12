@@ -144,15 +144,32 @@ public class EnrollmentService {
                                         UUID preEnrollResponseId,
                                         boolean isSubject,
                                         EnrolleeSourceType source) {
+        return enroll(operator, envName, studyShortcode, user, ppUser, preEnrollResponseId, isSubject, source, true);
+    }
+
+    /**
+     * @param enforceEnrollmentGates whether to require that the study is accepting enrollment and that the required
+     *                               pre-enrollment survey was completed. These gates apply to participants enrolling
+     *                               themselves, and are skipped for staff creating records (e.g. family members).
+     */
+    protected HubResponse<Enrollee> enroll(PortalParticipantUser operator,
+                                        EnvironmentName envName,
+                                        String studyShortcode,
+                                        ParticipantUser user,
+                                        PortalParticipantUser ppUser,
+                                        UUID preEnrollResponseId,
+                                        boolean isSubject,
+                                        EnrolleeSourceType source,
+                                        boolean enforceEnrollmentGates) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
                 .orElseThrow(StudyEnvConfigMissing::new);
-        if (!studyEnvConfig.isAcceptingEnrollment()) {
+        if (enforceEnrollmentGates && !studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
-        if (isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
+        if (enforceEnrollmentGates && isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
             throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
         if (!isEligibleForStudy(user, ppUser, studyEnvConfig)) {
@@ -417,19 +434,20 @@ public class EnrollmentService {
         String newUsername = registrationService.getDerivedUsername(baseUsername, envName);
 
         RegistrationService.RegistrationResult registration =
-                registrationService.registerDerivedUser(existingUser, existingPpUser, newUsername, null);
+                registrationService.registerDerivedUser(existingUser, existingPpUser, newUsername, null, true);
 
         Profile profile = profileService.loadWithMailingAddress(registration.portalParticipantUser().getProfileId()).orElseThrow();
-        // no emails by default -- the existing enrollee's address is shared, and this is a staff-created record
-        profile.setDoNotEmail(true);
         if (profileInfo != null) {
             applyEditableProfileFields(profile, profileInfo);
         }
+        // no emails -- the existing enrollee's address is shared, and this is a staff-created record.
+        // Set after applying the supplied fields so callers can't re-enable it.
+        profile.setDoNotEmail(true);
         profileService.updateWithMailingAddress(profile, auditInfo);
 
         Enrollee newEnrollee = this
                 .enroll(existingPpUser, envName, studyShortcode, registration.participantUser(),
-                        registration.portalParticipantUser(), null, true, EnrolleeSourceType.MANUAL_ADMIN)
+                        registration.portalParticipantUser(), null, true, EnrolleeSourceType.MANUAL_ADMIN, false)
                 .getEnrollee();
 
         EnrolleeRelation relation = EnrolleeRelation.builder()
@@ -452,7 +470,6 @@ public class EnrollmentService {
         profile.setBirthDate(supplied.getBirthDate());
         profile.setSexAtBirth(StringUtils.trimToNull(supplied.getSexAtBirth()));
         profile.setPhoneNumber(StringUtils.trimToNull(supplied.getPhoneNumber()));
-        profile.setDoNotEmail(supplied.isDoNotEmail());
         profile.setDoNotEmailSolicit(supplied.isDoNotEmailSolicit());
         if (StringUtils.isNotBlank(supplied.getContactEmail())) {
             profile.setContactEmail(supplied.getContactEmail().trim());

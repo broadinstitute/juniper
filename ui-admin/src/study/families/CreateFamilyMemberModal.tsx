@@ -107,7 +107,8 @@ export const CreateFamilyMemberModal = ({
       Store.addNotification(successNotification(`Created ${created.shortcode}.`))
       onCreated()
     } catch (e) {
-      Store.addNotification(failureNotification('Could not create family member.'))
+      const reason = e instanceof Error && e.message ? `: ${e.message}` : '.'
+      Store.addNotification(failureNotification(`Could not create family member${reason}`))
       setShowJustify(false)
     }
   }

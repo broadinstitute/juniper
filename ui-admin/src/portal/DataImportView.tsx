@@ -162,7 +162,7 @@ export default function DataImportView({ studyEnvContext }:
 
 const removeProxyEmailSuffix = (email: string) => {
   // remove -prox-ABCD or -derived-ABCD from the end of the email
-  const regex = /-(prox|derived)-[A-Z0-9]{4}$/
+  const regex = /-(prox|derived)-[A-Z]{4}$/
 
   const match = email.match(regex)
   if (match) {

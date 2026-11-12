@@ -553,7 +553,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(profile.getPhoneNumber(), equalTo("555-1234"));
         assertThat(profile.getSexAtBirth(), equalTo("Female"));
         assertThat(profile.getContactEmail(), equalTo("own@example.com"));
-        assertThat(profile.isDoNotEmail(), equalTo(false));
+        // emails stay disabled for staff-created members even if the supplied profile says otherwise
+        assertThat(profile.isDoNotEmail(), equalTo(true));
         assertThat(profileService.loadWithMailingAddress(profile.getId()).get().getMailingAddress().getCity(), equalTo("Boston"));
         assertThat(sibling.getSource(), equalTo(bio.terra.pearl.core.model.participant.EnrolleeSourceType.MANUAL_ADMIN));
 

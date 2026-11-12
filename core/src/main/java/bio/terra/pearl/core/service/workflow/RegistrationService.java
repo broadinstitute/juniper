@@ -153,6 +153,15 @@ public class RegistrationService {
      */
     @Transactional
     public RegistrationResult registerDerivedUser(ParticipantUser sourceUser, PortalParticipantUser sourcePpUser, String derivedUsername, ParticipantUser derivedUser) {
+        return registerDerivedUser(sourceUser, sourcePpUser, derivedUsername, derivedUser, false);
+    }
+
+    /**
+     * @param forceDoNotEmail if true, the derived profile is created with doNotEmail set, so that the registration
+     *                        event published here can't trigger email to the source user's (shared) address.
+     */
+    @Transactional
+    public RegistrationResult registerDerivedUser(ParticipantUser sourceUser, PortalParticipantUser sourcePpUser, String derivedUsername, ParticipantUser derivedUser, boolean forceDoNotEmail) {
         if (!sourcePpUser.getParticipantUserId().equals(sourceUser.getId())) {
             throw new IllegalArgumentException("user and portal participant user do not match");
         }
@@ -170,7 +179,7 @@ public class RegistrationService {
         Profile sourceProfile = profileService.find(sourcePpUser.getProfileId()).orElseThrow();
         Profile derivedProfile = Profile.builder()
                 .contactEmail(sourceProfile.getContactEmail())
-                .doNotEmail(sourceProfile.isDoNotEmail())
+                .doNotEmail(forceDoNotEmail || sourceProfile.isDoNotEmail())
                 .preferredLanguage(sourceProfile.getPreferredLanguage())
                 .givenName(null)
                 .familyName(null)
@@ -216,8 +225,12 @@ public class RegistrationService {
 
     /** username for a user derived from (but not governed by) another user, e.g. a@b.com-derived-ABCD */
     public String getDerivedUsername(String sourceUserName, EnvironmentName environmentName) {
-        String suffix = generateGovernedUsernameSuffix(sourceUserName, environmentName);
-        return DERIVED_USERNAME_INDICATOR.formatted(sourceUserName, suffix);
+        String username;
+        do {
+            String suffix = randomUtilService.generateSecureRandomString(GOVERNED_EMAIL_SUFFIX_LENGTH, GOVERNED_USERNAME_SUFFIX_CHARS);
+            username = DERIVED_USERNAME_INDICATOR.formatted(sourceUserName, suffix);
+        } while (participantUserService.findOne(username, environmentName).isPresent());
+        return username;
     }
 
     public static String removeProxySuffix(String email) {
