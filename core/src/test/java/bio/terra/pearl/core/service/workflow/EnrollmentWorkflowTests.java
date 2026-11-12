@@ -546,7 +546,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         // the account is governed-style, so it is based on the existing member's email but can't be a valid login
         ParticipantUser siblingUser = participantUserService.find(sibling.getParticipantUserId()).get();
         assertThat(siblingUser.getUsername(), matchesPattern(
-                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-prox-[A-Z]{4}"));
+                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-derived-[A-Z]{4}"));
         Profile profile = profileService.find(sibling.getProfileId()).get();
         assertThat(profile.getGivenName(), equalTo("Sis"));
         assertThat(profile.getFamilyName(), equalTo("Tester"));
@@ -574,7 +574,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(profileService.find(niece.getProfileId()).get().isDoNotEmail(), equalTo(true));
         ParticipantUser nieceUser = participantUserService.find(niece.getParticipantUserId()).get();
         assertThat(nieceUser.getUsername(), matchesPattern(
-                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-prox-[A-Z]{4}"));
+                java.util.regex.Pattern.quote(userBundle.user().getUsername()) + "-derived-[A-Z]{4}"));
         // newMemberIsTarget=false flips the direction: the new member is the enrollee ("niece is the daughter of sibling")
         List<EnrolleeRelation> nieceRelations = enrolleeRelationService.findAllByEnrolleeId(niece.getId());
         assertThat(nieceRelations, hasSize(1));

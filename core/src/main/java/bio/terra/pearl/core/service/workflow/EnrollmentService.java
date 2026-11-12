@@ -390,7 +390,7 @@ public class EnrollmentService {
     /**
      * Creates a new enrollee who is a family member of an existing enrollee. Intended for study staff doing manual
      * data upkeep: the new enrollee gets a governed-style username derived from the existing enrollee's
-     * (e.g. "a@b.com-prox-ABCD") which is not a deliverable address, so they cannot log in unless
+     * (e.g. "a@b.com-derived-ABCD") which is not a deliverable address, so they cannot log in unless
      * their email is later changed and they are invited. Emails to the new enrollee are disabled.
      * A family relation "{enrollee} is the {familyRelationship} of {target}" is created between the two within
      * the given family; if newMemberIsTarget the existing enrollee is the relation's enrollee and the new
@@ -414,7 +414,7 @@ public class EnrollmentService {
 
         // if the existing enrollee is itself a governed user, derive from the original email rather than stacking suffixes
         String baseUsername = RegistrationService.removeProxySuffix(existingUser.getUsername());
-        String newUsername = registrationService.getGovernedUsername(baseUsername, envName);
+        String newUsername = registrationService.getDerivedUsername(baseUsername, envName);
 
         RegistrationService.RegistrationResult registration =
                 registrationService.registerDerivedUser(existingUser, existingPpUser, newUsername, null);

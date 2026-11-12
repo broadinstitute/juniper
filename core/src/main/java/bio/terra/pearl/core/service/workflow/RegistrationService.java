@@ -50,6 +50,7 @@ public class RegistrationService {
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
+    private static final String DERIVED_USERNAME_INDICATOR = "%s-derived-%s";
     private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
@@ -213,9 +214,15 @@ public class RegistrationService {
 
     }
 
+    /** username for a user derived from (but not governed by) another user, e.g. a@b.com-derived-ABCD */
+    public String getDerivedUsername(String sourceUserName, EnvironmentName environmentName) {
+        String suffix = generateGovernedUsernameSuffix(sourceUserName, environmentName);
+        return DERIVED_USERNAME_INDICATOR.formatted(sourceUserName, suffix);
+    }
+
     public static String removeProxySuffix(String email) {
-        // if the email ends with -prox-XXXX, remove it
-        Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
+        // if the email ends with -prox-XXXX or -derived-XXXX, remove it
+        Pattern proxySuffix = Pattern.compile("-(prox|derived)-[A-Z]{4}$");
 
         return proxySuffix.matcher(email).replaceAll("");
     }
