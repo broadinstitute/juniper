@@ -51,7 +51,7 @@ export type StudyEnvironmentConfig = {
   kittingSystem: KittingSystem
   useStubSidr: boolean
   sidrEnvironment: SidrEnvironment
-  sidrProject?: string
+  sidrProjectKey?: string
   enableInPersonKits: boolean
   includeSexAtBirthInKitMetadata: boolean
   timeZone: string

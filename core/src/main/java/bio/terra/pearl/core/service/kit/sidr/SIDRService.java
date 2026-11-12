@@ -102,7 +102,7 @@ public class SIDRService {
                 .build();
 
         return SIDROrder.builder()
-                .projectKey(config.getSidrProject())
+                .projectKey(config.getSidrProjectKey())
                 .numberOfSamples(1)
                 .clinicalOrderAttestation(true)
                 .externalOrderId(kitRequest.getId().toString())
@@ -113,7 +113,7 @@ public class SIDRService {
     }
 
     private static void requireProject(StudyEnvironmentConfig config) {
-        if (StringUtils.isBlank(config.getSidrProject())) {
+        if (StringUtils.isBlank(config.getSidrProjectKey())) {
             throw new IllegalArgumentException("Kit ordering is not configured for this study environment");
         }
     }
@@ -165,7 +165,7 @@ public class SIDRService {
                 .build();
 
         return SIDROrder.builder()
-                .projectKey(config.getSidrProject())
+                .projectKey(config.getSidrProjectKey())
                 .numberOfSamples(1)
                 .sampleKitRequested(true)
                 .clinicalOrderAttestation(true)

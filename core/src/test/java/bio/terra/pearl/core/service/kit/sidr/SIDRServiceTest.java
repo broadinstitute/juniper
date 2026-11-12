@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 class SIDRServiceTest {
     private final StudyEnvironmentConfig config = StudyEnvironmentConfig.builder()
-            .sidrProject("PROJ").build();
+            .sidrProjectKey("PROJ").build();
     private final Enrollee enrollee = Enrollee.builder().shortcode("HDSALK").researchId("RESEARCH1").build();
 
     private KitRequest kit(String kitTypeName, boolean skipValidation) {

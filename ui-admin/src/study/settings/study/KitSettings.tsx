@@ -160,8 +160,8 @@ export const KitSettings = (
           <label className="form-label">
             SIDR project key
             <input type="text" className="form-control" style={{ width: 300 }}
-              value={config.sidrProject ?? ''}
-              onChange={e => updateConfig('sidrProject', e.target.value || undefined)}/>
+              value={config.sidrProjectKey ?? ''}
+              onChange={e => updateConfig('sidrProjectKey', e.target.value || undefined)}/>
           </label>
         </div>
       </> : <>

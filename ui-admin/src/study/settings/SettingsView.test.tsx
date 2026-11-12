@@ -174,7 +174,7 @@ describe('Study Settings', () => {
         'useStubDsm': false,
         'kittingSystem': 'DSM_PEPPER',
         'useStubSidr': true,
-        'sidrEnvironment': 'PRODUCTION',
+        'sidrEnvironment': 'DEV',
         'enableInPersonKits': false,
         'kitUseResearchIds': false,
         timeZone: 'America/New_York',

@@ -707,7 +707,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         config.setKittingSystem(ExternalKitSystem.SIDR);
         config.setUseStubSidr(true);
-        config.setSidrProject("TEST_PROJECT");
+        config.setSidrProjectKey("TEST_PROJECT");
         studyEnvironmentConfigService.update(config);
         return enrollee;
     }
@@ -836,7 +836,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 new KitRequestService.KitRequestCreationDto("SALIVA", DistributionMethod.IN_PERSON, "BARCODE-3", false, null, null));
         // no project to order under
         StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
-        config.setSidrProject(null);
+        config.setSidrProjectKey(null);
         studyEnvironmentConfigService.update(config);
 
         KitRequest requested = kitRequestDao.find(dto.getId()).get();

@@ -58,13 +58,13 @@ public class StudyEnvironmentConfig extends BaseEntity {
      * Only relevant when kittingSystem is SIDR and useStubSidr is false.
      */
     @Builder.Default
-    private SIDREnvironment sidrEnvironment = SIDREnvironment.PRODUCTION;
+    private SIDREnvironment sidrEnvironment = SIDREnvironment.DEV;
 
     /**
      * the SIDR project key kit orders for this study environment are placed under.
      */
     @Builder.Default
-    private String sidrProject = null;
+    private String sidrProjectKey = null;
 
     /**
      * the external system kit requests are sent to. New studies default to SIDR; studies that existed
