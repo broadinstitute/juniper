@@ -50,6 +50,7 @@ public class RegistrationService {
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
+    private static final String DERIVED_USERNAME_INDICATOR = "%s-derived-%s";
     private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
@@ -146,38 +147,51 @@ public class RegistrationService {
         return new RegistrationResult(user, ppUser, ppUser.getProfile());
     }
 
+    /**
+     * Registers a new user whose account is derived from an existing "source" user. Used for governed (proxied)
+     * users and for staff created family members.
+     */
     @Transactional
-    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser, String governedUsername, ParticipantUser governedUser) {
-        if (!proxyPpUser.getParticipantUserId().equals(proxyUser.getId())) {
+    public RegistrationResult registerDerivedUser(ParticipantUser sourceUser, PortalParticipantUser sourcePpUser, String derivedUsername, ParticipantUser derivedUser) {
+        return registerDerivedUser(sourceUser, sourcePpUser, derivedUsername, derivedUser, false);
+    }
+
+    /**
+     * @param forceDoNotEmail if true, the derived profile is created with doNotEmail set, so that the registration
+     *                        event published here can't trigger email to the source user's (shared) address.
+     */
+    @Transactional
+    public RegistrationResult registerDerivedUser(ParticipantUser sourceUser, PortalParticipantUser sourcePpUser, String derivedUsername, ParticipantUser derivedUser, boolean forceDoNotEmail) {
+        if (!sourcePpUser.getParticipantUserId().equals(sourceUser.getId())) {
             throw new IllegalArgumentException("user and portal participant user do not match");
         }
-        if (governedUser == null) {
-            governedUser = new ParticipantUser();
-            governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
-            governedUser.setUsername(governedUsername);
-            governedUser = participantUserService.create(governedUser);
+        if (derivedUser == null) {
+            derivedUser = new ParticipantUser();
+            derivedUser.setEnvironmentName(sourceUser.getEnvironmentName());
+            derivedUser.setUsername(derivedUsername);
+            derivedUser = participantUserService.create(derivedUser);
         }
 
-        PortalParticipantUser governedPpUser = new PortalParticipantUser();
-        governedPpUser.setPortalEnvironmentId(proxyPpUser.getPortalEnvironmentId());
-        governedPpUser.setParticipantUserId(governedUser.getId());
+        PortalParticipantUser derivedPpUser = new PortalParticipantUser();
+        derivedPpUser.setPortalEnvironmentId(sourcePpUser.getPortalEnvironmentId());
+        derivedPpUser.setParticipantUserId(derivedUser.getId());
 
-        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
-        Profile governedProfile =  Profile.builder()
-                .contactEmail(proxyProfile.getContactEmail())
-                .doNotEmail(proxyProfile.isDoNotEmail())
-                .preferredLanguage(proxyProfile.getPreferredLanguage())
+        Profile sourceProfile = profileService.find(sourcePpUser.getProfileId()).orElseThrow();
+        Profile derivedProfile = Profile.builder()
+                .contactEmail(sourceProfile.getContactEmail())
+                .doNotEmail(forceDoNotEmail || sourceProfile.isDoNotEmail())
+                .preferredLanguage(sourceProfile.getPreferredLanguage())
                 .givenName(null)
                 .familyName(null)
                 .build();
-        governedPpUser.setProfile(governedProfile);
-        governedPpUser = portalParticipantUserService.create(governedPpUser);
+        derivedPpUser.setProfile(derivedProfile);
+        derivedPpUser = portalParticipantUserService.create(derivedPpUser);
 
-        PortalEnvironment portalEnv = portalEnvService.find(proxyPpUser.getPortalEnvironmentId()).orElseThrow();
+        PortalEnvironment portalEnv = portalEnvService.find(sourcePpUser.getPortalEnvironmentId()).orElseThrow();
 
-        eventService.publishPortalRegistrationEvent(governedUser, governedPpUser, portalEnv);
-        log.info("Governed user registration: userId: {}, portal: {}, env: {}", governedUser.getId(), portalEnv.getPortalId(), portalEnv.getEnvironmentName());
-        return new RegistrationResult(governedUser, governedPpUser, governedProfile);
+        eventService.publishPortalRegistrationEvent(derivedUser, derivedPpUser, portalEnv);
+        log.info("Derived user registration: userId: {}, portal: {}, env: {}", derivedUser.getId(), portalEnv.getPortalId(), portalEnv.getEnvironmentName());
+        return new RegistrationResult(derivedUser, derivedPpUser, derivedProfile);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {
@@ -209,9 +223,19 @@ public class RegistrationService {
 
     }
 
+    /** username for a user derived from (but not governed by) another user, e.g. a@b.com-derived-ABCD */
+    public String getDerivedUsername(String sourceUserName, EnvironmentName environmentName) {
+        String username;
+        do {
+            String suffix = randomUtilService.generateSecureRandomString(GOVERNED_EMAIL_SUFFIX_LENGTH, GOVERNED_USERNAME_SUFFIX_CHARS);
+            username = DERIVED_USERNAME_INDICATOR.formatted(sourceUserName, suffix);
+        } while (participantUserService.findOne(username, environmentName).isPresent());
+        return username;
+    }
+
     public static String removeProxySuffix(String email) {
-        // if the email ends with -prox-XXXX, remove it
-        Pattern proxySuffix = Pattern.compile("-prox-[A-Z]{4}$");
+        // if the email ends with -prox-XXXX or -derived-XXXX, remove it
+        Pattern proxySuffix = Pattern.compile("-(prox|derived)-[A-Z]{4}$");
 
         return proxySuffix.matcher(email).replaceAll("");
     }

@@ -54,6 +54,7 @@ export function I18nProvider({
   environmentName,
   loadedPortalContentLang,
   reloadPortalContent,
+  persistLanguage = true,
   children
 }: {
   defaultLanguage: string,
@@ -61,20 +62,28 @@ export function I18nProvider({
   environmentName: EnvironmentName,
   children: React.ReactNode,
   loadedPortalContentLang?: string | null,
-  reloadPortalContent?: (language: string) => void
+  reloadPortalContent?: (language: string) => void,
+  /**
+   * whether the selected language is read from and saved to localStorage. Defaults to true, which is what the
+   * participant UI wants. Contexts like the admin UI should pass false so a
+   * language chosen in the participant UI does not leak in.
+   */
+  persistLanguage?: boolean
 }) {
   const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
   const [selectedLanguage, setSelectedLanguage] = useState(
-    localStorage.getItem(SELECTED_LANGUAGE_KEY) || defaultLanguage)
+    (persistLanguage && localStorage.getItem(SELECTED_LANGUAGE_KEY)) || defaultLanguage)
 
   const { pathname } = useLocation()
 
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
-    localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
+    if (persistLanguage) {
+      localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
+    }
   }
 
   useEffect(() => {

@@ -40,6 +40,14 @@ import {
 } from './adminUser'
 import { SystemStatus } from 'status/status'
 
+export type NewFamilyMemberInfo = {
+  existingEnrolleeShortcode: string
+  // whether the new member is the target of the relation ('existing is the X of new') rather than the enrollee
+  newMemberIsTarget: boolean
+  familyRelationship: string
+  profile?: Profile
+}
+
 export type {
   Answer,
   AddressValidationResult,
@@ -1649,6 +1657,23 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async createFamilyMember(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, info: NewFamilyMemberInfo, justification: string
+  ): Promise<Enrollee> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/newMember?${params}`
+
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(info)
+    })
+    return await this.processJsonResponse(result)
   },
 
   async addMemberToFamily(

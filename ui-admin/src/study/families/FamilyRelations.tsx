@@ -13,7 +13,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/table/tableUtils'
-import Creatable from 'react-select/creatable'
+import { FamilyRelationshipSelect } from 'study/families/FamilyRelationshipSelect'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import {
@@ -136,15 +136,11 @@ export const FamilyRelations = ({
     cell: ({ row }) => {
       const relationship = row.original?.familyRelationship
       return <span className="fst-italic">
-        is the <Creatable
+        is the <FamilyRelationshipSelect
           isDisabled={!isNewRelationCreationRow(row)}
-          options={[]}
-          styles={{
-            control: provided => ({ ...provided, minWidth: '120px' })
-          }}
-          value={{ value: relationship, label: relationship }}
-          onChange={option => setNewRelation(old => {
-            return { ...old, familyRelationship: option?.value || '' }
+          value={relationship}
+          onChange={value => setNewRelation(old => {
+            return { ...old, familyRelationship: value }
           })}
           className={'d-inline-block'}
         /> of

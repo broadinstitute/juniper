@@ -122,6 +122,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
     <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
       <I18nProvider
         defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
+        persistLanguage={false}
         portalShortcode={portal.shortcode}
         environmentName={portalEnv.environmentName as EnvironmentName}>
         <Routes>

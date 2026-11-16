@@ -4,6 +4,7 @@ import bio.terra.pearl.api.admin.api.FamilyApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.family.FamilyExtService;
+import bio.terra.pearl.api.admin.service.family.FamilyExtService.NewFamilyMemberInfo;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Family;
@@ -129,6 +130,27 @@ public class FamilyController implements FamilyApi {
         justification);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Object> createMember(
+      String justification,
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      Object body) {
+    NewFamilyMemberInfo info = objectMapper.convertValue(body, NewFamilyMemberInfo.class);
+    return ResponseEntity.ok(
+        familyExtService.createMember(
+            PortalStudyEnvAuthContext.of(
+                authUtilService.requireAdminUser(request),
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            familyShortcode,
+            info,
+            justification));
   }
 
   @Override

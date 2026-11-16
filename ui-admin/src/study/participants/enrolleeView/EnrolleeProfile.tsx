@@ -150,11 +150,14 @@ function ReadOnlyProfile(
 
 /**
  * Editable profile, providing the update to `setProfile` on each change.
+ * If `hideAccountFields` is true, only the basic personal info is rendered -- the contact email
+ * and notification settings are hidden, since they relate to the participant's account.
  */
-function EditableProfile(
-  { profile, setProfile }: {
+export function EditableProfile(
+  { profile, setProfile, hideAccountFields = false }: {
     profile: Profile,
-    setProfile: (value: React.SetStateAction<Profile>) => void
+    setProfile: (value: React.SetStateAction<Profile>) => void,
+    hideAccountFields?: boolean
   }
 ) {
   const onFieldChange = (field: keyof Profile, value: string | boolean | MailingAddress) => {
@@ -227,17 +230,17 @@ function EditableProfile(
       title={'Primary Address'} mailingAddress={profile.mailingAddress}
       onFieldChange={onFieldChange}
     />
-    <InfoCardRow title={'Email'}>
+    {!hideAccountFields && <InfoCardRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
-    </InfoCardRow>
+    </InfoCardRow>}
     <InfoCardRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
         placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
     </InfoCardRow>
-    <InfoCardRow title={'Notifications'}>
+    {!hideAccountFields && <InfoCardRow title={'Notifications'}>
       <div className='row mt-2'>
         <div className="col-auto">
           <div className="form-check">
@@ -261,7 +264,7 @@ function EditableProfile(
           </div>
         </div>
       </div>
-    </InfoCardRow>
+    </InfoCardRow>}
   </>
 }
 

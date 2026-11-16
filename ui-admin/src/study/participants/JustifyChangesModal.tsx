@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import { ObjectDiff } from '@juniper/ui-core'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -17,7 +17,7 @@ export default function JustifyChangesModal({
   confirmText,
   animated = true
 }: {
-  saveWithJustification: (justification: string) => void,
+  saveWithJustification: (justification: string) => void | Promise<void>,
   onDismiss: () => void,
   changes?: ObjectDiff[],
   bodyText?: React.ReactNode,
@@ -25,10 +25,21 @@ export default function JustifyChangesModal({
   animated?: boolean
 }) {
   const [justification, setJustification] = useState<string>('')
+  const [isSaving, setIsSaving] = useState(false)
+  // a ref, since state doesn't update fast enough to block a rapid second click
+  const saveInProgress = useRef(false)
 
-  const attemptSave = () => {
-    if (justification.length !== 0) {
-      saveWithJustification(justification)
+  const attemptSave = async () => {
+    if (justification.length === 0 || saveInProgress.current) {
+      return
+    }
+    saveInProgress.current = true
+    setIsSaving(true)
+    try {
+      await saveWithJustification(justification)
+    } finally {
+      saveInProgress.current = false
+      setIsSaving(false)
     }
   }
 
@@ -59,7 +70,8 @@ export default function JustifyChangesModal({
     </Modal.Body>
     <Modal.Footer>
       <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-      <button className='btn btn-primary' onClick={attemptSave} disabled={justification.length === 0}>
+      <button className='btn btn-primary' onClick={attemptSave}
+        disabled={justification.length === 0 || isSaving}>
         {confirmText || 'Save & Complete Change'}
       </button>
     </Modal.Footer>

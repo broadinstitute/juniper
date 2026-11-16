@@ -30,6 +30,7 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import classNames from 'classnames'
 import InfoPopup from 'components/forms/InfoPopup'
+import { CreateFamilyMemberModal } from 'study/families/CreateFamilyMemberModal'
 
 /**
  * Editable view of the members of a family.
@@ -41,6 +42,7 @@ export const FamilyMembers = ({
 }) => {
   const [isAddingNewMember, setIsAddingNewMember] = useState<boolean>(false)
   const [newMember, setNewMember] = useState<Enrollee>()
+  const [isCreatingMember, setIsCreatingMember] = useState<boolean>(false)
 
   const isNewMemberCreationRow = (row: Row<Partial<Enrollee>>) => {
     return isAddingNewMember && row.index === 0
@@ -179,11 +181,24 @@ export const FamilyMembers = ({
     <h4>
       Members
       <button className='btn btn-secondary ms-2' onClick={() => setIsAddingNewMember(true)}>
-        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Add new member'}/>
-        Add new member
+        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Link existing enrollee'}/>
+        Link existing enrollee
+      </button>
+      <button className='btn btn-secondary ms-2' onClick={() => setIsCreatingMember(true)}>
+        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Create new family member'}/>
+        Create new member
       </button>
     </h4>
     {basicTableLayout(table, { useSize: true })}
+    {isCreatingMember && <CreateFamilyMemberModal
+      family={family}
+      studyEnvContext={studyEnvContext}
+      onClose={() => setIsCreatingMember(false)}
+      onCreated={() => {
+        setIsCreatingMember(false)
+        reloadFamily()
+      }}
+    />}
     {memberSelectedForDeletion && <JustifyChangesModal
       bodyText={<>
         <p>Are you sure you want to remove <EnrolleeLink
