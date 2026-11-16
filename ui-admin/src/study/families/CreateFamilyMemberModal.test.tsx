@@ -85,4 +85,22 @@ describe('CreateFamilyMemberModal', () => {
       familyRelationship: 'Father'
     }))
   })
+
+  test('only creates one member when save is clicked twice', async () => {
+    let resolveCreate: (e: ReturnType<typeof mockEnrollee>) => void = () => undefined
+    const createSpy = jest.spyOn(Api, 'createFamilyMember').mockReturnValue(
+      new Promise(resolve => { resolveCreate = resolve }))
+    renderModal()
+    await select(screen.getByLabelText('Relationship'), 'Sister')
+    await userEvent.click(screen.getByText('Create'))
+    await userEvent.type(screen.getByPlaceholderText('Why are you making this change?'), 'because')
+    const saveButton = screen.getByText('Save & Complete Change')
+    await userEvent.dblClick(saveButton)
+
+    expect(createSpy).toHaveBeenCalledTimes(1)
+    expect(saveButton).toBeDisabled()
+    resolveCreate(mockEnrollee())
+    await waitFor(() => expect(Store.addNotification).toHaveBeenCalled())
+    expect(createSpy).toHaveBeenCalledTimes(1)
+  })
 })

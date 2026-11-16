@@ -72,6 +72,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
+    private ParticipantDataChangeService participantDataChangeService;
+    @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
     private SurveyResponseService surveyResponseService;
@@ -543,6 +545,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .build(),
                 auditInfo);
 
+        // the profile change shows up in the new participant's history
+        assertThat(participantDataChangeService.findAllRecordsForEnrollee(sibling).stream()
+                .anyMatch(c -> "Profile".equals(c.getModelName())), equalTo(true));
+
         // the account is governed-style, so it is based on the existing member's email but can't be a valid login
         ParticipantUser siblingUser = participantUserService.find(sibling.getParticipantUserId()).get();
         assertThat(siblingUser.getUsername(), matchesPattern(
@@ -592,5 +598,25 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Assertions.assertThrows(IllegalArgumentException.class, () ->
                 enrollmentService.enrollFamilyMember(studyEnv.getEnvironmentName(), studyShortcode,
                         new Enrollee(), true, UUID.randomUUID(), " ", null, DataAuditInfo.builder().build()));
+    }
+
+    @Test
+    @Transactional
+    public void testEnrollFamilyMemberIgnoresEligibilityRule(TestInfo info) {
+        StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        Enrollee proband = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, true).getEnrollee();
+        Family family = familyFactory.buildPersisted(getTestName(info), proband);
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
+        config.setStudyEligibilityRule("{user.username} = 'nobody-matches-this'");
+        studyEnvironmentConfigService.update(config);
+
+        Enrollee member = enrollmentService.enrollFamilyMember(studyEnv.getEnvironmentName(), studyShortcode,
+                proband, true, family.getId(), "sister", null, DataAuditInfo.builder().systemProcess(getTestName(info)).build());
+        assertThat(member, notNullValue());
     }
 }

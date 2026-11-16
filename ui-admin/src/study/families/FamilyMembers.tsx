@@ -181,8 +181,8 @@ export const FamilyMembers = ({
     <h4>
       Members
       <button className='btn btn-secondary ms-2' onClick={() => setIsAddingNewMember(true)}>
-        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Add new member'}/>
-        Add new member
+        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Link existing enrollee'}/>
+        Link existing enrollee
       </button>
       <button className='btn btn-secondary ms-2' onClick={() => setIsCreatingMember(true)}>
         <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Create new family member'}/>

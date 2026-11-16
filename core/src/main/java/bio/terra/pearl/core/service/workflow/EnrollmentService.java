@@ -148,9 +148,10 @@ public class EnrollmentService {
     }
 
     /**
-     * @param enforceEnrollmentGates whether to require that the study is accepting enrollment and that the required
-     *                               pre-enrollment survey was completed. These gates apply to participants enrolling
-     *                               themselves, and are skipped for staff creating records (e.g. family members).
+     * @param enforceEnrollmentGates whether to require that the study is accepting enrollment, that the required
+     *                               pre-enrollment survey was completed, and that the user meets the study eligibility
+     *                               rule. These gates apply to participants enrolling themselves, and are skipped for
+     *                               staff creating records (e.g. family members), who have no data to satisfy them.
      */
     protected HubResponse<Enrollee> enroll(PortalParticipantUser operator,
                                         EnvironmentName envName,
@@ -172,7 +173,7 @@ public class EnrollmentService {
         if (enforceEnrollmentGates && isSubject && preEnrollResponseId == null && hasRequiredPreEnroll(studyEnv.getId())) {
             throw new IllegalArgumentException("user did not complete required pre-enrollment survey");
         }
-        if (!isEligibleForStudy(user, ppUser, studyEnvConfig)) {
+        if (enforceEnrollmentGates && !isEligibleForStudy(user, ppUser, studyEnvConfig)) {
             throw new IllegalArgumentException("Not eligible for this study");
         }
 
@@ -443,7 +444,11 @@ public class EnrollmentService {
         // no emails -- the existing enrollee's address is shared, and this is a staff-created record.
         // Set after applying the supplied fields so callers can't re-enable it.
         profile.setDoNotEmail(true);
+        // tie the profile change to the new participant so it shows in their history. The enrollee doesn't exist yet,
+        // and the profile must be set before enrolling since enrollment tasks/emails can depend on it
+        auditInfo.setPortalParticipantUserId(registration.portalParticipantUser().getId());
         profileService.updateWithMailingAddress(profile, auditInfo);
+        auditInfo.setPortalParticipantUserId(null);
 
         Enrollee newEnrollee = this
                 .enroll(existingPpUser, envName, studyShortcode, registration.participantUser(),
@@ -538,7 +543,7 @@ public class EnrollmentService {
             return true;
         }
         StudyEnvironment primaryStudyEnv = studyEnvironmentService.findPrimaryStudyByPortalEnvId(ppUser.getPortalEnvironmentId()).orElseThrow();
-        Enrollee primaryStudyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(ppUser.getId(), primaryStudyEnv.getId())
+        Enrollee primaryStudyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(ppUser.getParticipantUserId(), primaryStudyEnv.getId())
                 .orElse(Enrollee.builder()
                         .participantUserId(ppUser.getParticipantUserId())
                         .profileId(ppUser.getProfileId())
